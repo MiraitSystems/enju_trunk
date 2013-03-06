@@ -92,16 +92,16 @@ class SeriesStatementsController < ApplicationController
 
     respond_to do |format|
       begin
+        manifestation = nil
         SeriesStatement.transaction do
           unless params[:series_statement][:periodical] == 0.to_s
-            manifestation = Manifestation.new(
-              :original_title => @series_statement.original_title,
-            )
+            manifestation = Manifestation.create(:original_title => @series_statement.original_title)
             manifestation.periodical_master = true
+            manifestation.save!
             @series_statement.root_manifestation = manifestation
-            @series_statement.manifestations << manifestation if manifestation
           end
           @series_statement.save!
+          @series_statement.manifestations << manifestation if @series_statement.periodical and manifestation
           format.html { redirect_to @series_statement,
             :notice => t('controller.successfully_created', :model => t('activerecord.models.series_statement')) }
           format.json { render :json => @series_statement, :status => :created, :location => @series_statement }
@@ -124,20 +124,21 @@ class SeriesStatementsController < ApplicationController
     respond_to do |format|
       begin
         SeriesStatement.transaction do
-          unless params[:series_statement][:periodical] == 0.to_s
+          unless params[:series_statement][:periodical].to_s == "0"
             unless @series_statement.root_manifestation
-              manifestation = Manifestation.new(
-                :original_title => @series_statement.original_title,
-              )
+              manifestation = Manifestation.create( :original_title => @series_statement.original_title)
               manifestation.periodical_master = true
+              manifestation.save!
               @series_statement.root_manifestation = manifestation
               @series_statement.manifestations << manifestation
             end
           else
-            @series_statement.manifestations.collect{ |manifestation| manifestation.destroy if manifestation.periodical_master }
+            if @series_statement.root_manifestation
+              manifestation = Manifestation.find(@series_statement.root_manifestation_id)
+              manifestation.destroy if manifestation
+            end
             @series_statement.root_manifestation_id = nil
           end
-
           @series_statement.update_attributes!(params[:series_statement])
           @series_statement.manifestations.map { |manifestation| manifestation.index }
           format.html { redirect_to @series_statement, :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
