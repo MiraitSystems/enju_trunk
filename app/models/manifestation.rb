@@ -27,7 +27,7 @@ class Manifestation < ActiveRecord::Base
     end
     text :fulltext, :note, :contributor, :description
     text :creator do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号の著者のリストを取得する
         Patron.joins(:works).joins(:works => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -37,7 +37,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     text :publisher do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         Patron.joins(:manifestations => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           collect(&:name).compact
@@ -46,7 +46,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     text :table_of_content do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           map(&:table_of_content).compact
@@ -71,7 +71,7 @@ class Manifestation < ActiveRecord::Base
       publisher.join('').gsub(/\s/, '').downcase
     end
     string :isbn, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号のISBNのリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -81,7 +81,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     string :issn, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号のISSNのリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -116,7 +116,7 @@ class Manifestation < ActiveRecord::Base
       language.try(:name)
     end
     text :item_identifier do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号の蔵書の蔵書情報IDのリストを取得する
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -126,7 +126,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     string :shelf, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           map {|manifestation| [manifestation.items.collect{|i| "#{i.shelf.library.name}_#{i.shelf.name}"}] }.flatten.compact
@@ -141,7 +141,7 @@ class Manifestation < ActiveRecord::Base
     time :deleted_at
     time :date_of_publication
     string :pub_date, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号の出版日のリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -167,7 +167,7 @@ class Manifestation < ActiveRecord::Base
     integer :end_page
     integer :number_of_pages
     string :number_of_pages, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号のページ数のリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -208,14 +208,14 @@ class Manifestation < ActiveRecord::Base
       title unless series_statement.try(:periodical)
     end
     text :jtitle do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         series_statement.titles
       else                  # 雑誌以外（雑誌の記事も含む）
         original_manifestations.map{|m| m.title}.flatten
       end
     end
     text :isbn do  # 前方一致検索のためtext指定を追加
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号のISBNのリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -225,7 +225,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     text :issn do  # 前方一致検索のためtext指定を追加
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号のISSNのリストを取得する
         Manifestation.joins(:series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
@@ -299,7 +299,7 @@ class Manifestation < ActiveRecord::Base
         and(mani1[:id].eq(acquired_at_subq['grp_manifestation_id']))
       )
     string :acquired_at, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         # 同じ雑誌の全号について、それぞれの最古の受入日のリストを取得する
         Item.find_by_sql([acquired_at_q.to_sql, series_statement.id, series_statement.id]).map(&:acquired_at)
       else
@@ -307,7 +307,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     string :call_number, :multiple => true do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           collect(&:call_number).compact
@@ -316,7 +316,7 @@ class Manifestation < ActiveRecord::Base
       end
     end
     text :call_number do
-      if series_statement.try(:periodical)  # 雑誌の場合
+      if root_of_series?
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           collect(&:call_number).compact
