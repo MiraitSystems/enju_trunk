@@ -1725,6 +1725,11 @@ ja:
     help_isbn: "半角英数字で入力してください。ハイフン（-）の入力は不要です。"
     help_issn: "半角英数字で入力してください。ハイフン（-）の入力は不要です。"
     all_manifestations: "検索非対象資料も表示"
+    exact_keyword: 完全一致
+    include_keyword: 部分一致
+    begins_with_keyword: 前方一致
+    query_and: かつ(AND条件)
+    query_or: いずれか(OR条件)
     description: "
       <h5>検索方法:</h5>
       <strong>[AND]検索</strong><br />

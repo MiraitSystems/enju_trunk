@@ -310,6 +310,7 @@ module ApplicationHelper
     publisher: 'patron.publisher',
     isbn: 'activerecord.attributes.manifestation.isbn',
     issn: 'activerecord.attributes.manifestation.issn',
+    call_number: 'activerecord.attributes.item.call_number',
     item_identifier: 'activerecord.attributes.item.item_identifier',
     pub_date: 'activerecord.attributes.manifestation.date_of_publication',
     acquired: 'activerecord.attributes.item.acquired_at',
@@ -317,6 +318,11 @@ module ApplicationHelper
     number_of_pages: 'page.number_of_pages',
     exact_title: 'page.exact_title',
     exact_creator: 'page.exact_creator',
+    exact_keyword: 'advanced_search.exact_keyword',
+    include_keyword: 'advanced_search.include_keyword',
+    begins_with_keyword: 'advanced_search.begins_with_keyword',
+    query_and: 'advanced_search.query_and'
+    query_or: 'advanced_search.query_or'
     query: 'page.search_term',
   }
 

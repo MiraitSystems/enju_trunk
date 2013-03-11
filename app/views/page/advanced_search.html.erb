@@ -55,6 +55,10 @@ $(function(){
       <td><%= text_field_tag 'issn', params[:issn] -%><%= t('advanced_search.help_issn') -%></td>
     </tr>
     <tr>
+      <td><label><%= advanced_search_label(:call_number) -%>:</label></td>
+      <td><%= text_field_tag 'call_number', params[:call_number] -%></td>
+    </tr>
+    <tr>
       <td><label><%= advanced_search_label(:item_identifier) -%>:</label></td>
       <td><%= text_field_tag 'item_identifier', params[:item_identifier] -%></td>
     </tr>
