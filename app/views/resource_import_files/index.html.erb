@@ -17,7 +17,7 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to (resource_import_file.id), resource_import_file -%></td>
     <td><%= link_to resource_import_file.resource_import_file_name, resource_import_file -%></td>
-    <td><%= l(resource_import_file.imported_at) if resource_import_file.imported_at -%></td>
+    <td><%= resource_import_file.imported_at if resource_import_file.imported_at -%></td>
     <td><%= link_to resource_import_file.user.username, resource_import_file.user if resource_import_file.user -%></td>
     <td>
       <%- if resource_import_file.edit_mode == 'create' -%>
