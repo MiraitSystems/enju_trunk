@@ -15,8 +15,8 @@
 //= require event_calendar
 //= require rails.validations
 //= require function_key_control
-//= require jquery.auto_ruby
 //= require enju_audio_control
 //= require enju_trunk
 //= require jquery.ui.datepicker-ja
 //= require jquery.spin
+//= require jquery.autoKana
