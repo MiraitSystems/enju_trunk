@@ -140,6 +140,20 @@ module ManifestationsHelper
     return pages
   end
 
+  def reset_facet_params(params)
+    params = params.merge(
+            :reservable => nil,
+            :carrier_type => nil,
+            :library => nil,
+            :in_process => nil,
+            :language => nil,
+            :manifestation_type => nil,
+            :page => nil,
+            :view => nil
+          )
+    return params
+  end
+
   if defined?(EnjuBookmark)
     def link_to_bookmark(manifestation)
       if manifestation.bookmarked?(current_user)

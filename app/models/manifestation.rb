@@ -137,6 +137,15 @@ class Manifestation < ActiveRecord::Base
     string :user, :multiple => true do
     end
     time :created_at
+    time :recent, :multiple => true do
+      if root_of_series?
+        Manifestation.joins(:series_statement).
+          where(['series_statements.id = ?', self.series_statement.id]).
+          map(&:created_at).compact
+      else
+        created_at
+      end
+    end
     time :updated_at
     time :deleted_at
     time :date_of_publication
