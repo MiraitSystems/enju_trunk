@@ -7,9 +7,9 @@ gem 'cocaine', '0.4.2'
 #gem 'enju_calil', :git => 'git://github.com/nabeta/enju_calil.git'
 #gem 'enju_scribd', :git => 'git://github.com/nabeta/enju_scribd.git'
 #gem 'enju_nii', :git => 'git://github.com/nabeta/enju_nii.git'
-gem 'enju_oai', :git => 'git://github.com/nabeta/enju_oai.git'
+gem 'enju_oai', :git => 'git://github.com/next-l/enju_oai.git'
 gem 'enju_book_jacket', "0.1.0.pre"
-gem 'enju_manifestation_viewer', :git => 'git://github.com/nabeta/enju_manifestation_viewer.git'
+gem 'enju_manifestation_viewer', :git => 'git://github.com/next-l/enju_manifestation_viewer.git'
 #gem 'enju_message', "0.1.14.pre"
 gem 'enju_message', :git => 'git://github.com/shinozuka/enju_message.git'
 gem "enju_ndl", "0.1.0.pre3"
@@ -17,7 +17,8 @@ gem "enju_ndl", "0.1.0.pre3"
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
 gem 'enju_event', :git => 'git://github.com/shinozuka/enju_event.git'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
-gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
+#gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
+gem 'enju_ssf', :git => "https://mis-enju:3M9irait@github.com/MiraitSystems/enju_ssf.git"
 
 gem "jpp_customercode_transfer", "~> 0.0.2"
 
@@ -35,6 +36,7 @@ platforms :ruby_19 do
 end
 
 gem 'roo'
+gem 'axlsx'
 
 gem 'spinjs-rails'
 gem 'kaminari'
