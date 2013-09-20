@@ -47,7 +47,7 @@ module EnjuTrunk
       publisher
       subject
       accept_type
-      acquired_at
+      acquired_at_string
       bookstore
       library
       shelf
@@ -69,8 +69,11 @@ module EnjuTrunk
     )
 
     def import_book(sheet, errors)
-      error_msg = check_header_field(sheet)
-      unless error_msg
+      error_msg = []
+      error_msg << check_header_field(sheet)
+      error_msg << check_duplicate_item_identifier(sheet)
+      error_msg = error_msg.flatten.compact.join('')
+      if error_msg.blank?
         import_textresult = ResourceImportTextresult.new(
           :resource_import_textfile_id => @textfile_id,
           :extraparams                 => "{'sheet'=>'#{sheet}'}",
@@ -89,34 +92,25 @@ module EnjuTrunk
     end 
 
     def check_header_field(sheet)
-      field_row_num = 1
-
-      # read the field, then set field a hash
-      @field = Hash::new
-      columns_num = 0
-      begin
-        @oo.first_column.upto(@oo.last_column) do |column|
-          name = @oo.cell(field_row_num, column).to_s.strip
-          unless name.blank?
-            @field.store(name, column) 
-            columns_num = columns_num + 1
-          end
-        end
-      rescue
-        return I18n.t('resource_import_textfile.error.blank_sheet', :sheet => sheet)
-      end
-      if (columns_num - @field.keys.uniq.size) > 0
-        return I18n.t('resource_import_textfile.error.overlap', :sheet => sheet)
-      end
-
+      # check1: sheet is blank
+      return I18n.t('resource_import_textfile.error.blank_sheet', :sheet => sheet) unless @oo.first_column
+      # check2: header has duplicate columns
+      set_book_field
+      return I18n.t('resource_import_textfile.error.overlap', :sheet => sheet) unless @field.keys.uniq.size == @field.keys.size
+      # check3: header require field 
       unless @field[I18n.t('resource_import_textfile.excel.book.item_identifier')]
         # exist need fields?
         import_textresult = ResourceImportTextresult.new(:resource_import_textfile_id => @textfile_id, :extraparams => "{'sheet'=>'#{sheet}'}" )
+        unless SystemConfiguration.get('manifestations.split_by_type')
+          if @field[I18n.t('resource_import_textfile.excel.book.manifestation_type')].nil?
+            return I18n.t('resource_import_textfile.error.book.head_require_manifestation_type', :sheet => sheet)
+          end
+        end
         require_book = [@field[I18n.t('resource_import_textfile.excel.book.original_title')],
                         @field[I18n.t('resource_import_textfile.excel.book.isbn')]]
         require_series = [@field[I18n.t('resource_import_textfile.excel.series.original_title')],
                           @field[I18n.t('resource_import_textfile.excel.series.issn')]]
-        if @manifestation_type.is_book?
+        if @manifestation_type.nil? or @manifestation_type.is_book?
           if require_book.reject{ |field| field.to_s.strip == "" }.empty?
             return I18n.t('resource_import_textfile.error.book.head_is_blank', :sheet => sheet)
           end
@@ -127,6 +121,15 @@ module EnjuTrunk
         end
       end
       return nil
+    end
+
+    def set_book_field
+      field_row_num = 1
+      @field = Hash::new
+      @oo.first_column.upto(@oo.last_column) do |column|
+        name = @oo.cell(field_row_num, column).to_s.strip
+        @field.store(name, column) unless name.blank?
+      end
     end
 
     def book_header_has_out_of_manage?(sheet)
@@ -146,6 +149,18 @@ module EnjuTrunk
       return msg
     end
 
+    def check_duplicate_item_identifier(sheet)
+      col = @field[I18n.t('resource_import_textfile.excel.book.item_identifier')]
+      item_identifiers, duplicates = [], []
+      2.upto(@oo.last_row) do |row|
+         i_id = @oo.cell(row,col).try(:to_s).try(:strip)
+         next unless i_id
+         duplicates << i_id if item_identifiers.include?(i_id)
+         item_identifiers << i_id  
+      end
+      return I18n.t('resource_import_textfile.error.duplicate_item_identifier', :sheet => sheet, :item_identifier => duplicates.join(',')) unless duplicates.empty?
+    end
+
     def import_book_data(sheet)
       first_data_row_num = 2
       num = { 
@@ -158,7 +173,6 @@ module EnjuTrunk
 
       first_data_row_num.upto(@oo.last_row) do |row|
         Rails.logger.info("import block start. row_num=#{row}")
-
         datas = Hash::new
         @oo.first_column.upto(@oo.last_column) do |column|
           datas.store(column, fix_data(@oo.cell(row, column).to_s.strip))
@@ -177,19 +191,17 @@ module EnjuTrunk
             if fix_boolean(datas[@field[I18n.t('resource_import_textfile.excel.book.del_flg')]])
               delete_data(item_identifier, item, import_textresult)
             else
-              unless item
-                next unless has_necessary_cell?(datas, sheet, row, import_textresult)
-              end
-              manifestation = fetch_book(datas, item)
+              next unless has_necessary_cell?(item, datas, sheet, row, import_textresult)
+              manifestation, import_textresult = fetch_book(datas, item, import_textresult)
               if manifestation.valid?
-                item = create_book_item(datas, manifestation, item)
+                item, import_textresult = create_book_item(datas, manifestation, item, import_textresult)
                 import_textresult.manifestation = manifestation
                 import_textresult.item = item
                 manifestation.index
                 manifestation.series_statement.index if manifestation.series_statement
                 num[:manifestation_imported] += 1 if import_textresult.manifestation
                 num[:item_imported] += 1 if import_textresult.item
-                if import_textresult.item.manifestation.next_reserve
+                if false # DO NOT AUTO RETAIN import_textresult.item.manifestation.next_reserve
                   current_user = User.where(:username => 'admin').first
                   msg = []
                   if import_textresult.item.manifestation.next_reserve and import_textresult.item.item_identifier
@@ -198,7 +210,7 @@ module EnjuTrunk
                       :username => import_textresult.item.reserve.user.username,
                       :user_number => import_textresult.item.reserve.user.user_number)
                   end
-                  import_textresult.error_msg = msg.join ("\s\n")
+                  import_textresult.error_msg = msg.join("\s\n")
                 end
               else
                 num[:failed] += 1
@@ -219,30 +231,31 @@ module EnjuTrunk
           GC.start
         end
       end
+      Sunspot.commit
       #sm_complete!
       Rails.cache.write("manifestation_search_total", Manifestation.search.total)
       return num
     end
 
-    def fetch_book(datas, item = nil)
+    def fetch_book(datas, item = nil, import_textresult = nil)
       @mode = 'create'
       manifestation = nil
 
       if item
         manifestation = item.manifestation
         @mode = 'edit'
-      else
-        isbn = datas[@field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
-        manifestation = import_isbn(isbn)
       end
       series_statement = find_series_statement(datas, manifestation)
-      manifestation = exist_same_book?(datas, manifestation, series_statement) 
+      manifestation, error_msg = exist_same_book?(datas, manifestation, series_statement, import_textresult) unless manifestation
+      isbn = datas[@field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
+      unless manifestation
+        manifestation = import_isbn(isbn)
+      end
       series_statement = create_series_statement(datas, manifestation, series_statement)
 
       unless manifestation
         manifestation = Manifestation.new
       end
-
       manifestation.series_statement = series_statement if series_statement
       original_title         = datas[@field[I18n.t('resource_import_textfile.excel.book.original_title')]]
       title_transcription    = datas[@field[I18n.t('resource_import_textfile.excel.book.title_transcription')]]
@@ -359,19 +372,22 @@ module EnjuTrunk
       unless contributors.nil?
         contributors_list   = contributors.inject([]){ |list, contributor| list << {:full_name => contributor.to_s.strip, :full_name_transcription => "" } }
         contributor_patrons = Patron.import_patrons(contributors_list)
+        #TODO update contributor position withou destroy_all
+        manifestation.contributors.destroy_all unless manifestation.contributors.empty?
         manifestation.contributors = contributor_patrons
       end
       # subject
-      subjects_list_string = datas[@field[I18n.t('resource_import_textfile.excel.article.subject')]]
-      subjects_list        = subjects_list_string.nil? ? nil : subjects_list_string.to_s.gsub('；', ';').split(';')
+      subjects_list = datas[@field[I18n.t('resource_import_textfile.excel.article.subject')]]
       unless subjects_list.nil?
-        subjects = Subject.import_subjects (subjects_list)
+        subjects = Subject.import_subjects(subjects_list)
         manifestation.subjects = subjects
       end
-      return manifestation
+      import_textresult.error_msg = error_msg if error_msg
+      return manifestation, import_textresult
     end
 
-    def exist_same_book?(datas, manifestation, series_statement = nil)
+    def exist_same_book?(datas, manifestation, series_statement = nil, import_textresult = nil)
+      error_msg = ""
       original_title    = datas[@field[I18n.t('resource_import_textfile.excel.book.original_title')]]
       pub_date          = datas[@field[I18n.t('resource_import_textfile.excel.book.pub_date')]]
       creators_string   = datas[@field[I18n.t('resource_import_textfile.excel.book.creator')]]
@@ -403,22 +419,24 @@ module EnjuTrunk
       conditions = conditions.join(' and ')
       book = nil
 
-      book = Manifestation.find(
-        :first,
+      books = Manifestation.find(
+        :all,
         :readonly => false,
         :include => [:series_statement, :creators, :publishers],
         :conditions => conditions,
         :order => "manifestations.created_at asc"
       )
-      if book
-        if book.creators.map{ |c| c.full_name }.sort == creators.sort and book.publishers.map{ |s| s.full_name }.sort == publishers.sort
+      if books.size == 1
+        if book = books.first and book.creators.map{ |c| c.full_name }.sort == creators.sort and book.publishers.map{ |s| s.full_name }.sort == publishers.sort
           p "editing manifestation"
           @mode = 'edit'
           return book
         end
+      elsif books.size > 1
+        error_msg = I18n.t('resource_import_textfile.error.book.exist_multiple_same_manifestations')
       end
       p "make new manifestation"
-      return manifestation
+      return manifestation, error_msg
     end
 
     def import_isbn(isbn)
@@ -427,17 +445,15 @@ module EnjuTrunk
       unless isbn.blank?
         begin
           isbn = Lisbn.new(isbn)
-          manifestation = Manifestation.find_by_isbn(isbn)
-          if manifestation
-            @mode = "edit"
-          else
+          exist_manifestation = Manifestation.find_by_isbn(isbn)
+          unless exist_manifestation
             manifestation = Manifestation.import_isbn(isbn)
+            # raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
           end
-          raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
         rescue EnjuNdl::InvalidIsbn
           raise I18n.t('resource_import_textfile.error.book.wrong_isbn')
         rescue EnjuNdl::RecordNotFound
-          raise I18n.t('resource_import_textfile.error.book.wrong_isbn')
+          raise I18n.t('resource_import_textfile.error.book.record_not_found')
         end
       end
       manifestation.external_catalog = 1 if manifestation
@@ -521,12 +537,12 @@ module EnjuTrunk
       return series_statement
     end
 
-    def create_book_item(datas, manifestation, item)
+    def create_book_item(datas, manifestation, item, import_textresult)
       begin
         resource_import_textfile = ResourceImportTextfile.find(@textfile_id)
         @mode_item = 'edit'
         accept_type         = set_data(datas, AcceptType, 'accept_type', { :can_blank => true, :check_column => :display_name })
-        acquired_at         = check_data_is_date(datas[@field[I18n.t('resource_import_textfile.excel.book.acquired_at')]], 'acquired_at')      
+        acquired_at         = datas[@field[I18n.t('resource_import_textfile.excel.book.acquired_at')]]
         library             = set_library(datas[@field[I18n.t('resource_import_textfile.excel.book.library')]], resource_import_textfile.user)
         shelf               = set_shelf(datas[@field[I18n.t('resource_import_textfile.excel.book.shelf')]], resource_import_textfile.user, library)
         checkout_type       = set_data(datas, CheckoutType, 'checkout_type', { :default => 'book' })
@@ -544,21 +560,23 @@ module EnjuTrunk
         non_searchable      = fix_boolean(datas[@field[I18n.t('resource_import_textfile.excel.book.non_searchable')]])
 
         unless item
-          if manifestation.items and manifestation.items.size > 0
-            item = manifestation.items.order('created_at asc').first #if item_identifier.nil?
-          else
-            item = Item.new
-            @mode_item = 'create'
+          unless @field[I18n.t('resource_import_textfile.excel.book.item_identifier')] || @auto_numbering
+            import_textresult.error_msg = I18n.t('resource_import_textfile.message.without_item')
+            return item, import_textresult
           end
+          item = Item.new
+          @mode_item = 'create'
         end
         # rank
         rank = fix_rank(datas[@field[I18n.t('resource_import_textfile.excel.book.rank')]], { :manifestation => manifestation, :mode => @mode_item})
         if item.item_identifier.nil? and item_identifier.nil?
-          while item_identifier.nil? 
-            create_item_identifier = Numbering.do_numbering(@numbering.name)
-            exit_item_identifier = Item.where(:item_identifier => create_item_identifier).first
-            item_identifier = create_item_identifier unless exit_item_identifier
+          if item_identifier.nil? && @auto_numbering
+            begin
+              create_item_identifier = Numbering.do_numbering(@numbering.name)
+            end while Item.where(:item_identifier => create_item_identifier).first
+            item_identifier = create_item_identifier
           end
+          raise I18n.t("resource_import_textfile.error.no_item_identifier") if item_identifier.nil?
         end
         unless rank.nil?
           item.rank = rank
@@ -570,12 +588,6 @@ module EnjuTrunk
           item.accept_type = accept_type
         else
           item.accept_type = nil if datas[@field[I18n.t('resource_import_textfile.excel.book.accept_type')]] == ''
-        end
-        # acquired_at
-        unless acquired_at.nil?
-          item.acquired_at = acquired_at 
-        else
-          item.acquired_at = nil if datas[@field[I18n.t('resource_import_textfile.excel.book.acquired_at')]] == ''
         end
         # use_restriction
         unless use_restriction.nil?
@@ -597,6 +609,7 @@ module EnjuTrunk
         item.required_role       = required_role        unless required_role.nil?
         item.item_identifier     = item_identifier.to_s unless item_identifier.nil?
         item.non_searchable      = non_searchable       unless non_searchable.nil?
+        item.acquired_at_string  = acquired_at.to_s     unless acquired_at.nil?
 
         # bookstore
         bookstore_name = datas[@field[I18n.t('resource_import_textfile.excel.book.bookstore')]]
@@ -636,35 +649,58 @@ module EnjuTrunk
             item.reserve.revert_request rescue nil
           end
         end
-        return item
+        return item, import_textresult
       rescue Exception => e
         p "error at fetch_new: #{e.message}"
         raise e
       end
     end
 
-    def has_necessary_cell?(datas, sheet, row, textresult)
-      require_cell_book   = [datas[@field[I18n.t('resource_import_textfile.excel.book.original_title')]],
-                             datas[@field[I18n.t('resource_import_textfile.excel.book.isbn')]]]
-      require_cell_series = [datas[@field[I18n.t('resource_import_textfile.excel.series.original_title')]],
-                             datas[@field[I18n.t('resource_import_textfile.excel.series.issn')]]]
+    def has_necessary_cell?(item, datas, sheet, row, textresult)
       if datas[@field[I18n.t('resource_import_textfile.excel.book.original_title')]] == ''
         textresult.error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.book.not_delete')}"
         textresult.save
         return false
       end
-      if @manifestation_type.is_book?  
-        if require_cell_book.reject{ |f| f.to_s.strip == "" }.empty?
-          textresult.error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.book.cell_is_blank')}"
+      unless SystemConfiguration.get('manifestations.split_by_type')
+        @manifestation_type = nil
+        manifestation_type = item.manifestation.manifestation_type if item
+        data = datas[@field[I18n.t('resource_import_textfile.excel.book.manifestation_type')]]
+        if data == '' or (manifestation_type.nil? and data.nil?)
+          error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.cell_require_manifestation_type')}"
+        end
+        unless data.blank?
+          manifestation_type = ManifestationType.find_by_display_name(data) rescue nil 
+          if manifestation_type.nil?
+            error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.wrong_manifestation_type', :manifestation_type => data) }"
+          end
+        end
+        if error_msg
+          textresult.error_msg = error_msg
           textresult.save
           return false
         end
-      else
-        if require_cell_series.reject{ |f| f.to_s.strip == "" }.empty? or require_cell_book.reject{ |f| f.to_s.strip == "" }.empty?
-          textresult.error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.series.cell_is_blank')}"
-          textresult.save
-          return false
-        end 
+        @manifestation_type = manifestation_type
+      end
+
+      unless item
+        require_cell_book   = [datas[@field[I18n.t('resource_import_textfile.excel.book.original_title')]],
+                               datas[@field[I18n.t('resource_import_textfile.excel.book.isbn')]]]
+        require_cell_series = [datas[@field[I18n.t('resource_import_textfile.excel.series.original_title')]],
+                               datas[@field[I18n.t('resource_import_textfile.excel.series.issn')]]]
+        if @manifestation_type.is_series?
+          if require_cell_series.reject{ |f| f.to_s.strip == "" }.empty? or require_cell_book.reject{ |f| f.to_s.strip == "" }.empty?
+            textresult.error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.series.cell_is_blank')}"
+            textresult.save
+            return false
+          end
+        else
+          if require_cell_book.reject{ |f| f.to_s.strip == "" }.empty?
+            textresult.error_msg = "FAIL[sheet:#{sheet} row:#{row}] #{I18n.t('resource_import_textfile.error.book.cell_is_blank')}"
+            textresult.save
+            return false
+          end
+        end
       end
       return true
     end
@@ -863,22 +899,22 @@ module EnjuTrunk
 
           manifestation = item.manifestation
           series_statement = manifestation.series_statement
-          item.delete
+          item.destroy
           p "deleted item_identifier: #{item_identifier}"
           if manifestation.items.blank? or manifestation.items.size == 0
             deleted_manifestation_title = manifestation.original_title
-            manifestation.delete
+            manifestation.destroy
             p "deleted manifestation_title: #{deleted_manifestation_title}"
             deleted_manifestation = true
           end
           if series_statement
             if series_statement.periodical and series_statement.manifestations.size == 1
               series_manifestation = series_statement.manifestations.first
-              series_manifestation.delete if series_manifestation.periodical_master
+              series_manifestation.destroy if series_manifestation.periodical_master
             end
             if series_statement.manifestations.blank? or series_statement.manifestations.size == 0
               deleted_series_title = series_statement.original_title
-              series_statement.delete
+              series_statement.destroy
               p "deleted series_statement_title: #{deleted_series_title}"
               deleted_series_statement = true
             end

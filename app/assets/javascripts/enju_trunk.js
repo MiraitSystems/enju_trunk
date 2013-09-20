@@ -1,5 +1,5 @@
-// check checkbox
 $(document).ready(function() {
+  // check checkbox
   var $tgt_parent = $("input.check-parent");
   var $tgt_child = $("input.check-child");
 

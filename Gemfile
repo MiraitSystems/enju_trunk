@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby "1.9.3"
 
-gem 'rails', '3.2.12'
+gem 'rails', '3.2.13'
 
 gem 'cocaine', '0.4.2'
 #gem 'enju_amazon', :git => 'git://github.com/nabeta/enju_amazon.git'
@@ -37,9 +37,10 @@ platforms :ruby do
   gem 'kgio'
 end
 
-#platforms :ruby_19 do
-#  gem 'simplecov', '~> 0.6', :require => false, :group => :test
-#end
+platforms :ruby_19 do
+  gem 'simplecov', '~> 0.6', :require => false, :group => :test
+  gem 'simplecov-rcov', :require => false, :group => :test
+end
 
 gem 'roo', "= 1.10.1"
 gem 'rubyzip', "=0.9.9"
@@ -127,7 +128,7 @@ group :development, :test do
   #gem 'rcov', '0.9.11'
   #gem 'metric_fu', '~> 2.1'
   gem 'timecop'
-  #gem 'sunspot-rails-tester', :git => 'git://github.com/nabeta/sunspot-rails-tester.git'
+  gem 'sunspot-rails-tester'
   gem 'vcr', '~> 2.0.0.rc2'
   gem 'fakeweb'
   #gem 'churn', '0.0.13'
@@ -141,14 +142,13 @@ group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
 
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-   gem 'therubyracer'
+  gem 'therubyracer', :platform => :ruby
 
   gem 'uglifier', '>= 1.0.3'
 end
 
-gem 'jquery-rails'
-
+gem 'jquery-rails', "~> 3.0.4"
+gem 'jquery-ui-rails', "~> 4.0.4"
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
@@ -171,3 +171,4 @@ group :operation do
   gem 'enju_trunk_ill', :git => 'git://github.com/emiko/enju_trunk_ill.git'
   gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git'
 end
+gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'

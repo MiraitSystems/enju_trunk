@@ -13,9 +13,9 @@ module ApplicationHelper
     when 'print'
       image_tag('icons/book.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
     when 'CD'
-      image_tag('icons/cd.png', :size => '16x16', :alt => carrier_type.display_name.localizei, :title => carrier_type.display_name.localize)
+      image_tag('icons/cd.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
     when 'DVD'
-      image_tag('icons/dvd.png', :size => '16x16', :alt => carrier_type.display_name.localizei, :title => carrier_type.display_name.localize)
+      image_tag('icons/dvd.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
     when 'file'
       image_tag('icons/monitor.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
     else
@@ -88,27 +88,19 @@ module ApplicationHelper
     html.html_safe
   end
 
-  def patrons_list(patrons = [], options = {})
+  def patrons_list(patrons = [], options = {}, mode = 'html')
     return nil if patrons.blank?
     patrons_list = []
-    has_extra_patron = false
+    exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
     patrons.each do |patron|
-      unless Patron.exclude_patrons.include?(patron.full_name)
-        if options[:nolink]
-          patrons_list << patron.full_name
-        else
-          patrons_list << link_to(patron.full_name, patron, options)
-        end
+      if options[:nolink] or exclude_patrons.include?(patron.full_name)
+        patron = mode == 'html' ? highlight(patron.full_name) : patron.full_name
+        patrons_list << patron
       else
-        has_extra_patron = true
+        patron = mode == 'html' ? link_to(highlight(patron.full_name), patron, options) : link_to(patron.full_name, patron, options)
+        patrons_list << patron
       end
     end
-    patrons_list << I18n.t('page.et_al') if has_extra_patron
-#    if options[:nolink]
-#      patrons_list = patrons.map{|patron| patron.full_name}
-#    else
-#      #patrons_list = patrons.map{|patron| link_to(patron.full_name, patron, options)}
-#    end
     patrons_list.join(" ").html_safe
   end
 
@@ -200,23 +192,6 @@ module ApplicationHelper
     render :partial => 'page/position', :locals => {:object => object}
   end
 
-  def localized_state(state)
-    case state
-    when 'pending'
-      t('state.pending')
-    when 'canceled'
-      t('state.canceled')
-    when 'started'
-      t('state.started')
-    when 'failed'
-      t('state.failed')
-    when 'completed'
-      t('state.completed')
-    else
-      state
-    end
-  end
-
   def localized_boolean(bool)
     case bool.to_s
     when nil
@@ -301,16 +276,18 @@ module ApplicationHelper
     :publisher, :isbn, :issn, :item_identifier, :pub_date_from,
     :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
     :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
-    :title_merge, :creator_merge, :query_merge,
+    :title_merge, :creator_merge, :query_merge, :manifestation_types 
   ]
 
   ADVANCED_SEARCH_LABEL_IDS = {
     tag: 'page.tag',
     title: 'page.title',
     creator: 'patron.creator',
+    subject: 'activerecord.models.subject',
     publisher: 'patron.publisher',
     isbn: 'activerecord.attributes.manifestation.isbn',
     issn: 'activerecord.attributes.manifestation.issn',
+    ncid: 'activerecord.attributes.nacsis_user_request.ncid',
     item_identifier: 'activerecord.attributes.item.item_identifier',
     call_number: 'activerecord.attributes.item.call_number',
     pub_date: 'activerecord.attributes.manifestation.date_of_publication',
@@ -342,28 +319,44 @@ module ApplicationHelper
     link_title ||= t('page.advanced_search')
     url_params = params.dup
 
-    [:controller, :commit, :utf8].each {|k| url_params.delete(k) }
+    [:controller, :commit, :utf8, :mode].each {|k| url_params.delete(k) }
     link_to link_title, page_advanced_search_path(url_params)
   end
 
   def link_to_normal_search(link_title = nil)
-    return '' if ADVANCED_SEARCH_PARAMS.all? {|k| params[k].blank? }
+    if params[:mode].present?
+      return '' if params[:mode] != 'recent'
+    else
+      return '' if ADVANCED_SEARCH_PARAMS.all? {|k| params[k].blank? } and params[:solr_query].blank?
+    end
 
     link_title ||= t('page.normal_search')
     url_params = params.dup
     [:controller, :commit, :utf8].each {|k| url_params.delete(k) }
+    url_params.delete('mode') if params[:mode].present? and params[:mode] == 'recent'
+    url_params.delete('solr_query') if params[:solr_query].present?
     ADVANCED_SEARCH_PARAMS.each {|k| url_params.delete(k) }
     link_to link_title, manifestations_path(url_params)
   end
 
   def hidden_advanced_search_field_tags
+    array = []
     ADVANCED_SEARCH_PARAMS.map do |name|
-      hidden_field_tag(name.to_s, params[name])
-    end.join('').html_safe
+      if name == :manifestation_types
+        next unless params[name]
+        params[name].keys.each do |key|
+          array << hidden_field_tag("#{name.to_s}[#{key}]", true)
+        end
+      else
+        array << hidden_field_tag(name.to_s, params[name])
+      end
+    end
+    array.join('').html_safe
   end
 
   def advanced_search_condition_summary(opts = {})
-    return '' if params[:solr_commit].present?
+    return "(#{I18n.t('page.new_resource')})" if params[:mode] == 'recent'
+    return "(#{params[:solr_query]})" if params[:solr_query].present?
 
     summary_ary = []
     special = {
@@ -419,6 +412,10 @@ module ApplicationHelper
         if params[key].present? && params[k].present?
           summary_ary << ["#{advanced_search_label(key)}#{advanced_search_label(k)}", params[key]]
         end
+
+      when :manifestation_types
+        ks = ManifestationType.where(["id in (?)", params[key].keys]).map(&:display_name)
+        summary_ary << [key, ks.join(', ')] if params[key].present?
 
       else
         summary_ary << [key, params[key]] if params[key].present?
@@ -482,5 +479,58 @@ module ApplicationHelper
   def hbr(target)
     target = html_escape(target)
     target.gsub(/\r\n|\r|\n/, "<br />")
+  end
+
+  # @highlightに設定された正規表現に基きspanタグを挿入する
+  # html_safeを適用した文字列を返す
+  def highlight(str)
+    html = ''
+    str = str.dup
+    while @highlight =~ str
+      html << escape_once($`)
+      html << content_tag(:span, :class => 'highlight') { $& }
+      str = $'
+    end
+    html << escape_once(str)
+    html.html_safe
+  end
+
+  def tab_menu_width
+    css_name = ''
+    if !user_signed_in?
+      if can_use_purchase_request?
+        css_name = 'fg-4button'
+      else
+        css_name = 'fg-3button'
+      end
+    elsif user_signed_in? and !current_user.has_role?('Librarian')
+      if can_use_purchase_request? || SystemConfiguration.get('use_copy_request') || SystemConfiguration.get("user_show_questions")
+        css_name = 'fg-4button'
+      else
+        css_name = 'fg-3button'
+      end
+    end
+    return css_name
+  end
+
+  if defined?(EnjuTrunkCirculation)
+    def i18n_state(state)
+      case state
+      when 'pending'
+        t('reserve.pending')
+      when 'requested'
+        t('reserve.requested')
+      when 'retained'
+        t('reserve.retained')
+      when 'in_process'
+        t('reserve.in_process')
+      when 'canceled'
+        t('reserve.canceled')
+      when 'expired'
+        t('reserve.expired')
+      when 'completed'
+        t('reserve.completed')
+      end
+    end
   end
 end

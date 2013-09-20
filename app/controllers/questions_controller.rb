@@ -1,16 +1,23 @@
 # -*- encoding: utf-8 -*-
 class QuestionsController < ApplicationController
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.question'))", 'questions_path', :only => [:index]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.question'))", 'question_path(params[:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.question'))", 'new_question_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.question'))", 'edit_question_path(params[:id])', :only => [:edit, :update]
   before_filter :store_location, :only => [:index, :show, :new, :edit]
   load_and_authorize_resource
   before_filter :get_user, :except => [:edit]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
-  if !SystemConfiguration.get("user_show_questions")
-    before_filter :check_librarian
-  end
 
   # GET /questions
   # GET /questions.json
   def index
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     store_location
     if @user and user_signed_in?
       user = @user
@@ -106,6 +113,12 @@ class QuestionsController < ApplicationController
   # GET /questions/1
   # GET /questions/1.json
   def show
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     if @user
       @question = @user.questions.find(params[:id])
     else
@@ -127,11 +140,23 @@ class QuestionsController < ApplicationController
 
   # GET /questions/new
   def new
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     @question = current_user.questions.new
   end
 
   # GET /questions/1/edit
   def edit
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     if @user
       @question = @user.questions.find(params[:id])
     else
@@ -142,6 +167,12 @@ class QuestionsController < ApplicationController
   # POST /questions
   # POST /questions.json
   def create
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     @question = current_user.questions.new(params[:question])
 
     respond_to do |format|
@@ -159,6 +190,12 @@ class QuestionsController < ApplicationController
   # PUT /questions/1
   # PUT /questions/1.json
   def update
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
 #    @question = @user.questions.find(params[:id]) 
     @question = Question.find(params[:id])
     respond_to do |format|
@@ -176,6 +213,12 @@ class QuestionsController < ApplicationController
   # DELETE /questions/1
   # DELETE /questions/1.json
   def destroy
+    unless SystemConfiguration.get("user_show_questions")
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+
     if @user
       @question = @user.questions.find(params[:id])
     else

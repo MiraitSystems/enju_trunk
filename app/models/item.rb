@@ -5,13 +5,14 @@ class Item < ActiveRecord::Base
   attr_accessible :library_id, :shelf_id, :checkout_type_id, :circulation_status_id,
                   :retention_period_id, :call_number, :bookstore_id, :price, :price_string, :url, 
                   :include_supplements, :use_restriction_id, :required_role_id, 
-                  :acquired_at, :note, :item_identifier, :rank, :remove_reason_id,
+                  :acquired_at, :acquired_at_string, :note, :item_identifier, :rank, :remove_reason_id,
                   :use_restriction, :manifestation_id, :manifestation,
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable
 
   self.extend ItemsHelper
+  scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL')
   scope :not_for_checkout, where(:item_identifier => nil)
   scope :on_shelf, where('shelf_id != 1')
@@ -68,23 +69,20 @@ class Item < ActiveRecord::Base
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :checkout_type
   #belongs_to :resource_import_textresult
-  has_many :inventories, :dependent => :destroy
-  has_many :inventory_files, :through => :inventories
   has_many :lending_policies, :dependent => :destroy
   has_many :answer_has_items, :dependent => :destroy
   has_many :answers, :through => :answer_has_items
   has_one :resource_import_result
-  has_many :libcheck_tmp_items
-  has_many :libcheck_notfound_items
   has_many :expenses
   has_many :binding_items, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
-  validate :is_original?
+  validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   before_validation :set_circulation_status, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
+  before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   after_save :check_price, :except => :delete
   after_save :reindex
 
@@ -104,7 +102,6 @@ class Item < ActiveRecord::Base
     end
     integer :shelf_id
     integer :patron_ids, :multiple => true
-    integer :inventory_file_ids, :multiple => true
     integer :rank
     integer :remove_reason_id
     boolean :non_searchable
@@ -114,6 +111,10 @@ class Item < ActiveRecord::Base
   end
 
   paginates_per 10
+
+  RANK_ORIGINAL = 0
+  RANK_COPY =  1
+  RANK_SPARE = 2
 
   def reindex
     manifestation.try(:index)
@@ -172,19 +173,6 @@ class Item < ActiveRecord::Base
   def hold?(library)
     return true if self.shelf.library == library
     false
-  end
-
-  def self.inventory_items(inventory_file, mode = 'not_on_shelf')
-    item_ids = Item.select(:id).collect(&:id)
-    inventory_item_ids = inventory_file.items.select('items.id').collect(&:id)
-    case mode
-    when 'not_on_shelf'
-      Item.where(:id => (item_ids - inventory_item_ids))
-    when 'not_in_catalog'
-      Item.where(:id => (inventory_item_ids - item_ids))
-    end
-  rescue
-    nil
   end
 
   def lending_rule(user)
@@ -294,6 +282,10 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def set_rank
+    self.rank = 0
+  end
+
   def item_bind(bookbinder_id)
     Item.transaction do
       self.bookbinder_id = bookbinder_id
@@ -304,6 +296,15 @@ class Item < ActiveRecord::Base
       else
         return false
       end
+    end
+  end
+
+  def exchangeable?
+    case self.circulation_status.name
+    when "In Process", "Available On Shelf" 
+      return true
+    else
+      return false
     end
   end
 
@@ -325,9 +326,6 @@ class Item < ActiveRecord::Base
 
     when 'accept_type', 'retention_period', 'remove_reason', 'shelf'
       val = __send__(ws_col).try(:display_name) || ''
-
-    when 'acquired_at'
-      val = __send__(ws_col).try(:strftime, '%Y-%m-%d') || ''
 
     when 'rank'
       val = helper.i18n_rank(rank) || ''
@@ -356,7 +354,7 @@ class Item < ActiveRecord::Base
       if file_type.nil? || file_type == "tsv"
         columns = [
           ['item_identifier','activerecord.attributes.item.item_identifier'],
-          ['acquired_at', 'activerecord.attributes.item.acquired_at'],
+          ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
           [:created_at, 'activerecord.attributes.item.created_at'],
           [:call_number, 'activerecord.attributes.item.call_number'],
           [:original_title,'activerecord.attributes.manifestation.original_title'],
@@ -385,8 +383,6 @@ class Item < ActiveRecord::Base
               case column[0]
               when "removed_at"
                 row << item.removed_at.strftime("%Y/%m/%d") rescue ""
-              when "acquired at"
-                row << item.acquired_at.strftime("%Y/%m/%d") rescue ""
               when :created_at
                 row << item.created_at.strftime("%Y/%m/%d") rescue ""
               when :original_title
@@ -430,9 +426,7 @@ class Item < ActiveRecord::Base
           items.each do |item|
             page.list(:list).add_row do |row|
               row.item(:item_identifier).value(item.item_identifier)
-              unless item.acquired_at.nil?
-                row.item(:acquired_at).value(item.acquired_at.strftime("%Y/%m/%d"))
-              end
+              row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
               row.item(:created_at).value(item.created_at.strftime("%Y/%m/%d")) if item.created_at
               row.item(:call_number).value(item.call_number)
               unless item.removed_at.nil?
@@ -499,7 +493,7 @@ class Item < ActiveRecord::Base
     columns = [
       [:bookstore, 'activerecord.models.bookstore'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
-      ['acquired_at', 'activerecord.attributes.item.acquired_at'],
+      ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
       [:creator, 'patron.creator'],
       [:original_title, 'activerecord.attributes.manifestation.original_title'],
       [:pub_year, 'activerecord.attributes.manifestation.pub_year'],
@@ -564,7 +558,7 @@ class Item < ActiveRecord::Base
       [:carrier_type, 'activerecord.models.carrier_type'],
       [:shelf, 'activerecord.models.shelf'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
-      ['acquired_at', 'activerecord.attributes.item.acquired_at'],
+      ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
       [:original_title, 'activerecord.attributes.manifestation.original_title'],
       [:creator, 'patron.creator'],
       [:pub_year, 'activerecord.attributes.manifestation.pub_year'],
@@ -640,7 +634,7 @@ class Item < ActiveRecord::Base
             if item.bookstore_id == bookstore_id
               page.list(:list).add_row do |row|
                 row.item(:item_identifier).value(item.item_identifier)
-                row.item(:acquired_at).value(item.acquired_at.strftime("%Y%m%d")) if item.acquired_at
+                row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
                 row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
                 row.item(:title).value(item.manifestation.original_title) if item.manifestation
                 row.item(:pub_year).value(item.manifestation.date_of_publication.strftime("%Y")) if item.manifestation && item.manifestation.date_of_publication
@@ -949,7 +943,7 @@ class Item < ActiveRecord::Base
         row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
         row.item(:item_identifier).value(item.item_identifier)
         row.item(:pub_date).value(item.manifestation.pub_date)
-        row.item(:acquired_at).value(item.acquired_at.strftime("%Y/%m/%d")) if item.acquired_at
+        row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
         row.item(:title).value(item.manifestation.original_title) if item.manifestation
       end
     end
@@ -972,7 +966,7 @@ class Item < ActiveRecord::Base
       [:ndc, 'activerecord.attributes.manifestation.ndc'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
       [:pub_date, 'activerecord.attributes.manifestation.pub_date'],
-      [:acquired_at, 'activerecord.attributes.item.acquired_at'],
+      ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
       [:title, 'activerecord.attributes.manifestation.original_title'],
     ]
 
@@ -996,10 +990,6 @@ class Item < ActiveRecord::Base
           row << item.manifestation.original_title
         when :pub_date
           row << item.manifestation.pub_date
-        when :acquired_at
-          acquired_at = ""
-          acquired_at =  item.acquired_at.strftime("%Y/%m/%d") if item.acquired_at
-          row << acquired_at
         else
           row << get_object_method(item, column[0].split('.')).to_s.gsub(/\r\n|\r|\n/," ").gsub(/\"/,"\"\"")
         end
@@ -1026,7 +1016,7 @@ class Item < ActiveRecord::Base
     items.each do |item|
       report.page.list(:list).add_row do |row|
         row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
-        row.item(:acquired_at).value(item.acquired_at.strftime("%Y/%m/%d")) if item.acquired_at
+        row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
         row.item(:bookstore).value(item.bookstore.name) if item.bookstore
         row.item(:item_identifier).value(item.item_identifier)
         row.item(:volume_number_string).value(item.manifestation.volume_number_string) if item.manifestation
@@ -1044,7 +1034,7 @@ class Item < ActiveRecord::Base
 
     columns = [
       [:library, 'activerecord.models.library'],
-      [:acquired_at, 'activerecord.attributes.item.acquired_at'],
+      ['acquired_at', 'activerecord.attributes.item.acquired_at'],
       [:bookstore, 'activerecord.models.bookstore'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
       [:volume_number_string, 'activerecord.attributes.manifestation.volume_number_string'],
@@ -1063,8 +1053,6 @@ class Item < ActiveRecord::Base
         case column[0]
         when :library
           row << item.shelf.library.display_name.localize 
-        when :acquired_at
-          row << item.acquired_at.strftime("%Y/%m/%d") || "" rescue ""
         when :bookstore
           bookstore = ""
           bookstore = item.bookstore.name if item.bookstore and item.bookstore.name
@@ -1110,7 +1098,7 @@ class Item < ActiveRecord::Base
     items.each do |item|
       report.page.list(:list).add_row do |row|
         row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
-        row.item(:acquired_at).value(item.acquired_at.strftime("%Y/%m/%d")) if item.acquired_at
+        row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
         row.item(:bookstore).value(item.bookstore.name) if item.bookstore
         row.item(:item_identifier).value(item.item_identifier)
         row.item(:volume_number_string).value(item.manifestation.volume_number_string) if item.manifestation
@@ -1137,7 +1125,7 @@ class Item < ActiveRecord::Base
 
     columns = [
       [:library, 'activerecord.models.library'],
-      [:acquired_at, 'activerecord.attributes.item.acquired_at'],
+      ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
       [:bookstore, 'activerecord.models.bookstore'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
       [:volume_number_string, 'activerecord.attributes.manifestation.volume_number_string'],
@@ -1156,8 +1144,6 @@ class Item < ActiveRecord::Base
         case column[0]
         when :library
           row << item.shelf.library.display_name.localize 
-        when :acquired_at
-          row << item.acquired_at.strftime("%Y/%m/%d") if item.acquired_at
         when :bookstore
           bookstore = ""
           bookstore = item.bookstore.name if item.bookstore and item.bookstore.name

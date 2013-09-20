@@ -159,3 +159,17 @@ message_template_00017:
   body: "利用者が資料を予約しました。\n\n<%= manifestations %>"
   position: 17
   locale: ja
+message_template_00018:
+  id: 18
+  status: user_create_a_purchase_request
+  title: "購入リクエストが作成されました。"
+  body: "購入リクエストが作成されました。\n\n<%= purchase_request %>"
+  position: 18
+  locale: ja
+message_template_00019:
+  id: 19
+  status: enju_trunk_inventory_check_finish
+  title: "蔵書点検の実行が終了しました。"
+  body: "蔵書点検の実行が終了しました。\n\n"
+  position: 19
+  locale: ja

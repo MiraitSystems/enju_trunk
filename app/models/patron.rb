@@ -49,8 +49,8 @@ class Patron < ActiveRecord::Base
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
-  before_validation :set_role_and_name
-  before_save :set_date_of_birth, :set_date_of_death, :change_note
+  before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
+  before_save :change_note
 
   validate :check_duplicate_user
 
@@ -273,17 +273,14 @@ class Patron < ActiveRecord::Base
         if patron_list[:full_name_transcription].present?
           patron.full_name_transcription = patron_list[:full_name_transcription].exstrip_with_full_size_space
         end
-        patron.exclude_state = 1 if Patron.exclude_patrons.include?(patron_list[:full_name].exstrip_with_full_size_space)
+        exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+        patron.exclude_state = 1 if exclude_patrons.include?(patron_list[:full_name].exstrip_with_full_size_space)
         patron.required_role = Role.where(:name => 'Guest').first
         patron.save
       end
       list << patron
     end
     list
-  end
-
-  def self.exclude_patrons
-    return ['他', 'et-al.']
   end
 
   def self.add_patrons(patron_names, patron_transcriptions = nil)
@@ -304,6 +301,8 @@ class Patron < ActiveRecord::Base
         patron = Patron.new
         patron.full_name = name
         patron.full_name_transcription = full_name_transcription
+        exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+        patron.exclude_state = 1 if exclude_patrons.include?(name)
         patron.save
       else
         if full_name_transcription
@@ -344,31 +343,21 @@ class Patron < ActiveRecord::Base
     end
   end
 
-private
+  private
   def check_duplicate_user
     return if SystemConfiguration.get("patron.check_duplicate_user").nil? || SystemConfiguration.get("patron.check_duplicate_user") == false
+    return if self.full_name_transcription.blank? or self.birth_date.blank? or self.telephone_number_1.blank?
     chash = {}
-    #TODO
-    #chash[:full_name_transcription] = self.full_name_transcription.gsub(/\s|　/, "") unless self.full_name_transcription.blank?
-    chash[:full_name_transcription] = self.full_name_transcription.strip unless self.full_name_transcription.blank?
-    chash[:birth_date] = self.birth_date unless self.birth_date.blank?
-    chash[:telephone_number_1] = self.telephone_number_1 unless self.telephone_number_1.blank?
-  
-    return false if chash.empty?
-  
+    chash[:full_name_transcription] = self.full_name_transcription.strip
+    chash[:birth_date] = self.birth_date
+    chash[:telephone_number_1] = self.telephone_number_1
     patrons = Patron.find(:all, :conditions => chash)
-
-    patrons.delete_if {|p| p.id == self.id} if p
-
+    patrons.delete_if { |p| p.id == self.id } 
     if self.new_record? 
-      if patrons && patrons.size > 0
-        errors.add_to_base(I18n.t('patron.duplicate_user'))
-      end
+      errors.add(:base, I18n.t('patron.duplicate_user')) if patrons.size > 0
     end
     #logger.info errors.inspect
   end
-
-
 end
 
 # == Schema Information

@@ -6,7 +6,7 @@ class ItemsController < ApplicationController
   include NotificationSound
   load_and_authorize_resource :except => :numbering
   before_filter :get_user
-  before_filter :get_patron, :get_manifestation, :get_inventory_file
+  before_filter :get_patron, :get_manifestation
   helper_method :get_shelf
   helper_method :get_library
   before_filter :prepare_options, :only => [:new, :edit]
@@ -33,61 +33,40 @@ class ItemsController < ApplicationController
       end
     end
 
-    if @inventory_file
-      if user_signed_in?
-        if current_user.has_role?('Librarian')
-          case params[:inventory]
-          when 'not_in_catalog'
-            mode = 'not_in_catalog'
-          else
-            mode = 'not_on_shelf'
-          end
-          order = 'id'
-          @items = Item.inventory_items(@inventory_file, mode).order(order).page(params[:page]).per_page(per_page)
-        else
-          access_denied
-          return
-        end
-      else
-        redirect_to new_user_session_url
-        return
-      end
-    else
-      search = Sunspot.new_search(Item)
-      set_role_query(current_user, search)
+    search = Sunspot.new_search(Item)
+    set_role_query(current_user, search)
 
-      @query = query.dup
-      unless query.blank?
-        search.build do
-          fulltext query
-        end
-      end
-
-      patron = @patron
-      manifestation = @manifestation
-      shelf = get_shelf
-      unless params[:mode] == 'add'
-        search.build do
-          with(:patron_ids).equal_to patron.id if patron
-          with(:manifestation_id).equal_to manifestation.id if manifestation
-          with(:shelf_id).equal_to shelf.id if shelf
-        end
-      end
-
+    @query = query.dup
+    unless query.blank?
       search.build do
-        order_by(:created_at, :desc)
+        fulltext query
       end
-
-      role = current_user.try(:role) || Role.default_role
-      search.build do
-        with(:required_role_id).less_than role.id
-      end
-
-      page = params[:page] || 1
-      search.query.paginate(page.to_i, per_page)
-      @items = search.execute!.results
-      @count[:total] = @items.total_entries
     end
+
+    patron = @patron
+    manifestation = @manifestation
+    shelf = get_shelf
+    unless params[:mode] == 'add'
+      search.build do
+        with(:patron_ids).equal_to patron.id if patron
+        with(:manifestation_id).equal_to manifestation.id if manifestation
+        with(:shelf_id).equal_to shelf.id if shelf
+      end
+    end
+
+    search.build do
+      order_by(:created_at, :desc)
+    end
+
+    role = current_user.try(:role) || Role.default_role
+    search.build do
+      with(:required_role_id).less_than role.id
+    end
+
+    page = params[:page] || 1
+    search.query.paginate(page.to_i, per_page)
+    @items = search.execute!.results
+    @count[:total] = @items.total_entries
 
     if params[:mode] == 'barcode'
       render :action => 'barcode', :layout => false
@@ -126,11 +105,12 @@ class ItemsController < ApplicationController
       redirect_to manifestations_url
       return
     end
-    original_item = @manifestation.items.where(:rank => 0).first rescue nil
+    original_item = Item.where(:id => params[:item_id]).first if params[:item_id]
     if original_item
       @item = original_item.dup
       @item.item_identifier = nil
-      @item.rank = 1 # copy
+      @item.rank = 1 if original_item.rank == 0
+      @item.use_restriction_id = original_item.use_restriction.id
       @shelves << @item.shelf
     else
       @item = Item.new
@@ -140,13 +120,12 @@ class ItemsController < ApplicationController
       @circulation_statuses = CirculationStatus.order(:position)
       @item.circulation_status = CirculationStatus.where(:name => 'In Process').first unless @item.try(:circulation_status)
       @item.checkout_type = @manifestation.carrier_type.checkout_types.first unless @item.try(:checkout_type)
-      @item.use_restriction_id = UseRestriction.where(:name => 'Limited Circulation, Normal Loan Period').select(:id).first.id unless @item.try(:use_restriction)
-#      @item.shelf = @library.shelves.first
+      @item.use_restriction_id = UseRestriction.where(:name => 'Limited Circulation, Normal Loan Period').select(:id).first.id unless @item.use_restriction_id
       @item.call_number = @manifestation.items.where(:rank => 0).first.call_number unless @item.try(:call_number) rescue nil
     else
       @item.circulation_status = CirculationStatus.where(:name => 'Not Available').first unless @item.try(:circulation_status)
       @item.checkout_type = CheckoutType.where(:name => 'article').first unless @item.try(:checkout_type)
-      @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.try(:use_restriction)
+      @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
 
@@ -168,8 +147,9 @@ class ItemsController < ApplicationController
     @item = Item.new(params[:item])
     @manifestation = Manifestation.find(@item.manifestation_id)
     respond_to do |format|
-      if @item.save
+      if @item.valid?
         @item.manifestation = @manifestation 
+        @item.save!
         Item.transaction do
           if @item.shelf
             @item.shelf.library.patron.items << @item

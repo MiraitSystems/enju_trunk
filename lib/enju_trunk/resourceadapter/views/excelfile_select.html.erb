@@ -2,21 +2,45 @@
 <div>
   <table style="border: 0px;">
     <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.attributes.resource_import_textfile.sheet') %></th>
-    <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.manifestation_type') %></th>
+    <% if SystemConfiguration.get('manifestations.split_by_type') %>
+      <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.manifestation_type') %></th>
+    <% end %>
     <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.numbering') %></th>
+    <th style="border:0px; border-bottom: 1px solid #aaa;"></th>
     <% @oo.sheets.each_with_index do |name, i| %>
     <tr>
       <td style="border:0px; border-bottom: 1px solid #aaa;">
         <%= check_box_tag "extraparams[#{i}][sheet]", name, :selected => true %>
         <%= name.to_s %>
       </td>
-      <td style="border:0px; border-bottom: 1px solid #aaa;">
-        <%= select_tag "extraparams[#{i}][manifestation_type]", options_for_select(@manifestation_types.collect{|m| [m.display_name.localize, m.id]}) %>
-      </td>
+      <% if SystemConfiguration.get('manifestations.split_by_type') %>
+        <td style="border:0px; border-bottom: 1px solid #aaa;">
+          <%= select_tag "extraparams[#{i}][manifestation_type]", options_for_select(@manifestation_types.collect{|m| [m.display_name.localize, m.id]}) %>
+        </td>
+      <% end %>
       <td style="border:0px; border-bottom: 1px solid #aaa;">
         <%= select_tag "extraparams[#{i}][numbering]", options_for_select(@numberings.map{|n| [n.display_name, n.name]}.insert(0, '')) %>
+      </td>
+      <td style="border:0px; border-bottom: 1px solid #aaa;">
+        <%= check_box_tag "extraparams[#{i}][auto_numbering]", true %>
+        <%= t('resource_import_textfile.auto_numbering') %> 
       </td>
     </tr>
   <% end %>
   </table>  
 </div>
+<script type="text/javascript" src="../assets/application.js">
+$(document).ready(function(){
+  $(document).on("change", "select[id$='_manifestation_type']", function(){
+    auto_numbering = $("#"+$(this).attr('id').replace(/manifestation_type/, 'auto_numbering')); 
+    type = $(this).attr('value');
+    if (type == 9 || type == 10){ 
+      auto_numbering.attr("checked", true);
+      auto_numbering.attr("disabled", true);
+    } else {
+      auto_numbering.attr("disabled", false);
+      auto_numbering.attr("checked", false);
+    }
+  });
+});
+</script>

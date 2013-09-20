@@ -42,6 +42,8 @@ class UsersController < ApplicationController
         facet :patron_type
         facet :user_status
         paginate :page => page.to_i, :per_page => User.default_per_page
+      else
+        paginate :page => 1, :per_page => User.count
       end
     end
     @users = @search.execute!.results
@@ -208,9 +210,11 @@ class UsersController < ApplicationController
     begin
       # set user_info
       if current_user.has_role?('Librarian')
-         @user.assign_attributes(params[:user], :as => :admin)
+        @user.assign_attributes(params[:user], :as => :admin)
+      elsif SystemConfiguration.get('user_change_department')
+        @user.assign_attributes(params[:user], :as => :user_change_department)
       else
-         @user.assign_attributes(params[:user])
+        @user.assign_attributes(params[:user])
       end
       #@user.update_attributes!(params[:user])
       #@user.update_with_params(params[:user])

@@ -13,7 +13,11 @@ class User < ActiveRecord::Base
   attr_accessible :email, :password, :password_confirmation, :current_password,
     :remember_me, :email_confirmation, :library_id, :locale,
     :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
-    :username, :own_password, :user_status_id, :department_id
+    :username, :own_password, :user_status_id
+  attr_accessible :email, :password, :password_confirmation, :current_password,
+    :remember_me, :email_confirmation, :library_id, :locale,
+    :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
+    :username, :own_password, :user_status_id, :department_id, :as => :user_change_department
   attr_accessible :email, :password, :password_confirmation, :username,
     :current_password, :user_number, :remember_me,
     :email_confirmation, :note, :user_group_id, :library_id, :locale,
@@ -68,6 +72,7 @@ class User < ActiveRecord::Base
   belongs_to :user_status
   belongs_to :department
   has_many :copy_requests
+  has_many :nacsis_user_requests, :dependent => :destroy
 
   validates :username, :presence => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/, :message => I18n.t('errors.messages.en_expected')} #, :uniqueness => true
   validates_uniqueness_of :username, :unless => proc{|user| SystemConfiguration.get('auto_user_number')}, :allow_blank => true
@@ -576,7 +581,7 @@ class User < ActiveRecord::Base
     # query
     query = query.to_s
     query = query.gsub("-", "") if query
-    query = "#{query}*" if query.size == 1
+    query = "*#{query}*" if query.size == 1
     # birth date
     birth_date = birth.to_s.gsub(/\D/, '') if birth
     message = nil

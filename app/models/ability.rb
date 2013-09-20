@@ -39,7 +39,7 @@ class Ability
         #library.shelves.empty? and library.users.empty? and library.budgets.empty? and library.events.empty? and !library.web?
         library.id != 0 and  library.shelves.size == 1 and library.shelves[0].open_access == 9 and library.shelves[0].items.empty? and library.budgets.empty? and library.events.empty? and !library.web?
       end
-      can [:read, :create, :update], Manifestation
+      can [:read, :create, :update, :output_excelx], Manifestation
       can :destroy, Manifestation do |manifestation|
         manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
       end
@@ -105,18 +105,14 @@ class Ability
         Expense,
         Family,
         ImportRequest,
-        Inventory,
-        InventoryFile,
         ItemHasUseRestriction,
         KeywordCount,
-        LibcheckDataFile,
-        LibraryCheck,
-        LibraryCheckShelf,
         LibraryReport,
         ManifestationCheckoutStat,
         ManifestationRelationship,
         ManifestationRelationshipType,
         ManifestationReserveStat,
+        NacsisUserRequest,
         Numbering,
         Order,
         OrderList,
@@ -208,7 +204,7 @@ class Ability
       can :destroy, Item do |item|
         item.deletable?
       end
-      can [:read, :create, :update], Manifestation
+      can [:read, :create, :update, :output_excelx], Manifestation
       can :destroy, Manifestation do |manifestation|
         manifestation.items.empty? and !manifestation.is_reserved?
       end
@@ -275,16 +271,12 @@ class Ability
         Expense,
         Family,
         ImportRequest,
-        Inventory,
-        InventoryFile,
         KeywordCount,
-        LibcheckDataFile,
-        LibraryCheck,
-        LibraryCheckShelf,
         LibraryReport,
         ManifestationCheckoutStat,
         ManifestationRelationship,
         ManifestationReserveStat,
+        NacsisUserRequest,
         Numbering,
         Order,
         OrderList,
@@ -307,6 +299,7 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
+        Subject,
         SubjectHasClassification,
         Subscribe,
         Subscription,
@@ -351,7 +344,6 @@ class Ability
         Role,
         SearchEngine,
         Shelf,
-        Subject,
         SubjectType,
         SubjectHeadingType,
         SubjectHeadingTypeHasSubject,
@@ -424,6 +416,7 @@ class Ability
       can [:read, :update, :destroy], CopyRequest do |copy_request|
         copy_request.user == user
       end
+      can [:read, :update, :destroy], NacsisUserRequest, :user_id => user.id
       can :read, [
         AcceptType,
         CarrierType,

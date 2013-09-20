@@ -2,6 +2,9 @@ EnjuLeaf::Application.routes.draw do
   resources :warekis
   resources :user_request_logs
   resources :enju_terminals
+	resource :exchange_manifestation do
+    post :select_manifestation, :on => :member
+  end
 
   resources :numberings
   resources :departments
@@ -53,12 +56,8 @@ EnjuLeaf::Application.routes.draw do
     resources :reserves
     post :output_show, :on => :member
     get :output_pdf, :on => :member
-  end
-
-  resources :library_checks do
-    get :download_file, :on => :member
-    resources :libcheck_data_files
-    resources :library_check_shelves
+    post :output_excelx, :on => :collection
+    get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis'
   end
 
   resources :patrons do
@@ -77,15 +76,21 @@ EnjuLeaf::Application.routes.draw do
   end
 
   resources :creators, :controller => 'patrons' do
-    resources :manifestations
+    resources :manifestations do
+      post :output_excelx, :on => :collection
+    end
   end
 
   resources :contributors, :controller => 'patrons' do
-    resources :manifestations
+    resources :manifestations do
+      post :output_excelx, :on => :collection
+    end
   end
 
   resources :publishers, :controller => 'patrons' do
-    resources :manifestations
+    resources :manifestations do
+      post :output_excelx, :on => :collection
+    end
   end
 
   resources :works, :controller => 'manifestations' do
@@ -114,6 +119,7 @@ EnjuLeaf::Application.routes.draw do
     resources :manifestation_relationships
     resources :manifestations
     resources :exemplifies
+    post :output_excelx, :on => :collection
   end
 
   resources :users do
@@ -181,11 +187,6 @@ EnjuLeaf::Application.routes.draw do
     resources :patron_merges
   end
   resources :patron_merges
-  resources :inventory_files
-  resources :library_checks
-  resources :library_check_shelves
-  resources :libcheck_data_files
-  resources :inventories
   resources :donates
   resources :subscriptions do
     resources :manifestations
@@ -193,7 +194,9 @@ EnjuLeaf::Application.routes.draw do
   resources :subscribes
   resources :picture_files
   resources :series_statements do
-    resources :manifestations, :controller => :manifestations
+    resources :manifestations do
+      post :output_excelx, :on => :collection
+    end
     resources :series_has_manifestations
     resources :series_statement_relationships
   end
@@ -450,9 +453,13 @@ EnjuLeaf::Application.routes.draw do
   end
   resources :binding_items
   match '/bookbindings/:bookbinder_id/manifestations' => 'manifestations#index'
+  match '/bookbindings/:bookbinder_id/manifestations/output_excelx' => 'manifestations#output_excelx'
   resources :checkout_histories
 
   resources :copy_requests
+
+  resources :checkoutlists
+  resources :nacsis_user_requests
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -549,7 +556,6 @@ EnjuLeaf::Application.routes.draw do
   match '/batch_checkin' => 'checkins#batchexec' , :via => :post
   match '/batch_checkout' => 'checkouts#batchexec' , :via => :post
 
-  match '/checkoutlists' => 'checkoutlists#index'
   match '/reservelists' => 'reservelists#index'
   match '/unablelist' => 'unablelist#index'
   match '/retained_manifestations' => 'retained_manifestations#index'

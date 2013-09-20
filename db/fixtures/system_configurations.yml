@@ -514,7 +514,7 @@ system_configuration_00073:
 system_configuration_00074:
   id: 74
   keyname: manifestations.split_by_type
-  v: "true"
+  v: "false"
   typename: Boolean
   description: "資料区分で検索結果を分離するか？"
   category: 'manifestation'
@@ -645,7 +645,7 @@ system_configuration_00091:
 system_configuration_00092:
   id: 92
   keyname: manifestation.manage_item_rank
-  v: "true"
+  v: "false"
   typename: Boolean
   description: "正副本管理をする"
   category: 'manifestation'
@@ -698,4 +698,17 @@ system_configuration_00099:
   typename: Boolean
   description: "自分自身で利用者の部課の変更が出来るか？"
   category: 'user'
-
+system_configuration_00100:
+  id: 100
+  keyname: use_copy_request
+  v: "false"
+  typename: Boolean
+  description: "文献複写依頼を使用するか"
+  category: 'copy_request'
+system_configuration_00101:
+  id: 101
+  keyname: exclude_patrons
+  v: "他,ほか,et-al."
+  typename: String
+  description: "著者、協力者・編者、協力者・編者で指定時に人物・団体として扱わないワード"
+  category: 'manifestation'

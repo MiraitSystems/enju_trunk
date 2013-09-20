@@ -10,6 +10,7 @@ module SystemConfigurationsHelper
       'purchase_request',
       'question', 
       'order_list',
+      'copy_request',
       'reminder', 
       'statistics', 
       'sound', 
@@ -38,6 +39,8 @@ module SystemConfigurationsHelper
       t('system_configuration.question')
     when 'order_list'
       t('system_configuration.order_list')
+    when 'copy_request'
+      t('system_configuration.copy_request')
     when 'reminder'
       t('system_configuration.reminder')
     when 'statistics'
@@ -83,9 +86,9 @@ module SystemConfigurationsHelper
         string << "<input type='text' "
         string << "name=system_configurations[#{ system_configuration.id }] "
         if error
-          string << "value=#{ error.v } "
+          string << "value='#{ error.v }' "
         else
-          string << "value=#{ system_configuration.v } "
+          string << "value='#{ system_configuration.v }' "
         end
         string << "style='background-color:pink;'" if error
         string << ">"
@@ -183,7 +186,7 @@ module SystemConfigurationsHelper
      # => yes,no
      when 'auto_user_number', 'manifestations.split_by_type', 'manifestations.google_book_search_preview', 
           'checkout.auto_checkin', 'manifestation.manage_item_rank', 'use_inter_library_loan', 'use_family', 'use_birth_day',
-          'manifestation.has_one_item', 'manifestation.isbn_unique'
+          'manifestation.has_one_item', 'manifestation.isbn_unique', 'user_change_department'
        string << t('system_configuration.boolean_yes') if state == 'true'
        string << t('system_configuration.boolean_no') if state == 'false'
      # => send
@@ -206,6 +209,7 @@ module SystemConfigurationsHelper
        string << t('system_configuration.boolean_not_send') if state == 'false'
      # => use
      when 'use_order_lists',
+          'use_copy_request',
           'nacsis.can_use'
        string << t('system_configuration.boolean_use') if state == 'true'
        string << t('system_configuration.boolean_not_use') if state == 'false'

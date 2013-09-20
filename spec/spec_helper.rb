@@ -1,13 +1,16 @@
-#require 'simplecov'
-#SimpleCov.start 'rails' do
-#  add_filter do |source_file|
-#    source_file.lines.count < 5
-#  end
-#end
+require 'simplecov'
+require 'simplecov-rcov'
+SimpleCov.start 'rails' do
+  add_filter do |source_file|
+    source_file.lines.count < 5
+  end
+end
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 
 require 'rubygems'
 require 'spork'
 require 'vcr'
+require 'database_cleaner'
 
 Spork.prefork do
   # Loading more in this block will cause your tests to run faster. However, 
@@ -42,18 +45,25 @@ Spork.prefork do
     config.use_transactional_fixtures = true
 
     $original_sunspot_session = Sunspot.session
+ 
+#    DatabaseCleaner.strategy = :truncation
 
     config.before do
       Sunspot.session = Sunspot::Rails::StubSessionProxy.new($original_sunspot_session)
 #      SimpleCov.command_name "RSpec:#{Process.pid.to_s}#{ENV['TEST_ENV_NUMBER']}"
       PaperTrail.controller_info = {}
       PaperTrail.whodunnit = nil
+#      DatabaseCleaner.start
     end
 
     config.before :each, :solr => true do
       Sunspot::Rails::Tester.start_original_sunspot_session
       Sunspot.session = $original_sunspot_session
       #Sunspot.remove_all!
+    end
+
+    config.after do
+      DatabaseCleaner.clean
     end
 
     config.extend ControllerMacros, :type => :controller

@@ -1,7 +1,6 @@
 <script>
 jQuery(function(){
-  $('#manifestation_original_title').auto_ruby($('#manifestation_title_transcription'))
-  $('#manifestation_title_transcription').val("<%= @manifestation.title_transcription %>");//初回遷移時対策 
+  new AutoKana('manifestation_original_title', 'manifestation_title_transcription', { katakana:true, toggle:false });
 
   var article_title = "<%= @manifestation.article_title %>"
   displayArticleTitle(article_title);
@@ -47,8 +46,7 @@ $(document).keydown(function(e) {
 </script>
 
 <%= render 'page/required_field' %>
-<%#= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
-<%= form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
+<%= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
   <%= f.error_messages -%>
 
   <div class="field">
@@ -86,26 +84,41 @@ $(document).keydown(function(e) {
     <%= f.text_field :article_title, :class => 'resource_title' %>
   </div>
 
-  <div class="field">
+ <div class="field">
     <%= f.label :creator -%><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :creator, :value => @creator -%>
+  </div>
+ 
+  <div class="field">
+    <strong><%= t('manifestation.creator_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
+    <%= f.text_field :creator_transcription, :value => @creator_transcription, :class => 'resource_title' -%>
   </div>
   <div class="field">
     <%= f.label :contributor -%><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :contributor, :value => @contributor -%>
   </div>
   <div class="field">
+    <strong><%= t('manifestation.contributor_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
+    <%= f.text_field :contributor_transcription, :value => @contributor_transcription, :class => 'resource_title' -%>
+  </div>
+  <div class="field">
     <%= f.label :publisher -%><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :publisher, :value => @publisher -%>
+  </div>
+  <div class="field">
+    <strong><%= t('manifestation.publisher_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
+    <%= f.text_field :publisher_transcription, :value => @publisher_transcription, :class => 'resource_title' -%>
   </div>
 
   <div class="field">
     <%= f.label t('page.file') -%><br />
     <%= f.file_field :attachment -%>
-    <%- unless @manifestation.attachment_file_name.blank? -%>
+    <% unless @manifestation.new_record? %>
+      <%- unless @manifestation.attachment_file_name.blank? -%>
         <%= f.check_box :delete_attachment, :onClick => "toggle_upload()" -%><%= t('manifestation.delete_attachment') -%>
         <%= render 'manifestations/attachment_file', :manifestation => @manifestation -%>
-    <%- end -%>
+      <%- end -%>
+    <% end %>
   </div>
 
   <script type="text/javascript">
@@ -246,6 +259,11 @@ $(document).keydown(function(e) {
     <%= f.label :subject -%><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :subject, :value => @subject -%>
   </div>
+  <div class="field">
+    <strong><%= t('manifestation.subject_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
+    <%= f.text_field :subject_transcription, :value => @subject_transcription, :class => 'resource_url' -%>
+  </div>
+
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
@@ -255,6 +273,46 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.acceptance_number') %>
     <%= f.text_field :acceptance_number, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_1') %>
+    <%= f.text_field :exinfo_1, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_2') %>
+    <%= f.text_field :exinfo_2, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_3') %>
+    <%= f.text_field :exinfo_3, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_4') %>
+    <%= f.text_field :exinfo_4, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_5') %>
+    <%= f.text_field :exinfo_5, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_6') %>
+    <%= f.text_field :exinfo_6, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_7') %>
+    <%= f.text_field :exinfo_7, :class => "resource_integer" %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.exinfo_8') %>
+    <%= f.text_field :exinfo_8, :class => "resource_integer" %>
   </div>
 
   <div class="actions">

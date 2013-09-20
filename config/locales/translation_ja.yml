@@ -193,7 +193,10 @@ ja:
       realize_type: 表現の関係
       enju_terminal: 端末設定
       copy_request: 文献複写依頼
-
+      nacsis_user_request: 複写貸借状況
+      nacsis_request_copy: 複写依頼
+      nacsis_request_lend: 借用依頼
+      exchange_manifestation: 所蔵付け替え
     attributes:
       wareki:
         display_name: 表示名
@@ -327,6 +330,7 @@ ja:
       circulation_status:
         name: 名前
         display_name: 表示名
+        unsearchable: 検索対象から除外
         note: 注記
         position: 位置
       remove_reason:
@@ -353,9 +357,9 @@ ja:
         zip_code_1: 郵便番号1
         zip_code_2: 郵便番号2
         address: 住所
-        address_1: 所属先住所 # 住所1
+        address_1: 住所1
         address_2: 住所2
-        address_1_note: 所属先住所の注記 # 住所1の注記
+        address_1_note: 住所1の注記
         address_2_note: 住所2の注記
         telephone_number: 電話番号
         telephone_number_1: 内線 # 電話番号1-1
@@ -609,6 +613,7 @@ ja:
         update_note: 注記の更新
       produce:
         position: 位置
+        manifestation: 出版関係 
       role:
         name: 名前
         display_name: 表示名
@@ -640,6 +645,7 @@ ja:
         checkout_type: 貸出区分
         retention_period: 保存種別
         acquired_at: 受入日
+        acquired_at_string: 受入日
         loss_item: 紛失処理
         set_status: 紛失処理を実行
         will_loss_item: 資料の貸出状態を紛失扱いにし、自動返却を行いますか。
@@ -821,8 +827,6 @@ ja:
         note: 注記
         position: 位置
         non_searchable: 検索不可
-        able: 検索可能
-        unable: 検索不可
       manifestation_type:
         name: 名前
         display_name: 表示名
@@ -904,6 +908,11 @@ ja:
         acceptance_number: 受入部数
         printout_in_progress: 資料確認票の印刷を開始しました
         external_catalog: 目録作成機関
+        hold_dbname: 収録DB名
+        hold_id: 所蔵レコードID
+        hold_libabl: 所属館略称
+        hold_cln: 請求記号
+        hold_rgtn: 資料番号
       user_group:
         name: 名前
         display_name: 表示名
@@ -1453,6 +1462,47 @@ ja:
         user: 利用者
         body: 本文
         created_at: 登録日
+      nacsis_user_request:
+        subject_heading: 本表題/責任表示
+        subject_heading_reading: 本表題等のよみ
+        publisher: 出版者
+        pub_date: 出版年
+        publish_year: 出版年
+        physical_description: 形態(ページ情報)
+        series_title: シリーズ名
+        note: 資料注記
+        isbn: ISBN
+        issn: ISSN
+        pub_country: 出版国
+        title_language: 標題言語
+        text_language: 本文言語
+        classmark: 分類記号
+        author_heading: 著者情報
+        subject: 件名
+        ncid: NCID
+        user_id: 利用者ID
+        user_name: 利用者名
+        request_datetime: 依頼日時
+        request_type: 依頼分類
+        request_type_names:
+         - 
+         - 借用
+         - 複写
+        state: 処理状態
+        state_names:
+         - 終了
+         - 受付
+         - 受付済
+         - 事務員返却
+         - 依頼済
+         - 相手側拒否
+         - 到着済
+         - 事務確認中
+         - 連務連絡済
+        user_note: 依頼内容
+        librarian_note: 事務員注記
+        created_from: 開始日付
+        created_to: 終了日付
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1467,6 +1517,9 @@ ja:
     catalog_search: "資料の検索"
     search: "検索"
     search_term: "検索語"
+    search_for: "検索対象"
+    search_local: "ローカル所蔵"
+    search_nacsis: "NACSIS 目録"
     all_search_term: "すべて"
     any_search_term: "いずれか"
     except_search_term: "除外"
@@ -1475,6 +1528,8 @@ ja:
     number_of_manifestations: "%{numdocs} 件の資料があります。"
     number_of_unread_messages: "%{numdocs} 件の未読メッセージがあります。"
     number_of_search_results: "%{count} 件の資料が %{numdocs} 件の資料から %{seconds} 秒で見つかりました。"
+    number_of_nacsis_book_search_results: "図書の検索結果（%{count}件）"
+    number_of_nacsis_serial_search_results: "雑誌資料の検索結果（%{count}件）"
     tag: "タグ"
     call_number: "請求記号"
     holding: "所蔵"
@@ -1540,7 +1595,6 @@ ja:
     search_resource: "%{model}を検索"
     show_all: "全てを表示"
     hide: "隠す"
-    et_al: "他"
     overdue: "延滞"
     number_of_reservations: "%{count} 人の予約待ち"
     back_to_search_results: "検索結果の一覧に戻る"
@@ -1690,6 +1744,9 @@ ja:
     search_article_results: "文献資料の検索結果"
     library_reports: "報告書・帳票"
     more_information: "詳細情報を表示"
+    output_receipt_printer: "＊この資料確認票はレシートプリンタ用です。8cm幅に出力されますのでご注意ください。"
+    nacsis_book: "図書"
+    nacsis_serial: "雑誌"
 
     exstatistics:
       ranknumber: 順位
@@ -1753,24 +1810,21 @@ ja:
     help_issn: "半角英数字で入力してください。"
     all_manifestations: "検索非対象資料も表示"
     clear_query: "検索条件をクリア"
+    search_isbn: "ISBNで検索を行う場合、他の検索条件は指定できません。"
+    search_item_identifier: "所蔵情報IDで検索を行う場合、他の検索条件は指定できません。"
     description: "
-      <h5>検索方法:</h5>
-      <strong>[AND]検索</strong><br />
-      キーワードとキーワードの間に「AND」あるいは「空白文字」が入力されているとき、入力された全てのキーワードを含む情報を検索します<br />
-      
-      例：<br />
-      book1 AND book2<br />
-      book1 book2<br />
+      <h5>検索方法に関して:</h5>
       <br />
-      <strong>[OR]検索</strong><br />
-      キーワードとキーワードの間に「OR」が入力されているとき、入力されたいずれかのキーワードを含む情報を検索します<br />
-      例：<br />
-      book1 OR book2<br />
+      所蔵情報IDを入力時、マッチした資料の表示画面に遷移します。<br />
+      (ただしアスタリスク入力時は、検索結果一覧画面に遷移します)<br />
+      その際、その他の条件は入力できません。
+      "
+    description_unique_isbn: "
+      <h5>検索方法に関して:</h5>
       <br />
-      <strong>[NOT]検索</strong><br />
-      キーワードの前に「NOT」が入力されているとき、それに続いて入力されたキーワードを検索非対象とします<br />
-      例：<br />
-      NOT book1<br />
+      所蔵情報IDまたはISBNを入力時、マッチした資料の表示画面に遷移します。<br />
+      (ただしアスタリスク入力時は、検索結果一覧画面に遷移します)<br />
+      その際、その他の条件は入力できません。
       "
     help_solr_query: "
       solr 検索式を直接入力します
@@ -1781,9 +1835,18 @@ ja:
       word: "単語による検索"
       word_description: "入力された単語で検索を行います。"
       word_ex: "気象"
+      and: "[AND]検索"
+      and_description: "キーワードとキーワードの間に「AND」あるいは「空白文字」が入力されているとき、入力された全てのキーワードを含む情報を検索します。"
+      and_ex: "title_text:(book1 AND book2)"
+      or: "[OR]検索"
+      or_description: "キーワードとキーワードの間に「OR」が入力されているとき、入力されたいずれかのキーワードを含む情報を検索します。"
+      or_ex: "title_text:(book1 OR book2)"
+      not: "[NOT]検索"
+      not_description: "キーワードの前に「NOT」が入力されているとき、それに続いて入力されたキーワードを検索非対象とします。"
+      not_ex: "title_text:(NOT book1)"
       wild: "ワイルドカード検索"
       wild_description: "「任意の文字」に置き換えて検索を行います。「*」が任意の複数文字、「?」が任意の１文字を表します。"
-      wild_ex: "title:天気??<br / >title:天気*"
+      wild_ex: "天気??<br / >天気*"
       field: "フィールド指定検索"
       field_description: "指定されたフィールドに対して検索を行います。"
       field_detail:
@@ -1903,6 +1966,10 @@ ja:
     format_volume: "%{volume}巻"
     format_issue: "%{issue}号"
     format_year: "%{year}年"
+    creator_transcription: 著者(ヨミ)
+    contributor_transcription: 協力者・編者(ヨミ)
+    publisher_transcription: 出版者(ヨミ)
+    subject_transcription: 件名(ヨミ)
   missing_issue:
     no_request: 未請求
     requested: 請求済
@@ -2006,7 +2073,7 @@ ja:
     over_renewal_limit: "貸出更新回数の上限を超えています。"
     all_checkout: "全ての貸出"
     my_checkout: "自分の貸出"
-    no_checkout: "貸出中の資料はありません。"
+    no_checkout: "貸出中の資料ではありません。"
     number_of_day_overdue: "延滞日数"
     extend: "貸出期間の延長"
     extended: "貸出期間が延長されました。"
@@ -2204,6 +2271,7 @@ ja:
     you_should_specify_work: "シリーズ情報には書いた資料を指定しなければなりません。"
   state:
     pending: "処理待ち"
+    requested: "受付済み"
     canceled: "中止"
     completed: "完了"
     started: "開始"
@@ -2274,6 +2342,7 @@ ja:
     wrong_extention: "拡張子がxlsx形式のファイルのみインポート可能です。"
     wrong_content_type: "にはTSVファイルまたはXLSXファイル以外を指定しないでください。"
     importing_please_wait: "エクセルファイルを読み込み中です。しばらくお待ちください。。。"
+    auto_numbering: "所蔵情報IDを自動採番する"
     excel:
       series:
         issn: ISSN
@@ -2322,6 +2391,7 @@ ja:
         subject: 件名
         accept_type: 受入区分
         acquired_at: 受入日
+        acquired_at_string: 受入日
         bookstore: 寄贈・購入先
         library: 図書館
         shelf: 本棚
@@ -2349,7 +2419,7 @@ ja:
         number_of_page: ページ
         pub_date: 刊行年
         call_number: 請求記号 
-        url: ＵＲＬ
+        access_address: ＵＲＬ
         subject: 件名 
     message:
       read_sheet: "シート『%{sheet}』の読み取りを開始します。"
@@ -2357,12 +2427,17 @@ ja:
       deleted_manifestation: "タイトル：%{original_title}"
       deleted_series_statement: "シリーズタイトル：%{series_original_title}"
       out_of_manage: "<br />ヘッダーに管理外のカラム名が存在しています: %{columns}"
+      without_item: "所蔵情報IDカラムが存在しないので、所蔵情報はインポート対象外です。"
     error:
       blank_sheet: "シート『%{sheet}』の読み取りに失敗しました。データが記述されていません。"
       overlap: "シート『%{sheet}』の読み取りに失敗しました。ヘッダーのフィールド名に重複したものがあります。"
       wrong_data: "指定の%{field}は不正です。 %{field}: %{data}"
       delete_requre_item_identifier: "所蔵情報IDが入力されていないため削除を実行できませんでした。"
       failed_delete_not_find: "対象の資料が見つからなかったため削除を実行できませんでした。"
+      duplicate_item_identifier: "シート『%{sheet}』の読み取りに失敗しました。所蔵情報IDが重複しています: %{item_identifier}"
+      no_item_identifier: "所蔵情報IDが指定されていません。"
+      cell_require_manifestation_type: "資料区分を指定してください。"
+      wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
       series:
         head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目にはシリーズ名またはISSN,またタイトルまたはISBNが必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
         cell_is_blank: "シリーズ名またはISSN,タイトルまたはISBNを指定してください。"
@@ -2370,6 +2445,7 @@ ja:
         exist_same_series: "更新しようとしている内容と同一のシリーズ情報が既に存在しています。資料の編集画面より更新する資料のシリーズ情報を付け替えてください。"
       book:
         head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目にはタイトルまたはISBNが必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
+        head_require_manifestation_type: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目には資料区分が必須です。"
         cell_is_blank: "タイトルまたはISBNを指定してください。"
         only_integer: "%{field}には整数以外の値を指定しないでください。 %{field}: %{data}"
         only_numeric: "%{field}には数値以外の値を指定しないでください。 %{field}: %{data}"
@@ -2382,6 +2458,8 @@ ja:
         not_delete: "タイトルを空白登録することはできません。"
         has_original: "既に正本登録済みの資料に、正本資料の追加はできません。"
         has_not_shelf: "図書館が保持していない本棚が指定されています。"
+        exist_multiple_same_manifestations: "書誌同定された資料が複数存在します。インポートデータを新規作成しました。"
+        record_not_found: "NDL-OPACを参照しましたが、書誌情報を取得できませんでした。"
       article:
         head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目には表題が必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
         cell_is_blank: "表題を指定してください。"
@@ -2600,6 +2678,7 @@ ja:
     purchase_request: 購入リクエスト
     question: 質問（レファレンス）
     order_list: 発注リスト
+    copy_request: 文献複写依頼
     reminder: 督促
     statistics: 統計
     sound: 音
@@ -2700,6 +2779,14 @@ ja:
               ※２つ以上の文献を希望される方は、上のような要領で必要な数だけ列記してください。<br />
               なお、連絡事項等がある場合は、最下行に記入してください。"
 
+  checkoutlist:
+    output_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
+    output_job_success_subject: "貸出状況表のファイル出力が完了しました [ID: %{job_name}]"
+    output_job_success_body: "お知らせID「%{job_name}」のファイル出力が完了しました。次のアドレスからファイルを取得してください。\n%{url}"
+    output_job_error_subject: "ファイル出力できませんでした [ID: %{job_name}]"
+    output_job_error_body: "お知らせID「%{job_name}」のファイル出力を完了できませんでした。理由は次の通りです。\n%{message}"
+
+
   opac:
     finish: 終わる
     push_touchpanel: ▼ 希望の項目を押してください
@@ -2741,3 +2828,19 @@ ja:
       clear: 全部消す
     search:
       sort: "%{target}順に並べる"
+  exchange_manifestation:
+    title: "所蔵付け替え"
+    screen1_description1: "付け替える所蔵情報IDを入力してください。"
+    screen2_description1: "付け替え先の書誌を検索してください。「付替」リンクでつけ替えます。"
+    exchange: "付替"
+    item_not_found: "資料が見つかりません。"
+    no_item_identifier: "所蔵情報IDが指定されていません。"
+    source_manifestation: "付替元情報"
+    source_item_identifier: "所蔵情報ID"
+    manifestation: "書誌名"
+    exchange_success: "付け替えを行いました。"
+    force_exchange: "強制的に付け替え"
+    confirm: "付替を行います。よろしいですか？"
+    item_circulation_status_is_invalid: "所蔵の貸出状態が不正です。強制的に進める場合は、チェックボックスにチェックをつけてください。"
+
+

@@ -161,17 +161,16 @@ describe ManifestationsController do
         include_examples 'manifestation search conditions'
 
         it 'should load first Item record of a Manifestation record and use it as a solr search condition' do
-          manifestation = Manifestation.first
-          expected = manifestation.items.first
+          expected = Item.first
 
-          get :index, :bookbinder_id => manifestation.id.to_s
+          get :index, :bookbinder_id => expected.id.to_s
 
           response.should be_success
           assigns(:binder).should be_present
           assigns(:binder).should eq(expected)
 
           check_called(:with, :bookbinder_id, :equal_to, expected.id)
-          check_called(:without, :id, :equal_to, manifestation.id)
+          check_called(:without, :id, :equal_to, expected.manifestation.id)
         end
 
         it 'should set nil to @binder and not touch solr search conditions if bookbinder_id is invalid' do
@@ -560,27 +559,35 @@ describe ManifestationsController do
       end
 
       describe 'solr query' do
-        it 'should assign constructed solr query string as @solr_query when solr_commit parameter is not presented' do
+        it 'should assign constructed solr query string as @solr_query when solr_query parameter is not presented' do
           get :index, query: 'foobar', title: 'barbaz'
           response.should be_success
           assigns(:solr_query).should be_present
           assigns(:solr_query).should match(/\bfoobar\b/)
-          assigns(:solr_query).should match(/\btitle_text:barbaz\b/)
+          assigns(:solr_query).should match(/\btitle_text:\(barbaz\)/)
         end
 
-        it 'should assign solr_query parameter value as @solr_query when solr_commit parameter is presented' do
-          get :index, query: 'foobar', solr_query: 'barbaz', solr_commit: 'true'
+        it 'should assign solr_query parameter value as @solr_query even if query parameter is presented' do
+          get :index, query: 'foobar', solr_query: 'barbaz'
           response.should be_success
           assigns(:solr_query).should be_present
           assigns(:solr_query).should eq('barbaz')
         end
 
-        it 'should execute search with solr_query parameter value when solr_commit parameter is presented' do
+        it 'should assign solr_query parameter value as @solr_query even if advanced query parameters are presented' do
+          get :index, title: 'foobar', solr_query: 'barbaz'
+          response.should be_success
+          assigns(:solr_query).should be_present
+          assigns(:solr_query).should eq('barbaz')
+          assigns(:solr_query).should_not match(/\btitle_text:\(foobar\)/)
+        end
+
+        it 'should execute search with solr_query parameter value when solr_query parameter is presented' do
           found = false
           Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
             found = true if qs == 'barbaz'
           end
-          get :index, query: 'foobar', solr_query: 'barbaz', solr_commit: 'true'
+          get :index, query: 'foobar', solr_query: 'barbaz'
           response.should be_success
           found.should be_true
         end
@@ -656,9 +663,26 @@ describe ManifestationsController do
           it "should search from #{field} field when #{param} param is specified" do
             found = false
             Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-              found = true if /\b#{Regexp.quote(field)}:foobar\b/ =~ qs
+              found = true if /\b#{Regexp.quote(field)}:\(foobar\)/ =~ qs
             end
             get :index, param => 'foobar'
+            response.should be_success
+            found.should be_true
+          end
+        end
+
+        [
+          %w(title title_text),
+          %w(creator creator_text),
+          %w(contributor contributor_text),
+          %w(publisher publisher_text),
+        ].each do |param, field|
+          it "should search with \"*#{param}*\" from #{field} field when one char is specified as #{field} field" do
+            found = false
+            Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
+              found = true if /\b#{Regexp.quote(field)}:\(\*あ\*\)/ =~ qs
+            end
+            get :index, param => 'あ'
             response.should be_success
             found.should be_true
           end
@@ -691,7 +715,7 @@ describe ManifestationsController do
               found = false
               Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
                 t = "#{Regexp.quote(field)}:" if field
-                found = true if /\(#{t}foobar OR #{t}barbaz\)/ =~ qs
+                found = true if /#{t}\(foobar OR barbaz\)/ =~ qs
               end
               get :index, param => 'foobar barbaz', "#{param}_merge" => 'any'
               response.should be_success
@@ -710,8 +734,12 @@ describe ManifestationsController do
             it "should search records that dont match all words of the except_#{param}" do
               found = false
               Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-                t = "#{Regexp.quote(field)}:" if field
-                found = true if /\b#{t}foobar\b/ =~ qs && /-#{t}barbaz\b/ =~ qs
+                if field
+                  t = "#{Regexp.quote(field)}:"
+                  found = true if /\b#{t}\(foobar\)/ =~ qs && /#{t}\(-barbaz\)/ =~ qs
+                else
+                  found = true if /\bfoobar\b/ =~ qs && /-barbaz\b/ =~ qs
+                end
               end
               get :index, param => 'foobar', "except_#{param}" => 'barbaz'
               response.should be_success
@@ -964,17 +992,20 @@ describe ManifestationsController do
       end
 
       it "should show manifestation rdf template" do
+        pending
         get :show, :id => 22, :format => 'rdf'
         assigns(:manifestation).should eq Manifestation.find(22)
         response.should render_template("manifestations/show")
       end
 
       it "should_show_manifestation_with_isbn" do
+        pending
         get :show, :isbn => "4798002062"
         response.should redirect_to manifestation_url(assigns(:manifestation))
       end
 
       it "should_show_manifestation_with_isbn" do
+        pending
         get :show, :isbn => "47980020620"
         response.should be_missing
       end
@@ -1091,6 +1122,34 @@ describe ManifestationsController do
         it "redirects to the created manifestation" do
           post :create, :manifestation => @attrs
           response.should redirect_to(manifestation_url(assigns(:manifestation)))
+        end
+
+        it "get creator and creator_transcription" do
+          ma = FactoryGirl.attributes_for(:m_with_creator)
+          post :create, :manifestation => FactoryGirl.attributes_for(:m_with_creator)
+          assigns[:creator].should eq ma[:creator]
+          assigns[:creator_transcription].should eq ma[:creator_transcription]
+        end
+
+        it "get contributor and contributor_transcription" do
+          ma = FactoryGirl.attributes_for(:m_with_contributor)
+          post :create, :manifestation => FactoryGirl.attributes_for(:m_with_contributor)
+          assigns[:contributor].should eq ma[:contributor]
+          assigns[:contributor_transcription].should eq ma[:contributor_transcription]
+        end
+
+        it "get publisher and publisher_transcription" do
+          ma = FactoryGirl.attributes_for(:m_with_publisher)
+          post :create, :manifestation => FactoryGirl.attributes_for(:m_with_publisher)
+          assigns[:publisher].should eq ma[:publisher]
+          assigns[:publisher_transcription].should eq ma[:publisher_transcription]
+        end
+
+        it "get subject and subject_transcription" do
+          ma = FactoryGirl.attributes_for(:m_with_subject)
+          post :create, :manifestation => FactoryGirl.attributes_for(:m_with_subject)
+          assigns[:subject].should eq ma[:subject]
+          assigns[:subject_transcription].should eq ma[:subject_transcription]
         end
       end
 
