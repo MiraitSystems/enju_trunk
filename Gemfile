@@ -26,6 +26,7 @@ gem "jpp_customercode_transfer", "~> 0.0.2"
 
 # special gem here.
 # gem 'enju_xxx', :git => 'https://xxx@github.com/'
+gem 'enju_mitsubishi_archives', :git => 'https://github.com/MiraitSystems/enju_mitsubishi_archives.git'
 
 #
 platforms :ruby do
@@ -41,8 +42,9 @@ end
 #end
 
 gem 'roo', "= 1.10.1"
+gem 'rubyzip', "=0.9.9"
 gem 'spreadsheet', '0.7.9'
-gem 'axlsx'
+gem 'axlsx', '~> 1.3.6'
 
 gem 'spinjs-rails'
 gem 'kaminari'
@@ -161,7 +163,8 @@ gem 'jquery-rails'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # FRBR models
-gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git'
+#gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git'
+gem 'enju_trunk_frbr', :git => 'git://github.com/MiraitSystems/enju_trunk_frbr_meri.git'
 
 group :operation do
   gem 'enju_trunk_circulation', :git => 'git://github.com/emiko/enju_trunk_circulation.git'
