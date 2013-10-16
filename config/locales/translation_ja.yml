@@ -1671,7 +1671,7 @@ ja:
     batch_change_theme: "テーマを設定"
     batch_change_series_statement: "シリーズ情報を設定" 
     batch_change_series_statement_updated: "シリーズ情報を %{title} に設定しました。"
-    batch_change_series_statement_failed: "シリーズ情報を設定に失敗しました。"
+    batch_change_series_statement_failed: "シリーズ情報の設定に失敗しました。"
     patron_management: "人物・団体の管理"
     user_management: "利用者の管理"
     back_to: "%{model}の一覧に戻る"
