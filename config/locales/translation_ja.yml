@@ -194,6 +194,8 @@ ja:
       nacsis_request_copy: 複写依頼
       nacsis_request_lend: 借用依頼
       exchange_manifestation: 所蔵付け替え
+      relationship_family: 遍歴ファミリー
+
     attributes:
       wareki:
         display_name: 表示名
@@ -1456,6 +1458,10 @@ ja:
         librarian_note: 事務員注記
         created_from: 開始日付
         created_to: 終了日付
+      relationship_family:
+        display_name: 表示名
+        description: 説明
+        note: 注記
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1698,6 +1704,7 @@ ja:
     budgets: "予算"
     add_child: "継続後シリーズ情報の登録"
     extensions_1: "その他の機能"
+    relationship: "遍歴"
     library_check: "蔵書点検"
     access_logs: アクセス件数
     search_results: "資料の検索結果"

@@ -1,0 +1,30 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.relationship_family')) %></h1>
+  <div id="content_list">
+    <p id="notice"><%= notice %></p>
+    
+    <p>
+      <b><%= t('activerecord.attributes.relationship_family.display_name') %></b>
+      <%= @relationship_family.display_name %>
+    </p>
+    <p>
+      <b><%= t('activerecord.attributes.relationship_family.description') %></b>
+      <%= @relationship_family.description %>
+    </p>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      <p>
+        <b><%= t('activerecord.attributes.relationship_family.note') %></b>
+        <%= @relationship_family.note %>
+      </p>
+    <% end %>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :update, @relationship_family %>
+      <li><%= link_to t('page.edit'), edit_relationship_family_path(@relationship_family) %></li>
+    <% end %>
+    <li><%= link_to t('page.back'), relationship_families_path %></li>
+  </ul>
+</div>
