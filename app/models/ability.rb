@@ -179,6 +179,7 @@ class Ability
         RequestStatusType,
         RequestType,
         Role,
+        SeriesStatementRelationshipType,
         UseRestriction
       ]
       can :read, [
@@ -314,6 +315,9 @@ class Ability
         Term,
         UserStatus,
         WorkHasSubject
+      ]
+      can :read, :update [
+        SeriesStatementRelationshipType
       ]
       can :read, [
         AcceptType,

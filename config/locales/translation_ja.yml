@@ -195,6 +195,7 @@ ja:
       nacsis_request_lend: 借用依頼
       exchange_manifestation: 所蔵付け替え
       relationship_family: 遍歴ファミリー
+      series_statement_relationship_type: 遍歴関係タイプ
 
     attributes:
       wareki:
@@ -1461,6 +1462,10 @@ ja:
       relationship_family:
         display_name: 表示名
         description: 説明
+        note: 注記
+      series_statement_relationship_type:
+        display_name: 表示名
+        typeid: タイプID
         note: 注記
 
   page:

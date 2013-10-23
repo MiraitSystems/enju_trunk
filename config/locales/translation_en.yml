@@ -193,6 +193,7 @@ en:
       copy_request: Copy request
       exchange_manifestation: Exchenge manifestation exemplified
       relationship_family: Relationship family
+      series_statement_relationship_type: Series statement relationship type
 
     attributes:
       enju_terminal:
@@ -1475,6 +1476,10 @@ en:
       relationship_family:
         display_name: Display name
         description: Description
+        note: Note
+      series_statement_relationship_type:
+        display_name: Display name
+        typeid: TypeID
         note: Note
 
   page:
