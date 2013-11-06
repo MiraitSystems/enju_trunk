@@ -1752,6 +1752,10 @@ en:
     library_check: Inventory Check
     library_reports: Reports
     output_receipt_printer: "* This receipt is only for receipt printer and will be printed in 8cm width."
+    get_manual: Download manual
+  manual_for_user: "manual_for_user.pdf"
+  manual_for_librarian: "manual_for_librarian.pdf"
+
   tooltip:
     icons_info: Icons information
     message: message
