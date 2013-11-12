@@ -1,6 +1,5 @@
 EnjuLeaf::Application.routes.draw do
   resources :series_statement_relationship_types
-  resources :relationship_families
   #resources :identifier_types
   resources :warekis
   resources :user_request_logs
@@ -208,6 +207,9 @@ EnjuLeaf::Application.routes.draw do
       post :output_excelx, :on => :collection
     end
     resources :series_has_manifestations
+    resources :series_statement_relationships
+  end
+  resources :relationship_families, shallow:true do
     resources :series_statement_relationships
   end
   resources :series_statement_relationships

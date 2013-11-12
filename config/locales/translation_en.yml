@@ -1208,8 +1208,16 @@ en:
         id: ID
         note: Note
       series_statement_relationship:
-        parent_id: Parent
-        child_id: Child
+        titleid: TITLE ID
+        fid: FID
+        seq: SEQ
+        bbid: BBID
+        abid: ABID
+        before_series_statement_relationship: Before series statement relationship 
+        after_series_statement_relationship: After series statement relationship
+        before_series_statement_relationship_id: Before series statement relationship id
+        after_series_statement_relationship_id: After series statement relationship id
+        source: Source
       import_request:
         isbn: ISBN
         state: State
@@ -1705,7 +1713,7 @@ en:
     best_reader: best reader
     wait: Wait..
     extensions: Extensions
-    add_child: Add a child
+    edit_series_statement_relationship: Edit series statement relationship
     relationship: Relationship
     access_logs: Access logs
     search_results: Search results (Book)
@@ -2860,4 +2868,5 @@ en:
       rakuten: Rakuten
       kinokuniya: Kinokuniya
       junk_do: JUNKUDO
-
+  series_statement_relationship:
+    not_necessary: " is not necessary"

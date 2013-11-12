@@ -8,10 +8,10 @@ class SeriesStatement < ActiveRecord::Base
   has_many :series_has_manifestations
   has_many :manifestations, :through => :series_has_manifestations
   belongs_to :root_manifestation, :foreign_key => :root_manifestation_id, :class_name => 'Manifestation'
-  has_many :child_relationships, :foreign_key => 'parent_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
-  has_many :parent_relationships, :foreign_key => 'child_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
-  has_many :children, :through => :child_relationships, :source => :child
-  has_many :parents, :through => :parent_relationships, :source => :parent
+#  has_many :child_relationships, :foreign_key => 'parent_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
+#  has_many :parent_relationships, :foreign_key => 'child_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
+#  has_many :children, :through => :child_relationships, :source => :child
+#  has_many :parents, :through => :parent_relationships, :source => :parent
   validates_presence_of :original_title
   validate :check_issn
   #after_create :create_initial_manifestation
@@ -29,12 +29,12 @@ class SeriesStatement < ActiveRecord::Base
     end
     integer :position
     boolean :periodical
-    integer :parent_ids, :multiple => true do
-      parents.pluck('series_statements.id')
-    end
-    integer :child_ids, :multiple => true do
-      children.pluck('series_statements.id')
-    end
+#    integer :parent_ids, :multiple => true do
+#      parents.pluck('series_statements.id')
+#    end
+#    integer :child_ids, :multiple => true do
+#      children.pluck('series_statements.id')
+#    end
   end
 
   normalize_attributes :original_title, :issn

@@ -5,6 +5,8 @@ class RelationshipFamiliesController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @series_statement = SeriesStatement.find(params[:series_statement_id]) if params[:series_statement_id]
+
     query = params[:query].to_s.strip
     @query = query.dup
     query = "#{query}*" if query.size == 1
