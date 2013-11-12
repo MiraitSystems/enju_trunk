@@ -4,7 +4,7 @@
     <% unless @patron.full_name_alternative.blank? %>
       if ("<%= @patron.full_name_alternative.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         $("#full_name_alternative").show();
-    <%- end -%>  
+    <%- end -%> 
     // check address2
     var input_address2 = false;
     "<%- if @patron.zip_code_2 -%>"
@@ -64,8 +64,35 @@
       }
     });
   });
-</script>
 
+var ItemField = {
+    currentNumber : 1,
+    itemTemplate : '<p><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text1" /><input type="text" name="text1" /><input type="button" value="+" onClick="ItemField.add();" /><input type="button" value="-" onClick="ItemField.remove();" /></p>',
+    add : function () {
+        this.currentNumber++;
+
+        var field = document.getElementById('item' + this.currentNumber);
+
+        var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+        field.innerHTML = newItem;
+
+        var nextNumber = this.currentNumber + 1;
+        var new_area = document.createElement("div");
+        new_area.setAttribute("id", "item" + nextNumber);
+        field.appendChild(new_area);
+    },
+    remove : function () {
+        if ( this.currentNumber == 1 ) { return; }
+
+        var field = document.getElementById('item' + this.currentNumber);
+        field.removeChild(field.lastChild);
+        field.innerHTML = '';
+
+        this.currentNumber--;
+    }
+}
+
+</script>
 <%= render 'page/required_field' %>
 <%= simple_form_for(@patron) do |f| -%>
   <%= f.error_messages -%>
@@ -91,9 +118,30 @@
     <%= link_to_function t('activerecord.attributes.patron.full_name_alternative'), "$('#full_name_alternative').toggle()" -%>
     <span id="full_name_alternative" style="display: none">
       <br />
-      <%= f.text_area :full_name_alternative, :class => 'resource_textarea' -%>
+      <%= f.text_field :full_name_alternative, :class => 'resource_title' -%>
     </span>
   </div>
+
+  <div class="field">
+    <%= f.label :full_name -%>
+    <%= f.label :full_name_transcription -%>
+    <%= f.label :full_name_alternative -%><br />
+    <%= f.text_field :full_name, :class => 'resorce_title' -%>
+    <%= f.text_field :full_name_transcription, :class => 'resorce_title' -%>
+    <%= f.text_field :full_name_alternative, :class => 'resorce_title' -%>
+<input type="button" value="+" onClick="ItemField.add();" />
+<input type="button" value="-" onClick="ItemField.remove();" />
+<div id="item2"></div>
+
+<script type="text/javascript" src="/scripts/field.js"></script>
+<script type="text/javascript">
+ItemField.currentNumber = 1;
+ItemField.itemTemplate
+    = '<p><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="button" value="+" onClick="ItemField.add();" /><input type="button" value="-" onClick="ItemField.remove();" /></p>';
+</script>
+
+  </div>
+
 
   <div class="field">
     <%= f.label :date_of_birth -%><br />
