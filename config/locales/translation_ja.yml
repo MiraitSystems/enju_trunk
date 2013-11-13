@@ -197,6 +197,8 @@ ja:
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
 
+      theme: テーマ
+      theme_list: テーマ一覧
     attributes:
       wareki:
         display_name: 表示名
@@ -1475,7 +1477,14 @@ ja:
         display_name: 表示名
         typeid: タイプID
         note: 注記
-
+      theme:
+        name: 名前
+        description: 説明
+        publish: 公開範囲
+        note: 注記
+        position: 優先度
+        hot_topic: 話題のテーマ
+        related_manifestation: 関連する資料
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
@@ -2280,6 +2289,7 @@ ja:
     resources_were_published: 資料は公開されました。
     select_resources: 資料を選択してください。
     publish: 公開
+    closed: 非公開
     published: 公開済み
     reject: 却下
     withdraw: 取り下げ

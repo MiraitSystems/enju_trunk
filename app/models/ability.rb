@@ -82,6 +82,7 @@ class Ability
       can :destroy, UserGroup do |user_group|
         user_group.users.empty?
       end
+      can :show, Theme
       can :manage, [
         AccessLog,
         Answer,
@@ -152,6 +153,7 @@ class Ability
         Subscription,
         SystemConfiguration,
         Term,
+        Theme,
         EnjuTerminal,
         UserCheckoutStat,
         UserGroupHasCheckoutType,
@@ -313,6 +315,7 @@ class Ability
         Subscription,
         SystemConfiguration,
         Term,
+        Theme,
         UserStatus,
         WorkHasSubject
       ]
@@ -469,6 +472,7 @@ class Ability
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,
+        Theme,
         EnjuTerminal,
         UserCheckoutStat,
         UserReserveStat,
@@ -526,6 +530,7 @@ class Ability
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,
+        Theme,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,

@@ -1,5 +1,6 @@
 EnjuLeaf::Application.routes.draw do
   resources :series_statement_relationship_types
+  resources :themes
   #resources :identifier_types
   resources :warekis
   resources :user_request_logs
