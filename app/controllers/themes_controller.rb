@@ -12,28 +12,21 @@ class ThemesController < InheritedResources::Base
     @query = query.dup
     query = "#{query}*" if query.size == 1
     page = params[:page] || 1
-   
-    unless current_user.try(:has_role?, 'Librarian')
-      @themes = Theme.search do
-        fulltext query if query
-        with :publish, 0
-        order_by :position
-        paginate :page => page.to_i, :per_page => Theme.default_per_page
-      end.results
-    else
-      unless query.blank?
-        @themes = Theme.search do
-          fulltext query
-          paginate :page => page.to_i, :per_page => Theme.default_per_page
-        end.results
-      else
-        @themes = Theme.page(page)
-      end
-    end
+    @themes = Theme.search do
+      fulltext query if query
+      with :publish, 0 unless user_signed_in? and current_user.try(:has_role?, 'Librarian')
+      order_by :position
+      paginate :page => page.to_i, :per_page => Theme.default_per_page
+    end.results
   end
 
   def show
-    @themes = Theme.find(params[:id]).manifestations.scoped.page params[:page]
+    can_show = true
+    can_show = false unless @theme.publish == 0 or current_user.try(:has_role?, 'Librarian')
+    unless can_show
+      access_denied
+    end
+    @themes = @theme.manifestations.where(:periodical_master => false).page(params[:page])
   end
 
   def update
