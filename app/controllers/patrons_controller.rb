@@ -176,6 +176,12 @@ class PatronsController < ApplicationController
     @patron.fax_number_2_type_id = 3
     prepare_options
 
+#見つかった子供の数だけループしないとね？
+    1.times do |alias3|
+      patron_alias = PatronAlias.new
+      @patron.patron_aliases << patron_alias
+    end
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @patron }

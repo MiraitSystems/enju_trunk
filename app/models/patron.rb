@@ -34,12 +34,17 @@ class Patron < ActiveRecord::Base
   has_many :items, :through => :owns
   has_many :patron_merges, :dependent => :destroy
   has_many :patron_merge_lists, :through => :patron_merges
+  has_many :patron_aliases
   belongs_to :user
   belongs_to :patron_type
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :language
   belongs_to :country
   has_one :patron_import_result
+
+  accepts_nested_attributes_for :patron_aliases
+  # 子モデルの要素にもアクセスできるようにする
+  attr_accessible :patron_aliasess_attributes
 
   validates_presence_of :language, :patron_type, :country
   validates_associated :language, :patron_type, :country

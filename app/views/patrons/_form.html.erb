@@ -65,32 +65,36 @@
     });
   });
 
-var ItemField = {
-    currentNumber : 1,
-    itemTemplate : '<p><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text1" /><input type="text" name="text1" /><input type="button" value="+" onClick="ItemField.add();" /><input type="button" value="-" onClick="ItemField.remove();" /></p>',
+  var ItemField = {
+    currentNumber : 0,
+    itemTemplate : ''
+                 + '<input type="text" value="" name="alias_full_name"  size="20" class="resorce_title"> '
+                 + '<input type="text" value="" name="alias_full_name_transcription"  size="20" class="resorce_title"> '
+                 + '<input type="text" value="" name="alias_full_name_alternative"  size="20" class="resorce_title"> '
+                 + '<input type="button" value="+" onClick="ItemField.add();" /> '
+                 + '<input type="button" value="-" onClick="ItemField.remove();" />',
     add : function () {
-        this.currentNumber++;
+      this.currentNumber++;
+      var field = document.getElementById('SF' + this.currentNumber);
+      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+      field.innerHTML = newItem;
 
-        var field = document.getElementById('item' + this.currentNumber);
-
-        var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-        field.innerHTML = newItem;
-
-        var nextNumber = this.currentNumber + 1;
-        var new_area = document.createElement("div");
-        new_area.setAttribute("id", "item" + nextNumber);
-        field.appendChild(new_area);
+      var nextNumber = this.currentNumber + 1;
+      var new_area = document.createElement("div");
+      new_area.setAttribute("id", "SF" + nextNumber);
+      new_area.setAttribute("class", "field");
+      field.appendChild(new_area);
     },
     remove : function () {
-        if ( this.currentNumber == 1 ) { return; }
+      if ( this.currentNumber == 0 ) { return; }
 
-        var field = document.getElementById('item' + this.currentNumber);
-        field.removeChild(field.lastChild);
-        field.innerHTML = '';
+      var field = document.getElementById('SF' + this.currentNumber);
+      field.removeChild(field.lastChild);
+      field.innerHTML = '';
 
-        this.currentNumber--;
+      this.currentNumber--;
     }
-}
+  }
 
 </script>
 <%= render 'page/required_field' %>
@@ -126,22 +130,24 @@ var ItemField = {
     <%= f.label :full_name -%>
     <%= f.label :full_name_transcription -%>
     <%= f.label :full_name_alternative -%><br />
-    <%= f.text_field :full_name, :class => 'resorce_title' -%>
-    <%= f.text_field :full_name_transcription, :class => 'resorce_title' -%>
-    <%= f.text_field :full_name_alternative, :class => 'resorce_title' -%>
-<input type="button" value="+" onClick="ItemField.add();" />
-<input type="button" value="-" onClick="ItemField.remove();" />
-<div id="item2"></div>
+    <%= f.text_field :full_name , :class => 'resorce_title', :size => '20' %>
+    <%= f.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
+    <%= f.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
+    <%= button_to_function '+', 'ItemField.add()' -%>
+    <%= button_to_function '-', 'ItemField.remove()' -%>
 
-<script type="text/javascript" src="/scripts/field.js"></script>
-<script type="text/javascript">
-ItemField.currentNumber = 1;
-ItemField.itemTemplate
-    = '<p><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="text" name="text__count__" /><input type="button" value="+" onClick="ItemField.add();" /><input type="button" value="-" onClick="ItemField.remove();" /></p>';
-</script>
-
+    <div id="SF1" class="field">
+      <% @patron.patron_aliases.each do |palias| %>
+        <%= f.fields_for :patron_aliases do |aliasf| %>
+          <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20' %>
+          <%= aliasf.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
+          <%= aliasf.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
+          <%= button_to_function '+', 'ItemField.add()' -%>
+          <%= button_to_function '-', 'ItemField.remove()' -%>
+        <% end %>
+      <% end %>
+    </div>
   </div>
-
 
   <div class="field">
     <%= f.label :date_of_birth -%><br />
