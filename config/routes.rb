@@ -7,6 +7,7 @@ EnjuLeaf::Application.routes.draw do
     post :select_manifestation, :on => :member
   end
 
+  resources :patron_aliases
   resources :numberings
   resources :departments
   resources :classmarks
