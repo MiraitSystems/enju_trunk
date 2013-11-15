@@ -9,7 +9,6 @@ class SeriesStatementRelationshipTypesController < InheritedResources::Base
   end
 
   def update
-#    @series_statement_relationship_type = SeriesStatementRelationshipType.find(params[:id])
     if params[:move]
       move_position(@series_statement_relationship_type, params[:move])
     end

@@ -12,24 +12,8 @@
       <%= link_to @series_statement_relationship.relationship_family.display_name, @series_statement_relationship.relationship_family %>
     </p>
     <p>
-      <b><%= t('activerecord.attributes.series_statement_relationship.titleid') %>:</b>
-      <%= @series_statement_relationship.titleid %>
-    </p>
-    <p>
-      <b><%= t('activerecord.attributes.series_statement_relationship.fid') %>:</b>
-      <%= @series_statement_relationship.fid %>
-    </p>
-    <p>
       <b><%= t('activerecord.attributes.series_statement_relationship.seq') %>:</b>
       <%= @series_statement_relationship.seq %>
-    </p>
-    <p>
-      <b><%= t('activerecord.attributes.series_statement_relationship.bbid') %>:</b>
-      <%= @series_statement_relationship.bbid %>
-    </p>
-    <p>
-      <b><%= t('activerecord.attributes.series_statement_relationship.abid') %>:</b>
-      <%= @series_statement_relationship.abid %>
     </p>
     <p>
       <b><%= t('activerecord.attributes.series_statement_relationship.before_series_statement_relationship') %>:</b>
@@ -51,7 +35,7 @@
     </p>
     <p>
       <b><%= t('activerecord.attributes.series_statement_relationship.source') %>:</b>
-      <%= SeriesStatementRelationship::SOURCES.invert[@series_statement_relationship.source] %>
+      <%= SeriesStatementRelationship::SOURCES[@series_statement_relationship.source] %>
     </p>
   </div>
 </div>
@@ -59,6 +43,6 @@
 <div id="submenu" class="ui-corner-all">
   <ul>
     <li><%= link_to t('page.edit'), edit_series_statement_relationship_path(@series_statement_relationship) %></li>
-    <li><%= link_to t('page.back'), series_statement_relationships_path %></li>
+    <li><%= link_to t('page.showing', :model => t('activerecord.models.relationship_family')), relationship_family_path(@series_statement_relationship.relationship_family) %></li>
   </ul>
 </div>

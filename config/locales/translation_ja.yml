@@ -144,7 +144,7 @@ ja:
       work_to_expression_rel_type: 書いた資料と協力した資料の関係の種類
       expression_to_manifestation_rel_type: 協力した資料と出版した資料の関係の種類
       series_statement: シリーズ情報
-      series_statement_relationship: タイトル遍歴
+      series_statement_relationship: 遍歴
       checkout_stat_has_manifestation: 資料別貸出統計
       checkout_stat_has_user: 利用者別貸出統計
       reserve_stat_has_manifestation: 資料別予約統計
@@ -1293,11 +1293,7 @@ ja:
         title_transcription: シリーズ名（ヨミ）
         note: 注記
       series_statement_relationship:
-        titleid: タイトル遍歴レコードID 
-        fid: 変遷ファミリーID
         seq: シーケンシャル番号	 
-        bbid: BBID 
-        abid: ABID
         before_series_statement_relationship: 前誌
         after_series_statement_relationship: 後誌
         before_series_statement_relationship_id: 前誌ID
@@ -1468,7 +1464,6 @@ ja:
         created_from: 開始日付
         created_to: 終了日付
       relationship_family:
-        fid: ファミリーID
         display_name: 表示名
         description: 説明
         note: 注記
@@ -2859,3 +2854,5 @@ ja:
       junk_do: "ジュンク堂"
   series_statement_relationship:
     not_necessary: " は必要ありません。"
+    failed_destroy: "遍歴の削除に失敗しました。
+"

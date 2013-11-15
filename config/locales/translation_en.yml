@@ -1209,11 +1209,7 @@ en:
         id: ID
         note: Note
       series_statement_relationship:
-        titleid: TITLE ID
-        fid: FID
         seq: SEQ
-        bbid: BBID
-        abid: ABID
         before_series_statement_relationship: Before series statement relationship 
         after_series_statement_relationship: After series statement relationship
         before_series_statement_relationship_id: Before series statement relationship id
@@ -1489,7 +1485,6 @@ en:
         body: Body
         created_at: Accept date
       relationship_family:
-        fid: FID
         display_name: Display name
         description: Description
         note: Note
@@ -2885,3 +2880,4 @@ en:
       junk_do: JUNKUDO
   series_statement_relationship:
     not_necessary: " is not necessary"
+    failed_destroy: "failed destroy series statement relationship"

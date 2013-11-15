@@ -1,4 +1,7 @@
 class SeriesStatementRelationshipsController < InheritedResources::Base
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.series_statement_relationship'))", 'new_series_statement_relationship_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.series_statement_relationship'))", 'series_statement_relationship_path(params[:id])',      :only => :show
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.series_statement_relationship'))", 'edit_series_statement_relationship_path(params[:id])', :only => [:edit, :update]
   respond_to :html, :json
   has_scope :page, :default => 1
   load_and_authorize_resource
@@ -8,78 +11,118 @@ class SeriesStatementRelationshipsController < InheritedResources::Base
   end
 
   def new
-    prepare_options({ 
-      series_statement_id:    params[:series_statement_id], 
-      relationship_family_id: params[:relationship_family_id] 
-    })
+    prepare_options
+    @series_statement    = SeriesStatement.find(params[:series_statement_id])
+    @relationship_family = RelationshipFamily.find(params[:relationship_family_id])
   end
 
   def create
-    @series_statement_relationship = SeriesStatementRelationship.new(params[:series_statement_relationship])
-    if @series_statement_relationship.save
-      redirect_to @series_statement_relationship
-    else
-      prepare_options({ 
-        series_statement_id:    params[:series_statement_relationship][:series_statement_id], 
-        relationship_family_id: params[:series_statement_relationship][:relationship_family_id] 
-      })
-      render :action => :new
+    # TODO: NACSIS-CATからのインポートに未対応
+    @series_statement    = SeriesStatement.find(params[:series_statement_relationship][:series_statement_id])
+    @relationship_family = RelationshipFamily.find(params[:series_statement_relationship][:relationship_family_id])
+
+    SeriesStatementRelationship.transaction do  
+      @series_statement_relationship = SeriesStatementRelationship.create!(params[:series_statement_relationship])
+      @series_statement.relationship_family = @relationship_family
+      if params[:series_statement_relationship][:before_series_statement_relationship_id]
+        before_series_statement = SeriesStatement.find(params[:series_statement_relationship][:before_series_statement_relationship_id])
+        before_series_statement.relationship_family = @relationship_family
+      end
+      if params[:series_statement_relationship][:after_series_statement_relationship_id]
+        after_series_statement = SeriesStatement.find(params[:series_statement_relationship][:after_series_statement_relationship_id])
+        after_series_statement.relationship_family = @relationship_family
+      end
+=begin    
+    # TODO: 始端, 終端は自動設定できるようにしたい
+    SeriesStatementRelationship.transaction do
+      # set start relationship
+      SeriesStatementRelationship.create!(params[:series_statement_relationship].merge({ 
+        series_statement_relationship_type_id: 0,
+        before_series_statement_relationship_id: nil,
+        bbid: nil,
+      }))      
+      # set own relationship
+      @series_statement_relationship = SeriesStatementRelationship.create!(params[:series_statement_relationship].merge({
+        before_series_statement_relationship_id: @series_statement.id,
+        bbid: nil#TODO
+      }))
+      # set end relationship
+      SeriesStatementRelationship.create!(params[:series_statement_relationship].merge({ 
+        series_statement_relationship_type_id: 9,
+        after_series_statement_relationship_id: nil,
+        abid: nil
+      }))     
     end
+=end
+      redirect_to @series_statement_relationship
+    end
+  rescue 
+    prepare_options
+    render :action => :new
   end
 
   def edit
-    prepare_options({ 
-      series_statement_id:    @series_statement_relationship.series_statement_id, 
-      relationship_family_id: @series_statement_relationship.relationship_family_id
-    })
+    prepare_options
+    @series_statement    = SeriesStatement.find(@series_statement_relationship.series_statement_id)
+    @relationship_family = RelationshipFamily.find(@series_statement_relationship.relationship_family_id)
   end
 
   def update
-    if @series_statement_relationship.update_attributes(params[:series_statement_relationship])
-      redirect_to @series_statement_relationship
-    else
-      prepare_options({ 
-        series_statement_id:    @series_statement_relationship.series_statement_id, 
-        relationship_family_id: @series_statement_relationship.relationship_family_id
-      })
-      render :action => :edit
+    @relationship_family = RelationshipFamily.find(@series_statement_relationship.relationship_family_id)
+    SeriesStatementRelationship.transaction do  
+      @series_statement_relationship.update_attributes!(params[:series_statement_relationship])
+
+      if params[:series_statement_relationship][:before_series_statement_relationship_id]
+        before_series_statement = SeriesStatement.find(params[:series_statement_relationship][:before_series_statement_relationship_id])
+        before_series_statement.relationship_family = @relationship_family
+# TODO: seriesの処理
+#      else
+#        unless @series_statement_relationship.relationship_family.series_statement_relationships.map(&:series_statement_id).include?(params[:series_statement_relationship][:before_series_statement_relationship_id])
+#          before_series_statement.relationship_family = nil
+#        end
+      end
+      if params[:series_statement_relationship][:after_series_statement_relationship_id]
+        after_series_statement = SeriesStatement.find(params[:series_statement_relationship][:after_series_statement_relationship_id])
+        after_series_statement.relationship_family = @relationship_family
+# TODO: seriesの処理
+#      else
+#        unless @series_statement_relationship.relationship_family.series_statement_relationships.map(&:series_statement_id).include?(params[:series_statement_relationship][:after_series_statement_relationship_id])
+#        after_series_statement.relationship_family = nil
+#        end
+      end
     end
+    redirect_to @series_statement_relationship
+  rescue
+    @series_statement    = SeriesStatement.find(@series_statement_relationship.series_statement_id)
+    prepare_options
+    render :action => :edit
   end
 
-  private
-  def prepare_options(attrs = {})
-    @series_statement    = SeriesStatement.find(attrs[:series_statement_id])
-    @relationship_family = RelationshipFamily.find(attrs[:relationship_family_id])
-    @series_statement_relationship_types = SeriesStatementRelationshipType.select([:id, :display_name])
-                                             .inject([]){ |types, type| types << [type.display_name, type.id] }
-  end
-=begin
-    @series_statement_relationship.parent = SeriesStatement.find(params[:parent_id]) rescue nil
-    @series_statement_relationship.child = SeriesStatement.find(params[:child_id]) rescue nil
-  end
-
-  def update
-    @series_statement_relationship = SeriesStatementRelationship.find(params[:id])
-    if params[:move]
+  def destroy
+    relationship_family = @series_statement_relationship.relationship_family
+    begin
+      SeriesStatementRelationship.transaction do
+        @series_statement_relationship.destroy
+        if relationship_family.series_statement_relationships.size > 0
+          redirect_to relationship_family
+        else
+          series_statement = relationship_family.series_statement
+          relationship_family.series_statement = nil
+          series_statement.relationship_family = nil
+          redirect_to series_statement
+        end 
+      end
+    rescue
+      flash[:notice] = t('series_statement_relationship.failed_destroy')
+      redirect_to relationship_family
+    end
   end
 
   private
   def prepare_options
-    @series_statement_relationship_types = SeriesStatementRelationshipType.select([:typeid, :display_name])
-                                             .inject([]){ |types, type| types << [type.display_name, type.typeid] }
+    #TODO 始端、終端を自動登録できるようにしたい
+    #@series_statement_relationship_types = SeriesStatementRelationshipType.selectable.select([:id, :display_name])
+    @series_statement_relationship_types = SeriesStatementRelationshipType.select([:id, :display_name])
+                                             .inject([]){ |types, type| types << [type.display_name, type.id] }
   end
-=begin
-    @series_statement_relationship.parent = SeriesStatement.find(params[:parent_id]) rescue nil
-    @series_statement_relationship.child = SeriesStatement.find(params[:child_id]) rescue nil
-  end
-
-  def update
-    @series_statement_relationship = SeriesStatementRelationship.find(params[:id])
-    if params[:move]
-      move_position(@series_statement_relationship, params[:move])
-      return
-    end
-    update!
-  end
-=end
 end

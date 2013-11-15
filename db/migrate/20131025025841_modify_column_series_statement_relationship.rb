@@ -6,10 +6,7 @@ class ModifyColumnSeriesStatementRelationship < ActiveRecord::Migration
     add_column    :series_statement_relationships, :titleid,                                  :string
     add_column    :series_statement_relationships, :series_statement_id,                      :integer, :null => false
     add_column    :series_statement_relationships, :relationship_family_id,                   :integer, :null => false
-    add_column    :series_statement_relationships, :fid,                                      :string
     add_column    :series_statement_relationships, :seq,                                      :string, :null => false
-    add_column    :series_statement_relationships, :bbid,                                     :string
-    add_column    :series_statement_relationships, :abid,                                     :string
     add_column    :series_statement_relationships, :before_series_statement_relationship_id,  :integer
     add_column    :series_statement_relationships, :after_series_statement_relationship_id,   :integer
     add_column    :series_statement_relationships, :series_statement_relationship_type_id,    :integer, :null => false
@@ -20,10 +17,7 @@ class ModifyColumnSeriesStatementRelationship < ActiveRecord::Migration
     remove_column :series_statement_relationships, :titleid
     remove_column :series_statement_relationships, :series_statement_id
     remove_column :series_statement_relationships, :relationship_family_id
-    remove_column :series_statement_relationships, :fid
     remove_column :series_statement_relationships, :seq
-    remove_column :series_statement_relationships, :bbid
-    remove_column :series_statement_relationships, :abid
     remove_column :series_statement_relationships, :before_series_statement_relationship_id
     remove_column :series_statement_relationships, :after_series_statement_relationship_id
     remove_column :series_statement_relationships, :series_statement_relationship_type_id

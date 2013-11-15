@@ -13,7 +13,6 @@
     <table class="index">
       <tr>
         <th><%= t('activerecord.attributes.relationship_family.display_name') %></th>
-        <th><%= t('activerecord.attributes.relationship_family.fid') %></th>
         <% if can? :edit, RelationshipFamily %>
           <th><%= t('activerecord.attributes.relationship_family.note') %></th>
         <% end %>
@@ -22,7 +21,6 @@
         <% @relationship_families.each do |relationship_family| %>
          <tr class="line<%= cycle("0", "1") %>">
            <td><%= link_to relationship_family.display_name, relationship_family %></td>
-           <td><%= relationship_family.fid %></td>
            <% if can? :edit, relationship_family %>
              <td><%= relationship_family.note %></td>
            <% end %>
