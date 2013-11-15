@@ -13,7 +13,8 @@
     <table class="index">
       <tr>
         <th><%= t('activerecord.attributes.relationship_family.display_name') %></th>
-        <% if user_signed_in? and current_user.has_role?('Librarian') %>
+        <th><%= t('activerecord.attributes.relationship_family.fid') %></th>
+        <% if can? :edit, RelationshipFamily %>
           <th><%= t('activerecord.attributes.relationship_family.note') %></th>
         <% end %>
         <th></th>
@@ -21,11 +22,12 @@
         <% @relationship_families.each do |relationship_family| %>
          <tr class="line<%= cycle("0", "1") %>">
            <td><%= link_to relationship_family.display_name, relationship_family %></td>
-           <% if user_signed_in? and current_user.has_role?('Librarian') %>
+           <td><%= relationship_family.fid %></td>
+           <% if can? :edit, relationship_family %>
              <td><%= relationship_family.note %></td>
            <% end %>
            <td>
-             <% if can? :update, relationship_family %>
+             <% if can? :edit, relationship_family %>
                <%= link_to t('page.edit'), edit_relationship_family_path(relationship_family) %>
              <% end %>
              <% if can? :destroy, relationship_family %>

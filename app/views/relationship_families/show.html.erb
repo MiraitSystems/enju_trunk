@@ -2,18 +2,22 @@
   <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.relationship_family')) %></h1>
   <div id="content_list">
     <p id="notice"><%= notice %></p>
-    
+
     <p>
       <b><%= t('activerecord.attributes.relationship_family.display_name') %></b>
       <%= @relationship_family.display_name %>
     </p>
     <p>
-      <b><%= t('activerecord.attributes.relationship_family.description') %></b>
+      <b><%= t('activerecord.attributes.relationship_family.fid') %></b>
+      <%= @relationship_family.fid %>
+    </p>    
+    <p>
+      <b><%= t('activerecord.attributes.relationship_family.description') %></b><br />
       <%= @relationship_family.description %>
     </p>
     <% if user_signed_in? and current_user.has_role?('Librarian') %>
       <p>
-        <b><%= t('activerecord.attributes.relationship_family.note') %></b>
+        <b><%= t('activerecord.attributes.relationship_family.note') %></b><br />
         <%= @relationship_family.note %>
       </p>
     <% end %>
@@ -25,7 +29,6 @@
           <th style="width: 30px"><%= 'Id' %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.titleid') %></th>
           <th><%= t('activerecord.models.series_statement') %></th>
-          <th><%= t('activerecord.attributes.series_statement_relationship.fid') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.seq') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.before_series_statement_relationship') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.after_series_statement_relationship') %></th>
@@ -41,7 +44,6 @@
             <td>
               <%= link_to series_statement_relationship.series_statement.original_title, series_statement_relationship.series_statement %>
             </td>
-            <td><%= series_statement_relationship.fid %></td>
             <td><%= series_statement_relationship.seq %></td>
             <td>
               <% if series_statement_relationship.before_series_statement_relationship %>

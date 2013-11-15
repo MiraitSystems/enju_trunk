@@ -1468,6 +1468,7 @@ ja:
         created_from: 開始日付
         created_to: 終了日付
       relationship_family:
+        fid: ファミリーID
         display_name: 表示名
         description: 説明
         note: 注記

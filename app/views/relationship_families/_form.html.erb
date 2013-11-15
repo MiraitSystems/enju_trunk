@@ -1,9 +1,13 @@
-<%= form_for(@relationship_family) do |f| %>
+<%= simple_form_for @relationship_family do |f| %>
   <%= f.error_messages %>
 
   <div class="field">
     <%= f.label :display_name %><br />
     <%= f.text_field :display_name %>
+  </div>
+  <div class="field">
+    <%= f.label :fid %><br />
+    <%= f.text_field :fid %>
   </div>
   <div class="field">
     <%= f.label :description %><br />

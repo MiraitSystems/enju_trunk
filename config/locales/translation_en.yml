@@ -1489,6 +1489,7 @@ en:
         body: Body
         created_at: Accept date
       relationship_family:
+        fid: FID
         display_name: Display name
         description: Description
         note: Note
