@@ -176,11 +176,8 @@ class PatronsController < ApplicationController
     @patron.fax_number_2_type_id = 3
     prepare_options
 
-#見つかった子供の数だけループしないとね？
-    1.times do |alias3|
-      patron_alias = PatronAlias.new
-      @patron.patron_aliases << patron_alias
-    end
+    @countalias = 0
+    @patron.patron_aliases << PatronAlias.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -190,6 +187,7 @@ class PatronsController < ApplicationController
 
   # GET /patrons/1/edit
   def edit
+    @countalias = PatronAlias.count(:conditions => ["patron_id = ?", params[:id]])
     prepare_options
   end
 
@@ -197,6 +195,7 @@ class PatronsController < ApplicationController
   # POST /patrons.json
   def create
     @patron = Patron.new(params[:patron])
+
     if @patron.user_username
       @patron.user = User.find(@patron.user_username) rescue nil
     end
