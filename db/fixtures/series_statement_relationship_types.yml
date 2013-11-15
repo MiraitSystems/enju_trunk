@@ -36,31 +36,37 @@ series_statement_relationship_type_00006:
   position: 6
 series_statement_relationship_type_00007:
   id: 7
-  display_name: "合併"
-  typeid: 12
-  note: 
+  display_name: "分離"
+  typeid: 11
+  note:
   position: 7
 series_statement_relationship_type_00008:
   id: 8
-  display_name: "吸収合併"
-  typeid: 13
+  display_name: "合併"
+  typeid: 12
   note: 
   position: 8
 series_statement_relationship_type_00009:
   id: 9
-  display_name: "再収集"
-  typeid: 20
-  note:
+  display_name: "吸収合併"
+  typeid: 13
+  note: 
   position: 9
 series_statement_relationship_type_00010:
   id: 10
-  display_name: "復刊"
-  typeid: 21
+  display_name: "再収集"
+  typeid: 20
   note:
   position: 10
 series_statement_relationship_type_00011:
   id: 11
+  display_name: "復刊"
+  typeid: 21
+  note:
+  position: 11
+series_statement_relationship_type_00012:
+  id: 12
   display_name: "収集外/未登録"
   typeid: 30
   note:
-  position: 11
+  position: 12
