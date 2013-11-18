@@ -2854,5 +2854,5 @@ ja:
       junk_do: "ジュンク堂"
   series_statement_relationship:
     not_necessary: " は必要ありません。"
-    failed_destroy: "遍歴の削除に失敗しました。
-"
+    failed_destroy: "遍歴の削除に失敗しました。"
+    not_exist_series_statement: "は存在してません。"

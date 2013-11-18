@@ -28,4 +28,20 @@ class SeriesStatementRelationship < ActiveRecord::Base
     :is => 0, 
     :if => proc { |p| p.series_statement_relationship_type_id.to_i == 5 and p.source == 1 },
     :message => I18n.t('series_statement_relationship.not_necessary')
+  validate :exist_series_statement?
+
+  def exist_series_statement?
+    if self.before_series_statement_relationship_id.present?
+      before_series_statement = SeriesStatement.find(self.before_series_statement_relationship_id) rescue nil
+      unless before_series_statement
+        errors.add(:before_series_statement_relationship_id, I18n.t('series_statement_relationship.not_exist_series_statement'))
+      end
+    end
+    if self.after_series_statement_relationship_id.present?
+      after_series_statement = SeriesStatement.find(self.after_series_statement_relationship_id) rescue nil
+      unless after_series_statement
+        errors.add(:after_series_statement_relationship_id, I18n.t('series_statement_relationship.not_exist_series_statement'))
+      end
+    end
+  end
 end

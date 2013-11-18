@@ -2881,3 +2881,4 @@ en:
   series_statement_relationship:
     not_necessary: " is not necessary"
     failed_destroy: "failed destroy series statement relationship"
+    not_exist_series_statement: " is not exist"
