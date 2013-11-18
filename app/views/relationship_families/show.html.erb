@@ -75,11 +75,14 @@
     <% if can? :update, @relationship_family %>
       <li><%= link_to t('page.edit'), edit_relationship_family_path(@relationship_family) %></li>
     <% end %>
-    <% if can? :create, SeriesStatementRelationship %>
-      <li>
-       <%= link_to t('page.new', :model => t('activerecord.models.series_statement_relationship')),
-         new_relationship_family_series_statement_relationship_path(@relationship_family, :series_statement_id => @relationship_family.series_statement.id) %>
-      </li>
+
+    <% if @relationship_family.series_statement %>
+      <% if can? :create, SeriesStatementRelationship %>
+        <li>
+         <%= link_to t('page.new', :model => t('activerecord.models.series_statement_relationship')),
+           new_relationship_family_series_statement_relationship_path(@relationship_family, :series_statement_id => @relationship_family.series_statement.id) %>
+        </li>
+      <% end %>
     <% end %>
     <li><%= link_to t('page.back'), relationship_families_path %></li>
   </ul>
