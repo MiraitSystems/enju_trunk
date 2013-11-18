@@ -19,6 +19,10 @@
         break;
     }
   }
+  function undisabled(){
+    jQuery('input').attr('disabled', false);
+    return true;
+  }
 </script>
 <%= render 'page/required_field' %>
 <%= simple_form_for @series_statement_relationship do |f| %>
@@ -51,6 +55,6 @@
   </div>
   <div class="actions">
     <%= f.hidden_field :source, :value => 0 %>
-    <%= f.submit %>
+    <%= f.submit :onclick => "undisabled();" %>
   </div>
 <% end %>
