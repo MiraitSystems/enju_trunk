@@ -1752,6 +1752,7 @@ en:
       no_matches_found: No matches found
       hot_topic: Hot topic
       related_manifestation: Related manifestation
+    user_notice: User notice
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"

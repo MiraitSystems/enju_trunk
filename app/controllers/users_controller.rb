@@ -4,8 +4,8 @@ class UsersController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.user'))", 'new_user_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.user'))", 'edit_user_path(params[:id])', :only => [:edit, :update]
   #before_filter :reset_params_session
-  load_and_authorize_resource :except => [:search_family, :get_family_info, :get_user_info, :get_user_rent, :output_password, :edit_user_number, :update_user_number, :create]
-  helper_method :get_patron
+  load_and_authorize_resource :except => [:search_family, :get_family_info, :get_user_info, :get_user_rent, :output_password, :edit_user_number, :update_user_number, :output_user_notice, :create]
+  helper_method :get_patron 
   before_filter :store_location, :only => [:index]
   before_filter :clear_search_sessions, :only => [:show]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
@@ -331,6 +331,22 @@ class UsersController < ApplicationController
       page.item(:password).value(params[:password])
     end
     send_data report.generate, :filename => "password.pdf", :type => 'application/pdf', :disposition => 'attachment'
+  end
+
+  def output_user_notice
+    if user_signed_in?
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+    user = User.find_by_username(params[:id])
+    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'user_notice.tlf')
+    report.start_new_page do |page|
+      page.item(:library).value(LibraryGroup.system_name(@locale))
+      page.item(:user).value(user.user_number)
+      page.item(:full_name).value(user.patron.full_name)
+    end
+    send_data report.generate, :filename => "user_notice.pdf", :type => 'application/pdf', :disposition => 'attachment'
   end
 
   def search_family
