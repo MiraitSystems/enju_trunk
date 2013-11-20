@@ -2478,6 +2478,9 @@ en:
     item_register_series: Series register
     item_register_article: Article register
     item_register_other: Other register
+    title_catalog: Title catalog
+    author_catalog: Author catalog
+    classfied_catalog: Classfied catalog
   system_configuration:
     general: General
     user: User
