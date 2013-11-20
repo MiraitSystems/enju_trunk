@@ -702,7 +702,6 @@ ja:
         note: 注記
         lock_version: ロックバージョン
         deleted_at: 削除時刻
-        parent_of_series: 継続前
       purchase_request:
         title: タイトル
         author: 著者

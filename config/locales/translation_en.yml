@@ -627,7 +627,6 @@ en:
         note: Note
         lock_version: Lock version
         deleted_at: Deleted at
-        parent_of_series: Parent of series
       purchase_request:
         title: Title
         author: Author

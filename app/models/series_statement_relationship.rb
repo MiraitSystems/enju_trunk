@@ -28,6 +28,15 @@ class SeriesStatementRelationship < ActiveRecord::Base
     :message => I18n.t('series_statement_relationship.not_necessary')
   validate :exist_series_statement?
 
+  after_save :reindex
+  after_destroy :reindex
+
+  def reindex
+    before_series_statement_relationship.try(:index)
+    after_series_statement_relationship.try(:index)
+    Sunspot.commit
+  end
+
   def exist_series_statement?
     if self.before_series_statement_relationship_id.present?
       before_series_statement = SeriesStatement.find(self.before_series_statement_relationship_id) rescue nil
