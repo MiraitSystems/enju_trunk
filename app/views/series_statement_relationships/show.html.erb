@@ -4,10 +4,6 @@
     <p id="notice"><%= notice %></p>
 
     <p>
-      <b><%= t('activerecord.models.series_statement') %>:</b>
-      <%= link_to @series_statement_relationship.series_statement.original_title, @series_statement_relationship.series_statement %>
-    </p>
-    <p>
       <b><%= t('activerecord.models.relationship_family') %>:</b>
       <%= link_to @series_statement_relationship.relationship_family.display_name, @series_statement_relationship.relationship_family %>
     </p>

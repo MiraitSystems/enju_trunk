@@ -23,7 +23,6 @@
       <table class="table table-striped index">
         <tr>
           <th style="width: 30px"><%= 'Id' %></th>
-          <th><%= t('activerecord.models.series_statement') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.seq') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.before_series_statement_relationship') %></th>
           <th><%= t('activerecord.attributes.series_statement_relationship.after_series_statement_relationship') %></th>
@@ -36,9 +35,6 @@
           <tr class="line<%= cycle("0", "1") %>">
             <td>
               <%= link_to series_statement_relationship.id, series_statement_relationship %>
-            </td>
-            <td>
-              <%= link_to series_statement_relationship.series_statement.original_title, series_statement_relationship.series_statement %>
             </td>
             <td><%= series_statement_relationship.seq %></td>
             <td>
@@ -75,14 +71,11 @@
     <% if can? :update, @relationship_family %>
       <li><%= link_to t('page.edit'), edit_relationship_family_path(@relationship_family) %></li>
     <% end %>
-
-    <% if @relationship_family.series_statement %>
-      <% if can? :create, SeriesStatementRelationship %>
-        <li>
-         <%= link_to t('page.new', :model => t('activerecord.models.series_statement_relationship')),
-           new_relationship_family_series_statement_relationship_path(@relationship_family, :series_statement_id => @relationship_family.series_statement.id) %>
-        </li>
-      <% end %>
+    <% if can? :create, SeriesStatementRelationship %>
+      <li>
+       <%= link_to t('page.new', :model => t('activerecord.models.series_statement_relationship')),
+         new_relationship_family_series_statement_relationship_path(@relationship_family) %>
+      </li>
     <% end %>
     <li><%= link_to t('page.back'), relationship_families_path %></li>
   </ul>

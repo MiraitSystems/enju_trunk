@@ -3,12 +3,12 @@ class SeriesStatement < ActiveRecord::Base
   attr_accessible :original_title, :numbering, :title_subseries,
     :numbering_subseries, :title_transcription, :title_alternative,
     :series_statement_identifier, :issn, :periodical, :note,
-    :title_subseries_transcription
+    :title_subseries_transcription, :relationship_family_id
 
   has_many :series_has_manifestations
   has_many :manifestations, :through => :series_has_manifestations
   belongs_to :root_manifestation, :foreign_key => :root_manifestation_id, :class_name => 'Manifestation'
-  has_one :relationship_family 
+  belongs_to :relationship_family 
 #  has_many :child_relationships, :foreign_key => 'parent_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
 #  has_many :parent_relationships, :foreign_key => 'child_id', :class_name => 'SeriesStatementRelationship', :dependent => :destroy
 #  has_many :children, :through => :child_relationships, :source => :child

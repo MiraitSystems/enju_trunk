@@ -3,8 +3,6 @@ class ModifyColumnSeriesStatementRelationship < ActiveRecord::Migration
     remove_column :series_statement_relationships, :parent_id 
     remove_column :series_statement_relationships, :child_id 
     remove_column :series_statement_relationships, :position
-    add_column    :series_statement_relationships, :titleid,                                  :string
-    add_column    :series_statement_relationships, :series_statement_id,                      :integer, :null => false
     add_column    :series_statement_relationships, :relationship_family_id,                   :integer, :null => false
     add_column    :series_statement_relationships, :seq,                                      :string, :null => false
     add_column    :series_statement_relationships, :before_series_statement_relationship_id,  :integer
@@ -14,8 +12,6 @@ class ModifyColumnSeriesStatementRelationship < ActiveRecord::Migration
   end
 
   def down
-    remove_column :series_statement_relationships, :titleid
-    remove_column :series_statement_relationships, :series_statement_id
     remove_column :series_statement_relationships, :relationship_family_id
     remove_column :series_statement_relationships, :seq
     remove_column :series_statement_relationships, :before_series_statement_relationship_id

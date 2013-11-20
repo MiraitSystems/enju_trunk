@@ -13,97 +13,84 @@ class SeriesStatementRelationshipsController < InheritedResources::Base
 
   def new
     prepare_options
-    @series_statement    = SeriesStatement.find(params[:series_statement_id])
     @relationship_family = RelationshipFamily.find(params[:relationship_family_id])
   end
 
   def create
-    @series_statement    = SeriesStatement.find(params[:series_statement_relationship][:series_statement_id])
-    @relationship_family = RelationshipFamily.find(params[:series_statement_relationship][:relationship_family_id])
-
     @series_statement_relationship = SeriesStatementRelationship.new(params[:series_statement_relationship])
+    @relationship_family = RelationshipFamily.find(params[:series_statement_relationship][:relationship_family_id])
     SeriesStatementRelationship.transaction do  
       @series_statement_relationship.save!
       # シリーズとの関連を設定
-      @series_statement.relationship_family = @relationship_family
-      if params[:series_statement_relationship][:before_series_statement_relationship_id]
+      if params[:series_statement_relationship][:before_series_statement_relationship_id].present?
         before_series_statement = SeriesStatement.find(params[:series_statement_relationship][:before_series_statement_relationship_id])
-        before_series_statement.relationship_family = @relationship_family
+        before_series_statement.update_attributes!(relationship_family_id: @relationship_family.id)
       end
-      if params[:series_statement_relationship][:after_series_statement_relationship_id]
+      if params[:series_statement_relationship][:after_series_statement_relationship_id].present?
         after_series_statement = SeriesStatement.find(params[:series_statement_relationship][:after_series_statement_relationship_id])
-        after_series_statement.relationship_family = @relationship_family
+        after_series_statement.update_attributes!(relationship_family_id: @relationship_family.id)
       end
       redirect_to @series_statement_relationship
     end
-  rescue Exception => e
+  rescue
     prepare_options
     render :action => :new
   end
 
   def edit
     prepare_options
-    @series_statement    = @series_statement_relationship.series_statement
     @relationship_family = @series_statement_relationship.relationship_family
   end
 
   def update
-    @relationship_family = @series_statement_relationship.relationship_family#RelationshipFamily.find(@series_statement_relationship.relationship_family_id)
+    @relationship_family = @series_statement_relationship.relationship_family
+    before_relationship_series_statement_ids = @series_statement_relationship.relationship_family.series_statements.map(&:id)
     SeriesStatementRelationship.transaction do  
-      present_relationship_series_statement_ids = @series_statement_relationship.relationship_family.series_statement_relationships.inject([]){ |ids, obj|
-        ids << obj.before_series_statement_relationship_id unless obj.before_series_statement_relationship_id.nil? 
-        ids << obj.after_series_statement_relationship_id unless obj.after_series_statement_relationship_id.nil?
-      }
       @series_statement_relationship.update_attributes!(params[:series_statement_relationship])
-      updated_relationship_series_statement_ids = @series_statement_relationship.relationship_family.series_statement_relationships.inject([]){ |ids, obj| 
+      after_relationship_series_statement_ids = @series_statement_relationship.relationship_family.series_statement_relationships.inject([]){ |ids, obj| 
         ids << obj.before_series_statement_relationship_id unless obj.before_series_statement_relationship_id.nil? 
         ids << obj.after_series_statement_relationship_id unless obj.after_series_statement_relationship_id.nil?
       }
-      # 前誌、後誌の関連を設定
+      # シリーズとの関連を設定
       if params[:series_statement_relationship][:before_series_statement_relationship_id].present?
-        unless relationship_series_statement_ids.include?(params[:series_statement_relationship][:before_series_statement_relationship_id])
-          before_series_statement = SeriesStatement.find(params[:series_statement_relationship][:before_series_statement_relationship_id])
-          before_series_statement.relationship_family = @relationship_family
+        before_series_statement = SeriesStatement.find(params[:series_statement_relationship][:before_series_statement_relationship_id])
+        unless before_series_statement.relationship_family == @relationship_family
+          before_series_statement.update_attributes!(relationship_family_id: @relationship_family.id)
         end
       end
       if params[:series_statement_relationship][:after_series_statement_relationship_id].present?
         after_series_statement = SeriesStatement.find(params[:series_statement_relationship][:after_series_statement_relationship_id])
-        after_series_statement.relationship_family = @relationship_family
-        after_series_statement.save
+        unless after_series_statement.relationship_family == @relationship_family
+          after_series_statement.update_attributes!(relationship_family_id: @relationship_family.id)
+        end
       end
+     # after_relationship_series_statement_ids = @series_statement_relationship.relationship_family.series_statements.map(&:id)
       # 関連がなくなったシリーズへの処理
-logger.info "__________________________________________________________________________________"
-logger.info present_relationship_series_statement_ids - updated_relationship_series_statement_ids
-      (present_relationship_series_statement_ids - updated_relationship_series_statement_ids).each do |id|
-        series_statement_delete_relationship = SeriesStatement.find(id)
-        series_statement_delete_relationship.relationship_family = nil
+      (before_relationship_series_statement_ids - after_relationship_series_statement_ids).each do |id|
+        series_statement = SeriesStatement.find(id)
+        series_statement.update_attributes!(relationship_family_id: nil)
       end 
     end
     redirect_to @series_statement_relationship
   rescue
-    @series_statement = @series_statement_relationship.series_statement
     prepare_options
     render :action => :edit
   end
 
   def destroy
     relationship_family = @series_statement_relationship.relationship_family
-    begin
-      SeriesStatementRelationship.transaction do
-        @series_statement_relationship.destroy
-        if relationship_family.series_statement_relationships.size > 0
-          redirect_to relationship_family
-        else
-          series_statement = relationship_family.series_statement
-          relationship_family.series_statement = nil
-          series_statement.relationship_family = nil
-          redirect_to series_statement
-        end 
-      end
-    rescue
-      flash[:notice] = t('series_statement_relationship.failed_destroy')
+    SeriesStatementRelationship.transaction do
+      @series_statement_relationship.destroy
+      if relationship_family.series_statement_relationships.size == 0
+        relationship_family.series_statements.each do |series_statement|
+          series_statement.update_attributes!(relationship_family_id: nil)
+        end
+      end 
       redirect_to relationship_family
     end
+  rescue
+    flash[:notice] = t('series_statement_relationship.failed_destroy')
+    redirect_to relationship_family
   end
 
   private
