@@ -194,6 +194,7 @@ ja:
       nacsis_request_copy: 複写依頼
       nacsis_request_lend: 借用依頼
       exchange_manifestation: 所蔵付け替え
+      theme: テーマ
     attributes:
       wareki:
         display_name: 表示名
@@ -1456,7 +1457,12 @@ ja:
         librarian_note: 事務員注記
         created_from: 開始日付
         created_to: 終了日付
-
+      theme:
+        name: 名前
+        description: 説明
+        publish: 公開範囲
+        note: 注記
+        position: 優先度
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
@@ -1707,7 +1713,6 @@ ja:
     output_receipt_printer: "＊この資料確認票はレシートプリンタ用です。8cm幅に出力されますのでご注意ください。"
     nacsis_book: "図書"
     nacsis_serial: "雑誌"
-
     exstatistics:
       ranknumber: 順位
       count: 回数
@@ -1716,7 +1721,12 @@ ja:
       nil_date: "年月日が空です。"
       invalid_input_date: "入力年月日が正しくありません。"
       over_end_date: "検索終了日は検索開始日以降を指定してください。"
-    get_manual: 利用マニュアルをダウンロード 
+    get_manual: 利用マニュアルをダウンロード
+    theme:
+      theme_list: テーマ一覧
+      no_matches_found: テーマが見つかりません
+      hot_topic: 話題のテーマ
+      related_manifestation: 関連する資料
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2260,6 +2270,7 @@ ja:
     resources_were_published: 資料は公開されました。
     select_resources: 資料を選択してください。
     publish: 公開
+    closed: 非公開
     published: 公開済み
     reject: 却下
     withdraw: 取り下げ
@@ -2698,6 +2709,10 @@ ja:
     boolean_reserve_not_able_for_not_item: "予約できない"
     boolean_autoprint: "自動印刷する"
     boolean_not_autoprint: "自動印刷しない"
+    boolean_rental_certificate_size: "ラベル"
+    boolean_not_rental_certificate_size: "A4"
+    boolean_output_format_type: "TSV"
+    boolean_not_output_format_type: "CSV"
     error:
       over_checkouts_print_message: "貸出表に表示できるメッセージは最大全角%{num}文字までです"
       over_reminder_postal_card_message: "督促はがきに表示できるメッセージは最大全角%{num}文字までです"

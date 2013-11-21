@@ -159,6 +159,7 @@ en:
       nacsis_user_request: Nacsis user requests
       nacsis_request_copy: Nacsis copy request
       nacsis_request_lend: Nacsis lend request
+      theme: Theme
       wareki: Japanese Calendar
       user_request_log: User request log
       sheet: Sheet
@@ -1308,6 +1309,12 @@ en:
         librarian_note: Librarian note
         created_from: Created from
         created_to: Created to
+      theme:
+        name: Name
+        description: Description
+        publish: Publish
+        note: Note
+        position: Position
       wareki:
         display_name: Display name
         short_name: Short name
@@ -1740,6 +1747,12 @@ en:
     library_reports: Reports
     output_receipt_printer: "* This receipt is only for receipt printer and will be printed in 8cm width."
     get_manual: Download manual
+    theme:
+      theme_list: Theme_list
+      no_matches_found: No matches found
+      hot_topic: Hot topic
+      related_manifestation: Related manifestation
+
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
 
@@ -2261,6 +2274,7 @@ en:
     resources_were_published: Resources were published.
     select_resources: Select resources.
     publish: Publish
+    closed: Close
     published: Published
     reject: Reject
     withdraw: Withdraw
@@ -2517,6 +2531,8 @@ en:
     boolean_reserve_not_able_for_not_item: Can not be reserved
     boolean_autoprint: Auto-print
     boolean_not_autoprint: Not auto-print
+    boolean_output_format_type: TSV
+    boolean_not_output_format_type: CSV
     error:
       over_checkouts_print_message: checkouts print message exceed the limit. max
         %{num}.
@@ -2530,6 +2546,8 @@ en:
     boolean_yes: Yes
     boolean_no: No
     boolean_no_opac: No(WebOPAC)
+    boolean_rental_certificate_size: Label
+    boolean_not_rental_certificate_size: A4
   manifestation_relationships:
     no_parent_id: Not found parent id
     no_child_id: Not found child id
