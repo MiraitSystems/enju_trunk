@@ -34,6 +34,7 @@ class ExportItemRegistersController < ApplicationController
 
     method = 'export_item_register'
     args = []
+    catalog_flag = true
 
     case list_type.to_i
     when 1 # all item register
@@ -59,22 +60,31 @@ class ExportItemRegistersController < ApplicationController
       args << 'exinfo'
     when 8 # title catalog
       file_name = 'title_catalog'
-      method = 'export_catalog'
+      method = 'output_catalog'
       #args << 'title'
+      catalog_flag = false
     when 9 # author catalog
       file_name = 'author_catalog'
-      method = 'export_catalog'
+      method = 'output_catalog'
       #args << 'author'
+      catalog_flag = false
     when 10 # classfied catalog
       file_name = 'classfied_catalog'
-      method = 'export_catalog'
+      method = 'output_catalog'
       #args << 'classfied'
+      catalog_flag = false
     end
 
-    job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)
-    flash[:message] = t('item_register.export_job_queued', :job_name => job_name)
-    redirect_to export_item_registers_path
-    return true
+    if catalog_flag == false
+      item = Item.new
+      job = item.output_catalog(file_name)
+      return true
+    else
+      job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)
+      flash[:message] = t('item_register.export_job_queued', :job_name => job_name)
+      redirect_to export_item_registers_path
+      return true
+    end
   end
 
   def get_list_size
@@ -117,5 +127,5 @@ class ExportItemRegistersController < ApplicationController
 
       render :json => {:success => 1, :list_size => list_size, :page => page}
     end
-  end 
+  end
 end

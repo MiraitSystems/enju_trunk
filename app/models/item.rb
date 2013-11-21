@@ -769,7 +769,7 @@ class Item < ActiveRecord::Base
     logger.error "created report: #{Time.now}"
   end
 
-def self.make_catalog_pdf(pdf_file, items, list_title = nil)
+  def self.make_catalog_pdf(pdf_file, items, list_title = nil)
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'item_register.tlf')
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1354,6 +1354,47 @@ def self.make_catalog_pdf(pdf_file, items, list_title = nil)
     Delayed::Job.enqueue GenerateItemRegisterJob.new(job_name, file_name, file_type, method, args, user)
     GenerateItemRegisterJob.new(job_name, file_name, file_type, method, args, user)
     job_name
+  end
+
+  def output_catalog(file_name)
+    job_name = "aaa"
+=begin
+    if user_signed_in?
+      unless current_user.has_role?('Librarian')
+        access_denied; return
+      end
+    end
+    manifestation = Manifestation.order("title DESC").limit(5)
+    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'title_catalog.tlf')
+    #report page
+    report.events.on :page_create do |e|
+      e.page.item(:page).value(e.page.no)
+    end
+    report.events.on :generate do |e|
+      e.pages.each do |page|
+        page.item(:total).value(e.report.page_count)
+        page.item(:list_title).value(I18n.t("item_register.#{list_title}"))
+      end
+    end
+    #item
+    report.start_new_page do |page|
+      page.item(:date).value(Time.now)
+      manifestation.each do |item|
+        page.list(:list).add_row do |row|
+          row.item(:title).value(manifestation.original_title) if manifestation.item
+          row.item(:patron).value(manifestation.creators[0].full_name) if manifestation.item && manifestation.creators[0]
+          row.item(:carrier_type).value(manifestation.carrier_type.display_name.localize) if manifestation.item && manifestation.carrier_type
+          row.item(:shelf).value(manifestation.item.shelf.display_name) if manifestation.item.shelf
+          row.item(:ndc).value(manifestation.ndc) if manifestation
+          row.item(:item_identifier).value(manifestation.item.item_identifier)
+          row.item(:call_number).value(call_numberformat(item))
+          row.item(:title).value(item.manifestation.original_title) if item.manifestation
+          row.item(:item_identifier).value(item.item_identifier)
+        end
+      end
+    end
+    send_data report.generate, :filename => "user_notice.pdf", :type => 'application/pdf', :disposition => 'attachment'
+=end
   end
 
   class GenerateItemRegisterJob
