@@ -1,5 +1,12 @@
 <div id="related">
   <ul>
+    <%- @patron.patron_aliases.each do |patron_alias| -%>
+      <li>
+        [P]
+        を見よ
+        <%= link_to patron_alias.full_name, patron_alias.patron -%>
+      </li>
+    <%- end -%>
     <%- @patron.parents.each do |patron_relationship| -%>
       <li>
         [P]
