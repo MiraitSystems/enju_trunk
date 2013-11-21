@@ -76,7 +76,8 @@
     add : function () {
       this.currentNumber++;
       var field = document.getElementById('SF' + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber += <%= @countalias -%>);
+      var replaceCount = this.currentNumber + <%= @countalias -%>;
+      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
       field.innerHTML = newItem;
 
       var nextNumber = this.currentNumber + 1;
@@ -107,6 +108,7 @@
 
   <div class="field">
     <span id="name_person">
+p
       <%- if SystemConfiguration.get("family_name_first") == true -%>
         <%= render 'patrons/form_family_name_first', :f => f -%>
       <%- else -%>
@@ -134,7 +136,7 @@
     <%#= f.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
     <%#= f.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
     <%#= button_to_function '+', 'ItemField.add()' -%>
-    <%#= button_to_function '-', 'ItemField.remove()' -%><br />
+    <%#= button_to_function '-', 'ItemField.remove()' -%>
 
     <%= f.fields_for :patron_aliases do |aliasf| %>
       <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20' %>
@@ -143,6 +145,7 @@
       <%= button_to_function '+', 'ItemField.add()' -%>
       <%= button_to_function '-', 'ItemField.remove()' -%><br />
     <% end %>
+
     <div id="SF1" class="field">
     </div>
   </div>
