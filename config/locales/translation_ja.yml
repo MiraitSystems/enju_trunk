@@ -2628,7 +2628,7 @@ ja:
     item_register_other: その他原簿
     title_catalog: 図書書名目録
     author_catalog: 図書著者名目録
-    classfied_catalog: 図書分類目録
+    classified_catalog: 図書分類目録
     
     invalid_file_type: "不正なファイル種別が指定されています。"
     export_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"

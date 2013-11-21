@@ -1357,15 +1357,11 @@ class Item < ActiveRecord::Base
   end
 
   def self.output_catalog(file_name)
-    job_name = "aaa"
-=begin
-    if user_signed_in?
-      unless current_user.has_role?('Librarian')
-        access_denied; return
-      end
-    end
-    manifestation = Manifestation.order("title DESC").limit(5)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'title_catalog.tlf')
+    manifestations = Manifestation.order("original_title ASC").limit(150) if file_name == "title_catalog"
+    #manifestations = Manifestation.order("full_name ASC").limit(150) if file_name == "author_catalog"
+    manifestations = Manifestation.order("ndc ASC").limit(150) if file_name == "classified_catalog"
+    
+    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{file_name}.tlf")
     #report page
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1373,28 +1369,31 @@ class Item < ActiveRecord::Base
     report.events.on :generate do |e|
       e.pages.each do |page|
         page.item(:total).value(e.report.page_count)
-        page.item(:list_title).value(I18n.t("item_register.#{list_title}"))
       end
     end
-    #item
-    report.start_new_page do |page|
-      page.item(:date).value(Time.now)
-      manifestation.each do |item|
-        page.list(:list).add_row do |row|
-          row.item(:title).value(manifestation.original_title) if manifestation.item
-          row.item(:patron).value(manifestation.creators[0].full_name) if manifestation.item && manifestation.creators[0]
-          row.item(:carrier_type).value(manifestation.carrier_type.display_name.localize) if manifestation.item && manifestation.carrier_type
-          row.item(:shelf).value(manifestation.item.shelf.display_name) if manifestation.item.shelf
-          row.item(:ndc).value(manifestation.ndc) if manifestation
-          row.item(:item_identifier).value(manifestation.item.item_identifier)
-          row.item(:call_number).value(call_numberformat(item))
+    report.start_new_page
+    report.page.item(:date).value(Time.now)
+    report.page.item(:list_name).value(I18n.t("item_register.#{file_name}"))
+    #items.each do |item|
+    logger.info("*****")
+    logger.info I18n.t("item_register.#{file_name}")
+    #logger.info Manifestation.first.items
+    manifestations.each do |manifestation|
+      manifestation.items.each do |item|
+        report.page.list(:list).add_row do |row|
           row.item(:title).value(item.manifestation.original_title) if item.manifestation
+          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+          row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
+          row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
+          row.item(:shelf).value(item.shelf.display_name) if item.shelf
+          row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
           row.item(:item_identifier).value(item.item_identifier)
+          row.item(:call_number).value(call_numberformat(item))   
         end
       end
     end
+    logger.info("#####")
     return report
-=end
   end
 
   class GenerateItemRegisterJob

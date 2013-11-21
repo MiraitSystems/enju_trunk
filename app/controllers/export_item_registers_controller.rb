@@ -68,16 +68,16 @@ class ExportItemRegistersController < ApplicationController
       method = 'output_catalog'
       #args << 'author'
       catalog_flag = false
-    when 10 # classfied catalog
-      file_name = 'classfied_catalog'
+    when 10 # classified catalog
+      file_name = 'classified_catalog'
       method = 'output_catalog'
       #args << 'classfied'
       catalog_flag = false
     end
 
     if catalog_flag == false
-      job = Item.output_catalog(file_name)
-      send_data "aaa", :filename => "test.txt" # jobをsendに受け渡してください
+      report = Item.output_catalog(file_name)
+      send_data report.generate, :filename => "#{file_name}.pdf", :type => 'application/pdf', :disposition => 'attachment' # jobをsendに受け渡してください
       return true
     else
       job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)
