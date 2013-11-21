@@ -76,8 +76,8 @@ class ExportItemRegistersController < ApplicationController
     end
 
     if catalog_flag == false
-      item = Item.new
-      job = item.output_catalog(file_name)
+      job = Item.output_catalog(file_name)
+      send_data "aaa", :filename => "test.txt" # jobをsendに受け渡してください
       return true
     else
       job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)

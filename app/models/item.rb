@@ -1356,7 +1356,7 @@ class Item < ActiveRecord::Base
     job_name
   end
 
-  def output_catalog(file_name)
+  def self.output_catalog(file_name)
     job_name = "aaa"
 =begin
     if user_signed_in?
@@ -1393,7 +1393,7 @@ class Item < ActiveRecord::Base
         end
       end
     end
-    send_data report.generate, :filename => "user_notice.pdf", :type => 'application/pdf', :disposition => 'attachment'
+    return report
 =end
   end
 
