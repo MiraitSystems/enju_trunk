@@ -34,7 +34,7 @@ class Patron < ActiveRecord::Base
   has_many :items, :through => :owns
   has_many :patron_merges, :dependent => :destroy
   has_many :patron_merge_lists, :through => :patron_merges
-  has_many :patron_aliases
+  has_many :patron_aliases, :dependent => :destroy
   belongs_to :user
   belongs_to :patron_type
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
@@ -54,7 +54,7 @@ class Patron < ActiveRecord::Base
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
-  before_save :change_note
+  before_save :change_note, :mark_destroy_blank_full_name
 
   validate :check_duplicate_user
 
@@ -103,6 +103,12 @@ class Patron < ActiveRecord::Base
   end
 
   paginates_per 10
+
+  def mark_destroy_blank_full_name
+    patron_aliases.each do |pa|
+      pa.mark_for_destruction if pa.full_name.blank?
+    end
+  end
 
   def full_name_without_space
     full_name.gsub(/\s/, "")

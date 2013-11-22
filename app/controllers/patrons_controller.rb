@@ -188,6 +188,9 @@ class PatronsController < ApplicationController
   # GET /patrons/1/edit
   def edit
     @countalias = PatronAlias.count(:conditions => ["patron_id = ?", params[:id]])
+    if @countalias == 0
+      @patron.patron_aliases << PatronAlias.new
+    end
     prepare_options
   end
 
