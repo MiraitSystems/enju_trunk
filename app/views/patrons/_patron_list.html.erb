@@ -5,7 +5,9 @@
     <%- end -%>
     <%- @patron.patron_aliases.each do |patron_alias| -%>
       <li>
-        <%= link_to patron_alias.full_name, patron_alias.patron -%>
+        <%= link_to patron_alias.full_name, patron_alias.patron -%>,
+        <%= link_to patron_alias.full_name_transcription, patron_alias.patron -%>,
+        <%= link_to patron_alias.full_name_alternative, patron_alias.patron -%>
       </li>
     <%- end -%>
     <%- @patron.parents.each do |patron_relationship| -%>

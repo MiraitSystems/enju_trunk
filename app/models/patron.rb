@@ -105,8 +105,8 @@ class Patron < ActiveRecord::Base
   paginates_per 10
 
   def mark_destroy_blank_full_name
-    patron_aliases.each do |pa|
-      pa.mark_for_destruction if pa.full_name.blank?
+    patron_aliases.each do |patron_alias|
+      patron_alias.mark_for_destruction if patron_alias.full_name.blank? and patron_alias.full_name_transcription.blank? and patron_alias.full_name_alternative.blank?
     end
   end
 
