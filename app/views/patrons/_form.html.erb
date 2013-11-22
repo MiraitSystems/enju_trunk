@@ -131,12 +131,6 @@
     <%= f.label :full_name_transcription -%>
     <%= f.label :full_name_alternative -%><br />
 
-    <%#= f.text_field :full_name , :class => 'resorce_title', :size => '20' %>
-    <%#= f.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
-    <%#= f.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
-    <%#= button_to_function '+', 'ItemField.add()' -%>
-    <%#= button_to_function '-', 'ItemField.remove()' -%>
-
     <%= f.fields_for :patron_aliases do |aliasf| %>
       <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20' %>
       <%= aliasf.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>

@@ -1,9 +1,10 @@
 <div id="related">
   <ul>
+    <%- if @patron.patron_aliases.exists? -%>
+      <%= t('page.see') -%>
+    <%- end -%>
     <%- @patron.patron_aliases.each do |patron_alias| -%>
       <li>
-        [P]
-        を見よ
         <%= link_to patron_alias.full_name, patron_alias.patron -%>
       </li>
     <%- end -%>

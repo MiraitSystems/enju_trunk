@@ -191,6 +191,7 @@ class PatronsController < ApplicationController
     if @countalias == 0
       @patron.patron_aliases << PatronAlias.new
     end
+    @papa = PatronAlias.all
     prepare_options
   end
 
