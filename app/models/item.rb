@@ -1230,9 +1230,9 @@ class Item < ActiveRecord::Base
   end
 
   def self.output_catalog(file_name)
-    manifestations = Manifestation.order("original_title ASC").limit(150) if file_name == "title_catalog"
-    manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name").limit(150) if file_name == "author_catalog"
-    manifestations = Manifestation.order("ndc ASC").limit(150) if file_name == "classified_catalog"
+    manifestations = Manifestation.order("original_title ASC") if file_name == "title_catalog"
+    manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name") if file_name == "author_catalog"
+    manifestations = Manifestation.order("ndc ASC") if file_name == "classified_catalog"
 
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{file_name}.tlf")
     #report page
@@ -1247,7 +1247,7 @@ class Item < ActiveRecord::Base
     report.start_new_page
     report.page.item(:date).value(Time.now)
     report.page.item(:list_name).value(I18n.t("item_register.#{file_name}"))
-    manifestations.each do |manifestation|
+    manifestations.find_each do |manifestation|
       manifestation.items.each do |item|
         report.page.list(:list).add_row do |row|
           row.item(:title).value(item.manifestation.original_title) if item.manifestation
