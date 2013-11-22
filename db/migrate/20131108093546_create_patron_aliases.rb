@@ -7,7 +7,7 @@ class CreatePatronAliases < ActiveRecord::Migration
       t.string :full_name_alternative
 
       t.timestamps
-    end
+    end 
     add_index :patron_aliases, :patron_id
   end
 end
