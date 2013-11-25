@@ -176,6 +176,9 @@ class PatronsController < ApplicationController
     @patron.fax_number_2_type_id = 3
     prepare_options
 
+    @countalias = 0
+    @patron.patron_aliases << PatronAlias.new
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @patron }
@@ -184,6 +187,10 @@ class PatronsController < ApplicationController
 
   # GET /patrons/1/edit
   def edit
+    @countalias = PatronAlias.count(:conditions => ["patron_id = ?", params[:id]])
+    if @countalias == 0
+      @patron.patron_aliases << PatronAlias.new
+    end
     prepare_options
   end
 
@@ -191,6 +198,7 @@ class PatronsController < ApplicationController
   # POST /patrons.json
   def create
     @patron = Patron.new(params[:patron])
+
     if @patron.user_username
       @patron.user = User.find(@patron.user_username) rescue nil
     end
