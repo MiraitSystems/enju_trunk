@@ -839,6 +839,7 @@ en:
         missing_issue: Missing Issue
         printout_in_progress: started to export checkout confirmation card
         external_catalog: Cataloging Authority
+        jpn_or_foreign: Japan or foreign
       user_group:
         name: Name
         display_name: Display name
@@ -2865,4 +2866,6 @@ en:
       rakuten: Rakuten
       kinokuniya: Kinokuniya
       junk_do: JUNKUDO
-
+  jpn_or_foreign:
+    jpn: Japan
+    foreign: Foreign

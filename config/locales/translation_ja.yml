@@ -910,6 +910,7 @@ ja:
         hold_libabl: 所属館略称
         hold_cln: 請求記号
         hold_rgtn: 資料番号
+        jpn_or_foreign: 和洋区分
       user_group:
         name: 名前
         display_name: 表示名
@@ -2841,3 +2842,6 @@ ja:
       rakuten: "楽天ブックス"
       kinokuniya: "紀伊國屋書店"
       junk_do: "ジュンク堂"
+  jpn_or_foreign:
+    jpn: 和書
+    foreign: 洋書
