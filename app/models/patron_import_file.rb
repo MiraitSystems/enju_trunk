@@ -12,8 +12,7 @@ class PatronImportFile < ActiveRecord::Base
   else
     has_attached_file :patron_import, :path => ":rails_root/private:url"
   end
-  #validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream']
-  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/comma-separated-values', 'application/octet-stream']
+  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream', 'application/octet-stream']
   validates_attachment_presence :patron_import
   belongs_to :user, :validate => true
   has_many :patron_import_results
@@ -66,11 +65,7 @@ class PatronImportFile < ActiveRecord::Base
     #rows.shift
     rows.each do |row|
       next if row['dummy'].to_s.strip.present?
-      if SystemConfiguration.get("set_output_format_type") == false
-        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join(","))
-      else
-        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
-      end
+      import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
 
       begin
         patron = Patron.new
@@ -174,31 +169,15 @@ class PatronImportFile < ActiveRecord::Base
     tempfile.close
 
     if RUBY_VERSION > '1.9'
-      if SystemConfiguration.get("set_output_format_type") == false
-        file = CSV.open(tempfile, :col_sep => ",")
-        header = file.first
-        rows = CSV.open(tempfile, :headers => header, :col_sep => ",")
-      else
-        file = CSV.open(tempfile, :col_sep => "\t")
-        header = file.first
-        rows = CSV.open(tempfile, :headers => header, :col_sep => "\t")
-      end
+      file = CSV.open(tempfile, :col_sep => "\t")
+      header = file.first
+      rows = CSV.open(tempfile, :headers => header, :col_sep => "\t")
     else
-      if SystemConfiguration.get("set_output_format_type") == false
-        file = FasterCSV.open(tempfile.path, :col_sep => ",")
-        header = file.first
-        rows = FasterCSV.open(tempfile.path, :headers => header, :col_sep => ",")
-      else
-        file = FasterCSV.open(tempfile.path, :col_sep => "\t")
-        header = file.first
-        rows = FasterCSV.open(tempfile.path, :headers => header, :col_sep => "\t")
-      end
+      file = FasterCSV.open(tempfile.path, :col_sep => "\t")
+      header = file.first
+      rows = FasterCSV.open(tempfile.path, :headers => header, :col_sep => "\t")
     end
-    if SystemConfiguration.get("set_output_format_type") == false
-      PatronImportResult.create(:patron_import_file => self, :body => header.join(","), :error_msg => 'HEADER DATA')
-    else
-      PatronImportResult.create(:patron_import_file => self, :body => header.join("\t"), :error_msg => 'HEADER DATA')
-    end
+    PatronImportResult.create(:patron_import_file => self, :body => header.join("\t"), :error_msg => 'HEADER DATA')
     tempfile.close(true)
     file.close
     rows
@@ -286,7 +265,6 @@ class PatronImportFile < ActiveRecord::Base
     user.user_number = row['user_number'] if row['user_number']
     library = Library.where(:name => row['library_short_name'].to_s.strip).first || Library.web
     user_group = UserGroup.where(:name => row['user_group_name']).first || UserGroup.first
-    department = Department.where(:name => row['display_name']).first || Department.first
     user.library = library
     role = Role.where(:name => row['role_name'].to_s.strip.camelize).first || Role.find('User')
     user.role = role
