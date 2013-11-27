@@ -1,4 +1,5 @@
 EnjuLeaf::Application.routes.draw do
+  match 'themes/update_all', :to => 'themes#update_all'
   resources :themes
   #resources :identifier_types
   resources :warekis
