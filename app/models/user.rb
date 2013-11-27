@@ -687,6 +687,8 @@ class User < ActiveRecord::Base
       ['username', 'activerecord.attributes.user.username'],
       ['user_number', 'activerecord.attributes.user.user_number'],
       [:library, 'activerecord.attributes.user.library'],
+      [:user_group, 'activerecord.attributes.user.user_group'],
+      [:department, 'activerecord.attributes.user.department'],
       [:expired_at, 'activerecord.attributes.user.expired_at'],
       [:locked, 'activerecord.attributes.user.locked'],
       [:unable, 'activerecord.attributes.user.unable'],
@@ -696,6 +698,7 @@ class User < ActiveRecord::Base
       [:other_designation, 'activerecord.attributes.patron.other_designation'],
       [:place, 'activerecord.attributes.patron.place'],
       [:language, 'activerecord.models.language'],
+      [:country, 'activerecord.models.country'],
       [:zip_code_1, 'activerecord.attributes.patron.zip_code_1'],
       [:address_1, 'activerecord.attributes.patron.address_1'],
       [:telephone_number_1, 'activerecord.attributes.patron.telephone_number_1'],
@@ -742,6 +745,10 @@ class User < ActiveRecord::Base
           row << user.try(:patron).try(:full_name_alternative)
         when :library
           row << user.try(:library).try(:display_name)
+        when :user_group
+          row << user.try(:user_group).try(:display_name)
+        when :department
+          row << user.try(:department).try(:display_name)
         when :expired_at
           expired_at = ""
           if user.expired_at
@@ -769,6 +776,8 @@ class User < ActiveRecord::Base
           row << user.try(:patron).try(:place)
         when :language
           row << user.try(:patron).try(:language).try(:display_name).try(:localize)
+        when :country
+          row << user.try(:patron).try(:country).try(:display_name).try(:localize)
         when :zip_code_1
           row << user.try(:patron).try(:zip_code_1)
         when :address_1
