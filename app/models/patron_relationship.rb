@@ -5,6 +5,7 @@ class PatronRelationship < ActiveRecord::Base
   validate :check_parent
   validates_presence_of :parent_id, :child_id
   acts_as_list :scope => :parent_id
+  scope :seealso, where(:patron_relationship_type_id => 1)
 
   def check_parent
     errors.add(:parent) if parent_id == child_id
