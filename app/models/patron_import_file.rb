@@ -12,7 +12,7 @@ class PatronImportFile < ActiveRecord::Base
   else
     has_attached_file :patron_import, :path => ":rails_root/private:url"
   end
-  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream', 'application/octet-stream']
+  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream']
   validates_attachment_presence :patron_import
   belongs_to :user, :validate => true
   has_many :patron_import_results

@@ -684,6 +684,10 @@ class User < ActiveRecord::Base
       [:full_name, 'activerecord.attributes.patron.full_name'],
       [:full_name_transcription, 'activerecord.attributes.patron.full_name_transcription'],
       [:full_name_alternative, 'activerecord.attributes.patron.full_name_alternative'],
+      [:first_name, 'activerecord.attributes.patron.first_name'],
+      [:first_name_transcription, 'activerecord.attributes.patron.first_name_transcription'],
+      [:last_name, 'activerecord.attributes.patron.last_name'],
+      [:last_name_transcription, 'activerecord.attributes.patron.last_name_transcription'],
       ['username', 'activerecord.attributes.user.username'],
       ['user_number', 'activerecord.attributes.user.user_number'],
       [:library, 'activerecord.attributes.user.library'],
@@ -743,6 +747,14 @@ class User < ActiveRecord::Base
           row << user.try(:patron).try(:full_name_transcription)
         when :full_name_alternative
           row << user.try(:patron).try(:full_name_alternative)
+        when :first_name
+          row << user.try(:patron).try(:first_name)
+        when :first_name_transcription
+          row << user.try(:patron).try(:first_name_transcription)
+        when :last_name
+          row << user.try(:patron).try(:last_name)
+        when :last_name_transcription
+          row << user.try(:patron).try(:last_name_transcription)
         when :library
           row << user.try(:library).try(:display_name)
         when :user_group
