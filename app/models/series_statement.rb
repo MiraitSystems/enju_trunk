@@ -116,12 +116,15 @@ class SeriesStatement < ActiveRecord::Base
   end
 
   def titles
-    [
+    titles = [
       original_title,
       title_transcription,
-      relationship_family.series_statements.map{ |series_statement| [series_statement.original_title, series_statement.title_transcription] },
       manifestations.map { |manifestation| [manifestation.original_title, manifestation.title_transcription] }
-    ].flatten.compact
+    ]
+    if relationship_family
+      titles << relationship_family.series_statements.map{ |series_statement| [series_statement.original_title, series_statement.title_transcription] }
+    end
+    titles.flatten.compact
   end
 
   # XLSX形式でのエクスポートのための値を生成する
