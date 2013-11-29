@@ -12,11 +12,8 @@ class PatronImportFile < ActiveRecord::Base
   else
     has_attached_file :patron_import, :path => ":rails_root/private:url"
   end
-  if SystemConfiguration.get("set_output_format_type") == false
-    validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/vnd.ms-excel']
-  else
-    validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream']
-  end
+  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/vnd.ms-excel'], :unless => proc{ SystemConfiguration.get("set_output_format_type") }
+  validates_attachment_content_type :patron_import, :content_type => ['text/csv', 'text/plain', 'text/tab-separated-values', 'application/octet-stream'], :if => proc{ SystemConfiguration.get("set_output_format_type") }
   validates_attachment_presence :patron_import
   belongs_to :user, :validate => true
   has_many :patron_import_results
@@ -198,7 +195,7 @@ class PatronImportFile < ActiveRecord::Base
       end
     end
     if SystemConfiguration.get("set_output_format_type") == false
-      PatronImportResult.create(:patron_import_file => self, :body => header.join("\t"), :error_msg => 'HEADER DATA')
+      PatronImportResult.create(:patron_import_file => self, :body => header.join(","), :error_msg => 'HEADER DATA')
     else
       PatronImportResult.create(:patron_import_file => self, :body => header.join("\t"), :error_msg => 'HEADER DATA')
     end
