@@ -193,6 +193,7 @@ class PatronImportFile < ActiveRecord::Base
 
     patron.full_name = row['full_name'] if row['full_name']
     patron.full_name_transcription = row['full_name_transcription'] if row['full_name_transcription']
+    patron.full_name_alternative = row['full_name_alternative'] if row['full_name_alternative']
 
     patron.address_1 = row['address_1'] if row['address_1']
     patron.address_2 = row['address_2'] if row['address_2']
@@ -201,41 +202,49 @@ class PatronImportFile < ActiveRecord::Base
     if row['telephone_number_1']
       patron.telephone_number_1 = row['telephone_number_1']
       type_id = row['telephone_number_1_type_id'].to_i rescue 0
-      patron.telephone_number_1_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.telephone_number_1_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
     if row['telephone_number_2']
       patron.telephone_number_2 = row['telephone_number_2']
       type_id = row['telephone_number_2_type_id'].to_i rescue 0
-      patron.telephone_number_2_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.telephone_number_2_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
     if row['extelephone_number_1']
       patron.extelephone_number_1 = row['extelephone_number_1']
       type_id = row['extelephone_number_1_type_id'].to_i rescue 0
-      patron.extelephone_number_1_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.extelephone_number_1_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
     if row['extelephone_number_2']
       patron.extelephone_number_2 = row['extelephone_number_2']
       type_id = row['extelephone_number_2_type_id'].to_i rescue 0
-      patron.extelephone_number_2_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.extelephone_number_2_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
     if row['fax_number_1']
       patron.fax_number_1 = row['fax_number_1']
       type_id = row['fax_number_1_type_id'].to_i rescue 0
-      patron.fax_number_1_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.fax_number_1_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
     if row['fax_number_2']
       patron.fax_number_2 = row['fax_number_2']
       type_id = row['fax_number_2_type_id'].to_i rescue 0
-      patron.fax_number_2_type_id = ((0 < type_id and type_id < 5) ? type_id : 1)
+      patron.fax_number_2_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
-
+    patron.address_1_note = row['address_1_note'] if row['address_1_note']
+    patron.address_2_note = row['address_2_note'] if row['address_1_note']
     patron.note = row['note'] if row['note']
+    patron.note_update_at = row['note_update_at'] if row['note_update_at']
+    patron.note_update_by = row['note_update_by'] if row['note_update_by']
+    patron.note_update_library = row['note_update_library'] if row['note_update_library']
     patron.birth_date = row['birth_date'] if row['birth_date']
     patron.death_date = row['death_date'] if row['death_date']
     patron.patron_type_id = row['patron_type_id'] unless row['patron_type_id'].to_s.strip.blank?
+    patron.url = row['url'].to_s.strip if row['url']
+    patron.other_designation = row['other_designation'].to_s.strip if row['other_designation']
+    patron.place = row['place'].to_s.strip if row['place']
+    patron.email = row['email'].to_s.strip if row['email']
 
     if row['username'].to_s.strip.blank?
-      patron.email = row['email'].to_s.strip
+      #patron.email = row['email'].to_s.strip
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Guest')
     else
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
@@ -246,6 +255,7 @@ class PatronImportFile < ActiveRecord::Base
     patron.language = language if language
     country = Country.where(:name => row['country'].to_s.strip).first
     patron.country = country if country
+    patron.patron_identifier = row['patron_identifier'].to_s.strip if row['patron_identifier']
     patron
   end
 
@@ -263,9 +273,18 @@ class PatronImportFile < ActiveRecord::Base
     end
     user.username = row['username'] if row['username']
     user.user_number = row['user_number'] if row['user_number']
-    library = Library.where(:name => row['library_short_name'].to_s.strip).first || Library.web
-    user_group = UserGroup.where(:name => row['user_group_name']).first || UserGroup.first
-    user.library = library
+    user.library = Library.where(:name => row['library'].to_s.strip).first || Library.web
+    user.user_group = UserGroup.where(:name => row['user_group_name']).first || UserGroup.first
+    #追加
+    user.department = Department.where(:name => row['department']).first || Department.first
+    #追加
+    user.expired_at = row['expired_at'] if row['expired_at']
+    #追加 locked
+    user.user_status = UserStatus.where(:display_name => row['status']).first || UserStatus.first
+    #追加 unable
+    user.unable = row['unable'] if row['unable']
+    user.created_at = row['created_at']
+    user.updated_at = row['updated_at']
     role = Role.where(:name => row['role_name'].to_s.strip.camelize).first || Role.find('User')
     user.role = role
     required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
@@ -276,7 +295,7 @@ class PatronImportFile < ActiveRecord::Base
     unless row['library_id'].to_s.strip.blank?
       user.library_id = row['library_id'] 
     end
-    #
+
     user
   end
 end
