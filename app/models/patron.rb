@@ -95,6 +95,7 @@ class Patron < ActiveRecord::Base
     integer :expression_ids, :multiple => true
     integer :manifestation_ids, :multiple => true
     integer :patron_merge_list_ids, :multiple => true
+    integer :derived_patron_ids, :multiple => true
     integer :original_patron_ids, :multiple => true
     integer :required_role_id
     integer :patron_type_id
