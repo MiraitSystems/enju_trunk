@@ -23,6 +23,7 @@
       <th><%= t('activerecord.models.patron_type') %></th>
       <th><%= t('activerecord.attributes.patron.date_of_birth') %></th>
       <th></th>
+      <th></th>
     </tr>
 
     <% @patrons.each do |p| %>
@@ -35,6 +36,15 @@
           <td><%= p.patron_type.display_name.localize %></td>
           <td><%= l(p.date_of_birth, :format => :only_date) if p.date_of_birth %></td>
           <td>
+            <% patron_relationship_child  = patron.children.find_by_child_id(p.id) %>
+            <% patron_relationship_parent = patron.parents.find_by_parent_id(p.id) %>
+            <% if patron_relationship_child %>
+              <%= patron_relationship_child.patron_relationship_type.display_name %>
+            <% elsif patron_relationship_parent %>
+              <%= patron_relationship_parent.patron_relationship_type.display_name %>
+            <% end %>
+          </td>
+          <td>
             <% if can? :edit, p %>
               <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
                   edit_patron_path(p) %>
@@ -42,12 +52,13 @@
                 <%= link_to image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('patron.add_derivation'), :title => t('patron.add_derivation')),
                     new_patron_patron_relationship_path(patron, :child_id => p.id) unless patron.derived_patrons.include?(p) or p == patron %>
               <% else %>
-                <% patron_relationship_child  = patron.children.find_by_child_id(p.id) %>
-                <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
-                    patron_relationship_child, :confirm => t('page.are_you_sure'), :method => :delete if patron_relationship_child %>
-                <% patron_relationship_parent = patron.parents.find_by_parent_id(p.id) %>
-                <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
-                    patron_relationship_parent, :confirm => t('page.are_you_sure'), :method => :delete if patron_relationship_parent %>
+                <% if patron_relationship_child %>
+                  <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
+                      patron_relationship_child, :confirm => t('page.are_you_sure'), :method => :delete %>
+                <% elsif patron_relationship_parent %>
+                  <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
+                      patron_relationship_parent, :confirm => t('page.are_you_sure'), :method => :delete %>
+                <% end %>
               <% end %>
             <% end %>
           </td>

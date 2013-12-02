@@ -11,13 +11,16 @@ class PatronRelationship < ActiveRecord::Base
 
   def check_parent
     errors.add(:parent) if parent_id == child_id
+    existing_record = PatronRelationship.find(:first, :conditions => ["parent_id = ? AND child_id = ?", child_id, parent_id])
+    unless existing_record.blank?
+      errors.add(:parent)
+    end
   end
 
   def reindex
     self.parent.index
     self.child.index
   end
-
 end
 
 # == Schema Information
