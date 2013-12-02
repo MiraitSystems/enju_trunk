@@ -137,17 +137,40 @@ class PatronImportFile < ActiveRecord::Base
 
   def modify
     self.reload
+    num = {:patron_imported => 0, :user_imported => 0, :failed => 0}
     rows = open_import_file
     field = rows.first
+    row_num = 2
     rows.each do |row|
+      next if row['dummy'].to_s.strip.present?
       user = User.where(:user_number => row['user_number'].to_s.strip).first
-      if user.try(:patron)
-        set_patron_value(user.patron, row)
-        user.patron.save!
-        set_user_value(user, row)
-        user.save!
+      if SystemConfiguration.get("set_output_format_type") == false
+        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join(","))
+      else
+        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
       end
+
+      begin
+        user = User.where(:user_number => row['user_number'].to_s.strip).first
+        if user.try(:patron)
+          set_patron_value(user.patron, row)
+          user.patron.save!
+          set_user_value(user, row)
+          user.save!
+        end
+        num[:patron_imported] += 1
+        num[:user_imported] += 1
+      rescue Exception => e
+        import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+        Rails.logger.info("patron import failed: column #{row_num}")
+        num[:failed] += 1
+      end
+      import_result.save!
+      row_num += 1
     end
+    self.update_attribute(:imported_at, Time.zone.now)
+    rows.close
+    return num
   end
 
   def remove
