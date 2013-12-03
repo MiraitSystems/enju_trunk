@@ -155,8 +155,10 @@ class PatronImportFile < ActiveRecord::Base
         if user.try(:patron)
           set_patron_value(user.patron, row)
           user.patron.save!
+          import_result.patron = patron
           set_user_value(user, row)
           user.save!
+          import_result.user = user
         end
         num[:patron_imported] += 1
         num[:user_imported] += 1
@@ -169,6 +171,7 @@ class PatronImportFile < ActiveRecord::Base
       row_num += 1
     end
     self.update_attribute(:imported_at, Time.zone.now)
+        #import_result.user = user
     rows.close
     return num
   end
@@ -189,6 +192,13 @@ class PatronImportFile < ActiveRecord::Base
       end
 
       begin
+        patron = Patron.new
+        patron = set_patron_value(patron, row)
+        import_result.patron = patron
+        user = User.new
+        user = set_user_value(user, row)
+        import_result.user = user
+
         user = User.where(:user_number => row['user_number'].to_s.strip).first
         user.destroy
         num[:patron_imported] += 1
