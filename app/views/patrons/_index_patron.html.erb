@@ -55,9 +55,11 @@
                 <% if patron_relationship_child %>
                   <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
                       patron_relationship_child, :confirm => t('page.are_you_sure'), :method => :delete %>
+                  <%# patron_relationship_parent.destroy if patron_relationship_parent %>
                 <% elsif patron_relationship_parent %>
                   <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
                       patron_relationship_parent, :confirm => t('page.are_you_sure'), :method => :delete %>
+                  <%# patron_relationship_child.destroy if patron_relationship_child %>
                 <% end %>
               <% end %>
             <% end %>
