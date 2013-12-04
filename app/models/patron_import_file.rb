@@ -143,42 +143,57 @@ class PatronImportFile < ActiveRecord::Base
 
   def modify
     self.reload
+    user_number = I18n.t('activerecord.attributes.user.user_number')
+    username = I18n.t('activerecord.attributes.user.username')
     num = {:patron_imported => 0, :user_imported => 0, :failed => 0}
     rows = open_import_file
     field = rows.first
     row_num = 2
     rows.each do |row|
       next if row['dummy'].to_s.strip.present?
-      user = User.where(:user_number => row['user_number'].to_s.strip).first
+      user = User.where(:user_number => row[user_number].to_s.strip).first
       if SystemConfiguration.get("set_output_format_type") == false
         import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join(","))
       else
         import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
       end
-
-      begin
-        user = User.where(:user_number => row['user_number'].to_s.strip).first
-        if user.try(:patron)
+      if user.try(:patron)
+        begin
+          #更新用にまず削除
           set_patron_value(user.patron, row)
-          user.patron.save!
-          import_result.patron = patron
-          num[:patron_imported] += 1
           set_user_value(user, row)
-          user.save!
-          import_result.user = user
+          user.destroy
+          #削除したものを更新
+          user = User.new
+          patron = Patron.new
+          patron = set_patron_value(patron, row)
+          user.patron = patron
+          set_user_value(user, row)
+          if user.password.blank?
+            user.set_auto_generated_password
+          end
+          if user.patron.save!
+            import_result.patron = patron
+          end 
+          if user.save!
+            import_result.user = user
+          end
+          num[:patron_imported] += 1
           num[:user_imported] += 1
+        rescue Exception => e
+          import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+          Rails.logger.info("patron import failed: column #{row_num}")
+          num[:failed] += 1
         end
-      rescue Exception => e
-        import_result.error_msg = "FAIL[#{row_num}]: #{e}"
-        Rails.logger.info("patron import failed: column #{row_num}")
-        num[:failed] += 1
+      else
+        import_result.error_msg = "FAIL[#{row_num}]: faild" 
       end
       import_result.save!
       row_num += 1
     end
     self.update_attribute(:imported_at, Time.zone.now)
-        #import_result.user = user
     rows.close
+    sm_complete!
     return num
   end
 
@@ -198,14 +213,13 @@ class PatronImportFile < ActiveRecord::Base
         import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
       end
 
+      user = User.new
+      patron = Patron.new
+      set_patron_value(patron, row)
+      import_result.patron = patron
+      set_user_value(user, row)
+      import_result.user = user
       begin
-        patron = Patron.new
-        patron = set_patron_value(patron, row)
-        import_result.patron = patron
-        user = User.new
-        user = set_user_value(user, row)
-        import_result.user = user
-
         user = User.where(:user_number => row[user_number].to_s.strip).first
         user.destroy
         num[:patron_imported] += 1
@@ -220,6 +234,7 @@ class PatronImportFile < ActiveRecord::Base
     end
     self.update_attribute(:imported_at, Time.zone.now)
     rows.close
+    sm_complete!
     return num
   end
 
@@ -359,14 +374,12 @@ class PatronImportFile < ActiveRecord::Base
       patron.fax_number_2_type_id = ((0 < type_id and type_id < 6) ? type_id : 1)
     end
 
-    logger.info("address#####################")
     patron.address_1_note = row[address_1_note] if row[address_1_note]
     patron.address_2_note = row[address_2_note] if row[address_1_note]
     patron.note = row[note] if row[note]
     patron.note_update_at = row[note_update_at] if row[note_update_at]
     patron.note_update_by = row[note_update_by] if row[note_update_by]
     patron.note_update_library = row[note_update_library] if row[note_update_library]
-    logger.info("note#####################")
     patron.birth_date = row[birth_date] if row[birth_date]
     patron.death_date = row[death_date] if row[death_date]
     patron.patron_type_id = row[patron_type] unless row[patron_type].to_s.strip.blank?
@@ -375,14 +388,12 @@ class PatronImportFile < ActiveRecord::Base
     patron.place = row[place].to_s.strip if row[place]
     patron.email = row[email].to_s.strip if row[email]
 
-    logger.info("email#####################")
     if row[username].to_s.strip.blank?
     #  #patron.email = row[email].to_s.strip
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Guest')
     else
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     end
-    logger.info("language#####################")
     language = Language.where(:name => row[language].to_s.strip.camelize).first
     language = Language.where(:iso_639_2 => row[language].to_s.strip.downcase).first unless language
     language = Language.where(:iso_639_1 => row[language].to_s.strip.downcase).first unless language
