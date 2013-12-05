@@ -46,7 +46,7 @@ class PatronImportFile < ActiveRecord::Base
     when 'create'
       import
     when 'update'
-      modify
+      import
     when 'destroy'
       remove
     else
@@ -57,19 +57,15 @@ class PatronImportFile < ActiveRecord::Base
   def import
 #日本語化
     username = I18n.t('activerecord.attributes.user.username')
+    user_number = I18n.t('activerecord.attributes.user.user_number')
     full_name = I18n.t('activerecord.attributes.patron.full_name')
-    first_name = I18n.t('activerecord.attributes.patron.first_name')
-    last_name = I18n.t('activerecord.attributes.patron.last_name')
+    del_flg = I18n.t('resource_import_textfile.excel.book.del_flg')
 
     self.reload
     num = {:patron_imported => 0, :user_imported => 0, :failed => 0}
     row_num = 2
     rows = open_import_file
-    field = rows.first
-    if [field[first_name], field[last_name], field[full_name]].reject{|field| field.to_s.strip == ""}.empty?
-      raise "You should specify first_name, last_name or full_name in the first line"
-    end
-    #rows.shift
+    field = rows.first     
     rows.each do |row|
       next if row['dummy'].to_s.strip.present?
       if SystemConfiguration.get("set_output_format_type") == false
@@ -78,42 +74,61 @@ class PatronImportFile < ActiveRecord::Base
         import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
       end
 
-      begin
-        patron = Patron.new
-        patron = set_patron_value(patron, row)
+      delete_flag = row[del_flg]
+      puts("#####################################")
+      puts delete_flag
 
-        if patron.save!
-          import_result.patron = patron
-          num[:patron_imported] += 1
-          if row_num % 50 == 0
-            Sunspot.commit
-            GC.start
-          end
-        end
-      rescue Exception => e
-        import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-        Rails.logger.info("patron import failed: column #{row_num}")
-        num[:failed] += 1
-      end
-
-      unless row[username].to_s.strip.blank?
+      unless delete_flag.blank?
+        puts("delete")
         begin
-          user = User.new
-          user.patron = patron
-          set_user_value(user, row)
-          if user.password.blank?
-            user.set_auto_generated_password
-          end
-          if user.save!
-            import_result.user = user
-          end
+          user = User.where(:user_number => row[user_number].to_s.strip).first
+          import_result.error_msg = "#{user.patron.full_name} delete"
+          user.destroy
+          num[:patron_imported] += 1
           num[:user_imported] += 1
-        rescue ActiveRecord::RecordInvalid => e
+        rescue Exception => e
+          import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+          Rails.logger.info("patron import failed: column #{row_num}")
+          num[:failed] += 1
+        end
+      else
+        puts("insert")
+        begin
+          patron = Patron.new
+          patron = set_patron_value(patron, row)
+
+          if patron.save!
+            import_result.patron = patron
+            num[:patron_imported] += 1
+            if row_num % 50 == 0
+              Sunspot.commit
+              GC.start
+            end
+          end
+        rescue Exception => e
           import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-          Rails.logger.info("user import failed: column #{row_num}")
+          Rails.logger.info("patron import failed: column #{row_num}")
+          num[:failed] += 1
+        end
+
+        unless row[username].to_s.strip.blank?
+          begin
+            user = User.new
+            user.patron = patron
+            set_user_value(user, row)
+            if user.password.blank?
+              user.set_auto_generated_password
+            end
+            if user.save!
+              import_result.user = user
+            end
+            num[:user_imported] += 1
+          rescue ActiveRecord::RecordInvalid => e
+            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
+            Rails.logger.info("user import failed: column #{row_num}")
+          end
         end
       end
-
       import_result.save!
       row_num += 1
     end

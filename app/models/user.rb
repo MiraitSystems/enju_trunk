@@ -730,6 +730,7 @@ class User < ActiveRecord::Base
       [:patron_identifier, 'patron.patron_identifier'],
       [:created_at, 'page.created_at'],
       [:updated_at, 'page.updated_at'],
+      [:del_flg, 'resource_import_textfile.excel.book.del_flg']
     ]
 
     data = String.new
@@ -919,6 +920,8 @@ class User < ActiveRecord::Base
           row << user.created_at.strftime("%Y/%m/%d %H:%M:%S")
         when :updated_at
           row << user.updated_at.strftime("%Y/%m/%d %H:%M:%S")
+        when :del_flg
+          row << nil
         else
           row << get_object_method(user, column[0].split('.')).to_s.gsub(/\r\n|\r|\n/," ").gsub(/\"/,"\"\"")
         end
@@ -927,7 +930,7 @@ class User < ActiveRecord::Base
         data << '"'+row.join("\",\"")+"\"\n"
       else
         data << '"'+row.join("\"\t\"")+"\"\n"
-      end 
+      end
     end
     return data
   end
