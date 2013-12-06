@@ -78,7 +78,7 @@ class PatronImportFile < ActiveRecord::Base
       puts("#####################################")
       puts delete_flag
 
-      unless delete_flag.blank?
+      unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
         puts("delete")
         begin
           user = User.where(:user_number => row[user_number].to_s.strip).first
