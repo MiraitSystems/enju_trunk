@@ -92,40 +92,62 @@ class PatronImportFile < ActiveRecord::Base
           num[:failed] += 1
         end
       else
-        puts("insert")
-        begin
-          patron = Patron.new
-          patron = set_patron_value(patron, row)
+        user = User.where(:user_number => row[user_number].to_s.strip).first
+        if user.blank? 
+          puts("insert")
+          begin
+            patron = Patron.new
+            patron = set_patron_value(patron, row)
 
-          if patron.save!
-            import_result.patron = patron
-            num[:patron_imported] += 1
-            if row_num % 50 == 0
-              Sunspot.commit
-              GC.start
+            if patron.save!
+              import_result.patron = patron
+              num[:patron_imported] += 1
+              if row_num % 50 == 0
+                Sunspot.commit
+                GC.start
+              end
+            end
+          rescue Exception => e
+            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
+            Rails.logger.info("patron import failed: column #{row_num}")
+            num[:failed] += 1
+          end
+
+          unless row[username].to_s.strip.blank?
+            begin
+              user = User.new
+              user.patron = patron
+              set_user_value(user, row)
+              if user.password.blank?
+                user.set_auto_generated_password
+              end
+              if user.save!
+                import_result.user = user
+              end
+              num[:user_imported] += 1
+            rescue ActiveRecord::RecordInvalid => e
+              import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
+              Rails.logger.info("user import failed: column #{row_num}")
             end
           end
-        rescue Exception => e
-          import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-          Rails.logger.info("patron import failed: column #{row_num}")
-          num[:failed] += 1
-        end
-
-        unless row[username].to_s.strip.blank?
-          begin
-            user = User.new
-            user.patron = patron
-            set_user_value(user, row)
-            if user.password.blank?
-              user.set_auto_generated_password
+        else
+          puts ("update!")
+          if user.try(:patron)
+            begin
+              patron = set_patron_value(user.patron, row)
+              set_user_value(user, row)
+              if patron.save
+                import_result.patron = patron
+              end
+              if user.save!
+                import_result.user = user
+              end
+              num[:user_imported] += 1
+            rescue ActiveRecord::RecordInvalid => e
+              import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
+              Rails.logger.info("update failed: column #{row_num}")
+              num[:failed] += 1
             end
-            if user.save!
-              import_result.user = user
-            end
-            num[:user_imported] += 1
-          rescue ActiveRecord::RecordInvalid => e
-            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-            Rails.logger.info("user import failed: column #{row_num}")
           end
         end
       end
