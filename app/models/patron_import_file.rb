@@ -334,6 +334,7 @@ class PatronImportFile < ActiveRecord::Base
     url = I18n.t('activerecord.attributes.patron.url')
     created_at = I18n.t('page.created_at')
     updated_at = I18n.t('page.updated_at')
+    role = I18n.t('activerecord.models.role')
 
     user.operator = User.find(1)
 
@@ -357,10 +358,14 @@ class PatronImportFile < ActiveRecord::Base
     user.unable = row[unable] if row[unable]
     user.created_at = row[created_at]
     user.updated_at = row[updated_at]
+=begin
     role = Role.where(:name => row['role_name'].to_s.strip.camelize).first || Role.find('User')
     user.role = role
     required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     user.required_role = required_role
+=end
+    user.user_has_role.role_id = Role.where(:id => row[role].to_s.strip).first || Role.find('User')
+    user.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     locale = Language.where(:iso_639_1 => row['locale'].to_s.strip).first
     user.locale = locale || I18n.default_locale.to_s
 

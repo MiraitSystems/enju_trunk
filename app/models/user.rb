@@ -728,6 +728,7 @@ class User < ActiveRecord::Base
       [:note_update_by, 'activerecord.attributes.patron.note_update_by'],
       [:note_update_library, 'activerecord.attributes.patron.note_update_library'],
       [:patron_identifier, 'patron.patron_identifier'],
+      [:role, 'activerecord.models.role'],
       [:created_at, 'page.created_at'],
       [:updated_at, 'page.updated_at'],
       [:del_flg, 'resource_import_textfile.excel.book.del_flg']
@@ -772,40 +773,20 @@ class User < ActiveRecord::Base
           row << user.try(:department).try(:display_name)
         when :expired_at
           row << user.expired_at
-=begin
-          expired_at = ""
-          if user.expired_at
-            year = user.expired_at.strftime("%Y")
-            month = user.expired_at.strftime("%m")
-            date = user.expired_at.strftime("%d")
-            expired_at = I18n.t('expense.date_format', :year => year, :month => month, :date => date) 
-          end
-          row << expired_at
-=end
-=begin
-        when :locked
-          row << I18n.t('activerecord.attributes.user.locked_yes') if user.active_for_authentication?
-          row << I18n.t('activerecord.attributes.user.locked_no') unless user.active_for_authentication?
-=end
         when :status
           row << user.try(:user_status).try(:display_name)
         when :unable
           row << user.try(:unable)
-=begin
-          row << I18n.t('activerecord.attributes.user.unable_yes') unless user.unable
-          row << I18n.t('activerecord.attributes.user.unable_no') if user.unable
-=end
         when :patron_type
-          #row << user.try(:patron).try(:patron_type).try(:display_name).try(:localize)
           row << user.try(:patron).try(:patron_type_id)
         when :email
           row << user.try(:patron).try(:email)
         when :url
           row << user.try(:patron).try(:url)
-#TODO 現在は表示されていない
+        #TODO 現在は表示されていない
         when :other_designation
           row << user.try(:patron).try(:other_designation)
-#TODO 現在は表示されていない
+        #TODO 現在は表示されていない
         when :place
           row << user.try(:patron).try(:place)
         when :language
@@ -878,28 +859,8 @@ class User < ActiveRecord::Base
           row << user.try(:patron).try(:address_2_note)
         when :birth_date
           row << user.try(:patron).try(:birth_date)
-=begin
-          date_of_birth = ""
-          if user.try(:patron).try(:date_of_birth)
-            year = user.patron.date_of_birth.strftime("%Y")
-            month = user.patron.date_of_birth.strftime("%m")
-            date = user.patron.date_of_birth.strftime("%d")
-            date_of_birth = I18n.t('expense.date_format', :year => year, :month => month, :date => date)
-          end
-          row << date_of_birth
-=end
         when :death_date
           row << user.try(:patron).try(:death_date)
-=begin
-          date_of_death = ""
-          if user.try(:patron).try(:date_of_death)
-            year = user.patron.date_of_death.strftime("%Y")
-            month = user.patron.date_of_death.strftime("%m")
-            date = user.patron.date_of_death.strftime("%d")
-            date_of_death = I18n.t('expense.date_format', :year => year, :month => month, :date => date)
-          end
-          row << date_of_death
-=end
         when :note
           row << user.try(:patron).try(:note)
         when :note_update_at
@@ -908,14 +869,10 @@ class User < ActiveRecord::Base
           row << user.try(:patron).try(:note_update_by) if user.try(:patron).try(:note_update_by)
         when :note_update_library
           row << user.try(:patron).try(:note_update_library) if user.try(:patron).try(:note_update_library)
-=begin
-          note_update = user.patron.note_update_at.strftime("%Y/%m/%d %H:%M:%S") if user.try(:patron).try(:note_update_at)
-          note_update += ' ' + I18n.t('patron.last_update_by') + ':' + user.try(:patron).try(:note_update_by) if user.try(:patron).try(:note_update_by)
-          note_update += '(' + user.patron.note_update_library + ')' if user.try(:patron).try(:note_update_library)
-          row << note_update
-=end
         when :patron_identifier
           row << user.try(:patron).try(:patron_identifier)
+        when :role
+          row << user.try(:user_has_role).try(:role_id)
         when :created_at
           row << user.created_at.strftime("%Y/%m/%d %H:%M:%S")
         when :updated_at
