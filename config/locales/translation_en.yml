@@ -2091,6 +2091,9 @@ en:
   import:
     from_file: from file
     from_isbn: from ISBN
+    successfully_created: Successfully created
+    successfully_updated: Successfully updated
+    successfully_deleted: Successfully deleted
     will_be_imported:
       one: Resource will be impored in a %{minute} minute.
       other: Resource will be impored in %{minute} minutes.

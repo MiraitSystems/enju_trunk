@@ -43,9 +43,7 @@ class PatronImportFile < ActiveRecord::Base
   def import
     sm_start!
     #日本語化
-    username = I18n.t('activerecord.attributes.user.username')
     user_number = I18n.t('activerecord.attributes.user.user_number')
-    full_name = I18n.t('activerecord.attributes.patron.full_name')
     del_flg = I18n.t('resource_import_textfile.excel.book.del_flg')
 
     self.reload
@@ -63,10 +61,10 @@ class PatronImportFile < ActiveRecord::Base
 
       #delete_flagの定義
       delete_flag = row[del_flg]
+      user = User.where(:user_number => row[user_number].to_s.strip).first
       unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
         begin
-          user = User.where(:user_number => row[user_number].to_s.strip).first
-          import_result.error_msg = "#{user.patron.full_name} delete"
+          import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
           user.destroy
           num[:patron_imported] += 1
           num[:user_imported] += 1
@@ -76,55 +74,51 @@ class PatronImportFile < ActiveRecord::Base
           num[:failed] += 1
         end
       else
-        user = User.where(:user_number => row[user_number].to_s.strip).first
         if user.blank? 
           begin
-            patron = Patron.new
-            patron = set_patron_value(patron, row)
-            if patron.save!
-              import_result.patron = patron
-              num[:patron_imported] += 1
-              if row_num % 50 == 0
-                Sunspot.commit
-                GC.start
-              end
-            end
-          rescue Exception => e
-            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-            Rails.logger.info("patron import failed: column #{row_num}")
-            num[:failed] += 1
-          end
-          unless row[username].to_s.strip.blank?
-            begin
+            User.transaction do
+              patron = Patron.new
+              patron = set_patron_value(patron, row)
               user = User.new
               user.patron = patron
               set_user_value(user, row)
               if user.password.blank?
                 user.set_auto_generated_password
               end
+              if patron.save!
+                import_result.patron = patron
+                num[:patron_imported] += 1
+                if row_num % 50 == 0
+                  Sunspot.commit
+                  GC.start
+                end
+              end
               if user.save!
                 import_result.user = user
               end
-              import_result.error_msg = "#{user.patron.full_name} insert!"
+              import_result.error_msg = I18n.t('import.successfully_created')
               num[:user_imported] += 1
-            rescue ActiveRecord::RecordInvalid => e
-              import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-              Rails.logger.info("user import failed: column #{row_num}")
             end
+          rescue Exception => e
+            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
+            Rails.logger.info("import failed: column #{row_num}")
+            num[:failed] += 1
           end
         else
           if user.try(:patron)
             begin
-              patron = set_patron_value(user.patron, row)
-              set_user_value(user, row)
-              if patron.save
-                import_result.patron = patron
+              User.transaction do
+                patron = set_patron_value(user.patron, row)
+                set_user_value(user, row)
+                if patron.save
+                  import_result.patron = patron
+                end
+                if user.save!
+                  import_result.user = user
+                end
+                import_result.error_msg = I18n.t('import.successfully_updated')
+                num[:user_imported] += 1
               end
-              if user.save!
-                import_result.user = user
-              end
-              import_result.error_msg = "#{user.patron.full_name} update!"
-              num[:user_imported] += 1
             rescue ActiveRecord::RecordInvalid => e
               import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
               Rails.logger.info("update failed: column #{row_num}")
