@@ -31,6 +31,8 @@ class Manifestation < ActiveRecord::Base
 
   scope :without_master, where(:periodical_master => false)
  
+  JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
+
   searchable do
     text :fulltext, :contributor, :article_title, :series_title, :exinfo_1, :exinfo_6
     text :title, :default_boost => 2 do
@@ -1239,6 +1241,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.get_manifestation_list_tsv(manifestations, current_user)
+    split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
     data = String.new
     data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
 
@@ -1254,7 +1257,7 @@ class Manifestation < ActiveRecord::Base
 
     # title column
     row = columns.map{|column| I18n.t(column[1])}
-    data << '"' + row.join("\"\t\"") +"\"\n"
+    data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
 
     manifestations.each do |manifestation|
       row = []
@@ -1280,7 +1283,7 @@ class Manifestation < ActiveRecord::Base
           row << Reserve.waiting.where(:manifestation_id => manifestation.id, :checked_out_at => nil).count rescue 0
         end
       end
-      data << '"' + row.join("\"\t\"") +"\"\n"
+      data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
     end
     return data
   end
