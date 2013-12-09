@@ -2090,6 +2090,7 @@ ja:
     successfully_created: "正常に作成されました。"
     successfully_updated: "正常に更新されました。"
     successfully_deleted: "正常に削除されました。"
+    user_does_not_exist: "対象のユーザが存在しません。"
   user:
     current_password: "現在のパスワード"
     new_password: "新しいパスワード"

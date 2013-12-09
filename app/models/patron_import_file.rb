@@ -43,14 +43,18 @@ class PatronImportFile < ActiveRecord::Base
   def import
     sm_start!
     #日本語化
-    user_number = I18n.t('activerecord.attributes.user.user_number')
+    full_name = I18n.t('activerecord.attributes.patron.full_name')
+    username = I18n.t('activerecord.attributes.user.username')
     del_flg = I18n.t('resource_import_textfile.excel.book.del_flg')
 
     self.reload
     num = {:patron_imported => 0, :user_imported => 0, :failed => 0}
     row_num = 2
     rows = open_import_file
-    field = rows.first     
+    field = rows.first
+    if [field[username], field[full_name]].reject{|field| field.to_s.strip == ""}.empty?
+      raise "You should specify #{username} and #{full_name} in the first line"
+    end
     rows.each do |row|
       next if row['dummy'].to_s.strip.present?
       if SystemConfiguration.get("set_output_format_type") == false
@@ -61,15 +65,18 @@ class PatronImportFile < ActiveRecord::Base
 
       #delete_flagの定義
       delete_flag = row[del_flg]
-      user = User.where(:user_number => row[user_number].to_s.strip).first
+      user = User.where(:username => row[username].to_s.strip).first
       unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
         begin
-          import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
-          user.destroy
-          num[:patron_imported] += 1
-          num[:user_imported] += 1
+          User.transaction do
+            import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
+            user.destroy
+            num[:patron_imported] += 1
+            num[:user_imported] += 1
+          end
         rescue Exception => e
-          import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+          #import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+          import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.user_does_not_exist')}"
           Rails.logger.info("patron import failed: column #{row_num}")
           num[:failed] += 1
         end
@@ -305,7 +312,6 @@ class PatronImportFile < ActiveRecord::Base
     patron.email = row[email].to_s.strip if row[email]
 
     if row[username].to_s.strip.blank?
-    #  #patron.email = row[email].to_s.strip
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Guest')
     else
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
@@ -350,7 +356,7 @@ class PatronImportFile < ActiveRecord::Base
     end
     user.username = row[username] if row[username]
     user.user_number = row[user_number] if row[user_number]
-    user.library = Library.where(:name => row[library].to_s.strip).first || Library.web
+    user.library = Library.where(:name => row[library].to_s.strip).first || Library.first
     user.user_group = UserGroup.where(:name => row[user_group_name]).first || UserGroup.first
     user.department = Department.where(:name => row[department]).first || Department.first
     user.expired_at = row[expired_at] if row[expired_at]
@@ -358,16 +364,11 @@ class PatronImportFile < ActiveRecord::Base
     user.unable = row[unable] if row[unable]
     user.created_at = row[created_at]
     user.updated_at = row[updated_at]
-=begin
-    role = Role.where(:name => row['role_name'].to_s.strip.camelize).first || Role.find('User')
-    user.role = role
-    required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
-    user.required_role = required_role
-=end
-    user.user_has_role.role_id = Role.where(:id => row[role].to_s.strip).first || Role.find('User')
+    user.role = Role.where(:id => row[role].to_s.strip).first || Role.find('User')
     user.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     locale = Language.where(:iso_639_1 => row['locale'].to_s.strip).first
     user.locale = locale || I18n.default_locale.to_s
+
 
     #unless row['library_id'].to_s.strip.blank?
     #  user.library_id = row['library_id']
