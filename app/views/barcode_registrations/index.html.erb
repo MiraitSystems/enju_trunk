@@ -1,0 +1,32 @@
+<% if user_signed_in? && current_user.has_role?('Librarian') %>
+
+  <div id="content_detail" class="ui-corner-all">
+    <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.barcode')) -%></h1>
+    <div id="content_list">
+
+      <%= form_tag({ :controller => 'barcode_registrations', :action => 'index' }, { :method => :get, :id => 'form' }) do %>
+        <p>first_number <%= text_field_tag :first_number, @first, { :size => 25 , :maxlength => '9'} %></p>
+        <p>last_number <%= text_field_tag :last_number, @last, { :size => 25, :maxlength => '9' } %></p>
+        <%= submit_tag '出力' %>
+      <% end %>
+
+    </div>
+  </div>
+
+  <div id="submenu" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.back'), page_extensions_path %></li>
+    </ul>
+  </div>
+
+<% else %>
+  <div id="content_detail" class="ui-corner-all">
+    <h1 class="title"><%= t('page.access_denied') -%></h1>
+    <div id="content_list">
+      <%= render 'page/search_form' %>
+    </div>
+  </div>
+
+  <div id="submenu" class="ui-corner-all">
+  </div>
+<% end %>

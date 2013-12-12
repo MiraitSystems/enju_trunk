@@ -196,6 +196,7 @@ ja:
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
       theme: テーマ
+      barcode_registration: 資料登録番号バーコード
     attributes:
       wareki:
         display_name: 表示名
