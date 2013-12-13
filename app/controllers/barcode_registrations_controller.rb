@@ -13,28 +13,15 @@ class BarcodeRegistrationsController < ApplicationController
         first = first_number.to_i
         last = last_number.to_i
       
-        respond_to do |format|
-
-          columns = [
-            [:barcode, 'page.barcode_registration.number'],
-          ]
-          data = String.new
-          data << "\xEF\xBB\xBF".force_encoding("UTF-8") #+ "\n"
-          #data << "\xEF\xBB\xBF".encode("Shift_JIS") #+ "\n"
-          row = []
-          columns.each do |column|
-            row << I18n.t(column[1])
-          end
-          data << '"'+row.join("\",\"")+"\"\n"
-          row = []
-          first.upto(last) do |num|
-            row << "%09d" % num
-          end
-          data << '"'+row.join("\",\n\"")+"\"\n"
-        
-          send_data data, :filename => Setting.barcode_output.filename + ".csv"
-          return
+        data = String.new
+        data << "\xEF\xBB\xBF".force_encoding("UTF-8") #+ "\n"
+        row = []
+        first.upto(last) do |num|
+          row << "%09d" % num
         end
+        data << '"'+row.join("\",\n\"")+"\"\n"
+        send_data data, :filename => Setting.barcode_output.filename + ".csv"
+        return
       else
         @error = true
         @first = params[:first_number]
