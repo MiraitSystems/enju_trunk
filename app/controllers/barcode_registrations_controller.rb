@@ -14,7 +14,7 @@ class BarcodeRegistrationsController < ApplicationController
         last = last_number.to_i
       
         data = String.new
-        data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
+        data << "\xEF\xBB\xBF".force_encoding("UTF-8")# + "\n"
         row = []
         first.upto(last) do |num|
           row << "%09d" % num
