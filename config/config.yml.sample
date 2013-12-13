@@ -423,7 +423,8 @@ defaults: &defaults
 
   ndl_api_type: 'opensearch'
  
-  barcode_output: 'output_barcode_registration'
+  barcode_output:
+    filename: "output_barcode_registration"
 
 development:
   <<: *defaults
