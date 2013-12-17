@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "2.0.0"
+ruby "1.9.3"
 
 gem 'rails', '3.2.15'
 
@@ -17,8 +17,7 @@ gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git'
 #gem "enju_ndl", "0.1.0.pre8"
 gem 'enju_ndl', :git => 'git://github.com/MiraitSystems/enju_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
-#gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :require => 'enju_event'
-gem 'enju_trunk_event', :path => '/home/hoshino/work/enju/enju_trunk_event', :require => 'enju_event'
+gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :require => 'enju_event'
 gem 'activerecord-import'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
