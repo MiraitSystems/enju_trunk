@@ -196,6 +196,7 @@ ja:
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
       theme: テーマ
+      barcode_registration: 資料登録番号バーコード
     attributes:
       wareki:
         display_name: 表示名
@@ -1500,6 +1501,7 @@ ja:
     all_search_term: "すべて"
     any_search_term: "いずれか"
     except_search_term: "除外"
+    startwith_term: "前方一致"
     search_result: "検索結果"
     search_clear: クリア
     number_of_manifestations: "%{numdocs} 件の資料があります。"
@@ -1521,14 +1523,17 @@ ja:
     carrier_type: "資料形態"
     item_identifier: "所蔵情報ID"
     exact_title: "完全一致"
+    startwith_title: "前方一致"
     all_title: "すべて"
     any_title: "いずれか"
     except_title: "除外"
     exact_creator: "完全一致"
+    startwith_creator: "前方一致"
     all_creator: "すべて"
     any_creator: "いずれか"
     except_creator: "除外"
     exact_publisher: "完全一致"
+    startwith_publisher: "前方一致"
     all_publisher: "すべて"
     any_publisher: "いずれか"
     except_publisher: "除外"
@@ -1746,6 +1751,12 @@ ja:
       no_matches_found: テーマが見つかりません
       hot_topic: 話題のテーマ
       related_manifestation: 関連する資料
+    barcode_registration:
+      first_number: 開始番号
+      last_number: 終了番号
+      submit: 出力
+      error: "不正な値が入力されています。"
+      number: 登録番号
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
