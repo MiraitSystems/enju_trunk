@@ -2102,6 +2102,7 @@ ja:
     successfully_updated: "正常に更新されました。"
     successfully_deleted: "正常に削除されました。"
     user_does_not_exist: "対象のユーザが存在しません。"
+    library_error: "所属図書館が存在しない、または未入力です。"
   user:
     current_password: "現在のパスワード"
     new_password: "新しいパスワード"

@@ -66,6 +66,7 @@ class PatronImportFile < ActiveRecord::Base
       #delete_flagの定義
       delete_flag = row[del_flg]
       user = User.where(:username => row[username].to_s.strip).first
+      #削除
       unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
         begin
           User.transaction do
@@ -74,13 +75,15 @@ class PatronImportFile < ActiveRecord::Base
             num[:patron_imported] += 1
             num[:user_imported] += 1
           end
-        rescue Exception => e
+        rescue ActiveRecord::RecordInvalid => e
           #import_result.error_msg = "FAIL[#{row_num}]: #{e}"
           import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.user_does_not_exist')}"
           Rails.logger.info("patron import failed: column #{row_num}")
           num[:failed] += 1
+          next
         end
       else
+        #作成
         if user.blank? 
           begin
             User.transaction do
@@ -106,12 +109,14 @@ class PatronImportFile < ActiveRecord::Base
               import_result.error_msg = I18n.t('import.successfully_created')
               num[:user_imported] += 1
             end
-          rescue Exception => e
+          rescue ActiveRecord::RecordInvalid => e
             import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
             Rails.logger.info("import failed: column #{row_num}")
             num[:failed] += 1
+            next
           end
         else
+          #更新
           if user.try(:patron)
             begin
               User.transaction do
@@ -130,6 +135,7 @@ class PatronImportFile < ActiveRecord::Base
               import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
               Rails.logger.info("update failed: column #{row_num}")
               num[:failed] += 1
+              next
             end
           end
         end
@@ -251,10 +257,8 @@ class PatronImportFile < ActiveRecord::Base
     patron_identifier = I18n.t('patron.patron_identifier')
 
     patron.first_name = row[first_name] if row[first_name]
-    #patron.middle_name = row[middle_name] if row[middle_name]
     patron.last_name = row[last_name] if row[last_name]
     patron.first_name_transcription = row[first_name_transcription] if row[first_name_transcription]
-    #patron.middle_name_transcription = row[middle_name_transcription] if row[middle_name_transcription]
     patron.last_name_transcription = row[last_name_transcription] if row[last_name_transcription]
 
     patron.full_name = row[full_name] if row[full_name]
@@ -356,9 +360,34 @@ class PatronImportFile < ActiveRecord::Base
     end
     user.username = row[username] if row[username]
     user.user_number = row[user_number] if row[user_number]
-    user.library = Library.where(:name => row[library].to_s.strip).first || Library.first
+    # 所属図書館（未入力の場合：図書館が一つ以外はエラー　入力の場合：図書館が複数あり、入力ミスだとエラー）
+    unless row[library].first.blank?
+      if Library.all.length == 1
+        user.library = Library.where(:name => row[library].to_s.strip).first || Library.first
+      else
+        unless Library.where(:name => row[library].to_s.strip).first.blank? 
+          user.library = Library.where(:name => row[library].to_s.strip).first
+        else
+          import_result.error_msg = I18n.t('import.library_error')
+        end
+      end
+    else
+      if Library.all.length == 1
+        user.library = Library.first
+      else
+        import_result.error_msg = I18n.t('import.library_error')
+      end
+    end
     user.user_group = UserGroup.where(:name => row[user_group_name]).first || UserGroup.first
-    user.department = Department.where(:name => row[department]).first || Department.first
+    # 部署（未登録の場合、id = name 入力値 = displayname にて新規作成）
+    if (Department.where(:display_name => row[department]).first).blank?
+      unless (row[department].first).blank?
+        new_department = Department.add_department(row[department])
+        user.department = Department.where(:display_name => new_department).first
+      end
+    else
+      user.department = Department.where(:display_name => row[department]).first
+    end
     user.expired_at = row[expired_at] if row[expired_at]
     user.user_status = UserStatus.where(:display_name => row[status]).first || UserStatus.first
     user.unable = row[unable] if row[unable]
