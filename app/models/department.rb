@@ -12,9 +12,7 @@ class Department < ActiveRecord::Base
   has_many :users
 
   def self.add_department(name)
-    logger.info("##########department###########")
-    logger.info(name)
-    return [] if name.blank?
+    return nil if name.blank?
     names = [name]
     names.each do |department|
       department = Department.new

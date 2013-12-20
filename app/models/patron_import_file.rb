@@ -46,13 +46,15 @@ class PatronImportFile < ActiveRecord::Base
     full_name = I18n.t('activerecord.attributes.patron.full_name')
     username = I18n.t('activerecord.attributes.user.username')
     del_flg = I18n.t('resource_import_textfile.excel.book.del_flg')
+    library = I18n.t('activerecord.attributes.user.library')
+    department = I18n.t('activerecord.attributes.user.department')
 
     self.reload
     num = {:patron_imported => 0, :user_imported => 0, :failed => 0}
     row_num = 2
     rows = open_import_file
     field = rows.first
-    if [field[username], field[full_name]].reject{|field| field.to_s.strip == ""}.empty?
+    if [field[username], field[full_name], field[department]].reject{|field| field.to_s.strip == ""}.empty?
       raise "You should specify #{username} and #{full_name} in the first line"
     end
     rows.each do |row|
@@ -64,11 +66,23 @@ class PatronImportFile < ActiveRecord::Base
           import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
         end
 
+        department = row[department].first if row[department]
+        if department.blank?
+          import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.check_input')}"
+          Rails.logger.info("update failed: column #{row_num}")
+          num[:failed] += 1
+          next
+        end
         #delete_flagの定義
-        delete_flag = row[del_flg]
+        delete_flag = row[del_flg].first if row[del_flg]
         user = User.where(:username => row[username].to_s.strip).first
         #削除
         unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
+          if user.blank?
+            import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.user_does_not_exist')}"
+            next
+          end
+
           User.transaction do
             import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
             user.destroy
@@ -107,7 +121,7 @@ class PatronImportFile < ActiveRecord::Base
               User.transaction do
                 patron = set_patron_value(user.patron, row)
                 set_user_value(user, row)
-                if patron.save
+                if patron.save!
                   import_result.patron = patron
                 end
                 if user.save!
@@ -122,7 +136,6 @@ class PatronImportFile < ActiveRecord::Base
       rescue ActiveRecord::RecordInvalid => e
         import_result.error_msg = "FAIL[#{row_num}]: #{e}"
         Rails.logger.info("update failed: column #{row_num}")
-        logger.error "##############error################"
         num[:failed] += 1
         next
       ensure
@@ -307,7 +320,7 @@ class PatronImportFile < ActiveRecord::Base
     else
       patron.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     end
-    language = Language.where(:name => row[language].to_s.strip.camelize).first
+    language = Language.where(:name => row[language].to_s.strip.camelize).first || Language.find('77')
     language = Language.where(:iso_639_2 => row[language].to_s.strip.downcase).first unless language
     language = Language.where(:iso_639_1 => row[language].to_s.strip.downcase).first unless language
     patron.language = language if language
@@ -346,9 +359,14 @@ class PatronImportFile < ActiveRecord::Base
       user.password_confirmation = password
     end
     user.username = row[username] if row[username]
-    user.user_number = row[user_number] if row[user_number]
+    unless SystemConfiguration.get("auto_user_number") == false
+      user.user_number = row[username] if row[username]
+    else
+      user.user_number = row[user_number] if row[user_number]
+    end
     # 所属図書館（未入力の場合：図書館が一つ以外はエラー　入力の場合：図書館が複数あり、入力ミスだとエラー）
-    unless row[library].first.blank?
+    #library = row[library].first if row[library]
+    unless library.blank?
       if Library.all.length == 1
         user.library = Library.where(:name => row[library].to_s.strip).first || Library.first
       else
@@ -358,18 +376,13 @@ class PatronImportFile < ActiveRecord::Base
           user.library = nil
         end
       end
-    else
-      if Library.all.length == 1
-        user.library = Library.first
-      else
-        user.library = nil
-      end
     end
     user.user_group = UserGroup.where(:name => row[user_group_name]).first || UserGroup.first
     # 部署（未登録の場合、id = name 入力値 = displayname にて新規作成）
     if (Department.where(:display_name => row[department]).first).blank?
-      unless (row[department].first).blank?
+      unless row[department].blank?
         new_department = Department.add_department(row[department])
+        logger.info(new_department)
         user.department = Department.where(:display_name => new_department).first
       end
     else
@@ -378,8 +391,8 @@ class PatronImportFile < ActiveRecord::Base
     user.expired_at = row[expired_at] if row[expired_at]
     user.user_status = UserStatus.where(:display_name => row[status]).first || UserStatus.first
     user.unable = row[unable] if row[unable]
-    user.created_at = row[created_at]
-    user.updated_at = row[updated_at]
+    user.created_at = row[created_at] if row[created_at]
+    user.updated_at = row[updated_at] if row[updated_at]
     user.role = Role.where(:id => row[role].to_s.strip).first || Role.find('User')
     user.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Librarian')
     locale = Language.where(:iso_639_1 => row['locale'].to_s.strip).first

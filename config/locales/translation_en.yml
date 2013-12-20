@@ -2106,6 +2106,7 @@ en:
     successfully_updated: Successfully updated
     successfully_deleted: Successfully deleted
     user_does_not_exist: User does not exist
+    check_input: Please check input
     will_be_imported:
       one: Resource will be impored in a %{minute} minute.
       other: Resource will be impored in %{minute} minutes.
