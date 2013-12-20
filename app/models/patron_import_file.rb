@@ -57,35 +57,27 @@ class PatronImportFile < ActiveRecord::Base
     end
     rows.each do |row|
       next if row['dummy'].to_s.strip.present?
-      if SystemConfiguration.get("set_output_format_type") == false
-        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join(","))
-      else
-        import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
-      end
+      begin
+        if SystemConfiguration.get("set_output_format_type") == false
+          import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join(","))
+        else
+          import_result = PatronImportResult.create!(:patron_import_file => self, :body => row.fields.join("\t"))
+        end
 
-      #delete_flagの定義
-      delete_flag = row[del_flg]
-      user = User.where(:username => row[username].to_s.strip).first
-      #削除
-      unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
-        begin
+        #delete_flagの定義
+        delete_flag = row[del_flg]
+        user = User.where(:username => row[username].to_s.strip).first
+        #削除
+        unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
           User.transaction do
             import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
             user.destroy
             num[:patron_imported] += 1
             num[:user_imported] += 1
           end
-        rescue ActiveRecord::RecordInvalid => e
-          #import_result.error_msg = "FAIL[#{row_num}]: #{e}"
-          import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.user_does_not_exist')}"
-          Rails.logger.info("patron import failed: column #{row_num}")
-          num[:failed] += 1
-          next
-        end
-      else
-        #作成
-        if user.blank? 
-          begin
+        else
+          #作成
+          if user.blank? 
             User.transaction do
               patron = Patron.new
               patron = set_patron_value(patron, row)
@@ -109,16 +101,9 @@ class PatronImportFile < ActiveRecord::Base
               import_result.error_msg = I18n.t('import.successfully_created')
               num[:user_imported] += 1
             end
-          rescue ActiveRecord::RecordInvalid => e
-            import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-            Rails.logger.info("import failed: column #{row_num}")
-            num[:failed] += 1
-            next
-          end
-        else
-          #更新
-          if user.try(:patron)
-            begin
+          else
+            #更新
+            if user.try(:patron)
               User.transaction do
                 patron = set_patron_value(user.patron, row)
                 set_user_value(user, row)
@@ -131,17 +116,19 @@ class PatronImportFile < ActiveRecord::Base
                 import_result.error_msg = I18n.t('import.successfully_updated')
                 num[:user_imported] += 1
               end
-            rescue ActiveRecord::RecordInvalid => e
-              import_result.error_msg = "FAIL[#{row_num}]: #{e}" 
-              Rails.logger.info("update failed: column #{row_num}")
-              num[:failed] += 1
-              next
             end
           end
         end
+      rescue ActiveRecord::RecordInvalid => e
+        import_result.error_msg = "FAIL[#{row_num}]: #{e}"
+        Rails.logger.info("update failed: column #{row_num}")
+        logger.error "##############error################"
+        num[:failed] += 1
+        next
+      ensure
+        import_result.save!
+        row_num += 1
       end
-      import_result.save!
-      row_num += 1
     end
     self.update_attribute(:imported_at, Time.zone.now)
     Sunspot.commit
@@ -368,14 +355,14 @@ class PatronImportFile < ActiveRecord::Base
         unless Library.where(:name => row[library].to_s.strip).first.blank? 
           user.library = Library.where(:name => row[library].to_s.strip).first
         else
-          import_result.error_msg = I18n.t('import.library_error')
+          user.library = nil
         end
       end
     else
       if Library.all.length == 1
         user.library = Library.first
       else
-        import_result.error_msg = I18n.t('import.library_error')
+        user.library = nil
       end
     end
     user.user_group = UserGroup.where(:name => row[user_group_name]).first || UserGroup.first
