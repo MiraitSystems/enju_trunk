@@ -84,6 +84,7 @@ class Ability
       end
       can :show, Theme
       can :manage, [
+        Abbreviation,
         AccessLog,
         Answer,
         Basket,
@@ -261,6 +262,7 @@ class Ability
         remove_reason.items.count == 0
       end
       can :manage, [
+        Abbreviation,
         AccessLog,
         Answer,
         Basket,
@@ -433,6 +435,7 @@ class Ability
       end
       can [:read, :update, :destroy], NacsisUserRequest, :user_id => user.id
       can :read, [
+        Abbreviation,
         AcceptType,
         CarrierType,
         CirculationStatus,
@@ -491,6 +494,7 @@ class Ability
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
       can :read, [
+        Abbreviation,
         CarrierType,
         CirculationStatus,
         Classification,

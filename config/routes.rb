@@ -1,6 +1,8 @@
 EnjuLeaf::Application.routes.draw do
   get "barcode_registrations/index"
 
+  resources :abbreviations
+
   resources :series_statement_relationship_types
   resources :themes
   resources :barcode_registrations

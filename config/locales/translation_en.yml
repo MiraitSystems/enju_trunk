@@ -2,6 +2,7 @@
 en:
   activerecord:
     models:
+      abbreviation: Abbreviation
       library: Library
       question: Question
       patron_import_file: Patron import file
@@ -197,6 +198,9 @@ en:
       barcode_registration: Registration bar code
 
     attributes:
+      abbreviation:
+        keyword: Keyword
+        v: V
       enju_terminal:
         ipaddr: IP Address
         name: Hostname

@@ -1,6 +1,7 @@
 ja:
   activerecord:
     models:
+      abbreviation: 略語辞書
       wareki: 和暦
       user_request_log: 利用者操作履歴
       library: 図書館
@@ -198,6 +199,9 @@ ja:
       theme: テーマ
       barcode_registration: 資料登録番号バーコード
     attributes:
+      abbreviation:
+        keyword: キーワード
+        v: 略語
       wareki:
         display_name: 表示名
         short_name: 短縮名
