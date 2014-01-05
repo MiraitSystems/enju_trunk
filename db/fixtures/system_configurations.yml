@@ -795,4 +795,10 @@ system_configuration_00113:
   v: "false"
   typename: Boolean
   description: "利用制限が貸出不可な所蔵を検索結果画面に表示しない"
+system_configuration_00114:
+  id: 114
+  keyname: add_only_exist_patron
+  v: "true"
+  typename: Boolean
+  description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
   category: 'manifestation'

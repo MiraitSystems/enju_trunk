@@ -1764,6 +1764,8 @@ ja:
       submit: 出力
       error: "不正な値が入力されています。"
       number: 登録番号
+    add_line: "行追加"
+    del_line: "行削除"
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2040,6 +2042,12 @@ ja:
     last_update_by: 更新者 
     duplicate_user: "同じフルネーム(ヨミ)、電話番号１ー１、生年月日の人が既に登録されています。"
     patron_identifier: 人物団体の識別番号
+    search_placeholder: "検索名を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"
+    adding: "の追加"
+    adding_free: "（既存データ以外の追加）"
+    adding_limitative: "（既存データのみの追加）"
   question:
     my: "自分の質問"
     all: "全ての質問"

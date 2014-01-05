@@ -73,6 +73,8 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/delete' => 'checked_manifestations#destroy'
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
 
+  match 'patrons/search_name' => 'patrons#search_name'
+
   resources :patrons do
     resources :works, :controller => 'manifestations'
     resources :expressions, :controller => 'manifestations'

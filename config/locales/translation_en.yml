@@ -1790,6 +1790,8 @@ en:
       submit: submit
       error: Invalid value has been entered
       number: Number
+    add_line: "Add line"
+    del_line: "Delete line"
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2045,6 +2047,12 @@ en:
     last_update_by: Last update by
     duplicate_user: Duplicate user was already registered. (same full name(transcription), same telephone number 1-1 and same birth date)
     patron_identifier: Patron identifier
+    search_placeholder: Please enter a search name
+    search_searching: Searching...
+    search_nomatch: No matches
+    adding: adding
+    adding_free: (Free input)
+    adding_limitative: (Limitative input)
   question:
     my: My questions
     all: All questions

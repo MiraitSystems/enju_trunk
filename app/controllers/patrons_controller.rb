@@ -4,7 +4,7 @@ class PatronsController < ApplicationController
   add_breadcrumb "I18n.t('activerecord.models.patron')", 'patron_path(params[:id])', :only => [:show]
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.patron'))", 'new_patron_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.patron'))", 'edit_patron_path(params[:id])', :only => [:edit, :update]
-  load_and_authorize_resource :except => :index
+  load_and_authorize_resource :except => [:index, :search_name]
   authorize_resource :only => :index
   before_filter :get_user
   helper_method :get_work, :get_expression
@@ -113,6 +113,24 @@ class PatronsController < ApplicationController
       format.atom
       format.json { render :json => @patrons }
       format.mobile
+    end
+    
+  end
+
+  def search_name
+    @patron_id = params[:patron_id]
+    if @patron_id.blank?
+       @patrons = Patron.where("full_name like '#{params[:search_phrase]}%'").select("id, full_name")
+    else
+       @patrons = Patron.where(id: @patron_id.split(",")).select("id, full_name")
+    end
+    struct_patron = Struct.new(:id, :text)
+    @struct_patron_array = []
+    @patrons.each do |patron|
+      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+    end
+    respond_to do |format|
+      format.json { render :text => @struct_patron_array.to_json }
     end
   end
 
