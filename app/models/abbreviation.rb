@@ -4,11 +4,13 @@ class Abbreviation < ActiveRecord::Base
   def self.get_abbreviation(bookname)
     merge_v = ""
     bookname.split(" ").each do |key|
-      @abberviation = Abbreviations.find(key)
-      if merge_v == "" then
-        merge_v = abbreviation.v
-      else
-        merge_v.concat(" ").concat(abbreviation.v)
+      abbreviation = Abbreviation.where(keyword: key)
+      if ! abbreviation.empty?
+        if merge_v == "" then
+          merge_v = abbreviation[0]['v']
+        else
+          merge_v.concat(" ").concat(abbreviation[0]['v'])
+        end
       end
     end
     return merge_v
