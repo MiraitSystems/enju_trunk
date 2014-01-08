@@ -445,6 +445,60 @@ class ApplicationController < ActionController::Base
     end  
     patron
   end  
+
+  # 先頭が大文字かどうか
+  def self.check_first_big?(str)
+    if /^[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
+
+  # 先頭が数字かどうか
+  def self.check_first_numeric?(str)
+    if /^[0123456789]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
+
+  # 先頭以外に大文字があるかどうか
+  def self.check_middle_big?(str)
+    if /.+[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
+
+  # 先頭以外に記号があるかどうか
+  def self.check_middle_mark?(str)
+    if /.+[!-.\/:-@\[-`{-~]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
+
+  # 半角文字列かどうか
+  def self.check_hankaku_string?(str)
+    if /[abcdefghijklmnopqrstuvwxyz]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
+
+  # 空白があるかどうか (Unicodeプロパティ、POSIX文字クラス 対応含む)
+  def self.exists_space?(str)
+    if /[ 　\p{blank}\[\[:blank:\]\]]/ =~ str then
+      return true
+    else
+      return false
+    end
+  end
 end
 
 class InvalidLocaleError < StandardError
