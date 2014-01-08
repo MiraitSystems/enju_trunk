@@ -1,4 +1,7 @@
 EnjuLeaf::Application.routes.draw do
+  resources :keycodes
+
+
   get "barcode_registrations/index"
 
   resources :series_statement_relationship_types

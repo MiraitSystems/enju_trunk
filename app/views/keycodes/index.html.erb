@@ -1,0 +1,39 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.keycode')) -%></h1>
+<div id="content_list">
+<div style="color: red"><%= flash[:message].to_s -%></div>
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.keycode.name') -%></th>
+    <th><%= t('activerecord.attributes.keycode.display_name') -%></th>
+    <th><%= t('activerecord.attributes.keycode.v') -%></th>
+    <th><%= t('activerecord.attributes.keycode.keyname') -%></th>
+    <th><%= t('activerecord.attributes.keycode.started_at') -%></th>
+    <th><%= t('activerecord.attributes.keycode.ended_at') -%></th>
+    <th></th>
+  </tr>
+
+<%- @keycodes.each do |keycode| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= keycode.name -%></td>
+    <td><%= keycode.display_name -%></td>
+    <td><%= keycode.v -%></td>
+    <td><%= keycode.keyname -%></td>
+    <td><%= l(keycode.started_at, :format => :only_date) -%></td>
+    <td><%= l(keycode.ended_at, :format => :only_date) -%></td>
+    <td>
+      <%= link_to t('page.edit'), edit_keycode_path(keycode) -%>
+      <%= link_to t('page.destroy'), keycode, :confirm => t('page.are_you_sure'), :method => :delete -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.keycode')), new_keycode_path -%></li>
+  </ul>
+</div>

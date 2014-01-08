@@ -1,0 +1,46 @@
+<%= form_for(@keycode) do |f| %>
+  <%= f.error_messages %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :display_name %><br />
+    <%= f.text_field :display_name %>
+  </div>
+  <div class="field">
+    <%= f.label :v %><br />
+    <%= f.text_field :v %>
+  </div>
+  <div class="field">
+    <%= f.label :keyname %><br />
+    <%= f.text_field :keyname %>
+  </div>
+
+  <div class="field">
+<script>
+$(function(){
+  $('#keycode_started_at').setCalendar({src:'/assets/calendar.png'});
+  $('#keycode_ended_at').setCalendar({src:'/assets/calendar.png'});
+});
+</script>
+    <%= f.label :started_at %><br />
+<!--
+    <%= f.date_select :started_at, :use_month_numbers => true -%>
+-->
+    <%= f.text_field :started_at %>
+  </div>
+
+  <div class="field">
+    <%= f.label :ended_at %><br />
+<!--
+    <%= f.date_select :ended_at, :use_month_numbers => true -%>
+-->
+    <%= f.text_field :ended_at %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

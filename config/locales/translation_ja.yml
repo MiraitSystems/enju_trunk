@@ -197,6 +197,7 @@ ja:
       series_statement_relationship_type: 遍歴関係タイプ
       theme: テーマ
       barcode_registration: 資料登録番号バーコード
+      keycode: コード管理
     attributes:
       wareki:
         display_name: 表示名
@@ -1487,6 +1488,14 @@ ja:
         publish: 公開範囲
         note: 注記
         position: 優先度
+      keycode:
+        name: コード識別記号
+        display_name: コード名称
+        v: コードキー値
+        keyname: コード内容
+        started_at: 開始日時
+        ended_at: 終了日時
+        ended_at_invalid: 終了日は開始日より未来を指定してください。
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
