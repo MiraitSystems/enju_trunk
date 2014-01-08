@@ -950,3 +950,87 @@ system_configuration_00135:
   typename: Boolean
   description: "月別利用統計: コピー件数(件)を表示しない"
   category: 'statistics'
+system_configuration_00136:
+  id: 136
+  keyname: statistic_report.daily_report.not_use_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 蔵書冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00137:
+  id: 137
+  keyname: statistic_report.daily_report.not_use_checkout_users
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出人数(人)を表示しない"
+  category: 'statistics'
+system_configuration_00138:
+  id: 138
+  keyname: statistic_report.daily_report.checkout_users_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出人数(人)に年齢別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00139:
+  id: 139
+  keyname: statistic_report.daily_report.not_use_checkout_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出冊数 (冊)を表示しない"
+  category: 'statistics'
+system_configuration_00140:
+  id: 140
+  keyname: statistic_report.daily_report.checkout_items_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出冊数 (冊)に区分別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00141:
+  id: 141
+  keyname: statistic_report.daily_report.not_use_checkout_items_reminded
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 督促対象資料数を表示しない"
+  category: 'statistics'
+system_configuration_00142:
+  id: 142
+  keyname: statistic_report.daily_report.not_use_checkin_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 返却数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00143:
+  id: 143
+  keyname: statistic_report.daily_report.not_use_checkin_items_reminded
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 督促資料返却数を表示しない"
+  category: 'statistics'
+system_configuration_00144:
+  id: 144
+  keyname: statistic_report.daily_report.not_use_reserves
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 予約件数 (件)を表示しない"
+  category: 'statistics'
+system_configuration_00145:
+  id: 145
+  keyname: statistic_report.daily_report.reserves_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 予約件数 (件)に区分別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00146:
+  id: 146
+  keyname: statistic_report.daily_report.not_use_questions
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: レファレンス数 (件)を表示しない"
+  category: 'statistics'
+system_configuration_00147:
+  id: 147
+  keyname: statistic_report.daily_report.not_use_consultations
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 窓口利用件数(件)を表示しない"
+  category: 'statistics'
