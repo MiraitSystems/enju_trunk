@@ -1,5 +1,6 @@
 class Abbreviation < ActiveRecord::Base
   attr_accessible :keyword, :v
+  validates_uniqueness_of :keyword
 
   def self.get_abbreviation(bookname)
     merge_v = ""
