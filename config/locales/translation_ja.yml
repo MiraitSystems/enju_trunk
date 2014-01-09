@@ -1493,9 +1493,9 @@ ja:
         display_name: コード名称
         v: コードキー値
         keyname: コード内容
-        started_at: 開始日時
-        ended_at: 終了日時
-        ended_at_invalid: 終了日は開始日より未来を指定してください。
+        started_at: 開始年月日
+        ended_at: 終了年月日
+        ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
