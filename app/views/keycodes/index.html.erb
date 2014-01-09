@@ -20,7 +20,11 @@
     <td><%= keycode.v -%></td>
     <td><%= keycode.keyname -%></td>
     <td><%= l(keycode.started_at, :format => :only_date) -%></td>
-    <td><%= l(keycode.ended_at, :format => :only_date) -%></td>
+    <%- if keycode.ended_at.nil? -%>
+      <td></td>
+    <%- else -%>
+      <td><%= l(keycode.ended_at, :format => :only_date) -%></td>
+    <%- end -%>
     <td>
       <%= link_to t('page.edit'), edit_keycode_path(keycode) -%>
       <%= link_to t('page.destroy'), keycode, :confirm => t('page.are_you_sure'), :method => :delete -%>

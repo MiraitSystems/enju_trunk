@@ -22,7 +22,11 @@
 
 <p>
   <strong><%= t('activerecord.models.keycode') -%>:</strong>
-  <%= l(@keycode.started_at, :format => :only_date) -%> - <%= l(@keycode.ended_at, :format => :only_date) -%>
+  <%- if @keycode.ended_at.nil? -%>
+    <%= l(@keycode.started_at, :format => :only_date) -%> -
+  <%- else -%>
+    <%= l(@keycode.started_at, :format => :only_date) -%> - <%= l(@keycode.ended_at, :format => :only_date) -%>
+  <%- end -%>
 </p>
 
 
