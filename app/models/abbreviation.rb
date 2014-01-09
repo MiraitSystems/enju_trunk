@@ -14,8 +14,10 @@ class Abbreviation < ActiveRecord::Base
         else
           merge_before_v = key
         end
-      # 先頭以外に大文字がある場合
-      elsif ApplicationController.check_middle_big?(key) then
+      # 先頭が小文字で、先頭以外に大文字または記号がある場合
+      elsif ApplicationController.check_hankaku_string?(key[0]) and
+        (ApplicationController.check_middle_big?(key) or 
+         ApplicationController.check_middle_mark?(key)) then
         merge_before_v = key
       # 上記以外の場合、次の要素へ進む
       else
