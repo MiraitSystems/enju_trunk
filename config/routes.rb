@@ -1,5 +1,10 @@
 EnjuLeaf::Application.routes.draw do
+  get "barcode_registrations/index"
+
+  resources :series_statement_relationship_types
   resources :themes
+  resources :barcode_registrations
+ 
   #resources :identifier_types
   resources :warekis
   resources :user_request_logs
@@ -8,6 +13,7 @@ EnjuLeaf::Application.routes.draw do
     post :select_manifestation, :on => :member
   end
 
+  resources :patron_aliases
   resources :numberings
   resources :departments
   resources :classmarks
@@ -60,7 +66,7 @@ EnjuLeaf::Application.routes.draw do
     post :output_show, :on => :member
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
-    get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis'
+    get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis', :as => 'nacsis'
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'
@@ -141,6 +147,7 @@ EnjuLeaf::Application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
+    post :output_user_notice, :on => :member   
     resources :answers
     resources :baskets do
       resources :checked_items
@@ -208,6 +215,9 @@ EnjuLeaf::Application.routes.draw do
     end
     resources :series_has_manifestations
     resources :series_statement_relationships
+  end
+  resources :relationship_families, shallow:true do
+    resources :series_statement_relationships, :except => :index
   end
   resources :series_statement_relationships
   resources :barcodes
@@ -412,6 +422,7 @@ EnjuLeaf::Application.routes.draw do
   resources :budget_and_results_managements
 
   resources :statistic_reports do
+    post :get_report, :on => :collection
     post :get_monthly_report, :on => :collection
     post :get_daily_report, :on => :collection
     post :get_timezone_report, :on => :collection

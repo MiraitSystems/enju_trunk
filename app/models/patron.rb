@@ -34,6 +34,7 @@ class Patron < ActiveRecord::Base
   has_many :items, :through => :owns
   has_many :patron_merges, :dependent => :destroy
   has_many :patron_merge_lists, :through => :patron_merges
+  has_many :patron_aliases, :dependent => :destroy
   belongs_to :user
   belongs_to :patron_type
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
@@ -41,16 +42,19 @@ class Patron < ActiveRecord::Base
   belongs_to :country
   has_one :patron_import_result
 
+  accepts_nested_attributes_for :patron_aliases
+  attr_accessible :patron_aliases_attributes
+
   validates_presence_of :language, :patron_type, :country
   validates_associated :language, :patron_type, :country
-  validates :full_name, :presence => true, :length => {:maximum => 255}
+  validates :full_name, :uniqueness => true, :presence => true, :length => {:maximum => 255}
   validates :user_id, :uniqueness => true, :allow_nil => true
   validates :birth_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
-  before_save :change_note
+  before_save :change_note, :mark_destroy_blank_full_name
 
   validate :check_duplicate_user
 
@@ -79,6 +83,11 @@ class Patron < ActiveRecord::Base
     string :fax_number_2
     string :zip_code_1
     string :zip_code_2
+    string :place
+    string :address_1
+    string :address_2
+    string :other_designation
+    string :note
     string :username do
       user.username if user
     end
@@ -91,6 +100,7 @@ class Patron < ActiveRecord::Base
     integer :expression_ids, :multiple => true
     integer :manifestation_ids, :multiple => true
     integer :patron_merge_list_ids, :multiple => true
+    integer :derived_patron_ids, :multiple => true
     integer :original_patron_ids, :multiple => true
     integer :required_role_id
     integer :patron_type_id
@@ -99,6 +109,12 @@ class Patron < ActiveRecord::Base
   end
 
   paginates_per 10
+
+  def mark_destroy_blank_full_name
+    patron_aliases.each do |patron_alias|
+      patron_alias.mark_for_destruction if patron_alias.full_name.blank? and patron_alias.full_name_transcription.blank? and patron_alias.full_name_alternative.blank?
+    end
+  end
 
   def full_name_without_space
     full_name.gsub(/\s/, "")
