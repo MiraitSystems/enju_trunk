@@ -23,11 +23,13 @@
     <%- end -%>
   <%- end -%>
 
-  <% if can? :create, user %>
-    <%= form_tag({:action => 'output_user_notice'}) do %>
-      <div class="actions">
-        <%= submit_tag t('page.output', :model => t('page.user_notice')) %>
-      </div>
+  <% if SystemConfiguration.get("use_user_notice") %>
+    <% if can? :create, user %>
+      <%= form_tag({:action => 'output_user_notice'}) do %>
+        <div class="actions">
+          <%= submit_tag t('page.output', :model => t('page.user_notice')) %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 
