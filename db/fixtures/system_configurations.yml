@@ -1034,3 +1034,10 @@ system_configuration_00147:
   typename: Boolean
   description: "日別利用統計: 窓口利用件数(件)を表示しない"
   category: 'statistics'
+system_configuration_00148:
+  id: 148
+  keyname: use_user_notice
+  v: "false"
+  typename: Boolean
+  description: "利用者通知書の出力ボタンを表示するか"
+  category: 'user'

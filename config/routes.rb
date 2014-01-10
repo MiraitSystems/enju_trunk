@@ -147,6 +147,7 @@ EnjuLeaf::Application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
+    post :output_user_notice, :on => :member   
     resources :answers
     resources :baskets do
       resources :checked_items

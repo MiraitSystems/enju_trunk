@@ -1758,6 +1758,7 @@ ja:
       no_matches_found: テーマが見つかりません
       hot_topic: 話題のテーマ
       related_manifestation: 関連する資料
+    user_notice: 利用者通知書
     barcode_registration:
       first_number: 開始番号
       last_number: 終了番号
