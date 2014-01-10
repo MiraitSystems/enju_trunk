@@ -2584,6 +2584,10 @@ ja:
     item_register_series: 雑誌原簿
     item_register_article: 文献原簿
     item_register_other: その他原簿
+    title_catalog: 図書書名目録
+    author_catalog: 図書著者名目録
+    classified_catalog: 図書分類目録
+    
     invalid_file_type: "不正なファイル種別が指定されています。"
     export_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
     export_job_success_subject: "ファイル出力が完了しました [ID: %{job_name}]"
