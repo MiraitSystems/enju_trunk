@@ -491,24 +491,6 @@ class Item < ActiveRecord::Base
     make_audio_list_pdf(pdf_file, @items) if file_type.nil? || file_type == "pdf"
   end
 
-  def self.export_catalog(out_dir, file_type = nil)
-    raise "invalid parameter: no path" if out_dir.nil? || out_dir.length < 1
-    #logger.info type
-    tsv_file = out_dir + "catalog.tsv"
-    #csv_file = out_dir + "catalog.csv"
-    pdf_file = out_dir + "catalog.pdf"
-    logger.info "output catalog tsv: #{tsv_file} pdf: #{pdf_file}"
-    # create output path
-    FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
-    # get item
-    @items = Item.order("bookstore_id DESC, acquired_at ASC, item_identifier ASC").limit(5)
-    # make tsv
-    make_catalog_tsv(tsv_file, @items) if file_type.nil? || file_type == "tsv"
-    # make pdf
-    make_catalog_pdf(pdf_file, @items) if file_type.nil? || file_type == "pdf"
-  end
-
-
   private
   def self.patrons_list(patrons)
     ApplicationController.helpers.patrons_list(patrons, {:nolink => true})
@@ -636,69 +618,6 @@ class Item < ActiveRecord::Base
       end
     end
   end
- 
-  def self.make_catalog_tsv(tsvfile, items)
-    columns = [
-      [:bookstore, 'activerecord.models.bookstore'],
-      ['item_identifier', 'activerecord.attributes.item.item_identifier'],
-      ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
-      [:creator, 'patron.creator'],
-      [:original_title, 'activerecord.attributes.manifestation.original_title'],
-      [:pub_year, 'activerecord.attributes.manifestation.pub_year'],
-      [:publisher, 'patron.publisher'],
-      [:price, 'activerecord.attributes.manifestation.price'],
-      [:call_number, 'activerecord.attributes.item.call_number'],
-      [:marc_number, 'activerecord.attributes.manifestation.marc_number'],
-      ['note', 'activerecord.attributes.item.note']
-    ]
-    File.open(tsvfile, "w") do |output|
-      # add UTF-8 BOM for excel
-      output.print "\xEF\xBB\xBF".force_encoding("UTF-8")
-
-      # タイトル行
-      row = []
-      columns.each do |column|
-        row << I18n.t(column[1])
-      end
-      output.print '"'+row.join("\"\t\"")+"\"\n"
-      if items.nil? || items.size < 1
-        logger.warn "item data is empty"
-      else
-        items.each do |item|
-          row = []
-          columns.each do |column|
-            case column[0]
-            when :bookstore
-              row << item.try(:bookstore).try(:name) || ""
-            when :creator
-              creators = item.manifestation.creators.inject([]){|names, creator| names << creator.full_name if creator.full_name; names}.join("\t")
-              row << creators || ""
-            when :original_title
-              row << item.try(:manifestation).try(:original_title) || ""
-            when :pub_year
-              pub_year = item.try(:manifestation).try(:date_of_publication).strftime("%Y") rescue nil
-              row << pub_year || ""
-            when :publisher
-              publishers = item.publisher.delete_if{ |p|p.blank? }.join("\t") if item.publisher
-              row << publishers || ""
-            when :price
-              row << item.try(:manifestation).try(:price) || ""
-            when :marc_number
-              marc_number = item.try(:manifestation).try(:marc_number)[0, 10] rescue nil
-              row << marc_number || ""
-            when :call_number
-              call_number = call_numberformat(item)
-              row << call_numberformat(item) || ""
-            else
-              row << get_object_method(item, column[0].split('.')).to_s.gsub(/\r\n|\r|\n/," ").gsub(/\"/,"\"\"")
-            end
-          end
-          output.print '"'+row.join("\"\t\"")+"\"\n"
-        end
-      end
-    end
-  end
-
 
   def self.make_item_register_pdf(pdf_file, items, list_title = nil)
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'item_register.tlf') 
@@ -774,51 +693,6 @@ class Item < ActiveRecord::Base
     end
     report.generate_file(pdf_file)
     logger.error "created report: #{Time.now}"
-  end
-
-  def self.make_catalog_pdf(pdf_file, items, list_title = nil)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'item_register.tlf')
-    report.events.on :page_create do |e|
-      e.page.item(:page).value(e.page.no)
-    end
-    report.events.on :generate do |e|
-      e.pages.each do |page|
-        page.item(:total).value(e.report.page_count)
-        page.item(:list_title).value(I18n.t("item_register.#{list_title}"))
-      end
-    end
-
-    bookstore_ids = [nil] + items.inject([]){|ids, item| ids << item.bookstore_id; ids}.uniq!  rescue [nil]
-    if bookstore_ids
-      bookstore_ids.each do |bookstore_id|
-        report.start_new_page do |page|
-          page.item(:date).value(Time.now)
-          page.item(:bookstore).value(Bookstore.find(bookstore_id).name) rescue nil
-          items.each do |item|
-            if item.bookstore_id == bookstore_id
-              page.list(:list).add_row do |row|
-                row.item(:item_identifier).value(item.item_identifier)
-                row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
-                row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
-                row.item(:title).value(item.manifestation.original_title) if item.manifestation
-                row.item(:pub_year).value(item.manifestation.date_of_publication.strftime("%Y")) if item.manifestation && item.manifestation.date_of_publication
-                row.item(:publisher).value(item.publisher.delete_if{|p|p.blank?}[0]) if item.publisher
-                row.item(:price).value(to_format(item.price)) if item.price
-                row.item(:call_number).value(call_numberformat(item)) if item.call_number
-                row.item(:marc_number).value(item.manifestation.marc_number[0,10]) if item.manifestation && item.manifestation.marc_number
-                row.item(:note).value(item.note.split("\r\n")[0]) if item.note
-              end
-            end
-          end
-        end
-      end
-    else
-      report.start_new_page do |page|
-        page.item(:date).value(Time.now)
-        page.item(:bookstore).value(nil)
-      end
-    end
-    report.generate_file(pdf_file)
   end
 
   def self.make_export_item_list_pdf(items, filename)
@@ -1298,11 +1172,60 @@ class Item < ActiveRecord::Base
     return data
   end
 
+  def self.output_catalog(type, out_dir, file_type = nil)
+    raise "invalid parameter: no path" if out_dir.nil? || out_dir.length < 1
+    pdf_file = out_dir + "#{type}_catalog.pdf"
+    logger.info "output #{type}_catalog  pdf: #{pdf_file}"
+    FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
+    if type == 'title'
+      @manifestations = Manifestation.order("original_title ASC")
+    elsif type == 'author' 
+      @manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name")
+    elsif type == 'classifild'
+      @manifestations = Manifestation.order("ndc ASC")
+    end
+    make_catalog_pdf(pdf_file, @manifestations, "#{type}_catalog") if file_type.nil? || file_type == "pdf"
+  end
+
+
+  def self.make_catalog_pdf(pdf_file, manifestations, list_title = nil)
+    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{list_title}.tlf")
+    #report page
+    report.events.on :page_create do |e|
+      e.page.item(:page).value(e.page.no)
+    end
+    report.events.on :generate do |e|
+      e.pages.each do |page|
+        page.item(:total).value(e.report.page_count)
+      end
+    end
+    report.start_new_page
+    report.page.item(:date).value(Time.now)
+    report.page.item(:list_name).value(I18n.t("item_register.#{list_title}"))
+    manifestations.find_each do |manifestation|
+      manifestation.items.each do |item|
+        report.page.list(:list).add_row do |row|
+          row.item(:title).value(item.manifestation.original_title) if item.manifestation
+          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+          row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
+
+          row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
+          row.item(:shelf).value(item.shelf.display_name) if item.shelf
+          row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
+          row.item(:item_identifier).value(item.item_identifier)
+          row.item(:call_number).value(call_numberformat(item))
+        end
+      end
+    end
+    report.generate_file(pdf_file)
+  end
+
   def self.make_export_item_list_job(file_name, file_type, method, dumped_query, args, user)
     job_name = GenerateItemListJob.generate_job_name
     Delayed::Job.enqueue GenerateItemListJob.new(job_name, file_name, file_type, method, dumped_query, args, user)
     job_name
   end
+
 
   class GenerateItemListJob
     include Rails.application.routes.url_helpers
@@ -1359,48 +1282,7 @@ class Item < ActiveRecord::Base
   def self.make_export_register_job(file_name, file_type, method, args, user)
     job_name = GenerateItemRegisterJob.generate_job_name
     Delayed::Job.enqueue GenerateItemRegisterJob.new(job_name, file_name, file_type, method, args, user)
-    GenerateItemRegisterJob.new(job_name, file_name, file_type, method, args, user)
     job_name
-  end
-
-  def self.output_catalog(file_name)
-    manifestations = Manifestation.order("original_title ASC").limit(150) if file_name == "title_catalog"
-    #manifestations = Manifestation.order("full_name ASC").limit(150) if file_name == "author_catalog"
-    manifestations = Manifestation.order("ndc ASC").limit(150) if file_name == "classified_catalog"
-    
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{file_name}.tlf")
-    #report page
-    report.events.on :page_create do |e|
-      e.page.item(:page).value(e.page.no)
-    end
-    report.events.on :generate do |e|
-      e.pages.each do |page|
-        page.item(:total).value(e.report.page_count)
-      end
-    end
-    report.start_new_page
-    report.page.item(:date).value(Time.now)
-    report.page.item(:list_name).value(I18n.t("item_register.#{file_name}"))
-    #items.each do |item|
-    logger.info("*****")
-    logger.info I18n.t("item_register.#{file_name}")
-    #logger.info Manifestation.first.items
-    manifestations.each do |manifestation|
-      manifestation.items.each do |item|
-        report.page.list(:list).add_row do |row|
-          row.item(:title).value(item.manifestation.original_title) if item.manifestation
-          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
-          row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
-          row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
-          row.item(:shelf).value(item.shelf.display_name) if item.shelf
-          row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
-          row.item(:item_identifier).value(item.item_identifier)
-          row.item(:call_number).value(call_numberformat(item))   
-        end
-      end
-    end
-    logger.info("#####")
-    return report
   end
 
   class GenerateItemRegisterJob
@@ -1421,12 +1303,10 @@ class Item < ActiveRecord::Base
       fn = "#{file_name}.#{file_type}"
       user_file = UserFile.new(user)
       url = nil
-
       logger.error "SQL start at #{Time.now}"
 
       Dir.mktmpdir do |tmpdir|
         Item.__send__(method, *args, tmpdir + '/', file_type)
-
         o, info = user_file.create(:item_register, fn)
         begin
           open(File.join(tmpdir, fn)) do |i|
@@ -1450,7 +1330,11 @@ class Item < ActiveRecord::Base
       message(
         user,
         I18n.t('item_register.export_job_error_subject', :job_name => job_name),
-        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message))
+        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message),
+        method,
+        args,
+        file_type
+        )
     end
   end
 end
