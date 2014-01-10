@@ -11,7 +11,7 @@ class ExportItemRegistersController < ApplicationController
                    [t('item_register.item_register_other'),7],
                    [t('item_register.title_catalog'),8],
                    [t('item_register.author_catalog'),9],
-                   [t('item_register.classfied_catalog'),10],
+                   [t('item_register.classified_catalog'),10],
                   ]
     super
   end
