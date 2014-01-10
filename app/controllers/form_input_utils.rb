@@ -4,8 +4,19 @@ module FormInputUtils
 
   # 入力文字列を整数化する
   # ただし数値を表す文字列でない場合にはnilを返す
+  #
+  # 使用例:
+  #
+  #     normalize_integer('10') #=> 10
+  #     normalize_integer('010') #=> 10
+  #     normalize_integer('a10') #=> nil
+  #     normalize_integer('10a') #=> nil
+  #     normalize_integer(' 10') #=> 10
   def normalize_integer(form_input)
-    Integer(form_input.to_s) rescue nil
+    text = form_input.to_s
+    return nil unless /\A\d+\z/ =~ text
+
+    text.to_i
   end
 
   # 以下の前処理を加えた新しい文字列を返す
@@ -16,9 +27,25 @@ module FormInputUtils
     form_input.to_s.gsub(/[　\s]+/, ' ').strip
   end
 
+  # 引用符をエスケープした文字列を返す
+  # 第二引数がtrueなら空白文字もエスケープする
+  def escape_query_string(form_input, escape_wsp = false)
+    escaped = form_input.to_s
+    escaped = escaped.gsub(/(['"\\])/, '\\\\\1')
+    escaped = escaped.gsub(/([\s　])/, '\\\\\1') if escape_wsp
+    escaped
+  end
+
   # 空白を含まない文字列、"..."、'...'を抽出する
   # ただし単独のAND、ORは"AND"、"OR"に変換して返す(quote_op == trueのとき)
   # ブロックが与えられていれば抽出した文字列に適用する
+  #
+  # 使用例:
+  #
+  #     each_query_word('foo bar') #=> ["foo", "bar"]
+  #     each_query_word('foo "bar baz"') #=> ["foo", "\"bar baz\""]
+  #     each_query_word('foo AND bar') #=> ["foo", "\"AND\"", "bar"]
+  #     each_query_word('foo AND bar', false) #=> ["foo", "AND", "bar"]
   def each_query_word(str, quote_op = true)
     ary = []
     str = normalize_query_string(str)
@@ -33,6 +60,13 @@ module FormInputUtils
 
   # "..."、'...'から先頭と末尾の「"」「'」を除いた文字列を返す
   # 文字列中の「\"」は「"」に変換する
+  #
+  # 使用例:
+  #
+  #     unquote_query_word(%q<"foo">) #=> "foo"
+  #     unquote_query_word(%q<'foo'>) #=> "foo"
+  #     unquote_query_word(%q<'foo">) #=> "'foo\""
+  #     unquote_query_word(%q<"\\">) #=> "\\"
   def unquote_query_word(word)
     word.sub(/(["'])(.*)\1/, '\\2').gsub(/\\(.)/, '\\1')
   end
@@ -104,5 +138,102 @@ module FormInputUtils
     end
 
     [time, guess]
+  end
+
+  # Sunspotのfulltextによる検索においては
+  # 検索文字列が1文字だけのときにうまく検索できないことがある。
+  # これを回避(近似)するためにstringで登録されるインデックスを用いて
+  # 1文字検索を行うためのSolr用クエリー文字列を生成する。
+  # (fulltextによる検索は、searchableブロックでtextで登録されるインデックスが対象となる。)
+  #
+  # 引数は次の通り。
+  #
+  #  * text - 1文字からなる検索文字列を含む文字列
+  #  * model - 検索対象とするモデル(クラス)
+  #  * string_fields - textで登録される文字列群をカバーするのに十分なstring型のインデックス群
+  #
+  # 使用例:
+  #
+  #     generate_adhoc_one_char_query_text('あ い うえお AND "かき くけこ"', Patron, [:full_name, :note])
+  #     #=> %Q|_query_:"{!edismax qf='full_name_s note_s'}*あ* *い*" *うえお* "AND" "かき くけこ"|
+  #
+  # 注意:
+  # 可能ならば適切なインデックス構成とすることでこうした問題を解決するのが望ましい。
+  # しかし、インデックス構成の変更が難しいケースもある。
+  # ここでの方法はあくまでadhocなものであり利用を推奨するものではない。
+  def generate_adhoc_one_char_query_text(text, model, string_fields)
+    generate_adhoc_string_query_text(text, model, string_fields) do |t|
+      t.size == 1 ? "*#{t}*" : nil
+    end
+  end
+
+  # 与えられたテキストから検索語を抽出し、
+  # 各語に対してブロックを適用する。
+  # ブロックの返り値が偽ならば通常の検索を行い、
+  # 第3引数で指定されたstring型フィールドで
+  # 検索を行うようなSolrクエリー式を生成する。
+  #
+  # (generate_adhoc_one_char_query_textを参照)
+  def generate_adhoc_string_query_text(text, model, string_fields)
+    str_words = []
+    words = []
+    each_query_word(text) do |t|
+      if r = yield(t)
+        str_words << r
+      else
+        words << t
+      end
+    end
+
+    if str_words.present?
+      words << adhoc_text_field_query(str_words, model, string_fields)
+    end
+    words.join(' ')
+  end
+
+  # 第1引数で与えられたテキストを
+  # 第3引数で与えられたフィールドから
+  # 検索するためのSolrクエリー式を返す。
+  #
+  # その際、与えられたフィールドが
+  # 第2引数で与えられたモデルにおいて
+  # 定義されていることを検査する。
+  def adhoc_text_field_query(qwords, model, fields, nest = true, op = :default)
+    model_string_fields = {}
+    Sunspot::Setup.for(model).fields.each do |sunspot_field|
+      next unless sunspot_field.type.is_a?(Sunspot::Type::StringType)
+      model_string_fields[sunspot_field.name] = sunspot_field.indexed_name
+    end
+
+    indexed_names = []
+    fields.each do |field|
+      unless model_string_fields.include?(field)
+        logger.debug "#{model.name} has no such a string-typed-field: #{field.inspect}"
+        next
+      end
+      indexed_names << model_string_fields[field]
+    end
+
+    if indexed_names.blank?
+      # 指定されたstring型フィールドのすべてが
+      # modelに登録されていなかった
+      # (用法の間違いのおそれがある)
+      logger.debug "no valid string-typed-filed-names for #{model.name} given (missuse?)"
+      return one_char_text
+    end
+
+    case op
+    when :and
+      op = ' AND '
+    when :or
+      op = ' OR '
+    else
+      op = ' '
+    end
+
+    query = %Q|#{[qwords].flatten.map(&:to_s).join(op)}|
+    query = escape_query_string(query) if nest
+    query = %Q|{!edismax qf='#{indexed_names.join(' ')}'}#{query}|
+    nest ? %Q|_query_:"#{query}"| : query
   end
 end

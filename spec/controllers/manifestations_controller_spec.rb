@@ -5,27 +5,9 @@ describe ManifestationsController do
   fixtures :all
 
   describe "GET index", :solr => true do
-    # SystemConfigurationの簡易設定
-    def update_system_configuration(key, value)
-      Rails.cache.clear
-      sc = SystemConfiguration.find_by_keyname(key)
-      unless sc
-        t = case value
-            when String
-              'String'
-            when true, false
-              'Boolean'
-            when Fixnum
-              'Numeric'
-            end
-        sc = SystemConfiguration.new(keyname: key, typename: t)
-      end
-      sc.v = value.to_s
-      sc.save!
-    end
-
     before do
       Rails.cache.clear # SystemConfiguration由来の値が不定になるのを避けるため
+      update_system_configuration('manifestations.split_by_type', 'false') # このブロックではsplit_by_type==falseを基本とする
     end
 
     shared_examples_for 'manifestation search conditions' do
@@ -302,6 +284,7 @@ describe ManifestationsController do
         include_examples 'manifestation search conditions'
 
         it 'should search with/without is_article' do
+          update_system_configuration('manifestations.split_by_type', 'true')
           get :index
           check_called(:with, :is_article, :equal_to, false)
           check_called(:with, :is_article, :equal_to, true)
@@ -650,104 +633,6 @@ describe ManifestationsController do
       end
 
       describe 'advanced search' do
-        [
-          %w(tag tag_sm),
-          %w(title title_text),
-          %w(creator creator_text),
-          %w(contributor contributor_text),
-          %w(publisher publisher_text),
-          %w(isbn isbn_sm), %w(nbn nbn_s),
-          %w(item_identifier item_identifier_sm),
-          %w(manifestation_type manifestation_type_sm),
-        ].each do |param, field|
-          it "should search from #{field} field when #{param} param is specified" do
-            found = false
-            Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-              found = true if /\b#{Regexp.quote(field)}:\(foobar\)/ =~ qs
-            end
-            get :index, param => 'foobar'
-            response.should be_success
-            found.should be_true
-          end
-        end
-
-        [
-          %w(title title_text),
-          %w(creator creator_text),
-          %w(contributor contributor_text),
-          %w(publisher publisher_text),
-        ].each do |param, field|
-          it "should search with \"*#{param}*\" from #{field} field when one char is specified as #{field} field" do
-            found = false
-            Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-              found = true if /\b#{Regexp.quote(field)}:\(\*あ\*\)/ =~ qs
-            end
-            get :index, param => 'あ'
-            response.should be_success
-            found.should be_true
-          end
-        end
-
-        describe 'exact-match' do
-          [
-            %w(title title_sm),
-            %w(creator creator_sm),
-          ].each do |param, field|
-            it "should search records that have specified #{field} value when #{param}_merge is \"exact\"" do
-              found = false
-              Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-                found = true if /\b#{Regexp.quote(field)}:"foobar"/ =~ qs
-              end
-              get :index, param => 'foobar', "#{param}_merge" => 'exact'
-              response.should be_success
-              found.should be_true
-            end
-          end
-        end
-
-        describe 'or-search' do
-          [
-            %w(query),
-            %w(title title_text),
-            %w(creator creator_text),
-          ].each do |param, field|
-            it "should search records that match any words of the query string when #{param}_merge is \"any\"" do
-              found = false
-              Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-                t = "#{Regexp.quote(field)}:" if field
-                found = true if /#{t}\(foobar OR barbaz\)/ =~ qs
-              end
-              get :index, param => 'foobar barbaz', "#{param}_merge" => 'any'
-              response.should be_success
-              found.should be_true
-            end
-          end
-        end
-
-        describe 'not-search' do
-          [
-            %w(query),
-            %w(title title_text),
-            %w(creator creator_text),
-            %w(publisher publisher_text),
-          ].each do |param, field|
-            it "should search records that dont match all words of the except_#{param}" do
-              found = false
-              Sunspot::DSL::Search.any_instance.stub(:fulltext) do |qs, *opts|
-                if field
-                  t = "#{Regexp.quote(field)}:"
-                  found = true if /\b#{t}\(foobar\)/ =~ qs && /#{t}\(-barbaz\)/ =~ qs
-                else
-                  found = true if /\bfoobar\b/ =~ qs && /-barbaz\b/ =~ qs
-                end
-              end
-              get :index, param => 'foobar', "except_#{param}" => 'barbaz'
-              response.should be_success
-              found.should be_true
-            end
-          end
-        end
-
         def it_should_set_range_query(field_name, from_param, to_param, cond)
           field_regex = Regexp.quote(field_name)
           expect_regex = Regexp.quote(cond[:expect]) if cond[:expect]
@@ -883,7 +768,11 @@ describe ManifestationsController do
             expected_args = [order_args[0], dir ? dir : order_args[1]]
             it "should be \"#{order_args.join(' ')}\" with sort_by=#{param.inspect} and order=#{dir.inspect}" do
               called = []
-              expected = [expected_args, [:created_at, :desc]]*3
+
+              # 指定された主orderと、幅order[:created_at, :desc]がコントローラで指定される(後者は固定)
+              # split_by_type==falseのとき、search_allとsearch_all_sessionの二つの検索オブジェクトが生成される
+              expected = [expected_args, [:created_at, :desc]]*2
+
               Sunspot::DSL::Search.any_instance.stub(:order_by) do |*args|
                 called << args
               end
@@ -899,7 +788,10 @@ describe ManifestationsController do
 
         it 'should be done by and updated_at in oai format' do
           called = []
-          expected = [[:updated_at, :desc]]
+
+          # split_by_type==falseのとき、search_allとsearch_all_sessionの二つの検索オブジェクトが生成される
+          expected = [[:updated_at, :desc]]*2
+
           Sunspot::DSL::Search.any_instance.stub(:order_by) do |*args|
             called << args
           end

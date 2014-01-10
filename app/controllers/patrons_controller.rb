@@ -17,6 +17,8 @@ class PatronsController < ApplicationController
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   cache_sweeper :patron_sweeper, :only => [:create, :update, :destroy]
 
+  include FormInputUtils
+
   # GET /patrons
   # GET /patrons.json
   def index
@@ -29,18 +31,29 @@ class PatronsController < ApplicationController
         access_denied; return
       end
     end
-    query = params[:query].to_s.strip
 
-    if query.size == 1
-      query = "#{query}*"
-    end
-
+    query = normalize_query_string(params[:query])
     @query = query.dup
-    query = query.gsub('　', ' ')
+
+    query = generate_adhoc_one_char_query_text(
+      query, Patron, [
+        :full_name, :full_name_transcription, :full_name_alternative, # name
+        :place, :address_1, :address_2,
+        :other_designation, :note,
+      ])
+
+    if params[:mode] == 'recent'
+      query << 'created_at_d:[NOW-1MONTH TO NOW]'
+    end
+    logger.debug "  SOLR Query string:<#{query}>"
+
     order = nil
     @count = {}
 
-    search = Patron.search(:include => [:patron_type, :required_role])
+    search = Sunspot.new_search(Patron)
+    search.data_accessor_for(Patron).include = [
+      :patron_type, :required_role
+    ]
     search.data_accessor_for(Patron).select = [
       :id,
       :full_name,
@@ -54,9 +67,7 @@ class PatronsController < ApplicationController
     ]
     set_role_query(current_user, search)
 
-    if params[:mode] == 'recent'
-      query = "#{query} created_at_d:[NOW-1MONTH TO NOW]"
-    end
+
     unless query.blank?
       search.build do
         fulltext query
@@ -76,7 +87,10 @@ class PatronsController < ApplicationController
         with(:work_ids).equal_to work.id if work
         with(:expression_ids).equal_to expression.id if expression
         with(:manifestation_ids).equal_to manifestation.id if manifestation
-        with(:original_patron_ids).equal_to patron.id if patron
+        any_of do
+          with(:original_patron_ids).equal_to patron.id if patron
+          with(:derived_patron_ids).equal_to patron.id if patron
+        end
         with(:patron_merge_list_ids).equal_to patron_merge_list.id if patron_merge_list
       end
     end
@@ -176,6 +190,9 @@ class PatronsController < ApplicationController
     @patron.fax_number_2_type_id = 3
     prepare_options
 
+    @countalias = 0
+    @patron.patron_aliases << PatronAlias.new
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @patron }
@@ -184,6 +201,10 @@ class PatronsController < ApplicationController
 
   # GET /patrons/1/edit
   def edit
+    @countalias = PatronAlias.count(:conditions => ["patron_id = ?", params[:id]])
+    if @countalias == 0
+      @patron.patron_aliases << PatronAlias.new
+    end
     prepare_options
   end
 
@@ -191,6 +212,7 @@ class PatronsController < ApplicationController
   # POST /patrons.json
   def create
     @patron = Patron.new(params[:patron])
+
     if @patron.user_username
       @patron.user = User.find(@patron.user_username) rescue nil
     end
