@@ -9,6 +9,9 @@ class ExportItemRegistersController < ApplicationController
                    [t('item_register.item_register_series'),5],
                    [t('item_register.item_register_article'),6],
                    [t('item_register.item_register_other'),7],
+                   [t('item_register.title_catalog'),8],
+                   [t('item_register.author_catalog'),9],
+                   [t('item_register.classified_catalog'),10],
                   ]
     super
   end
@@ -18,6 +21,7 @@ class ExportItemRegistersController < ApplicationController
     @items_size = Item.count(:all, :joins => [:manifestation, :shelf => :library])
     @page = (@items_size / 36).to_f.ceil
     @page = 1 if @page == 0
+    @catalog_flag = true
   end
 
   def create
@@ -54,12 +58,24 @@ class ExportItemRegistersController < ApplicationController
     when 7 # other register
       file_name = 'item_register_exinfo'
       args << 'exinfo'
+    when 8 # title catalog
+      file_name = 'title_catalog'
+      method = 'output_catalog'
+      args << 'title'
+    when 9 # author catalog
+      file_name = 'author_catalog'
+      method = 'output_catalog'
+      args << 'author'
+    when 10 # classified catalog
+      file_name = 'classified_catalog'
+      method = 'output_catalog'
+      args << 'classified'
     end
 
-    job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)
-    flash[:message] = t('item_register.export_job_queued', :job_name => job_name)
-    redirect_to export_item_registers_path
-    return true
+      job_name = Item.make_export_register_job(file_name, file_type, method, args, current_user)
+      flash[:message] = t('item_register.export_job_queued', :job_name => job_name)
+      redirect_to export_item_registers_path
+      return true
   end
 
   def get_list_size
@@ -70,6 +86,7 @@ class ExportItemRegistersController < ApplicationController
     else
       list_type = params[:list_type]
       list_size = 0
+      catalog_flag = true
 
       begin
         case list_type.to_i
@@ -88,6 +105,9 @@ class ExportItemRegistersController < ApplicationController
           list_size = Item.count(:all, :joins => :manifestation, :conditions => ["manifestations.manifestation_type_id in (?)", ManifestationType.type_ids('article')])
         when 7 # item register other
           list_size = Item.count(:all, :joins => :manifestation, :conditions => ["manifestations.manifestation_type_id in (?)", ManifestationType.type_ids('exinfo')])
+        when 8 .. 10 # item title catalog
+          list_size = Item.count(:all)
+          catalog_flag = false
         end
       rescue Exception => e
         logger.error e
@@ -95,10 +115,17 @@ class ExportItemRegistersController < ApplicationController
       end
 
       #page
-      page = (list_size / 36).to_f.ceil
+      if catalog_flag == false
+        int_page = (list_size / 24)
+        #繰り上げ算
+        int_page = int_page + 1 unless (list_size % 24.0 == 0)
+        page = int_page.to_f.ceil
+      else
+        page = (list_size / 36).to_f.ceil
+      end
       page = 1 if page == 0 #and !error
 
-      render :json => {:success => 1, :list_size => list_size, :page => page}
+      render :json => {:success => 1, :list_size => list_size, :page => page, :catalog_flag => catalog_flag}
     end
-  end 
+  end
 end

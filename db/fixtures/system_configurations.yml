@@ -796,3 +796,248 @@ system_configuration_00113:
   typename: Boolean
   description: "利用制限が貸出不可な所蔵を検索結果画面に表示しない"
   category: 'manifestation'
+system_configuration_00114:
+  id: 114
+  keyname: statistic_report.monthly_public.not_use_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 蔵書冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00115:
+  id: 115
+  keyname: statistic_report.monthly_public.items_not_use_checkout_types
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 蔵書冊数(冊)に貸出区分別統計を表示しない"
+  category: 'statistics'
+system_configuration_00116:
+  id: 116
+  keyname: statistic_report.monthly_public.not_use_open_days_of_libraries
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 開館日数(日)を表示しない"
+  category: 'statistics'
+system_configuration_00117:
+  id: 117
+  keyname: statistic_report.monthly_public.not_use_users_122
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 貸出人数(人)(data_type=122)を表示しない"
+  category: 'statistics'
+system_configuration_00118:
+  id: 118
+  keyname: statistic_report.monthly_public.users_122_not_use_ages
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 貸出人数(人)(data_type=122)に年齢別統計を表示しない"
+  category: 'statistics'
+system_configuration_00119:
+  id: 119
+  keyname: statistic_report.monthly_public.not_use_daily_average_of_checkout
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 一日平均貸出人数(人)を表示しない"
+  category: 'statistics'
+system_configuration_00120:
+  id: 120
+  keyname: statistic_report.monthly_public.not_use_checkout_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 貸出冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00121:
+  id: 121
+  keyname: statistic_report.monthly_public.checkout_items_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 貸出冊数(冊)に種類別統計を表示しない"
+  category: 'statistics'
+system_configuration_00122:
+  id: 122
+  keyname: statistic_report.monthly_public.not_use_checkout_items_user_group
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 貸出冊数(団体別)を表示しない"
+  category: 'statistics'
+system_configuration_00123:
+  id: 123
+  keyname: statistic_report.monthly_public.not_use_daily_average_of_checkout_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 一日平均貸出冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00124:
+  id: 124
+  keyname: statistic_report.monthly_public.not_use_remind_checkout_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 督促対象資料数を表示しない"
+  category: 'statistics'
+system_configuration_00125:
+  id: 125
+  keyname: statistic_report.monthly_public.not_use_checkin_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 返却数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00126:
+  id: 126
+  keyname: statistic_report.monthly_public.not_use_daily_average_of_checkin_items
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 一日平均返却冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00127:
+  id: 127
+  keyname: statistic_report.monthly_public.not_use_checkin_items_remindered
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 督促資料返却数を表示しない"
+  category: 'statistics'
+system_configuration_00128:
+  id: 128
+  keyname: statistic_report.monthly_public.not_use_users_112
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 登録人数 (人)(data_type=112)を表示しない"
+  category: 'statistics'
+system_configuration_00129:
+  id: 129
+  keyname: statistic_report.monthly_public.users_112_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 登録人数 (人)(data_type=112)に区分別統計を表示しない"
+  category: 'statistics'
+system_configuration_00130:
+  id: 130
+  keyname: statistic_report.monthly_public.not_use_reserves
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 予約件数(件)を表示しない"
+  category: 'statistics'
+system_configuration_00131:
+  id: 131
+  keyname: statistic_report.monthly_public.reserves_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 予約件数(件)に区分別統計を表示しない"
+  category: 'statistics'
+system_configuration_00132:
+  id: 132
+  keyname: statistic_report.monthly_public.not_use_questions
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: レファレンス数(件)を表示しない"
+  category: 'statistics'
+system_configuration_00133:
+  id: 133
+  keyname: statistic_report.monthly_public.not_use_visiters
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 入館者数(人)を表示しない"
+  category: 'statistics'
+system_configuration_00134:
+  id: 134
+  keyname: statistic_report.monthly_public.not_use_consultations
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: 窓口利用件数(件)を表示しない"
+  category: 'statistics'
+system_configuration_00135:
+  id: 135
+  keyname: statistic_report.monthly_public.not_use_copies
+  v: "false"
+  typename: Boolean
+  description: "月別利用統計: コピー件数(件)を表示しない"
+  category: 'statistics'
+system_configuration_00136:
+  id: 136
+  keyname: statistic_report.daily_report.not_use_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 蔵書冊数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00137:
+  id: 137
+  keyname: statistic_report.daily_report.not_use_checkout_users
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出人数(人)を表示しない"
+  category: 'statistics'
+system_configuration_00138:
+  id: 138
+  keyname: statistic_report.daily_report.checkout_users_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出人数(人)に年齢別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00139:
+  id: 139
+  keyname: statistic_report.daily_report.not_use_checkout_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出冊数 (冊)を表示しない"
+  category: 'statistics'
+system_configuration_00140:
+  id: 140
+  keyname: statistic_report.daily_report.checkout_items_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 貸出冊数 (冊)に区分別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00141:
+  id: 141
+  keyname: statistic_report.daily_report.not_use_checkout_items_reminded
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 督促対象資料数を表示しない"
+  category: 'statistics'
+system_configuration_00142:
+  id: 142
+  keyname: statistic_report.daily_report.not_use_checkin_items
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 返却数(冊)を表示しない"
+  category: 'statistics'
+system_configuration_00143:
+  id: 143
+  keyname: statistic_report.daily_report.not_use_checkin_items_reminded
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 督促資料返却数を表示しない"
+  category: 'statistics'
+system_configuration_00144:
+  id: 144
+  keyname: statistic_report.daily_report.not_use_reserves
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 予約件数 (件)を表示しない"
+  category: 'statistics'
+system_configuration_00145:
+  id: 145
+  keyname: statistic_report.daily_report.reserves_not_use_types
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 予約件数 (件)に区分別利用統計を表示しない"
+  category: 'statistics'
+system_configuration_00146:
+  id: 146
+  keyname: statistic_report.daily_report.not_use_questions
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: レファレンス数 (件)を表示しない"
+  category: 'statistics'
+system_configuration_00147:
+  id: 147
+  keyname: statistic_report.daily_report.not_use_consultations
+  v: "false"
+  typename: Boolean
+  description: "日別利用統計: 窓口利用件数(件)を表示しない"
+  category: 'statistics'
+system_configuration_00148:
+  id: 148
+  keyname: use_user_notice
+  v: "false"
+  typename: Boolean
+  description: "利用者通知書の出力ボタンを表示するか"
+  category: 'user'

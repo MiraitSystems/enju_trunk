@@ -1768,6 +1768,7 @@ ja:
       no_matches_found: テーマが見つかりません
       hot_topic: 話題のテーマ
       related_manifestation: 関連する資料
+    user_notice: 利用者通知書
     barcode_registration:
       first_number: 開始番号
       last_number: 終了番号
@@ -2593,6 +2594,10 @@ ja:
     item_register_series: 雑誌原簿
     item_register_article: 文献原簿
     item_register_other: その他原簿
+    title_catalog: 図書書名目録
+    author_catalog: 図書著者名目録
+    classified_catalog: 図書分類目録
+    
     invalid_file_type: "不正なファイル種別が指定されています。"
     export_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
     export_job_success_subject: "ファイル出力が完了しました [ID: %{job_name}]"
