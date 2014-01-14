@@ -1,6 +1,20 @@
 class Abbreviation < ActiveRecord::Base
   attr_accessible :keyword, :v
+
+  # キーワードの検証
+  validate :val_keyword
+
+  # 既に登録されているキーワードは登録不可
   validates_uniqueness_of :keyword
+
+  def val_keyword
+    errors.add(:keyword) unless
+    (ApplicationController.check_first_big?(keyword) or
+     ApplicationController.check_first_numeric?(keyword)) and
+    not ApplicationController.check_middle_big?(keyword) and
+    not ApplicationController.check_middle_mark?(keyword) and
+    not ApplicationController.exists_space?(keyword)
+  end
 
   def self.get_abbreviation(bookname)
     merge_v = ""
@@ -10,7 +24,7 @@ class Abbreviation < ActiveRecord::Base
       if ApplicationController.check_first_big?(key) or
       ApplicationController.check_first_numeric?(key) then
         abbreviation = Abbreviation.where(keyword: key)
-        if ! abbreviation.empty?
+        if not abbreviation.empty?
           merge_before_v = abbreviation[0]['v']
         else
           merge_before_v = key

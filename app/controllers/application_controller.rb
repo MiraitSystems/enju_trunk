@@ -457,7 +457,7 @@ class ApplicationController < ActionController::Base
 
   # 先頭が数字かどうか
   def self.check_first_numeric?(str)
-    if /^[0123456789]/ =~ str then
+    if /^[0123456789]+/ =~ str then
       return true
     else
       return false
@@ -466,7 +466,7 @@ class ApplicationController < ActionController::Base
 
   # 先頭以外に大文字があるかどうか
   def self.check_middle_big?(str)
-    if /.+[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/ =~ str then
+    if /.[ABCDEFGHIJKLMNOPQRSTUVWXYZ]+/ =~ str then
       return true
     else
       return false
@@ -475,7 +475,7 @@ class ApplicationController < ActionController::Base
 
   # 先頭以外に記号があるかどうか
   def self.check_middle_mark?(str)
-    if /.+[!-.\/:-@\[-`{-~]/ =~ str then
+    if /.[!-.\/:-@\[-`{-~]+/ =~ str then
       return true
     else
       return false
