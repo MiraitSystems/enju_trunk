@@ -8,11 +8,29 @@ class Abbreviation < ActiveRecord::Base
   validates_uniqueness_of :keyword
 
   def val_keyword
+    # 先頭に数字が混ざる可能性があるため、検証する開始文字位置を定める
+    string_location = 0
+    keyword.split("").each do |spelling|
+      if string_location = 0 then
+        string_location += 1
+      elsif ApplicationController.check_first_numeric?(keyword) and
+      ApplicationController.check_first_numeric?(spelling) then
+        string_location += 1
+      else
+        break
+      end
+      # すべて数字の場合、検証する開始文字位置を先頭にする
+      if string_location >= keyword.length then
+        string_location = 0
+      end
+    end
+
     errors.add(:keyword) unless
     (ApplicationController.check_first_big?(keyword) or
      ApplicationController.check_first_numeric?(keyword)) and
     not ApplicationController.check_middle_big?(keyword) and
     not ApplicationController.check_middle_mark?(keyword) and
+    ApplicationController.check_hankaku_string?(keyword[string_location..keyword.length]) and
     not ApplicationController.exists_space?(keyword)
   end
 

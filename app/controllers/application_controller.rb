@@ -491,9 +491,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # 空白があるかどうか (Unicodeプロパティ、POSIX文字クラス 対応含む)
+  # 空白があるかどうか (Unicodeプロパティー、POSIX文字クラス 対応含む)
   def self.exists_space?(str)
-    if /[ 　\p{blank}\[\[:blank:\]\]]/ =~ str then
+    if /[ 　\p{blank}[[:blank:]]]/ =~ str then
       return true
     else
       return false
