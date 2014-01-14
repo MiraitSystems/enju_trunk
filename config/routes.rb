@@ -1,4 +1,10 @@
 EnjuLeaf::Application.routes.draw do
+  resources :exchange_rates
+
+
+  resources :currencies
+
+
   get "barcode_registrations/index"
 
   resources :series_statement_relationship_types
@@ -147,6 +153,7 @@ EnjuLeaf::Application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
+    post :output_user_notice, :on => :member   
     resources :answers
     resources :baskets do
       resources :checked_items
