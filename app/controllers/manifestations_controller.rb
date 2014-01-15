@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -* encoding: utf-8 -*-
 class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('breadcrumb.search_manifestations')", 'manifestations_path', :only => [:index] #, :unless => proc{params}
 #  add_breadcrumb "I18n.t('breadcrumb.search_manifestations')", 'manifestations_path(params)', :only => [:index], :if => proc{params}
@@ -40,33 +40,40 @@ class ManifestationsController < ApplicationController
   end
 
   class NacsisCatSearch
+    # sunspot_solrのSearchオブジェクトとの互換層
+
     include FormInputUtils
 
-    def initialize(db = :book)
-      @cond = {:db => db}
+    def initialize(dbs = [:all])
+      @orig_dbs = @dbs = dbs
+      @db_opts = {}
+      @dbs.each {|db| @db_opts[db] = {} }
+      @cond = {}
+
       @results = nil
-      @per_page = nil
-      @page = 1
     end
-    attr_reader :results
+    attr_accessor :results
 
     # 検索を実行する
     # 検索条件に問題があった場合にはnilを返す
     def execute
       return nil unless valid?
 
-      # NOTE:
-      # enju_nacsis_gatewayの制限によりBOOK:SERIALの横断的検索が行えない(2013-07-01時点)。
-      # このため一時的な回避措置として実際の検索を行わず、空の検索結果を返す。
-      @cond[:db] = nil if @cond[:db] == :all
+      if @dbs.blank?
+        @results = {}
 
-      if @cond[:db].blank?
-        @results = NacsisCat::ResultArray.new(nil)
       else
-        page_opts = {}
-        page_opts[:per_page] = @per_page if @per_page
-        page_opts[:page] = @page if @page && @per_page
-        @results = NacsisCat.search(@cond.merge(page_opts))
+        cond = @cond.merge(dbs: @dbs)
+        @dbs.each do |db|
+          next if @db_opts[db].blank?
+
+          cond[:opts] ||= {}
+          cond[:opts][db] ||= {}
+          @db_opts[db].each_pair do |k, v|
+            cond[:opts][db][k] = v
+          end
+        end
+        @results = NacsisCat.search(cond)
       end
       self
     end
@@ -74,26 +81,20 @@ class ManifestationsController < ApplicationController
     def total; @results.total end
     def collation; nil end
 
-    def per_page(n)
-      @per_page = normalize_integer(n)
-      self
-    end
-
-    def page(n)
-      @page = normalize_integer(n)
-      self
+    def setup_paginate!(db, page, per_page)
+      @db_opts[db] ||= {}
+      @db_opts[db][:page] = normalize_integer(page)
+      @db_opts[db][:per_page] = normalize_integer(per_page)
     end
 
     def filter_by_record_type!(form_input)
-      return if @cond[:db] == :all
+      return if @dbs == [:all]
       return if form_input.blank? # DB指定がなければ生成時の指定に従って検索する
 
       db_param = [form_input].flatten
       db_names = db_param.map {|x| normalize_query_string(x).to_sym }
-      return if db_names.include?(@cond[:db]) # DB指定が生成時の指定と整合していれば、生成時の指定に従って検索する
 
-      # 生成時のDB指定とフィルタ指定が異なっていたら検索を実行しない
-      @cond[:db] = nil
+      @dbs = @dbs&db_names
     end
 
     def filter_by_ncid!(form_input)
@@ -104,6 +105,21 @@ class ManifestationsController < ApplicationController
     end
     def filter_by_issn!(form_input)
       filter_by_one_word(:issn, form_input)
+    end
+    def filter_by_ndc!(form_input)
+      filter_by_one_word(:ndc, form_input)
+    end
+    def filter_by_edition_display_value!(form_input)
+      filter_by_one_word(:edition_display_value, form_input)
+    end
+    def filter_by_volume_number_string!(form_input)
+      filter_by_one_word(:volume_number_string, form_input)
+    end
+    def filter_by_issue_number_string!(form_input)
+      filter_by_one_word(:issue_number_string, form_input)
+    end
+    def filter_by_serial_number_string!(form_input)
+      filter_by_one_word(:serial_number_string, form_input)
     end
 
     def filter_by_query!(form_input, inverse = false)
@@ -183,6 +199,78 @@ class ManifestationsController < ApplicationController
   end
 
   class LocalSearchFactory < SearchFactory
+    FACET_FIELDS = [
+      :reservable, :carrier_type, :language, :library, :manifestation_type,
+      :missing_issue, :in_process, :circulation_status_in_process,
+      :circulation_status_in_factory,
+    ]
+
+    class Container
+      def initialize(options, params)
+        @options = options
+        @params = params
+        @search = {}
+      end
+
+      def [](key)
+        @search[key]
+      end
+
+      def []=(key, value)
+        @search[key] = value
+      end
+
+      def facet_fields
+        FACET_FIELDS
+      end
+
+      def execute
+        [:all, :book, :article, :serial].map do |key|
+          @search[key].try(:execute)
+        end
+      end
+
+      def setup_collation!(query)
+        options = @options
+        @search[:all].build do
+          spellcheck :collate => 3, :q => query if options[:html_mode]
+        end
+      end
+
+      def setup_facet!
+        @search[:all].build do
+          facet_fields.each {|f| facet f }
+        end
+      end
+
+      def setup_paginate!
+        @search.each_pair do |key, s|
+          if key == :article
+            setup_paginate_internal!(s, @options[:page_article], @options[:per_page])
+          elsif key == :serial
+            setup_paginate_internal!(s, @options[:page_serial], @options[:per_page])
+          elsif key == :session
+            setup_paginate_internal!(s, @options[:page_session], @options[:per_page_session])
+          else
+            # :all or :book
+            setup_paginate_internal!(s, @options[:page], @options[:per_page])
+          end
+        end
+      end
+
+      private
+
+        def setup_paginate_internal!(search, page, per_page)
+          if @options[:sru_mode]
+            search.query.start_record(@params[:startRecord] || 1, @params[:maximumRecords] || 200)
+          else
+            search.build do
+              paginate :page => page, :per_page => per_page
+            end
+          end
+        end
+    end
+
     def initialize(options, params, query, with_filter, without_filter, sort)
       @query = query
       @with_filter = with_filter
@@ -193,9 +281,38 @@ class ManifestationsController < ApplicationController
     end
     attr_reader :query, :sort
 
+    def new_search
+      container = Container.new(options, params)
+
+      # 全種の書誌からの横断検索用
+      container[:all] = new_search_internal(:all)
+
+      # session[:manifestation_ids]更新のための検索用
+      # FIXME?
+      # session[:manifestation_ids]は検索結果の書誌情報を次々と見るのに使われている
+      # (manifestations/index→manifestations/show→manifestations/show→...)。
+      # よって文献とその他を分ける場合には、このデータも分けて取りまわす必要があるはず。
+      container[:session] = new_search_internal(:all)
+
+      if options[:split_by_type]
+        # 一般書誌のみの検索用
+        container[:book] = new_search_internal(:book)
+        if options[:with_article]
+          # 資料書誌のみの検索用
+          container[:article] = new_search_internal(:article)
+        end
+        if options[:with_serial]
+          # 雑誌書誌のみの検索用
+          container[:serial] = new_search_internal(:serial)
+        end
+      end
+
+      container
+    end
+
     # 新しい検索オブジェクトを生成する。
     #  * manifestation_type - 検索対象とする書誌のタイプ(:all、:book、:article)を指定する。
-    def new_search(manifestation_type = :all)
+    def new_search_internal(manifestation_type = :all)
       search = Sunspot.new_search(Manifestation)
 
       Manifestation.build_search_for_manifestations_list(search, @query, @with_filter, @without_filter)
@@ -240,48 +357,90 @@ class ManifestationsController < ApplicationController
 
       search
     end
-
-    def facet_fields
-      [
-        :reservable, :carrier_type, :language, :library,
-        :manifestation_type, :missing_issue, :in_process,
-        :circulation_status_in_process, :circulation_status_in_factory,
-      ]
-    end
-
-    def setup_facet!(search)
-      search.build do
-        facet_fields.each {|f| facet f }
-      end
-    end
-
-    def setup_paginate!(search, page, per_page)
-      if options[:sru_mode]
-        search.query.start_record(params[:startRecord] || 1, params[:maximumRecords] || 200)
-      else
-        search.build do
-          paginate :page => page, :per_page => per_page
-        end
-      end
-    end
-
-    def setup_collation!(search, form_input)
-      search.build do
-        spellcheck :collate => 3, :q => form_input if options[:html_mode]
-      end
-    end
+    private :new_search_internal
   end
 
   class NacsisCatSearchFactory < SearchFactory
-    # 新しい検索オブジェクトを生成する。
-    #  * manifestation_type - 検索対象とする書誌のタイプ(:book、:serial)を指定する。
-    # NOTE: :allへの対応はenju_nacsis_gatewayの制限により2013-07-01時点では行えない。
-    def new_search(manifestation_type = :all)
-      search = NacsisCatSearch.new(manifestation_type)
+    class Container
+      def initialize(options, search)
+        @options = options
+        @search = search
+      end
+      attr_reader :search
+
+      def [](key)
+        # 複数DBが指定された検索であっても
+        # ゲートウェイへのアクセスは1回だけにする仕様であるため、
+        # LocalSearchFactory::Containerとは異なって
+        # 書誌の種別ごとの検索オブジェクトを持たない。
+        # そのため、ここでは共通の@searchを常に返している。
+        #
+        # しかし、このままでは共通の@searchを介した
+        # 複数回アクセスが発生してしまう可能性があるので
+        # memoizeすななど何らかの対策が必要となる。
+        # (ただし、2013-11-12時点では
+        # 各種幅検索をともなう機能はローカル検索のみに
+        # 対応しており、上述の問題が顕在化することはない。)
+        @search
+      end
+
+      def facet_fields
+        []
+      end
+
+      def execute
+        results = @search.execute.results
+
+        [:all, :book, :article, :serial].map do |key|
+          NacsisCatSearch.new.tap do |x|
+            if results.include?(key)
+              x.results = results[key]
+            else
+              x.results = NacsisCat::ResultArray.new(nil)
+            end
+          end
+        end
+      end
+
+      def setup_collation!(query)
+        # noop
+      end
+
+      def setup_facet!
+        # noop
+      end
+
+      def setup_paginate!
+        @search.setup_paginate!(:all,     @options[:page],         @options[:per_page])
+        @search.setup_paginate!(:book,    @options[:page],         @options[:per_page])
+        @search.setup_paginate!(:article, @options[:page_article], @options[:per_page])
+        @search.setup_paginate!(:serial,  @options[:page_serial],  @options[:per_page])
+        @search.setup_paginate!(:session, @options[:page_session], @options[:per_page_session])
+      end
+    end
+
+    def new_search
+      dbs = []
+      if @options[:nacsis_search_each]
+        dbs << :book
+        if @options[:with_article]
+          dbs << :article
+        end
+        if @options[:with_serial]
+          dbs << :serial
+        end
+      else
+        dbs << :all
+      end
+
+      search = NacsisCatSearch.new(dbs)
 
       search.filter_by_record_type!(params[:manifestation_type])
 
-      [:isbn, :issn, :ncid].each do |name|
+      [
+        :isbn, :issn, :ndc, :ncid,
+        :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
+      ].each do |name|
         search.__send__(:"filter_by_#{name}!", params[name])
       end
 
@@ -290,15 +449,7 @@ class ManifestationsController < ApplicationController
         search.__send__(:"filter_by_#{name}!", params[:"except_#{name}"], true)
       end
 
-      search
-    end
-
-    def facet_fields
-      [] # facet非対応
-    end
-
-    def setup_paginate!(search, page, per_page)
-      search.page(page).per_page(per_page)
+      Container.new(@options, search)
     end
   end
 
@@ -368,6 +519,7 @@ class ManifestationsController < ApplicationController
 
       if search_opts[:index] == :nacsis
         factory = NacsisCatSearchFactory.new(search_opts, params)
+
       else
         if search_opts[:sru_mode]
           sru = Sru.new(params)
@@ -395,43 +547,17 @@ class ManifestationsController < ApplicationController
 
       # 検索オブジェクトの生成と検索の実行
 
-      searchs = []
+      search = factory.new_search
 
-      searchs << search_all = factory.new_search
-      searchs << search_all_session = factory.new_search
-      if search_opts[:split_by_type]
-        searchs << search_book = factory.new_search(:book)
-        if search_opts[:with_article]
-          searchs << search_article = factory.new_search(:article)
-        end
-        if search_opts[:with_serial]
-          searchs << search_serial = factory.new_search(:serial)
-        end
-      end
+      do_file_output_proccess(search_opts, search) and return
 
-      do_file_output_proccess(search_opts, search_all) and return
-
-      searchs.each do |s|
-        if s == search_all
-          factory.setup_collation!(s, @query)
-        end
-
-        if s == search_article
-          factory.setup_paginate!(s, search_opts[:page_article], search_opts[:per_page])
-        elsif s == search_serial
-          factory.setup_paginate!(s, search_opts[:page_serial], search_opts[:per_page])
-        else
-          # search_all, search_book, or search_all_session
-          factory.setup_facet!(s)
-          factory.setup_paginate!(s, search_opts[:page], search_opts[:per_page])
-        end
-      end
+      search.setup_collation!(@query)
+      search.setup_facet!
+      search.setup_paginate!
 
       begin
-        search_all_result = search_all.execute
-        search_book_result = search_book.try(:execute)
-        search_article_result = search_article.try(:execute)
-        search_serial_result = search_serial.try(:execute)
+        search_all_result, search_book_result,
+          search_article_result, search_serial_result = search.execute
       rescue Exception => e
         flash[:message] = t('manifestation.invalid_query')
         logger.error "query error: #{e} (#{e.class})"
@@ -439,7 +565,7 @@ class ManifestationsController < ApplicationController
         return
       end
 
-      update_search_sessions(search_opts, search_all_session)
+      update_search_sessions(search_opts, search)
       do_tag_cloud_process(search_opts) and return
 
       # 主にビューのためのインスタンス変数を設定する
@@ -478,7 +604,7 @@ class ManifestationsController < ApplicationController
 
       if search_opts[:html_mode]
         s = search_opts[:split_by_type] && !search_opts[:with_article] ? search_book_result : search_all_result
-        factory.facet_fields.each do |field|
+        search.facet_fields.each do |field|
           instance_variable_set(:"@#{field}_facet", s.facet(field).rows)
         end
       end
@@ -685,6 +811,12 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',')
+      if original_manifestation.manifestation_exinfos
+        original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
+      end
+      if original_manifestation.manifestation_extexts
+        original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
+      end
     elsif @expression
       @manifestation.original_title = @expression.original_title
       @manifestation.title_transcription = @expression.title_transcription
@@ -738,6 +870,8 @@ class ManifestationsController < ApplicationController
     @publisher_transcription = @manifestation.publishers.collect(&:full_name_transcription).flatten.join(';')
     @subject = @manifestation.subjects.collect(&:term).join(';')
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
+    @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
+    @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
     if defined?(EnjuBookmark)
       if params[:mode] == 'tag_edit'
         @bookmark = current_user.bookmarks.where(:manifestation_id => @manifestation.id).first if @manifestation rescue nil
@@ -773,6 +907,8 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
+    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.save
@@ -788,6 +924,8 @@ class ManifestationsController < ApplicationController
           @manifestation.publishers = Patron.add_patrons(@publisher, @publisher_transcription) unless @publisher.blank?
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
+          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
+          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_created', :model => t('activerecord.models.manifestation')) }
@@ -814,6 +952,8 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
+    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
         if @manifestation.series_statement and @manifestation.series_statement.periodical
@@ -825,6 +965,14 @@ class ManifestationsController < ApplicationController
         @manifestation.publishers.destroy_all; @manifestation.publishers = Patron.add_patrons(@publisher, @publisher_transcription)
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
+        if params[:exinfos]
+          @manifestation.manifestation_exinfos.destroy_all;
+          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
+        end
+        if params[:extexts]
+          @manifestation.manifestation_extexts.destroy_all;
+          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
+        end
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
         format.json { head :no_content }
       else
@@ -854,7 +1002,7 @@ class ManifestationsController < ApplicationController
     data = Manifestation.get_manifestation_locate(@manifestation, current_user)
     send_data data.generate, :filename => Setting.manifestation_locate_print.filename
   end
- 
+
   def output_pdf
     output_show
   end
@@ -871,19 +1019,19 @@ class ManifestationsController < ApplicationController
       raise ActiveRecord::RecordNotFound
     end
 
-    search = NacsisCatSearch.new(db)
+    search = NacsisCatSearch.new([db])
     search.filter_by_ncid!(params[:ncid])
-    result = search.execute
-    raise ActiveRecord::RecordNotFound unless result
-    raise ActiveRecord::RecordNotFound unless result.results.present?
+    retval = search.execute
+    raise ActiveRecord::RecordNotFound unless retval
+    raise ActiveRecord::RecordNotFound unless retval.results[db].present?
 
-    @nacsis_cat = result.results.first
+    @nacsis_cat = retval.results[db].first
 
     db = @nacsis_cat.serial? ? :shold : :bhold
-    search = NacsisCatSearch.new(db)
+    search = NacsisCatSearch.new([db])
     search.filter_by_ncid!(params[:ncid])
-    result = search.execute
-    @items = result.try(:results)
+    retval = search.execute
+    @items = retval.try(:results).try(:[], db)
 
     respond_to do |format|
       format.html
@@ -903,13 +1051,37 @@ class ManifestationsController < ApplicationController
     # basic search
     #
 
-    query = normalize_query_string(params[:query])
-    query = "#{query}*" if query.size == 1
+    string_fields_for_query = [ # fulltext検索に対応するstring型フィールドのリスト
+      :title, :contributor,
+      :exinfo_1, :exinfo_6,
+      :subject, :isbn, :issn,
+      # 登録内容がroot_of_series?==trueの場合に相違
+      :creator, :publisher,
+      # 対応するstring型インデックスがない
+      # :fulltext,
+      # :article_title, :series_title,
+      # :note, :description,
+      # :aulast, :aufirst
+      # :atitle, :btitle, :jtitle,
+      # :extext_1, :extext_2, :extext_3, :extext_4, :extext_5,
+    ]
+
+    query = params[:query].to_s
     query = '' if query == '[* TO *]'
 
     if query.present?
-      qws = each_query_word(query) do |qw|
-        highlight << /#{highlight_pattern(qw)}/
+      qws = []
+      if params[:query_merge] == 'startwith'
+        qws << adhoc_text_field_query(
+          "#{escape_query_string(query, true)}*",
+          Manifestation, string_fields_for_query)
+      else
+        each_query_word(normalize_query_string(query)) do |qw|
+          highlight << /#{highlight_pattern(qw)}/
+          qws << generate_adhoc_string_query_text(qw, Manifestation, string_fields_for_query) do |t|
+            qw.size == 1 ? "#{t}*" : nil
+          end
+        end
       end
 
       if qws.size == 1
@@ -920,6 +1092,7 @@ class ManifestationsController < ApplicationController
         qwords << '(' + qws.join(' OR ') + ')'
       end
     end
+
     # recent manifestations
     qwords << "created_at_d:[NOW-1MONTH TO NOW] AND except_recent_b:false" if params[:mode] == 'recent'
 
@@ -927,65 +1100,94 @@ class ManifestationsController < ApplicationController
     # advanced search
     #
 
-    # exact match
-    exact_match = []
-    if params[:title].present? && params[:title_merge] == 'exact'
-      exact_match << :title
-      t = params[:title]
-      highlight << /\A#{highlight_pattern(t)}\z/
-      qwords << %Q[title_sm:"#{t.gsub(/"/, '\\"')}"]
-    end
+    # exact match / start-with match
+    special_match = []
+    [:title, :creator].each do |key|
+      value = params[key]
+      merge_type = params[:"#{key}_merge"]
+      next unless value.present? && (merge_type == 'exact' || merge_type == 'startwith')
+      special_match << key
 
-    if params[:creator].present? && params[:creator_merge] == 'exact'
-      exact_match << :creator
-      t = params[:creator].gsub(/\s/, '') # インデックス登録時の値に合わせて空白を除去しておく
-      highlight << /\A#{highlight_pattern(t)}\z/
-      qwords << %Q[creator_sm:"#{t.gsub(/"/, '\\"')}"]
+      case key
+      when :title
+        field = 'title_sm'
+      when :creator
+        field = 'creator_sm'
+        value = value.gsub(/\s/, '') # インデックス登録時の値に合わせて空白を除去しておく
+      end
+      highlight << /\A#{highlight_pattern(value)}\z/
+
+      if merge_type == 'exact'
+        qw = %Q["#{escape_query_string(value)}"]
+      else
+        qw = %Q[#{escape_query_string(value, true)}*]
+      end
+      qwords << %Q[#{field}:#{qw}]
     end
 
     # other attributes
     [
       [:tag, 'tag_sm'],
-      [:title, 'title_text'],
-      [:creator, 'creator_text'],
-      [:contributor, 'contributor_text'],
+      [:title, 'title_text', 'title_sm'],
+      [:creator, 'creator_text', 'creator_sm'],
+      [:contributor, 'contributor_text', 'contributor_sm'],
       [:isbn, 'isbn_sm'],
       [:issn, 'issn_sm'],
+      [:ndc, 'ndc_sm'],
+      [:edition_display_value, 'edition_display_value_sm'],
+      [:volume_number_string, 'volume_number_string_sm'],
+      [:issue_number_string, 'issue_number_string_sm'],
+      [:serial_number_string, 'serial_number_string_sm'],
       [:lccn, 'lccn_s'],
       [:nbn, 'nbn_s'],
-      [:publisher, 'publisher_text'],
+      [:publisher, 'publisher_text', 'publisher_sm'],
       [:item_identifier, 'item_identifier_sm'],
-      [:manifestation_type, 'manifestation_type_sm'],
       [:except_query, nil],
-      [:except_title, 'title_text'],
-      [:except_creator, 'creator_text'],
-      [:except_publisher, 'publisher_text'],
-    ].each do |key, field|
-      next if exact_match.include?(key)
+      [:except_title, 'title_text', 'title_sm'],
+      [:except_creator, 'creator_text', 'creator_sm'],
+      [:except_publisher, 'publisher_text', 'publisher_sm'],
+    ].each do |key, field, onechar_field|
+      next if special_match.include?(key)
 
       value = params[key]
       next if value.blank?
 
+      qcs = []
       qws = []
       hls = []
 
       merge_type = params[:"#{key}_merge"]
       flg = /\Aexcept_/ =~ key.to_s ? '-' : ''
-      tag = "#{field}:" if field
       each_query_word(value) do |word|
         hls << word if flg.blank?
-        word = "*#{word}*" if word.size == 1
-        qws << "#{flg}#{word}"
+        if word.size == 1 && onechar_field
+          # 1文字だけの検索語を部分一致とみなす
+          qcs << "#{flg}*#{word}*"
+        else
+          qws << "#{flg}#{word}"
+        end
       end
 
-      if qws.size > 1 && merge_type == 'any'
-        qwords.push "#{tag}(#{qws.join(' OR ')})"
-      else
-        qwords.push "#{tag}(#{qws.join(' AND ')})"
+      qw = []
+      [
+        [qcs, onechar_field || field],
+        [qws, field],
+      ].each do |q, f|
+        next if q.blank?
+
+        tag = f ? "#{f}:" : ''
+        if q.size == 1
+          qw << "#{tag}#{q.first}"
+        elsif merge_type == 'any'
+          qw << "#{tag}(#{q.join(' OR ')})"
+        else
+          qw << "#{tag}(#{q.join(' AND ')})"
+        end
       end
+      qwords.push qw.join(' AND ')
 
       if (key == :title || key == :creator) &&
-          flg!= '-' && !hls.blank? && merge_type != 'exact'
+          flg != '-' && hls.present?
         highlight.concat hls.map {|t| /#{highlight_pattern(t)}/ }
       end
     end
@@ -1011,7 +1213,7 @@ class ManifestationsController < ApplicationController
       types_ary = []
       manifestation_types = params[:manifestation_types]
       manifestation_types.each_key do |key|
-        manifestation_type = ManifestationType.find(key)
+        manifestation_type = ManifestationType.find(key) rescue nil
         types_ary << manifestation_type.name if manifestation_type.present?
       end
       qwords << "manifestation_type_sm:(" + types_ary.join(" OR ") + ")" if types_ary.present?
@@ -1336,18 +1538,20 @@ class ManifestationsController < ApplicationController
         search_opts[:direct_mode] = true
       end
 
-      # split option
+      # split option (local)
       search_opts[:split_by_type] = SystemConfiguration.get('manifestations.split_by_type')
-      if search_opts[:split_by_type]
-        if search_opts[:index] == :nacsis
-          search_opts[:with_serial] = true
-        elsif search_opts[:index] == :local
-          if params[:without_article]
-            search_opts[:with_article] = false
-          else
-            search_opts[:with_article] = !SystemConfiguration.isWebOPAC || clinet_is_special_ip?
-          end
+      if search_opts[:split_by_type] && search_opts[:index] == :local
+        if params[:without_article]
+          search_opts[:with_article] = false
+        else
+          search_opts[:with_article] = !SystemConfiguration.isWebOPAC || clinet_is_special_ip?
         end
+      end
+
+      # split option (nacsis)
+      search_opts[:nacsis_search_each] = SystemConfiguration.get('nacsis.search_each')
+      if search_opts[:nacsis_search_each] && search_opts[:index] == :nacsis
+        search_opts[:with_serial] = true
       end
     end
 
@@ -1371,6 +1575,8 @@ class ManifestationsController < ApplicationController
       search_opts[:page_article] = params[:page_article].try(:to_i) || 1
       search_opts[:page_serial] = params[:page_serial].try(:to_i) || 1
     end
+    search_opts[:page_session] = 1
+    search_opts[:per_page_session] = SystemConfiguration.get("max_number_of_results")
 
     search_opts
   end
@@ -1378,9 +1584,11 @@ class ManifestationsController < ApplicationController
   # indexアクションにおける検索関係のセッションデータを更新する。
   #
   #  * search_opts - 検索条件
-  #  * search - 検索に用いるオブジェクト(Sunspotなど)
-  def update_search_sessions(search_opts, search)
+  #  * search_container - 検索用のコンテナ(factory.new_searchで得られるもの)
+  def update_search_sessions(search_opts, search_container)
     return unless search_opts[:index] == :local # FIXME: 非local検索のときにも動作するようにする
+
+    search = search_container[:session]
 
     if session[:search_params]
       unless search.query.to_params == session[:search_params]
@@ -1398,9 +1606,8 @@ class ManifestationsController < ApplicationController
       # session[:manifestation_ids]は検索結果の書誌情報を次々と見るのに使われている
       # (manifestations/index→manifestations/show→manifestations/show→...)。
       # よって文献とその他を分ける場合には、このデータも分けて取りまわす必要があるはず。
-      manifestation_ids = search.build do
-        paginate :page => 1, :per_page => SystemConfiguration.get("max_number_of_results")
-      end.execute.raw_results.map {|r| r.primary_key.to_i }
+      manifestation_ids = search.
+        execute.raw_results.map {|r| r.primary_key.to_i }
       session[:manifestation_ids] = manifestation_ids
     end
   end
@@ -1460,14 +1667,13 @@ class ManifestationsController < ApplicationController
   #  * search_opts - 検索条件
   #  * search - 検索に用いるオブジェクト(Sunspotなど)
   def do_file_output_proccess(search_opts, search)
-    unless search_opts[:output_mode]
-      return false
-    end
+    return false unless search_opts[:index] == :local
+    return false unless search_opts[:output_mode]
 
     # TODO: 第一引数にparamsまたは生成した検索語、フィルタ指定を渡すようにして、バックグラウンドファイル生成で一時ファイルを作らなくて済むようにする
     summary = @query.present? ? "#{@query} " : ""
     summary += advanced_search_condition_summary
-    Manifestation.generate_manifestation_list(search, search_opts[:output_type], current_user, summary, search_opts[:output_cols]) do |output|
+    Manifestation.generate_manifestation_list(search[:all], search_opts[:output_type], current_user, summary, search_opts[:output_cols]) do |output|
       send_opts = {
         :filename => output.filename,
         :type => output.mime_type || 'application/octet-stream',

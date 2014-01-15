@@ -42,6 +42,7 @@
   <% end %>
 
 <%- if params[:index] && params[:index] == 'nacsis' -%>
+
     <div>
       <div style="float: right;">
         <%= t('activerecord.attributes.manifestation.per_page') %>: 
@@ -49,27 +50,42 @@
       </div>
       <br style="clear: both;"/>
     </div>
-      <%- if @manifestations_book && (@manifestations_book.count > 0) -%>
-        <p>
-          <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result]) -%></strong>
-        </p>
-        <div class="autopagerize_page_element" id="list">
-        <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_book, :type => "book" -%>
-        </div>
+      <%- if SystemConfiguration.get('nacsis.search_each') -%>
+        <%- if @manifestations_book && (@manifestations_book.count > 0) -%>
+          <p>
+            <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result_book]) -%></strong>
+          </p>
+          <div class="autopagerize_page_element" id="list">
+          <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_book, :type => "book" -%>
+          </div>
+        <%- else -%>
+          <%= render 'manifestations/not_found' -%>
+        <%- end -%>
+        <%- if @manifestations_serial && (@manifestations_serial.count > 0) -%>
+          <p>
+            <strong><%= t('page.number_of_nacsis_serial_search_results', :count => @count[:query_result_serial]) -%></strong>
+          </p>
+          <div class="autopagerize_page_element" id="list">
+          <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_serial, :type => "serial" -%>
+          </div>
+        <%- else -%>
+          <%= render 'manifestations/not_found' -%>
+        <%- end -%>
       <%- else -%>
-        <%= render 'manifestations/not_found' -%>
+        <%- if @manifestations && (@manifestations.total_count > 0) -%>
+          <p>
+            <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result]) -%></strong>
+          </p>
+          <div class="autopagerize_page_element" id="list">
+          <%= render 'manifestations/list_nacsis', :manifestations => @manifestations, :type => "book" -%>
+          </div>
+        <%- else -%>
+          <%= render 'manifestations/not_found' -%>
+        <%- end -%>
       <%- end -%>
-      <%- if @manifestations_serial && (@manifestations_serial.count > 0) -%>
-        <p>
-          <strong><%= t('page.number_of_nacsis_serial_search_results', :count => @count[:query_result]) -%></strong>
-        </p>
-        <div class="autopagerize_page_element" id="list">
-        <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_serial, :type => "serial" -%>
-        </div>
-      <%- else -%>
-        <%= render 'manifestations/not_found' -%>
-      <%- end -%>
+
 <%- else -%>
+
   <%- if @manifestations && (@manifestations.total_count > 0) -%>
     <p>
       <%= t('page.number_of_search_results', :count => @count[:query_result], :numdocs => Manifestation.cached_numdocs, :seconds => sprintf("%.3f", @seconds)) -%>
@@ -129,8 +145,6 @@
   	  <%- else -%>
             &nbsp; <button id="excelx_book_dialog_opener"><%= t('page.output_excelx', :model => t('page.search_result')) -%></button>
           <%- end -%>
-          <button id="batch_change_opener"><%= t('page.batch_change') %></button>
-          <%= render 'index_batch_change_dialog' %>
         <%- end -%>
       </strong></div>
       <%- if m && (m.count > 0) -%>
@@ -156,6 +170,7 @@
     <%- end -%>
     <%= render 'manifestations/not_found' -%>
   <%- end -%>
+
 <%- end -%>
 
     <div class="autopagerize_insert_before"></div>

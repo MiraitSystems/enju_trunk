@@ -125,6 +125,10 @@
           <td><span><%= manifestation.manifestation_type.display_name.localize if manifestation.manifestation_type %></span></td>
         </tr>
         <tr>
+          <td><%= t('activerecord.attributes.manifestation.jpn_or_foreign') %>:</td>
+          <td><%= Manifestation::JPN_OR_FOREIGN.invert[manifestation.jpn_or_foreign] %></td>
+        </tr>
+        <tr>
           <td><%= t('activerecord.models.language') -%>:</td>
           <td><span itemprop="inLanguage"><%= manifestation.language.display_name.localize -%></span></td>
         </tr>
@@ -291,13 +295,19 @@
               <%= simple_format(hbr(manifestation.note)) -%>
             </td>
           </tr>
-<!--
-          <%- if manifestation.exinfo_1 -%>
+          <% manifestation.manifestation_extexts.each do |extext| %> 
             <tr>
-              <td><%= t('activerecord.attributes.manifestation.exinfo_1') -%>:</td>
-              <td><%= manifestation.exinfo_1 -%></td>
+              <td><%= t("manifestation_extext.#{extext.name}") %>:</td>
+              <td><%= extext.value  %></td>
             </tr>
-          <%- end -%>
+          <% end %>
+          <% manifestation.manifestation_exinfos.each do |exinfo| %> 
+            <tr>
+              <td><%= t("manifestation_exinfo.#{exinfo.name}") %>:</td>
+              <td><%= exinfo.value  %></td>
+            </tr>
+          <% end %>
+<!--
           <%- if manifestation.exinfo_2 -%>
             <tr>
               <td><%= t('activerecord.attributes.manifestation.exinfo_2') -%>:</td>

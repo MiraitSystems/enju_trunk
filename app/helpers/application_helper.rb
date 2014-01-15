@@ -273,7 +273,8 @@ module ApplicationHelper
 
   ADVANCED_SEARCH_PARAMS = [
     :except_query, :tag, :title, :except_title, :creator, :except_creator,
-    :publisher, :isbn, :issn, :item_identifier, :pub_date_from,
+    :publisher, :isbn, :issn, :ndc, :item_identifier, :pub_date_from,
+    :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
     :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
     :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
     :title_merge, :creator_merge, :query_merge, :manifestation_types 
@@ -287,6 +288,11 @@ module ApplicationHelper
     publisher: 'patron.publisher',
     isbn: 'activerecord.attributes.manifestation.isbn',
     issn: 'activerecord.attributes.manifestation.issn',
+    ndc: 'activerecord.attributes.manifestation.ndc',
+    edition_display_value: 'activerecord.attributes.manifestation.edition_display_value',
+    volume_number_string: 'activerecord.attributes.manifestation.volume_number_string',
+    issue_number_string: 'activerecord.attributes.manifestation.issue_number_string',
+    serial_number_string: 'activerecord.attributes.manifestation.serial_number_string',
     ncid: 'activerecord.attributes.nacsis_user_request.ncid',
     item_identifier: 'activerecord.attributes.item.item_identifier',
     call_number: 'activerecord.attributes.item.call_number',
@@ -295,10 +301,12 @@ module ApplicationHelper
     removed: 'activerecord.attributes.item.removed_at',
     number_of_pages: 'page.number_of_pages',
     exact_title: 'page.exact_title',
+    startwith_title: 'page.startwith_title',
     all_title: 'page.all_title',
     any_title: 'page.any_title',
     except_title: 'page.except_title',
     exact_creator: 'page.exact_creator',
+    startwith_creator: 'page.startwith_creator',
     all_creator: 'page.all_creator',
     any_creator: 'page.any_creator',
     except_creator: 'page.except_creator',
@@ -306,6 +314,7 @@ module ApplicationHelper
     all_query: 'page.all_search_term',
     any_query: 'page.any_search_term',
     except_query: 'page.except_search_term',
+    startwith_query: 'page.startwith_term',
     solr_query: 'page.solr_query',
     manifestation_types: 'activerecord.models.manifestation_type',
     carrier_types: 'activerecord.models.carrier_type',
@@ -392,7 +401,7 @@ module ApplicationHelper
         v = nil
         if $1
           i = 1
-          if params[t].present? && /\A(?:all|any|exact)\z/ =~ params[key].to_s
+          if params[t].present? && /\A(?:all|any|exact|startwith)\z/ =~ params[key].to_s
             v = "[#{advanced_search_label(:"#{params[key]}_#{t}")}]"
           end
         else
@@ -448,7 +457,7 @@ module ApplicationHelper
 
   def advanced_search_merge_tag(name)
     pname = :"#{name}_merge"
-    all = any = exact = false
+    all = any = exact = startwith = false
 
     case params[pname]
     when 'any'
@@ -459,6 +468,8 @@ module ApplicationHelper
       else
         exact = true
       end
+    when 'startwith'
+      startwith = true
     else
       all = true
     end
@@ -469,6 +480,8 @@ module ApplicationHelper
         radio_button_tag(pname, 'exact', exact) +
         advanced_search_label(:"exact_#{name}") + ' '
       end +
+      radio_button_tag(pname, 'startwith', startwith) +
+      advanced_search_label(:"startwith_#{name}") + ' ' +
       radio_button_tag(pname, 'all', all) +
       advanced_search_label(:"all_#{name}") + ' ' +
       radio_button_tag(pname, 'any', any) +

@@ -5,9 +5,11 @@
     <%- end -%>
     <%- @patron.patron_aliases.each do |patron_alias| -%>
       <li>
-        <%= link_to patron_alias.full_name, patron_alias.patron -%>
-        <%= link_to patron_alias.full_name_transcription, patron_alias.patron -%>
-        <%= link_to patron_alias.full_name_alternative, patron_alias.patron -%>
+        <%= patron_alias.full_name -%>
+        <%= '||' if patron_alias.full_name_transcription.present? && patron_alias.full_name.present? -%>
+        <%= patron_alias.full_name_transcription -%>
+        <%= '||' if ( patron_alias.full_name.present? || patron_alias.full_name_transcription.present? ) && patron_alias.full_name_alternative.present? -%>
+        <%= patron_alias.full_name_alternative -%>
       </li>
     <%- end -%>
 
