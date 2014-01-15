@@ -1,44 +1,18 @@
 class BarcodeRegistrationsController < ApplicationController
-  respond_to :html, :json
-  #load_and_authorize_resource
-
-  def index
-    first_number = params[:first_number]
-    last_number = params[:last_number]
+  add_breadcrumb "I18n.t('activemodel.models.barcode_registration')", 'barcode_registrations_path'
+  load_and_authorize_resource
  
-    #文字が入力されているかどうか
-    unless (first_number.blank? || last_number.blank?)
-      # 数字、9桁以内、開始番号が終了番号より小さいかの判定
-      unless (first_number =~ /\D/ || last_number =~ /\D/  || (first_number.length > 9) || (last_number.length > 9) || (first_number.to_i > last_number.to_i))
-        first = first_number.to_i
-        last = last_number.to_i
-      
-        data = String.new
-        data << "\xEF\xBB\xBF".force_encoding("UTF-8")# + "\n"
-        row = []
-        first.upto(last) do |num|
-          row << "%09d" % num
-        end
-        data << '"'+row.join("\",\n\"")+"\"\n"
-        send_data data, :filename => Setting.barcode_output.filename + ".csv"
-        return
-      else
-        @error = true
-        @first = params[:first_number]
-        @last = params[:last_number]
-        render :action => "index"
-      end
+  def index
+    @barcode_registration = BarcodeRegistration.new
+  end
+
+  def output
+    @barcode_registration = BarcodeRegistration.new(params[:barcode_registration])
+    if @barcode_registration.valid?
+      data = BarcodeRegistration.set_data(@barcode_registration.first_number, @barcode_registration.last_number)
+      send_data data, :filename => Setting.barcode_output.filename + ".csv"
     else
-      #片方が入力されている場合の条件分岐
-      unless first_number.blank?
-        @error = true
-        @first = params[:first_number]
-      end
-      unless last_number.blank?
-        @error = true
-        @last = params[:last_number]
-      end
-      render :action => "index"
+      render :action => :index
     end
   end
 end

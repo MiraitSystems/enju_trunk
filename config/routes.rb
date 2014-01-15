@@ -1,15 +1,11 @@
 EnjuLeaf::Application.routes.draw do
   resources :exchange_rates
-
-
   resources :currencies
-
-
-  get "barcode_registrations/index"
-
   resources :series_statement_relationship_types
   resources :themes
-  resources :barcode_registrations
+  resources :barcode_registrations, :only => [:index] do
+    post :output, :on => :collection
+  end
  
   #resources :identifier_types
   resources :warekis
