@@ -147,17 +147,18 @@
 
   <div class="field">
     <%= f.label :patron_alias -%><br />
-    <%= f.label :patron_aliases_attributes -%><br />
+    <%= f.label :patron_aliases_attributes -%>
+    <%= button_to_function '+', 'ItemField.add()' -%><br />
 
     <% i = 0 %>
     <%= f.fields_for :patron_aliases do |aliasf| %>
       <span id="<%= 'patron_alias' + i.to_s -%>">
-      <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20' %>
-      <%= aliasf.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
-      <%= aliasf.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
-      <%= button_to_function '+', 'ItemField.add()' -%>
-      <input type="button" value="-" onClick="ItemField.alias_remove(<%= i.to_s -%>)" />
-      <br />
+        <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20' %>
+        <%= aliasf.text_field :full_name_transcription , :class => 'resorce_title', :size => '20' %>
+        <%= aliasf.text_field :full_name_alternative , :class => 'resorce_title', :size => '20' %>
+        <%= button_to_function '+', 'ItemField.add()' -%>
+        <input type="button" value="-" onClick="ItemField.alias_remove(<%= i.to_s -%>)" />
+        <br />
       </span>
       <% i += 1 %>
     <% end %>
