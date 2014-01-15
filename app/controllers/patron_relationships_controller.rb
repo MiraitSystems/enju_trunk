@@ -21,7 +21,7 @@ class PatronRelationshipsController < InheritedResources::Base
   end
 
   def create
-    create! { patron_patrons_path(@patron_relationship.parent, :mode => 'show') }
+    create! {patron_patrons_path(@patron_relationship.parent, :mode => 'show')}
   end
 
   def update
@@ -35,6 +35,6 @@ class PatronRelationshipsController < InheritedResources::Base
   end
 
   def destroy
-    destroy! { patron_patrons_path(@patron_relationship.parent, :mode => 'show') }
+    destroy! {patron_patrons_path(@patron_relationship.parent, :mode => 'show')}
   end
 end
