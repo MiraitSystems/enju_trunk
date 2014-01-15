@@ -20,6 +20,10 @@ class PatronRelationshipsController < InheritedResources::Base
     @patron_relationship.child = Patron.find(params[:child_id]) rescue nil
   end
 
+  def create
+    create! { patron_patrons_path(@patron_relationship.parent, :mode => 'show') }
+  end
+
   def update
     @patron_relationship = PatronRelationship.find(params[:id])
     if params[:position]
@@ -28,5 +32,9 @@ class PatronRelationshipsController < InheritedResources::Base
       return
     end
     update!
+  end
+
+  def destroy
+    destroy! { patron_patrons_path(@patron_relationship.parent, :mode => 'show') }
   end
 end
