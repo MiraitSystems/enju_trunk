@@ -1,4 +1,6 @@
 EnjuLeaf::Application.routes.draw do
+  resources :use_licenses
+
   get "barcode_registrations/index"
 
   resources :abbreviations
