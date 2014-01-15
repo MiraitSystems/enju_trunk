@@ -14,7 +14,7 @@
     <%- end -%>
 
     <%- if @patron.parents.seealso.exists? or @patron.children.seealso.exists? -%>
-      <%= t('page.see') -%>
+      <%= t('page.see_also') -%>
     <%- end -%> 
     <%- @patron.parents.seealso.each do |patron_relationship| -%>
       <li>
