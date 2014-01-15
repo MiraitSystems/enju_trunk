@@ -277,9 +277,9 @@ table{
   border: 1px solid #2779aa;
 }
 
-table#bless, td#bless, th#bless{
+table#bless, table#bless tr, table#bless tr td{
   border: none;
-  padding: 1px;
+  cellpadding: 1px;
 }
 
 td, th{

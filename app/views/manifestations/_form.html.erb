@@ -92,11 +92,11 @@ $(document).keydown(function(e) {
             }).done(function(data) { callback(data); });
         }
       },
-      createSearchChoice: function(term, data) { 
-        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-          return {id:term, text:term};
-        } 
-      },
+//      createSearchChoice: function(term, data) { 
+//        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+//          return {id:term, text:term};
+//        } 
+//      },
     });
   });
 </script>
@@ -226,128 +226,92 @@ $(document).keydown(function(e) {
     <%= f.text_field :article_title, :class => 'resource_title' %>
   </div>
 
-  <% if @creators.present? %>
   <div class="field">
+    <strong><%= t('patron.creator') %></strong><br />
     <table id="bless">
-    <tr>
-      <td id="bless" width=220px ><%= f.label :creator -%></td>
-      <td id="bless" width=80px > <strong> <%= t('page.type') %> </strong> </td>
-      <td id="bless"> <strong> <%= t('page.destroy') %> </strong> </td>
-    </tr>
     <% @creators.each_with_index do |c, i| %>
-    <tr>
-      <td id="bless"><%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%></td>
-      <td id="bless"><%= select_tag 'upd_creator[' + c.id.to_s + ']', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @creators_type[i]) %></td>
-      <td id="bless"><center><%= check_box_tag 'del_creator[' + c.id.to_s + ']', true, @keep_creator_del[i], {} -%></center></td>
-    </tr>
+      <tr>
+      <td><%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%></td>
+      <td><%= select_tag 'upd_creator[' + c.id.to_s + ']', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @creators_type[i]) %></td>
+      <td><%= t('page.destroy') %><%= check_box_tag 'del_creator[' + c.id.to_s + ']', true, @keep_creator_del[i], {} -%></td>
+      </tr>
     <% end %>
     </table>
+    <% if SystemConfiguration.get("add_only_exist_patron") %>
+      <%= text_field :add_creator, :creator_id, :id => 'patron_search_creator', :value => @keep_creator %>
+      <%= select_tag 'add_creator[creator_type]', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_creator_type) %>
+    <% else %>
+      <% @new_creator.each_with_index do |nc, i| %>
+        <div id="SF<%= i.to_s %>" class="field">
+          <%= text_field_tag 'creator_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
+          <%= text_field_tag 'creator_full_name_transcription[' + i.to_s + ']', @new_creator_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+          <%= select_tag 'creator_type_id[' + i.to_s + ']', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_creator_type[i]) %> 
+          <%= button_to_function t('page.add_line'), 'ItemField_creator.add()' -%>
+          <%= button_to_function t('page.del_line'), 'ItemField_creator.remove()' -%> 
+      <% end %>
+        <div id="SF<%= @new_creator_number %>" class="field">
+        </div>
+      <% @new_creator_number.to_i.times{ %></div><% } %>
+    <% end %>
   </div>
-  <% end %>
-  <div class="field">
-    <strong><%= t('patron.creator') %><%= t('patron.adding') %><%= t('patron.adding_limitative') %></strong><br />
-    <%= text_field :add_creator, :creator_id, :id => 'patron_search_creator', :value => @keep_creator %>
-    <%= select_tag 'add_creator[creator_type]', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_creator_type) %>
-  </div>
-  <% unless SystemConfiguration.get("add_only_exist_patron") %>
-    <strong><%= t('patron.creator') %><%= t('patron.adding') %><%= t('patron.adding_free') %></strong>
-    <%= button_to_function t('page.add_line'), 'ItemField_creator.add()' -%>
-    <%= button_to_function t('page.del_line'), 'ItemField_creator.remove()' -%>
-  <div class="field">
-    <% @new_creator.each_with_index do |nc, i| %>
-      <div id="SF<%= i.to_s %>" class="field">
-        <%= text_field_tag 'creator_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
-        <%= text_field_tag 'creator_full_name_transcription[' + i.to_s + ']', @new_creator_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
-        <%= select_tag 'creator_type_id[' + i.to_s + ']', options_for_select(@create_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_creator_type[i]) %> 
-    <%= button_to_function t('page.add_line'), 'ItemField_creator.add()' -%>
-    <%= button_to_function t('page.del_line'), 'ItemField_creator.remove()' -%>
-  
-  <% end %>
-      <div id="SF<%= @new_creator_number %>" class="field">
-      </div>
-    <% @new_creator_number.to_i.times{ %></div><% } %>
-  </div>
-  <% end %>
 
-  <% if @contributors.present? %>
   <div class="field">
+    <strong><%= t('patron.contributor') %></strong><br />
     <table id="bless">
-    <tr>
-      <td id="bless" width=220px ><%= f.label :contributor -%></td>
-      <td id="bless" width=80px > <strong> <%= t('page.type') %> </strong> </td>
-      <td id="bless"> <strong> <%= t('page.destroy') %> </strong> </td>
-    </tr>
-    <% @contributors.each_with_index do |c, i| %>
-    <tr>
+      <% @contributors.each_with_index do |c, i| %>
+      <tr>
       <td id="bless"><%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%></td>
       <td id="bless"><%= select_tag 'upd_contributor[' + c.id.to_s + ']', options_for_select(@realize_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @contributors_type[i]) %></td>
       <td id="bless"><center><%= check_box_tag 'del_contributor[' + c.id.to_s + ']', true, @keep_contributor_del[i], {} -%></center></td>
-    </tr>
-    <% end %>
+      </tr>
+      <% end %>
     </table>
-  </div>
-  <% end %>
-  <div class="field">
-    <strong><%= t('patron.contributor') %><%= t('patron.adding') %><%= t('patron.adding_limitative') %></strong><br />
-    <%= text_field :add_contributor, :contributor_id, :id => 'patron_search_contributor', :value => @keep_contributor %>
-    <%= select_tag 'add_contributor[contributor_type]', options_for_select(@realize_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_contributor_type) %>
-  </div>
-  <% unless SystemConfiguration.get("add_only_exist_patron") %>
-    <strong><%= t('patron.contributor') %><%= t('patron.adding') %><%= t('patron.adding_free') %></strong>
-    <%= button_to_function t('page.add_line'), 'ItemField_contributor.add()' -%>
-    <%= button_to_function t('page.del_line'), 'ItemField_contributor.remove()' -%>
-  <div class="field">
-    <% @new_contributor.each_with_index do |nc, i| %>
-      <div id="TF<%= i.to_s %>" class="field">
-        <%= text_field_tag 'contributor_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
-        <%= text_field_tag 'contributor_full_name_transcription[' + i.to_s + ']', @new_contributor_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
-        <%= select_tag 'contributor_type_id[' + i.to_s + ']', options_for_select(@realize_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_contributor_type[i]) %> 
-    <% end %>
+    <% if SystemConfiguration.get("add_only_exist_patron") %>
+      <%= text_field :add_contributor, :contributor_id, :id => 'patron_search_contributor', :value => @keep_contributor %>
+      <%= select_tag 'add_contributor[contributor_type]', options_for_select(@realize_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_contributor_type) %>
+    <% else %>
+      <% @new_contributor.each_with_index do |nc, i| %>
+        <div id="TF<%= i.to_s %>" class="field">
+          <%= text_field_tag 'contributor_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
+          <%= text_field_tag 'contributor_full_name_transcription[' + i.to_s + ']', @new_contributor_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+          <%= select_tag 'contributor_type_id[' + i.to_s + ']', options_for_select(@realize_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_contributor_type[i]) %> 
+          <%= button_to_function t('page.add_line'), 'ItemField_contributor.add()' -%>
+          <%= button_to_function t('page.del_line'), 'ItemField_contributor.remove()' -%>
+      <% end %>
       <div id="TF<%= @new_contributor_number %>" class="field">
       </div>
-    <% @new_contributor_number.to_i.times{ %></div><% } %>
+      <% @new_contributor_number.to_i.times{ %></div><% } %>
+    <% end %>
   </div>
-  <% end %>
 
-  <% if @publishers.present? %>
   <div class="field">
+    <strong><%= t('patron.publisher') %></strong><br />
     <table id="bless">
-    <tr>
-      <td id="bless" width=220px ><%= f.label :publisher -%></td>
-      <td id="bless" width=80px > <strong> <%= t('page.type') %> </strong> </td>
-      <td id="bless"> <strong> <%= t('page.destroy') %> </strong> </td>
-    </tr>
-    <% @publishers.each_with_index do |c, i| %>
-    <tr>
-      <td id="bless"><%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%></td>
-      <td id="bless"><%= select_tag 'upd_publisher[' + c.id.to_s + ']', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @publishers_type[i]) %></td>
-      <td id="bless"><center><%= check_box_tag 'del_publisher[' + c.id.to_s + ']', true, @keep_publisher_del[i], {} -%></center></td>
-    </tr>
-    <% end %>
+      <% @publishers.each_with_index do |c, i| %>
+        <tr>
+        <td id="bless"><%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%></td>
+        <td id="bless"><%= select_tag 'upd_publisher[' + c.id.to_s + ']', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @publishers_type[i]) %></td>
+        <td id="bless"><center><%= check_box_tag 'del_publisher[' + c.id.to_s + ']', true, @keep_publisher_del[i], {} -%></center></td>
+        </tr>
+      <% end %>
     </table>
-  </div>
-  <% end %>
-  <div class="field">
-    <strong><%= t('patron.publisher') %><%= t('patron.adding') %><%= t('patron.adding_limitative') %></strong><br />
-    <%= text_field :add_publisher, :publisher_id, :id => 'patron_search_publisher', :value => @keep_publisher %>
-    <%= select_tag 'add_publisher[publisher_type]', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_publisher_type) %>
-  </div>
-  <% unless SystemConfiguration.get("add_only_exist_patron") %>
-    <strong><%= t('patron.publisher') %><%= t('patron.adding') %><%= t('patron.adding_free') %></strong>
-    <%= button_to_function t('page.add_line'), 'ItemField_publisher.add()' -%>
-    <%= button_to_function t('page.del_line'), 'ItemField_publisher.remove()' -%>
-  <div class="field">
-    <% @new_publisher.each_with_index do |nc, i| %>
-      <div id="UF<%= i.to_s %>" class="field">
-        <%= text_field_tag 'publisher_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
-        <%= text_field_tag 'publisher_full_name_transcription[' + i.to_s + ']', @new_publisher_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
-        <%= select_tag 'publisher_type_id[' + i.to_s + ']', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_publisher_type[i]) %> 
-    <% end %>
+    <% if SystemConfiguration.get("add_only_exist_patron") %>
+      <%= text_field :add_publisher, :publisher_id, :id => 'patron_search_publisher', :value => @keep_publisher %>
+      <%= select_tag 'add_publisher[publisher_type]', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @keep_publisher_type) %>
+    <% else %>
+      <% @new_publisher.each_with_index do |nc, i| %>
+        <div id="UF<%= i.to_s %>" class="field">
+          <%= text_field_tag 'publisher_full_name[' + i.to_s + ']', nc, :placeholder => t("activerecord.attributes.patron.full_name") %>
+          <%= text_field_tag 'publisher_full_name_transcription[' + i.to_s + ']', @new_publisher_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+          <%= select_tag 'publisher_type_id[' + i.to_s + ']', options_for_select(@produce_types.collect{|r| [r.display_name.localize, r.id]}, :selected => @new_publisher_type[i]) %> 
+          <%= button_to_function t('page.add_line'), 'ItemField_publisher.add()' -%>
+          <%= button_to_function t('page.del_line'), 'ItemField_publisher.remove()' -%>
+      <% end %>  
       <div id="UF<%= @new_publisher_number %>" class="field">
       </div>
-    <% @new_publisher_number.to_i.times{ %></div><% } %>
+      <% @new_publisher_number.to_i.times{ %></div><% } %>
+    <% end %>
   </div>
-  <% end %>
 
   <div class="field">
     <%= f.label t('page.file') -%><br />

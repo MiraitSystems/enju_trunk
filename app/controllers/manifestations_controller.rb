@@ -1416,38 +1416,39 @@ class ManifestationsController < ApplicationController
   end
 
   def input_patron_parameter
+    if SystemConfiguration.get("add_only_exist_patron")
+      @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
+      @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
+      @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
+      @add_contributor_type = Array.new(@add_contributor.length, params[:add_contributor][:contributor_type])
+      @add_publisher = params[:add_publisher][:publisher_id].split(",")  #select2からデータ受取
+      @add_publisher_type = Array.new(@add_publisher.length, params[:add_publisher][:publisher_type])
+    else
+      @new_creator_name = params[:creator_full_name].values.join(";") rescue ''
+      @new_creator_transcription = params[:creator_full_name_transcription].values.join(";") rescue ''
+      @new_creator = []
+      @new_creator_type = params[:creator_type_id].values rescue []
+      @new_contributor_name = params[:contributor_full_name].values.join(";") rescue ''
+      @new_contributor_transcription = params[:contributor_full_name_transcription].values.join(";") rescue ''
+      @new_contributor = []
+      @new_contributor_type = params[:contributor_type_id].values rescue []
+      @new_publisher_name = params[:publisher_full_name].values.join(";") rescue ''
+      @new_publisher_transcription = params[:publisher_full_name_transcription].values.join(";") rescue ''
+      @new_publisher = []
+      @new_publisher_type = params[:publisher_type_id].values rescue []
+    end
     @upd_creator = params[:upd_creator].keys rescue []
     @upd_creator_type = params[:upd_creator].values rescue []
     @del_creator = Array.new(@upd_creator.length, false)
     @del_creator = Hash[[@upd_creator, @del_creator].transpose].merge(params[:del_creator]).values rescue []
-    @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
-    @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
-    @new_creator_name = params[:creator_full_name].values.join(";") rescue ''
-    @new_creator_transcription = params[:creator_full_name_transcription].values.join(";") rescue ''
-    @new_creator = []
-    @new_creator_type = params[:creator_type_id].values rescue []
-
     @upd_contributor = params[:upd_contributor].keys rescue []
     @upd_contributor_type = params[:upd_contributor].values rescue []
     @del_contributor = Array.new(@upd_contributor.length, false)
     @del_contributor = Hash[[@upd_contributor, @del_contributor].transpose].merge(params[:del_contributor]).values rescue []
-    @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
-    @add_contributor_type = Array.new(@add_contributor.length, params[:add_contributor][:contributor_type])
-    @new_contributor_name = params[:contributor_full_name].values.join(";") rescue ''
-    @new_contributor_transcription = params[:contributor_full_name_transcription].values.join(";") rescue ''
-    @new_contributor = []
-    @new_contributor_type = params[:contributor_type_id].values rescue []
-
     @upd_publisher = params[:upd_publisher].keys rescue []
     @upd_publisher_type = params[:upd_publisher].values rescue []
     @del_publisher = Array.new(@upd_publisher.length, false)
     @del_publisher = Hash[[@upd_publisher, @del_publisher].transpose].merge(params[:del_publisher]).values rescue []
-    @add_publisher = params[:add_publisher][:publisher_id].split(",")  #select2からデータ受取
-    @add_publisher_type = Array.new(@add_publisher.length, params[:add_publisher][:publisher_type])
-    @new_publisher_name = params[:publisher_full_name].values.join(";") rescue ''
-    @new_publisher_transcription = params[:publisher_full_name_transcription].values.join(";") rescue ''
-    @new_publisher = []
-    @new_publisher_type = params[:publisher_type_id].values rescue []
   end
 
   def output_patron_parameter
