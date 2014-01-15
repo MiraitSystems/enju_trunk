@@ -89,7 +89,7 @@ gem 'whenever', '~> 0.6', :require => false
 
 gem 'dynamic_form'
 gem 'sanitize'
-gem 'mobile-fu'
+gem 'mobile-fu', '1.2.2'
 gem 'attribute_normalizer', '~> 1.1'
 gem 'barby', '~> 0.5'
 gem 'chunky_png', '1.2.5'
