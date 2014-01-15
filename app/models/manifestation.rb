@@ -5,8 +5,11 @@ class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
   has_many :creators, :through => :creates, :source => :patron, :order => :position
+  has_many :creators_order_type, :through => :creates, :source => :patron, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :patron, :order => :position
+  has_many :contributors_order_type, :through => :realizes, :source => :patron, :order => 'realize_type_id, position'
   has_many :publishers, :through => :produces, :source => :patron, :order => :position
+  has_many :publishers_order_type, :through => :produces, :source => :patron, :order => 'produce_type_id, position'
   has_many :work_has_subjects, :foreign_key => 'work_id', :dependent => :destroy
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position

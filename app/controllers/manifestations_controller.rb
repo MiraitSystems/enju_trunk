@@ -1422,10 +1422,10 @@ class ManifestationsController < ApplicationController
     @del_creator = Hash[[@upd_creator, @del_creator].transpose].merge(params[:del_creator]).values rescue []
     @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
     @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
-    @new_creator_name = params[:creator_full_name].values.join(";")
-    @new_creator_transcription = params[:creator_full_name_transcription].values.join(";")
+    @new_creator_name = params[:creator_full_name].values.join(";") rescue ''
+    @new_creator_transcription = params[:creator_full_name_transcription].values.join(";") rescue ''
     @new_creator = []
-    @new_creator_type = params[:creator_type_id].values
+    @new_creator_type = params[:creator_type_id].values rescue []
 
     @upd_contributor = params[:upd_contributor].keys rescue []
     @upd_contributor_type = params[:upd_contributor].values rescue []
@@ -1433,10 +1433,10 @@ class ManifestationsController < ApplicationController
     @del_contributor = Hash[[@upd_contributor, @del_contributor].transpose].merge(params[:del_contributor]).values rescue []
     @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
     @add_contributor_type = Array.new(@add_contributor.length, params[:add_contributor][:contributor_type])
-    @new_contributor_name = params[:contributor_full_name].values.join(";")
-    @new_contributor_transcription = params[:contributor_full_name_transcription].values.join(";")
+    @new_contributor_name = params[:contributor_full_name].values.join(";") rescue ''
+    @new_contributor_transcription = params[:contributor_full_name_transcription].values.join(";") rescue ''
     @new_contributor = []
-    @new_contributor_type = params[:contributor_type_id].values
+    @new_contributor_type = params[:contributor_type_id].values rescue []
 
     @upd_publisher = params[:upd_publisher].keys rescue []
     @upd_publisher_type = params[:upd_publisher].values rescue []
@@ -1444,10 +1444,10 @@ class ManifestationsController < ApplicationController
     @del_publisher = Hash[[@upd_publisher, @del_publisher].transpose].merge(params[:del_publisher]).values rescue []
     @add_publisher = params[:add_publisher][:publisher_id].split(",")  #select2からデータ受取
     @add_publisher_type = Array.new(@add_publisher.length, params[:add_publisher][:publisher_type])
-    @new_publisher_name = params[:publisher_full_name].values.join(";")
-    @new_publisher_transcription = params[:publisher_full_name_transcription].values.join(";")
+    @new_publisher_name = params[:publisher_full_name].values.join(";") rescue ''
+    @new_publisher_transcription = params[:publisher_full_name_transcription].values.join(";") rescue ''
     @new_publisher = []
-    @new_publisher_type = params[:publisher_type_id].values
+    @new_publisher_type = params[:publisher_type_id].values rescue []
   end
 
   def output_patron_parameter
@@ -1456,9 +1456,9 @@ class ManifestationsController < ApplicationController
     @keep_creator = @add_creator.collect{|r| r.to_i}.join(",") rescue nil
     @keep_creator_type = @add_creator_type
     @keep_creator_del = @del_creator
-    @new_creator = params[:creator_full_name].values
-    @new_creator_transcription = params[:creator_full_name_transcription].values
-    @new_creator_type = params[:creator_type_id].values.collect{|r| r.to_i}
+    @new_creator = params[:creator_full_name].values rescue []
+    @new_creator_transcription = params[:creator_full_name_transcription].values rescue []
+    @new_creator_type = params[:creator_type_id].values.collect{|r| r.to_i} rescue []
     @new_creator_number = @new_creator.length
 
     @contributors = @manifestation.contributors
@@ -1466,9 +1466,9 @@ class ManifestationsController < ApplicationController
     @keep_contributor = @add_contributor.collect{|r| r.to_i}.join(",") rescue nil
     @keep_contributor_type = @add_contributor_type
     @keep_contributor_del = @del_contributor
-    @new_contributor = params[:contributor_full_name].values
-    @new_contributor_transcription = params[:contributor_full_name_transcription].values
-    @new_contributor_type = params[:contributor_type_id].values.collect{|r| r.to_i}
+    @new_contributor = params[:contributor_full_name].values rescue []
+    @new_contributor_transcription = params[:contributor_full_name_transcription].values rescue []
+    @new_contributor_type = params[:contributor_type_id].values.collect{|r| r.to_i} rescue []
     @new_contributor_number = @new_contributor.length
 
     @publishers = @manifestation.publishers
@@ -1476,9 +1476,9 @@ class ManifestationsController < ApplicationController
     @keep_publisher = @add_publisher.collect{|r| r.to_i}.join(",") rescue nil
     @keep_publisher_type = @add_publisher_type
     @keep_publisher_del = @del_publisher
-    @new_publisher = params[:publisher_full_name].values
-    @new_publisher_transcription = params[:publisher_full_name_transcription].values
-    @new_publisher_type = params[:publisher_type_id].values.collect{|r| r.to_i}
+    @new_publisher = params[:publisher_full_name].values rescue []
+    @new_publisher_transcription = params[:publisher_full_name_transcription].values rescue []
+    @new_publisher_type = params[:publisher_type_id].values.collect{|r| r.to_i} rescue []
     @new_publisher_number = @new_publisher.length
   end
 

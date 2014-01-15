@@ -1041,7 +1041,7 @@ system_configuration_00148:
   typename: Boolean
   description: "利用者通知書の出力ボタンを表示するか"
   category: 'user'
-system_configuration_00419:
+system_configuration_00149:
   id: 149
   keyname: add_only_exist_patron
   v: "true"

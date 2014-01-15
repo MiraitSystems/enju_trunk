@@ -1357,14 +1357,17 @@ ja:
         name: 名称
         display_name: 表示名
         note: 注記
+        display: 書誌への表示
       realize_type:
         name: 名称
         display_name: 表示名
         note: 注記
+        display: 書誌への表示
       produce_type:
         name: 名称
         display_name: 表示名
         note: 注記
+        display: 書誌への表示
       series_statement_merge_list:
         title: タイトル
       series_has_manifestation:
@@ -1768,6 +1771,8 @@ ja:
       no_matches_found: テーマが見つかりません
       hot_topic: 話題のテーマ
       related_manifestation: 関連する資料
+    add_line: "+"
+    del_line: "-"
     user_notice: 利用者通知書
     barcode_registration:
       first_number: 開始番号
@@ -1775,8 +1780,6 @@ ja:
       submit: 出力
       error: "不正な値が入力されています。"
       number: 登録番号
-    add_line: "行追加"
-    del_line: "行削除"
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"

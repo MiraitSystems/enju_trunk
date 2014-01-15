@@ -18,6 +18,15 @@
   <%= @create_type.note -%>
 </p>
 
+<p>
+  <strong><%= t('activerecord.attributes.create_type.display') -%>:</strong>
+  <%- if @create_type.display -%>
+    <%= t('system_configuration.boolean_display') -%>
+  <%- else -%>
+    <%= t('system_configuration.boolean_not_display') -%>
+  <%- end -%>
+</p>
+
 </div>
 </div>
 

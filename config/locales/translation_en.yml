@@ -1434,14 +1434,17 @@ en:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       realize_type:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       produce_type:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       series_has_manifestation:
         series_statement_id: Series statement id 
         manifestation_id: Manifestation id
@@ -1791,6 +1794,8 @@ en:
       no_matches_found: No matches found
       hot_topic: Hot topic
       related_manifestation: Related manifestation
+    add_line: "+"
+    del_line: "-"
     user_notice: User notice
     barcode_registration:
       first_number: First number
@@ -1798,8 +1803,6 @@ en:
       submit: submit
       error: Invalid value has been entered
       number: Number
-    add_line: "Add line"
-    del_line: "Delete line"
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
