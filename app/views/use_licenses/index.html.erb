@@ -1,2 +1,49 @@
-<h1>UseLicenses#index</h1>
-<p>Find me in app/views/use_licenses/index.html.erb</p>
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.use_license')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th>id</th>
+    <th><%= t('activerecord.attributes.use_license.target') -%></th>
+    <th><%= t('activerecord.attributes.use_license.author') -%></th>
+    <th><%= t('activerecord.attributes.use_license.author_fee') -%></th>
+    <th><%= t('activerecord.attributes.use_license.agency_name') -%></th>
+    <th></th>
+  </tr>
+
+<%- @use_licenses.each do |use_license| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to use_license.id, use_license -%></td>
+    <td><%= link_to use_license.target, use_license -%></td>
+    <td><%= link_to use_license.author, use_license -%></td>
+    <%- if use_license.author_fee? -%>
+      <td><%= link_to t('flag.yes'), use_license -%></td>
+    <%- else -%>
+      <td><%= link_to t('flag.no'), use_license -%></td>
+    <%- end -%>
+    <td><%= link_to use_license.agency_name, use_license -%></td>
+    <td>
+      <%= link_to t('page.show'), use_license -%>
+      <%- if can? :update, use_license -%>
+        <%= link_to t('page.edit'), edit_use_license_path(use_license) -%>
+      <% end %>
+      <%- if can? :destroy, use_license -%>
+        <%= link_to t('page.destroy'), use_license, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+<%- if can? :create, UseLicense -%>
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.use_license')), new_use_license_path -%></li>
+  </ul>
+<%- end -%>
+</div>
+

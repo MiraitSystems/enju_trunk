@@ -156,6 +156,7 @@ class Ability
         Term,
         Theme,
         EnjuTerminal,
+        UseLicense,
         UserCheckoutStat,
         UserGroupHasCheckoutType,
         UserHasRole,
@@ -318,6 +319,7 @@ class Ability
         SystemConfiguration,
         Term,
         Theme,
+        UseLicense,
         UserStatus,
         WorkHasSubject
       ]
@@ -477,6 +479,7 @@ class Ability
         SubjectHeadingType,
         Theme,
         EnjuTerminal,
+        UseLicense,
         UserCheckoutStat,
         UserReserveStat,
         UserStatus,
@@ -535,6 +538,7 @@ class Ability
         SubjectHasClassification,
         SubjectHeadingType,
         Theme,
+        UseLicense,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,
