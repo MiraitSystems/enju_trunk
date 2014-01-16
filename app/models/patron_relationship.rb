@@ -5,7 +5,9 @@ class PatronRelationship < ActiveRecord::Base
   validate :check_parent
   validates_presence_of :parent_id, :child_id
   acts_as_list :scope => :parent_id
-  scope :seealso, where(:patron_relationship_type_id => 1)
+  scope :seealso_type, where(:patron_relationship_type_id => 1)
+  scope :member_type, where(:patron_relationship_type_id => 2)
+  scope :child_type, where(:patron_relationship_type_id => 3)
   after_save :reindex
   after_destroy :reindex
 

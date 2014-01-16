@@ -13,18 +13,54 @@
       </li>
     <%- end -%>
 
-    <%- if @patron.parents.seealso.exists? or @patron.children.seealso.exists? -%>
+    <%- if @patron.parents.seealso_type.exists? or @patron.children.seealso_type.exists? -%>
       <%= t('page.see_also') -%>
-    <%- end -%> 
-    <%- @patron.parents.seealso.each do |patron_relationship| -%>
-      <li>
-        <%= link_to patron_relationship.parent.full_name, patron_relationship.parent -%>
-      </li>
+      <%- @patron.parents.seealso_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.parent.full_name, patron_relationship.parent -%>
+        </li>
+      <%- end -%>
+      <%- @patron.children.seealso_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.child.full_name, patron_relationship.child -%>
+        </li>
+      <%- end -%>
     <%- end -%>
-    <%- @patron.children.seealso.each do |patron_relationship| -%>
-      <li>
-        <%= link_to patron_relationship.child.full_name, patron_relationship.child -%>
-      </li>
+
+    <%- if @patron.children.member_type.exists? -%>
+      <%= t('page.member') -%>
+      <%- @patron.children.member_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.child.full_name, patron_relationship.child -%>
+        </li>
+      <%- end -%>
+    <%- end -%>
+
+    <%- if @patron.parents.member_type.exists? -%>
+      <%= t('page.organization') -%>
+      <%- @patron.parents.member_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.parent.full_name, patron_relationship.parent -%>
+        </li>
+      <%- end -%>
+    <%- end -%>
+
+    <%- if @patron.children.child_type.exists? -%>
+      <%= t('page.child') -%>
+      <%- @patron.children.child_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.child.full_name, patron_relationship.child -%>
+        </li>
+      <%- end -%>
+    <%- end -%>
+
+    <%- if @patron.parents.child_type.exists? -%>
+      <%= t('page.parent') -%>
+      <%- @patron.parents.child_type.each do |patron_relationship| -%>
+        <li>
+          <%= link_to patron_relationship.parent.full_name, patron_relationship.parent -%>
+        </li>
+      <%- end -%>
     <%- end -%>
   </ul>
 </div>
