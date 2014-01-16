@@ -1,6 +1,10 @@
 EnjuLeaf::Application.routes.draw do
   resources :exchange_rates
   resources :currencies
+  resources :keycodes
+
+  get "barcode_registrations/index"
+
   resources :series_statement_relationship_types
   match 'themes/update_all', :to => 'themes#update_all'
   resources :themes
