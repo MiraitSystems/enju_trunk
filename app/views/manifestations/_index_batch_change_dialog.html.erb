@@ -22,4 +22,8 @@ $(function(){
     <%= hidden_field_tag :basket_id, @current_basket.id %>
     <%= submit_tag t('page.batch_change_series_statement'), :style => "width: 200px" %>
   <% end %>
+  <%= form_tag themes_path, { method: 'get' } do %>
+    <%= hidden_field_tag :basket_id, @current_basket.id %>
+    <%= submit_tag t('page.batch_change_theme'), :style => "width: 200px" %>
+  <% end %>
 </div>

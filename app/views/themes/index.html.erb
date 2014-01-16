@@ -5,6 +5,9 @@
 
   <%= form_for :themes, :url => themes_path, :html => {:method => 'get'} do -%>
     <p>
+      <%- if params[:basket_id] -%>
+        <%= hidden_field_tag :basket_id %>
+      <%- end -%>
       <%= t('page.search_term') -%>: <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%= submit_tag t('page.search') -%>
     </p>
@@ -39,6 +42,9 @@
           <td>
             <%= link_to t('page.edit'), edit_theme_path(theme) %>
             <%= link_to t('page.destroy'), theme, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+            <%- if params[:basket_id] -%>
+              <%= link_to t('page.select'), themes_update_all_path(:theme_id => theme.id) %>
+            <%- end -%>
           </td>
         <%- end -%>
       </tr>
