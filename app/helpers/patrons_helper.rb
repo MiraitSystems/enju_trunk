@@ -13,8 +13,32 @@ module PatronsHelper
   end
 
   def patron_relationship_anyone(patron, id)
-    patron_relationship = patron.children.find_by_child_id(id) 
+    patron_relationship = patron.children.find_by_child_id(id)
     patron_relationship = patron.parents.find_by_parent_id(id) unless patron_relationship
     return patron_relationship
-  end  
+  end
+
+  def patron_relationship_type_show(patron, id)
+    patron_relationship_child  = patron.children.find_by_child_id(id)
+    patron_relationship_parent = patron.parents.find_by_parent_id(id)
+    if patron_relationship_child
+      case patron_relationship_child.patron_relationship_type_id
+        when 1 # See also
+          t('page.see_also')
+        when 2 # Member
+          t('page.member')
+        when 3 # Child
+          t('page.child')
+      end
+    elsif patron_relationship_parent
+      case patron_relationship_parent.patron_relationship_type_id
+        when 1 # See also
+          t('page.see_also')
+        when 2 # Member
+          t('page.organization')
+        when 3 # Child
+          t('page.parent')
+      end
+    end
+  end
 end
