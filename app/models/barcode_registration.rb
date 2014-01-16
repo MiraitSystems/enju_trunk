@@ -5,11 +5,11 @@ class BarcodeRegistration
 
   attr_accessor :first_number, :last_number
   validates :first_number,
-    :presence => true, 
+    :presence => false, 
     :length   => { maximum: 9 },
     :format   => { with: /^\d+$/ }
   validates :last_number,
-    :presence => true, 
+    :presence => false, 
     :length   => { maximum: 9 },
     :format   => { with: /^\d+$/ }
   validate :comparison_in_size
