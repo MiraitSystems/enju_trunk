@@ -196,7 +196,6 @@ ja:
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
       theme: テーマ
-      barcode_registration: 資料登録番号バーコード
       currency: 通貨単位
 
     attributes:
@@ -1774,12 +1773,6 @@ ja:
     add_line: "+"
     del_line: "-"
     user_notice: 利用者通知書
-    barcode_registration:
-      first_number: 開始番号
-      last_number: 終了番号
-      submit: 出力
-      error: "不正な値が入力されています。"
-      number: 登録番号
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2839,3 +2832,13 @@ ja:
     can_not_delete: "通貨単位は削除できません。"
   exchange_rate:
     invalid_started_at: "が不正な値です。例: 2011-04-12"
+  barcode_registration:
+    more_than_last_number: "が終了番号より大きいです。"
+
+  activemodel:
+    models:
+      barcode_registration: 資料登録番号バーコード
+    attributes:
+      barcode_registration:
+        first_number: 開始番号
+        last_number: 終了番号    
