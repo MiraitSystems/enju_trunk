@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby "1.9.3"
+#ruby "1.9.3"
 
-gem 'rails', '3.2.15'
+gem 'rails', '3.2.16'
 
 gem 'cocaine', '0.4.2'
 #gem 'enju_amazon', :git => 'git://github.com/nabeta/enju_amazon.git'
@@ -15,9 +15,10 @@ gem 'enju_manifestation_viewer', '0.1.0.pre3'
 #gem 'enju_message', "0.1.14.pre"
 gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git'
 #gem "enju_ndl", "0.1.0.pre8"
-gem 'enju_ndl', :git => 'git://github.com/MiraitSystems/enju_ndl.git'
+gem 'enju_ndl', :git => 'git://github.com/MiraitSystems/enju_trunk_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
 gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :require => 'enju_event'
+gem 'activerecord-import'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
 gem 'enju_subject', '0.1.0.pre5'
@@ -88,7 +89,7 @@ gem 'whenever', '~> 0.6', :require => false
 
 gem 'dynamic_form'
 gem 'sanitize'
-gem 'mobile-fu'
+gem 'mobile-fu', '1.2.2'
 gem 'attribute_normalizer', '~> 1.1'
 gem 'barby', '~> 0.5'
 gem 'chunky_png', '1.2.5'

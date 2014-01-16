@@ -1,13 +1,19 @@
 EnjuLeaf::Application.routes.draw do
   resources :use_licenses
+  resources :exchange_rates
+  resources :currencies
+  resources :keycodes
 
   get "barcode_registrations/index"
 
   resources :abbreviations
 
   resources :series_statement_relationship_types
+  match 'themes/update_all', :to => 'themes#update_all'
   resources :themes
-  resources :barcode_registrations
+  resources :barcode_registrations, :only => [:index] do
+    post :output, :on => :collection
+  end
  
   #resources :identifier_types
   resources :warekis
@@ -17,6 +23,7 @@ EnjuLeaf::Application.routes.draw do
     post :select_manifestation, :on => :member
   end
 
+  resources :patron_aliases
   resources :numberings
   resources :departments
   resources :classmarks
@@ -75,6 +82,8 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/create' => 'checked_manifestations#create'
   match 'checked_manifestations/delete' => 'checked_manifestations#destroy'
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
+
+  match 'patrons/search_name' => 'patrons#search_name'
 
   resources :patrons do
     resources :works, :controller => 'manifestations'
@@ -150,6 +159,7 @@ EnjuLeaf::Application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
+    post :output_user_notice, :on => :member   
     resources :answers
     resources :baskets do
       resources :checked_items

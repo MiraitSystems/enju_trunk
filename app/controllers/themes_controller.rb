@@ -35,4 +35,26 @@ class ThemesController < InheritedResources::Base
     end
     update!
   end
+
+#バスケットの中身をまとめてアップデートできる
+  def update_all
+    @theme = Theme.find(params[:theme_id])
+    respond_to do |format|
+      begin
+        @current_basket.checked_manifestations.map(&:manifestation).each do |m|
+          unless ThemeHasManifestation.exists?(theme_id: @theme.id, manifestation_id: m.id)
+            ThemeHasManifestation.create(theme_id: @theme.id, manifestation_id: m.id)
+          end
+        end
+        flash[:message] = t('page.batch_change_theme_added', :title => @theme.name)
+        format.html { redirect_to manifestations_path(:theme_id => params[:theme_id]) }
+        format.json { head :no_content }
+      rescue Exception => e
+        logger.debug "Exception: #{e.message} (#{e.class})"
+        flash[:message] = t('page.batch_change_theme_failed')
+        format.html { redirect_to manifestations_path(:theme_id => params[:theme_id]) }
+        format.json { head :no_content }
+      end
+    end
+  end
 end

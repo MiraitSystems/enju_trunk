@@ -1,0 +1,42 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.keycode')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.keycode.name') -%>:</strong>
+  <%= @keycode.name -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.keycode.display_name') -%>:</strong>
+  <%= @keycode.display_name -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.keycode.v') -%>:</strong>
+  <%= @keycode.v -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.keycode.keyname') -%>:</strong>
+  <%= @keycode.keyname -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.models.keycode') -%>:</strong>
+  <%- if @keycode.ended_at.nil? -%>
+    <%= l(@keycode.started_at, :format => :only_date) -%> -
+  <%- else -%>
+    <%= l(@keycode.started_at, :format => :only_date) -%> - <%= l(@keycode.ended_at, :format => :only_date) -%>
+  <%- end -%>
+</p>
+
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_keycode_path(@keycode) -%></li>
+    <li><%= link_to t('page.back'), keycodes_path -%></li>
+  </ul>
+</div>
+

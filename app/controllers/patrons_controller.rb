@@ -4,7 +4,7 @@ class PatronsController < ApplicationController
   add_breadcrumb "I18n.t('activerecord.models.patron')", 'patron_path(params[:id])', :only => [:show]
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.patron'))", 'new_patron_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.patron'))", 'edit_patron_path(params[:id])', :only => [:edit, :update]
-  load_and_authorize_resource :except => :index
+  load_and_authorize_resource :except => [:index, :search_name]
   authorize_resource :only => :index
   before_filter :get_user
   helper_method :get_work, :get_expression
@@ -87,7 +87,10 @@ class PatronsController < ApplicationController
         with(:work_ids).equal_to work.id if work
         with(:expression_ids).equal_to expression.id if expression
         with(:manifestation_ids).equal_to manifestation.id if manifestation
-        with(:original_patron_ids).equal_to patron.id if patron
+        any_of do
+          with(:original_patron_ids).equal_to patron.id if patron
+          with(:derived_patron_ids).equal_to patron.id if patron
+        end
         with(:patron_merge_list_ids).equal_to patron_merge_list.id if patron_merge_list
       end
     end
@@ -110,6 +113,24 @@ class PatronsController < ApplicationController
       format.atom
       format.json { render :json => @patrons }
       format.mobile
+    end
+    
+  end
+
+  def search_name
+    @patron_id = params[:patron_id]
+    if @patron_id.blank?
+       @patrons = Patron.where("full_name like '#{params[:search_phrase]}%'").select("id, full_name")
+    else
+       @patrons = Patron.where(id: @patron_id.split(",")).select("id, full_name")
+    end
+    struct_patron = Struct.new(:id, :text)
+    @struct_patron_array = []
+    @patrons.each do |patron|
+      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+    end
+    respond_to do |format|
+      format.json { render :text => @struct_patron_array.to_json }
     end
   end
 
@@ -187,6 +208,9 @@ class PatronsController < ApplicationController
     @patron.fax_number_2_type_id = 3
     prepare_options
 
+    @countalias = 0
+    @patron.patron_aliases << PatronAlias.new
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @patron }
@@ -195,6 +219,10 @@ class PatronsController < ApplicationController
 
   # GET /patrons/1/edit
   def edit
+    @countalias = PatronAlias.count(:conditions => ["patron_id = ?", params[:id]])
+    if @countalias == 0
+      @patron.patron_aliases << PatronAlias.new
+    end
     prepare_options
   end
 
@@ -202,6 +230,7 @@ class PatronsController < ApplicationController
   # POST /patrons.json
   def create
     @patron = Patron.new(params[:patron])
+
     if @patron.user_username
       @patron.user = User.find(@patron.user_username) rescue nil
     end

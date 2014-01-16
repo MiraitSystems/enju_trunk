@@ -88,18 +88,33 @@ module ApplicationHelper
     html.html_safe
   end
 
-  def patrons_list(patrons = [], options = {}, mode = 'html')
+  def patrons_list(patrons = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
     return nil if patrons.blank?
     patrons_list = []
     exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
     patrons.each do |patron|
-      if options[:nolink] or exclude_patrons.include?(patron.full_name)
-        patron = mode == 'html' ? highlight(patron.full_name) : patron.full_name
-        patrons_list << patron
-      else
-        patron = mode == 'html' ? link_to(highlight(patron.full_name), patron, options) : link_to(patron.full_name, patron, options)
-        patrons_list << patron
+      type_name = ''
+      if manifestation_id.present?
+        case type
+          when 'create'
+            create_type = CreateType.find(patron.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
+            type_name = (create_type and create_type.display) ? create_type.display_name : ''
+          when 'realize'
+            realize_type = RealizeType.find(patron.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
+            type_name = (realize_type and realize_type.display) ? realize_type.display_name : ''
+          when 'produce'
+            produce_type = ProduceType.find(patron.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
+            type_name = (produce_type and produce_type.display) ? produce_type.display_name : ''
+        end
+        type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
       end
+      full_name = patron.full_name << type_name
+      if options[:nolink] or exclude_patrons.include?(patron.full_name)
+        patron = mode == 'html' ? highlight(full_name) : full_name
+      else
+        patron = mode == 'html' ? link_to(highlight(full_name), patron, options) : link_to(full_name, patron, options)
+      end
+      patrons_list << patron
     end
     patrons_list.join(" ").html_safe
   end
@@ -273,7 +288,8 @@ module ApplicationHelper
 
   ADVANCED_SEARCH_PARAMS = [
     :except_query, :tag, :title, :except_title, :creator, :except_creator,
-    :publisher, :isbn, :issn, :item_identifier, :pub_date_from,
+    :publisher, :isbn, :issn, :ndc, :item_identifier, :pub_date_from,
+    :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
     :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
     :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
     :title_merge, :creator_merge, :query_merge, :manifestation_types 
@@ -287,6 +303,11 @@ module ApplicationHelper
     publisher: 'patron.publisher',
     isbn: 'activerecord.attributes.manifestation.isbn',
     issn: 'activerecord.attributes.manifestation.issn',
+    ndc: 'activerecord.attributes.manifestation.ndc',
+    edition_display_value: 'activerecord.attributes.manifestation.edition_display_value',
+    volume_number_string: 'activerecord.attributes.manifestation.volume_number_string',
+    issue_number_string: 'activerecord.attributes.manifestation.issue_number_string',
+    serial_number_string: 'activerecord.attributes.manifestation.serial_number_string',
     ncid: 'activerecord.attributes.nacsis_user_request.ncid',
     item_identifier: 'activerecord.attributes.item.item_identifier',
     call_number: 'activerecord.attributes.item.call_number',
