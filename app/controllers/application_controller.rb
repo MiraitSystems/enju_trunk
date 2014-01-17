@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 class ApplicationController < ActionController::Base
+  # helper EnjuXXX::Engine.helpers
+
   protect_from_forgery
   require_dependency 'language'
 
