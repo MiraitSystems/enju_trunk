@@ -1,6 +1,7 @@
 <div id="basket_menu">
   <%- if @basket -%>
-    <%= link_to t('basket.all_manifestation'), manifestations_path %>
+    <%= link_to t('basket.all_manifestation'), manifestations_path %><br />
+    <%= link_to t('page.batch_change'),  '', :id => 'batch_change_opener' %>    
   <%- else -%>
     <%- count = @current_basket.try(:checked_manifestations).try(:size) %>
     <%- is_list = is_list || @is_list -%>
@@ -17,11 +18,11 @@
       <% if is_list %><li><% end %>
         <%= link_to t('page.batch_change'),  '', :id => 'batch_change_opener' %>
       <% if is_list %></li><% end %>
-      <%= render 'index_batch_change_dialog' %>
     <%- else -%>
       <% if is_list %><li><% end %>
       <%= t('basket.show_basket', :count => count) %>
       <% if is_list %></li><% end %>
     <%- end -%>
   <%- end -%>
+  <%= render 'manifestations/index_batch_change_dialog' %>
 </div>

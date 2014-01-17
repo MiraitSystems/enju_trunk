@@ -5,8 +5,11 @@ class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
   has_many :creators, :through => :creates, :source => :patron, :order => :position
+  has_many :creators_order_type, :through => :creates, :source => :patron, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :patron, :order => :position
+  has_many :contributors_order_type, :through => :realizes, :source => :patron, :order => 'realize_type_id, position'
   has_many :publishers, :through => :produces, :source => :patron, :order => :position
+  has_many :publishers_order_type, :through => :produces, :source => :patron, :order => 'produce_type_id, position'
   has_many :work_has_subjects, :foreign_key => 'work_id', :dependent => :destroy
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
@@ -25,12 +28,13 @@ class Manifestation < ActiveRecord::Base
   has_many :theme_has_manifestations, :dependent => :destroy
   has_many :themes, :through => :theme_has_manifestations
   has_many :identifiers
+  has_many :manifestation_exinfos, :dependent => :destroy
+  has_many :manifestation_extexts, :dependent => :destroy
 
   belongs_to :manifestation_content_type, :class_name => 'ContentType', :foreign_key => 'content_type_id'
   belongs_to :country_of_publication, :class_name => 'Country', :foreign_key => 'country_of_publication_id'
 
   scope :without_master, where(:periodical_master => false)
- 
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
 
   SUNSPOT_EAGER_LOADING = {
@@ -42,7 +46,16 @@ class Manifestation < ActiveRecord::Base
       subjects: {classifications: :category},
     ]
   }
+
   searchable(SUNSPOT_EAGER_LOADING) do
+    text :extexts do
+      if root_of_series? # 雑誌の場合
+        series_manifestations.
+          manifestation_extexts.map(&:value).compact unless manifestation_extexts.blank?
+      else
+        manifestation_extexts.map(&:value).compact unless manifestation_extexts.blank?
+      end
+    end
     text :fulltext, :contributor, :article_title, :series_title, :exinfo_1, :exinfo_6
     text :title, :default_boost => 2 do
       titles
@@ -152,6 +165,13 @@ class Manifestation < ActiveRecord::Base
     string :language do
       language.try(:name)
     end
+    string :ndc, :multiple => true do
+      if root_of_series? # 雑誌の場合
+        series_manifestations.map.map(&:ndc).compact
+      else
+        ndc
+      end
+    end
     string :item_identifier, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の蔵書の蔵書情報IDのリストを取得する
@@ -204,9 +224,19 @@ class Manifestation < ActiveRecord::Base
     integer :height
     integer :width
     integer :depth
+    integer :edition, :multiple => true
     integer :volume_number, :multiple => true
     integer :issue_number, :multiple => true
     integer :serial_number, :multiple => true
+    string :edition_display_value, :multiple => true do
+      if root_of_series? # 雑誌の場合
+        # 同じ雑誌の全号の出版日のリストを取得する
+        series_manifestations.
+          map(&:edition_display_value).compact
+      else
+        edition_display_value
+      end
+    end
     string :volume_number_string, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の出版日のリストを取得する
@@ -444,8 +474,7 @@ class Manifestation < ActiveRecord::Base
 
   after_save :index_series_statement
   after_destroy :index_series_statement
-  attr_accessor :during_import, :creator, :contributor, :publisher, :subject, :theme, 
-                :creator_transcription, :publisher_transcription, :contributor_transcription, :subject_transcription
+  attr_accessor :during_import, :creator, :contributor, :publisher, :subject, :theme, :manifestation_exinfo, :creator_transcription, :publisher_transcription, :contributor_transcription, :subject_transcription
 
   paginates_per 10
 
@@ -546,6 +575,9 @@ class Manifestation < ActiveRecord::Base
       hide = false
       hide = true if i.non_searchable
       hide = true if item_retention_period_non_searchable?(i)
+      if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
+        hide = true if i.try(:use_restriction).try(:name) == 'Not For Loan' 
+      end
       unless article?
         hide = true if item_circulation_status_unsearchable?(i)
         if SystemConfiguration.get('manifestation.manage_item_rank')

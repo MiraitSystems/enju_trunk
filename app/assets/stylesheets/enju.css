@@ -138,10 +138,11 @@ div#submenu{
 }
 
 div#social_bookmark{
-  margin-top: 10px;
+  margin-top: 5px;
   margin-left: 10px;
   width: 190px;
   padding: 5px;
+  clear: left;
   float: left;
   border: 1px solid #5970B2;
 }
@@ -274,6 +275,11 @@ form{
 
 table{
   border: 1px solid #2779aa;
+}
+
+table#bless, table#bless tr, table#bless tr td{
+  border: none;
+  cellpadding: 1px;
 }
 
 td, th{

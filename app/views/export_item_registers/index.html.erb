@@ -20,8 +20,15 @@
       success: function(obj) {
         $('span#list_size').html(obj["list_size"]);
         $('span#page_size').html(obj["page"]);
+        if(obj["catalog_flag"] == false) {
+          $('span#catalog_flag').hide();
+          $("#export_item_register_file_type_pdf").prop("checked", true);
+        } else {
+          $('span#catalog_flag').show();
+        }
       }
     });
+    
   }
 </script>
 <div id="content_detail" class="ui-corner-all">
@@ -37,7 +44,9 @@
   <div class="field">
     <%= label :list_type, t('activerecord.attributes.item_register.file_type')-%>:
     <%= f.radio_button :file_type, "pdf", :checked => "checked" -%><%= t('item_register.pdf')-%>
-    <%= f.radio_button :file_type, "tsv" -%><%= t('item_register.tsv') -%>
+    <span id = "catalog_flag">
+      <%= f.radio_button :file_type, "tsv" -%><%= t('item_register.tsv') -%>
+    </span>
   </div>
 
   <div>

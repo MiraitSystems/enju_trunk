@@ -1172,11 +1172,60 @@ class Item < ActiveRecord::Base
     return data
   end
 
+  def self.output_catalog(type, out_dir, file_type = nil)
+    raise "invalid parameter: no path" if out_dir.nil? || out_dir.length < 1
+    pdf_file = out_dir + "#{type}_catalog.pdf"
+    logger.info "output #{type}_catalog  pdf: #{pdf_file}"
+    FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
+    if type == 'title'
+      @manifestations = Manifestation.order("original_title ASC")
+    elsif type == 'author' 
+      @manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name")
+    elsif type == 'classifild'
+      @manifestations = Manifestation.order("ndc ASC")
+    end
+    make_catalog_pdf(pdf_file, @manifestations, "#{type}_catalog") if file_type.nil? || file_type == "pdf"
+  end
+
+
+  def self.make_catalog_pdf(pdf_file, manifestations, list_title = nil)
+    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{list_title}.tlf")
+    #report page
+    report.events.on :page_create do |e|
+      e.page.item(:page).value(e.page.no)
+    end
+    report.events.on :generate do |e|
+      e.pages.each do |page|
+        page.item(:total).value(e.report.page_count)
+      end
+    end
+    report.start_new_page
+    report.page.item(:date).value(Time.now)
+    report.page.item(:list_name).value(I18n.t("item_register.#{list_title}"))
+    manifestations.find_each do |manifestation|
+      manifestation.items.each do |item|
+        report.page.list(:list).add_row do |row|
+          row.item(:title).value(item.manifestation.original_title) if item.manifestation
+          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+          row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
+
+          row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
+          row.item(:shelf).value(item.shelf.display_name) if item.shelf
+          row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
+          row.item(:item_identifier).value(item.item_identifier)
+          row.item(:call_number).value(call_numberformat(item))
+        end
+      end
+    end
+    report.generate_file(pdf_file)
+  end
+
   def self.make_export_item_list_job(file_name, file_type, method, dumped_query, args, user)
     job_name = GenerateItemListJob.generate_job_name
     Delayed::Job.enqueue GenerateItemListJob.new(job_name, file_name, file_type, method, dumped_query, args, user)
     job_name
   end
+
 
   class GenerateItemListJob
     include Rails.application.routes.url_helpers
@@ -1254,12 +1303,10 @@ class Item < ActiveRecord::Base
       fn = "#{file_name}.#{file_type}"
       user_file = UserFile.new(user)
       url = nil
-
       logger.error "SQL start at #{Time.now}"
 
       Dir.mktmpdir do |tmpdir|
         Item.__send__(method, *args, tmpdir + '/', file_type)
-
         o, info = user_file.create(:item_register, fn)
         begin
           open(File.join(tmpdir, fn)) do |i|
@@ -1283,7 +1330,11 @@ class Item < ActiveRecord::Base
       message(
         user,
         I18n.t('item_register.export_job_error_subject', :job_name => job_name),
-        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message))
+        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message),
+        method,
+        args,
+        file_type
+        )
     end
   end
 end
