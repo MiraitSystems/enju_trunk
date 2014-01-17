@@ -51,9 +51,9 @@ class Manifestation < ActiveRecord::Base
     text :extexts do
       if root_of_series? # 雑誌の場合
         series_manifestations.
-          manifestation_extexts.map(&:value).compact unless manifestation_extexts.blank?
+          manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
       else
-        manifestation_extexts.map(&:value).compact unless manifestation_extexts.blank?
+        manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
       end
     end
     text :fulltext, :contributor, :article_title, :series_title, :exinfo_1, :exinfo_6
