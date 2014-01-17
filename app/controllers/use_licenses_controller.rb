@@ -3,6 +3,17 @@ class UseLicensesController < ApplicationController
   before_filter :check_client_ip_address
   load_and_authorize_resource
 
+  # セレクターの設定
+  before_filter :set_selector
+
+  def set_selector
+    @targets = Keycode.where(name: "UL0D0010")
+    @authors = Keycode.where(name: "UL0D0020")
+    @author_fees = [[t('flag.yes'), true], [t('flag.no'), false]]
+    @account_kinds = [[t('activerecord.attributes.use_license.account_kinds.normal'), 1],
+                      [t('activerecord.attributes.use_license.account_kinds.current'), 2]]
+  end
+
   def new
     @use_license = UseLicense.new
 

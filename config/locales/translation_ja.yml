@@ -1,6 +1,7 @@
 ja:
   activerecord:
     models:
+      keycode: コード管理
       use_license: 利用許諾
       abbreviation: 略語辞書
       wareki: 和暦
@@ -200,6 +201,14 @@ ja:
       theme: テーマ
       barcode_registration: 資料登録番号バーコード
     attributes:
+      keycode:
+        name: コード識別記号
+        display_name: コード名称
+        v: コードキー値
+        keyname: コード内容
+        started_at: 開始年月日
+        ended_at: 終了年月日
+        ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
       use_license:
         target: 利用許諾対象
         author: 著者抄録許諾
@@ -216,6 +225,9 @@ ja:
         account_name: 口座名
         account_number: 口座番号
         account_kind: 口座種類
+        account_kinds:
+          "normal": 普通
+          "current": 当座
       abbreviation:
         keyword: キーワード
         v: 略語

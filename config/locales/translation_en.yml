@@ -2,6 +2,7 @@
 en:
   activerecord:
     models:
+      keycode: Keycode
       use_license: Use license
       abbreviation: Abbreviation
       library: Library
@@ -199,6 +200,14 @@ en:
       barcode_registration: Registration bar code
 
     attributes:
+      keycode:
+        name: Name
+        display_name: Display name
+        v: V
+        keyname: Key name
+        started_at: Started date
+        ended_at: Ended date
+        ended_at_invalid: End date must be later than Start date.
       use_license:
         target: Target
         author: Author
@@ -215,6 +224,9 @@ en:
         account_name: Account name
         account_number: Account number
         account_kind: Account kind
+        account_kinds:
+          "normal": Normal
+          "current": Current
       abbreviation:
         keyword: Keyword
         v: V

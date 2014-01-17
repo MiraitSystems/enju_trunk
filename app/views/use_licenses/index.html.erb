@@ -15,8 +15,18 @@
 <%- @use_licenses.each do |use_license| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to use_license.id, use_license -%></td>
-    <td><%= link_to use_license.target, use_license -%></td>
-    <td><%= link_to use_license.author, use_license -%></td>
+    <% @targets.collect{|r| %>
+      <% if r.v == use_license.target then %>
+        <td><%= link_to r.keyname.localize, use_license -%></td>
+        <% break %>
+      <% end %>
+    <% } %>
+    <% @authors.collect{|r| %>
+      <% if r.v == use_license.author then %>
+        <td><%= link_to r.keyname.localize, use_license -%></td>
+        <% break %>
+      <% end %>
+    <% } %>
     <%- if use_license.author_fee? -%>
       <td><%= link_to t('flag.yes'), use_license -%></td>
     <%- else -%>

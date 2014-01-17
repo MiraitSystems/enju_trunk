@@ -4,12 +4,26 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <strong>id:</strong>
+  <%= @use_license.id -%>
+</p>
+<p>
   <strong><%= t('activerecord.attributes.use_license.target') -%>:</strong>
-  <%= @use_license.target -%>
+  <% @targets.collect{|r| %>
+    <% if r.v == @use_license.target then %>
+      <%= r.keyname.localize -%>
+      <% break %>
+    <% end %>
+  <% } %>
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.author') -%>:</strong>
-  <%= @use_license.author -%>
+  <% @authors.collect{|r| %>
+    <% if r.v == @use_license.author then %>
+      <%= r.keyname.localize -%>
+      <% break %>
+    <% end %>
+  <% } %>
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.author_fee') -%>:</strong>
@@ -65,7 +79,12 @@
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.account_kind') -%>:</strong>
-  <%= @use_license.account_kind -%>
+  <% @account_kinds.each do |r| %>
+    <% if r[1] == @use_license.account_kind then %>
+      <%= r[0] -%>
+      <% break %>
+    <% end %>
+  <% end %>
 </p>
 
 </div>

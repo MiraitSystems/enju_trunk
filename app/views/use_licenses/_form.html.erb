@@ -3,15 +3,15 @@
 
   <div class="field">
     <%= f.label :target %><br />
-    <%= f.text_field :target %>
+    <%= f.select(:target, @targets.collect{|r| [r.keyname.localize, r.v]}) %>
   </div>
   <div class="field">
     <%= f.label :author %><br />
-    <%= f.text_field :author %>
+    <%= f.select(:author, @authors.collect{|r| [r.keyname.localize, r.v]}) %>
   </div>
   <div class="field">
     <%= f.label :author_fee %><br />
-    <%= f.select(:author_fee, [[t('flag.yes'), true], [t('flag.no'), false]]) %>
+    <%= f.select(:author_fee, @author_fees) %>
   </div>
   <div class="field">
     <%= f.label :agency_name %><br />
@@ -59,7 +59,7 @@
   </div>
   <div class="field">
     <%= f.label :account_kind %><br />
-    <%= f.text_field :account_kind %>
+    <%= f.select(:account_kind, @account_kinds) %>
   </div>
   <div class="actions">
     <%= f.submit %>
