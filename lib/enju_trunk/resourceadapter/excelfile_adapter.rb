@@ -1,9 +1,5 @@
 # -*- encoding: utf-8 -*-
-require File.join(File.expand_path(File.dirname(__FILE__)), 'excelfile_import_book')
-require File.join(File.expand_path(File.dirname(__FILE__)), 'excelfile_import_article')
 class Excelfile_Adapter < EnjuTrunk::ResourceAdapter::Base
-  include EnjuTrunk::ExcelfileImportBook
-  include EnjuTrunk::ExcelfileImportArticle
 
   def self.display_name
     "エクセルファイル(xlsx)"
@@ -13,101 +9,22 @@ class Excelfile_Adapter < EnjuTrunk::ResourceAdapter::Base
     "excelfile_select_manifestation_type.html.erb"
   end
 
-  def import(id, filename, user_id, extraparams = {})
-    logger.info "#{Time.now} start import #{self.class.display_name}"
-    logger.info "id=#{id} filename=#{filename}"
-
-    Benchmark.bm do |x|
-      x.report { 
-        extraparams = eval(extraparams)
-        manifestation_types = extraparams["manifestation_type"]
-        numberings = extraparams["numbering"]
-        auto_numbering = extraparams["auto_numbering"]
-        @textfile_id = id
-        @resource_import_textfile = ResourceImportTextfile.find(@textfile_id)
-        @oo = Excelx.new(filename)
-        errors = []
-        
-        extraparams["sheet"].each_with_index do |sheet, i|
-          @manifestation_type = ManifestationType.find(manifestation_types[i].to_i) rescue nil
-          if SystemConfiguration.get('manifestations.split_by_type') and @manifestation_type.nil?
-            errors << { :msg => I18n.t('resource_import_textfile.error.manifestation_type_is_nil'), :sheet => sheet }
-            next
-          end
-
-          @numbering = Numbering.where(:name => numberings[i]).first rescue nil
-          @auto_numbering = auto_numbering[i]
-          unless @numbering
-            case 
-            when @manifestation_type.nil?
-              @numbering = Numbering.where(:name => 'book').first
-            when @manifestation_type.is_book?
-              @numbering = Numbering.where(:name => 'book').first
-            when @manifestation_type.is_article?
-              @numbering = Numbering.where(:name => 'article').first
-            else 
-              @numbering = Numbering.where(:name => 'book').first
-            end
-          end
-          @oo.default_sheet = sheet
-          logger.info "num=#{i}  sheet=#{sheet} manifestation_type=#{@manifestation_type.display_name if @manifestation_type}"
-
-          if SystemConfiguration.get('manifestations.split_by_type')
-            if @manifestation_type.is_article?
-              import_article(sheet, errors)
-            else
-              import_book(sheet, errors)
-            end
-          else
-            import_book(sheet, errors) 
-          end
+  def set_field(oo, sheet, manifestation_type, field_row_num)
+    raise I18n.t('resource_import_textfile.error.blank_sheet') unless oo.first_column
+    # set field
+    field = Hash::new
+    files = []
+    oo.first_column.upto(oo.last_column) do |column|
+      name = oo.cell(field_row_num, column).to_s.strip
+      unless name.blank?
+        if field.keys.include?(name)
+          raise I18n.t('resource_import_textfile.error.overlap')
+        else
+          field.store(name, column)
         end
-        if errors.size > 0
-          errors.each do |error|
-            import_textresult = ResourceImportTextresult.new(
-              :resource_import_textfile_id => @textfile_id,
-              :extraparams                 => "{'sheet'=>'#{error[:sheet]}', 'wrong_sheet' => true, 'filename' => '#{filename}' }",
-              :error_msg                   => error[:msg],
-              :failed                      => true
-             )
-            import_textresult.save!
-          end
-        end
-      }
-    end
-    logger.info "#{Time.now} end import #{self.class.display_name}"
-  end
-
-  def fix_data(cell)
-    return nil unless cell
-    cell = cell.to_s.strip
-
-    if cell.match(/^[0-9]+.0$/)
-      return cell.to_i
-    elsif cell == 'delete'
-      return ''
-    elsif cell.blank? or cell.nil?
-      return nil
-    else
-      return cell.to_s
-    end
-  end
-
-  def fix_boolean(cell, options = {:mode => 'create'})
-    unless cell
-      if options[:mode] == 'delete' or @mode == 'edit' or @mode_item == 'edit'
-        return nil
-      else
-        return false
       end
     end
-    cell = cell.to_s.strip
-
-    if cell.nil? or cell.blank? or cell.upcase == 'FALSE' or cell == ''
-      return false
-    end
-    return true
+    return field
   end
 end
-
 EnjuTrunk::ResourceAdapter::Base.add(Excelfile_Adapter)

@@ -1617,7 +1617,6 @@ class ManifestationsController < ApplicationController
       access_denied unless current_user.has_role?('Librarian')
       @add = true
     end
-
     if params[:format] == 'csv'
       search_opts[:csv_mode] = true
 
@@ -1634,16 +1633,15 @@ class ManifestationsController < ApplicationController
 
     elsif defined?(EnjuBookmark) && params[:view] == 'tag_cloud'
       search_opts[:tag_cloud_mode] = true
-
-    elsif params[:output_pdf] || params[:output_tsv] ||
-        params[:output_excelx] || params[:output_request]
+    elsif params[:output]
       search_opts[:output_mode] = true
       search_opts[:output_type] =
-        case
-        when params[:output_pdf]; :pdf
-        when params[:output_tsv]; :tsv
-        when params[:output_excelx]; :excelx
-        when params[:output_request]; :request
+        case params[:format_type]
+        when 'excelx'  then :excelx
+        when 'tsv'     then :tsv
+        when 'pdf'     then :pdf
+        when 'request' then :request
+        when 'label'   then :label
         end
       raise UnknownFileTypeError unless search_opts[:output_type]
       search_opts[:output_cols] = params[:cols]

@@ -905,37 +905,52 @@ class Manifestation < ActiveRecord::Base
     generate_manifestation_list_internal(manifestation_ids, output_type, current_user, search_condition_summary, cols, &block)
   end
 
-  def self.generate_manifestation_list_internal(manifestation_ids, output_type, current_user, search_condition_summary, cols, &block)
+  # TODO: エクセル、TSV、PDF利用部分のメソッド名を修正すること	
+  def self.generate_manifestation_list_internal(manifestation_ids, output_type, current_user, summary, cols, &block)
     output = OpenStruct.new
-    output.result_type = :data
-
+    output.result_type = output_type == :excelx ? :path : :data
     case output_type
-    when :pdf
+    when :pdf 
       method = 'get_manifestation_list_pdf'
-    when :tsv
-      method = 'get_manifestation_list_tsv'
-    when :excelx
-      method = 'get_manifestation_list_excelx'
-      output.result_type = :path
+      type  = cols.first =~ /\Aarticle./ ? :article : :book
+      result = output.__send__("#{output.result_type}=", 
+        self.__send__(method, manifestation_ids, current_user, summary, type))
     when :request
-      method = 'get_missing_issue_list_pdf'
-    end
-    filename_method = method.sub(/\Aget_(.*)(_[^_]+)\z/) { "#{$1}_print#{$2}" }
-    output.filename = Setting.__send__(filename_method).filename
-
-    if output_type == :excelx
-      result = output.__send__("#{output.result_type}=",
-                      self.__send__(method, manifestation_ids, current_user, cols))
-    else
-      manifestations = self.where(:id => manifestation_ids).all
-      if output_type == :pdf
+      method = 'get_missing_list_pdf'
+      result = output.__send__("#{output.result_type}=", 
+        self.__send__(method, manifestation_ids, current_user))
+    when :excelx, :tsv
+      method = 'get_manifestation_list_excelx'
+      if output_type == :tsv
         result = output.__send__("#{output.result_type}=",
-                             self.__send__(method, manifestations, current_user, search_condition_summary))
+          self.__send__('get_manifestation_list_tsv_csv', manifestation_ids, cols))
       else
-        result = output.__send__("#{output.result_type}=",
-                             self.__send__(method, manifestations, current_user))
+        result = output.__send__("#{output.result_type}=", 
+          self.__send__('get_manifestation_list_excelx', manifestation_ids, current_user, cols))
       end
+    when :label
+      method = 'get_label_list_tsv_csv'
+      result = output.__send__("#{output.result_type}=", 
+        self.__send__(method, manifestation_ids))
     end
+
+    if output_type == :label
+      if SystemConfiguration.get("set_output_format_type")
+        output.filename = Setting.manifestation_label_list_print_tsv.filename
+      else
+        output.filename = Setting.manifestation_label_list_print_csv.filename
+      end
+    elsif output_type == :tsv
+      if SystemConfiguration.get("set_output_format_type")
+        output.filename = Setting.manifestation_list_print_tsv.filename
+      else
+        output.filename = Setting.manifestation_list_print_csv.filename
+      end
+    else
+      filename_method = method.sub(/\Aget_(.*)(_[^_]+)\z/) { "#{$1}_print#{$2}" }
+      output.filename = Setting.__send__(filename_method).filename
+    end
+
     if output.result_type == :path
       output.path, output.data = result
     else
@@ -957,7 +972,7 @@ class Manifestation < ActiveRecord::Base
   # NOTE: resource_import_textfile.excelとの整合性を維持すること
   BOOK_COLUMNS = lambda { %W(
     #{ 'manifestation_type' unless SystemConfiguration.get('manifestations.split_by_type') } 
-    isbn original_title title_transcription title_alternative carrier_type
+    isbn original_title title_transcription title_alternative carrier_type jpn_or_foreign
     frequency pub_date country_of_publication place_of_publication language
     edition_display_value volume_number_string issue_number_string serial_number_string lccn
     marc_number ndc start_page end_page height width depth price
@@ -976,10 +991,9 @@ class Manifestation < ActiveRecord::Base
     creator original_title title volume_number_string number_of_page pub_date
     call_number access_address subject
   )
+  # 出力時の順番に関わるので SERIES_COLUMNS と BOOK_COLUMNS の順番を入れ替えないこと
   ALL_COLUMNS =
-    BOOK_COLUMNS.call.map {|c| "book.#{c}" } +
-    SERIES_COLUMNS.map {|c| "series.#{c}" } +
-    ARTICLE_COLUMNS.map {|c| "article.#{c}" }
+    SERIES_COLUMNS.map { |c| "series.#{c}" } + BOOK_COLUMNS.call.map { |c| "book.#{c}" } + ARTICLE_COLUMNS.map {|c| "article.#{c}" }
 
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
@@ -992,44 +1006,89 @@ class Manifestation < ActiveRecord::Base
       require 'axlsx'
       ws_cls = Axlsx::Worksheet
     end
-
     pkg = Axlsx::Package.new
     wb = pkg.workbook
     sty = wb.styles.add_style :font_name => Setting.manifestation_list_print_excelx.fontname
+    sheet_name = {
+      'book'    => 'book_list',
+      'series'  => 'series_list',
+      'article' => 'article_list',
+    }
+    worksheet = {}
+    style = {}
+    # ヘッダー部分
+    column = self.set_column(selected_column)
+    column.keys.each do |type|
+      if column[type].blank?
+        column.delete(type); next
+      end
+      worksheet[type] = ws_cls.new(wb, :name => sheet_name[type]).tap do |sheet|
+        row = column[type].map { |(t, c)| I18n.t("resource_import_textfile.excel.#{t}.#{c}") }
+        style[type] = [sty]*row.size
+        sheet.add_row row, :types => :string, :style => style[type]
+      end
+    end
+    # データ部分
+    self.set_manifestations_data(:excelx, column, manifestation_ids, worksheet, style)
+    pkg.serialize(excel_filepath)
+    return [excel_filepath, excel_fileinfo]
+  end
 
-    column = { # 書誌のタイプごとの出力すべきカラムのリスト
-      'book' => [], # 一般書誌(manifestation_type.is_{series,article}?がfalse)
-      'series' => SERIES_COLUMNS.map {|c| ["series", c] }, # 雑誌(manifestation_type.is_series?がtrue)
+  def self.get_manifestation_list_tsv_csv(manifestation_ids, selected_column = [])
+    split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
+    data = String.new
+    data << "\xEF\xBB\xBF".force_encoding("UTF-8")
+    # ヘッダー部分
+    column = self.set_column(selected_column)
+    column.keys.each do |type|
+      if column[type].blank?
+        column.delete(type); next
+      end
+    end
+    type = column.keys.include?('article') ? 'article' : 'series'
+    row = column[type].map { |(t, c)| I18n.t("resource_import_textfile.excel.#{t}.#{c}") }
+    data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
+    # データ部分
+    self.set_manifestations_data(:tsv_csv, column, manifestation_ids, data)
+
+    return data
+  end
+
+  def self.get_label_list_tsv_csv(manifestation_ids)
+    split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
+    data = String.new
+    data << "\xEF\xBB\xBF".force_encoding("UTF-8")
+
+    where(:id => manifestation_ids).includes(:items => [:shelf]).find_in_batches do |manifestations|
+      manifestations.each do |manifestation|
+        manifestation.items.each do |item|
+          row = []
+          row << item.manifestation.ndc
+          row << item.manifestation.manifestation_exinfos(:name => 'author_mark').first.try(:value)# 著者記号
+          row << item.shelf.name 
+          data << row.join(split) +"\n" 
+        end
+      end       
+    end
+    return data
+  end
+
+  def self.set_column(selected_column = [])
+    column = {
+      'book'    => [], # 一般書誌(manifestation_type.is_{series,article}?がfalse
+      'series'  => [], # 雑誌(manifestation_type.is_series?がtrue)
       'article' => [], # 文献(manifestation_type.is_article?がtrue)
     }
     selected_column.each do |type_col|
       next unless ALL_COLUMNS.include?(type_col)
       next unless /\A([^.]+)\.([^.]+)\z/ =~ type_col
-      column[$1] << [$1, $2]
+      column[$1]       << [$1, $2]
       column['series'] << [$1, $2] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
     end
-    sheet_name = {
-      'book' => 'book_list',
-      'series' => 'series_list',
-      'article' => 'article_list',
-    }
+    return column
+  end
 
-    # 必要となりそうなワークシートの初期化
-    worksheet = {}
-    style = {}
-    column.keys.each do |type|
-      if column[type].blank?
-        column.delete(type)
-        next
-      end
-      worksheet[type] = ws_cls.new(wb, :name => sheet_name[type]).tap do |sheet|
-        row = column[type].map {|(t, c)| I18n.t("resource_import_textfile.excel.#{t}.#{c}") }
-        style[type] = [sty]*row.size
-        sheet.add_row row, :types => :string, :style => style[type]
-      end
-    end
-
-
+  def self.set_manifestations_data(format_type, column, manifestation_ids, data, style = {})
     logger.debug "begin export manifestations"
     transaction do
       where(:id => manifestation_ids).
@@ -1054,11 +1113,13 @@ class Manifestation < ActiveRecord::Base
             target = [manifestation]
           elsif manifestation.series?
             type = 'series'
-#            target = manifestation.series_statement.manifestations # XXX: 検索結果由来とseries_statement由来とでmanifestationレコードに重複が生じる可能性があることに注意(32b51f2c以前のコードをそのまま残した) #TODO:重複はさせない
+            # target = manifestation.series_statement.manifestations
+            # XXX: 検索結果由来とseries_statement由来とでmanifestationレコードに重複が生じる可能性があることに注意(32b51f2c以前のコード>をそのまま残した)
+            # TODO:重複はさせない
              if manifestation.periodical_master
                #target = manifestation.series_statement.manifestaitions
                target = manifestation.series_statement.manifestations.map{ |m| m unless m.periodical_master }.compact
-             else 
+             else
                target = [manifestation]
              end
           else # 一般書誌
@@ -1081,7 +1142,13 @@ class Manifestation < ActiveRecord::Base
               column[type].each do |(t, c)|
                 row << m.excel_worksheet_value(t, c, i)
               end
-              worksheet[type].add_row row, :types => :string, :style => style[type]
+              if format_type == :excelx
+                data[type].add_row row, :types => :string, :style => style[type]
+              else
+                split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
+                SERIES_COLUMNS.size.times { data << '""' + split } unless m.series?
+                data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
+              end
 
               if Setting.export.delete_article
                 # 文献をエクスポート時にはその文献情報を削除する
@@ -1099,9 +1166,7 @@ class Manifestation < ActiveRecord::Base
               # 文献をエクスポート時にはその文献情報を削除する
               # copied from app/models/resource_import_textresult.rb:102-105
               if type == 'article' && m.article?
-                if manifestation.items.count == 0
-                  manifestation.destroy
-                end
+                manifestation.destroy if manifestation.items.count == 0
               end
             end
           end # target.each
@@ -1110,16 +1175,6 @@ class Manifestation < ActiveRecord::Base
       end # find_in_batches
     end # transaction
     logger.debug "end export manifestations"
-
-    # 空のワークシートを削除
-    #worksheet.each_pair do |type, ws|
-    #  next if ws.rows.size > 1
-    #  wb.worksheets.delete(ws) # 見出し行以外ない
-    #end
-
-    pkg.serialize(excel_filepath)
-
-    [excel_filepath, excel_fileinfo]
   end
 
   # XLSX形式でのエクスポートのための値を生成する
@@ -1132,8 +1187,8 @@ class Manifestation < ActiveRecord::Base
     val = nil
 
     case ws_col
-    when 'manifestation_type'
-      val = manifestation_type.try(:display_name) || ''
+    #when 'manifestation_type'
+    #  val = manifestation_type.try(:display_name) || ''
 
     when 'original_title', 'title_transcription', 'series_statement_identifier', 'periodical', 'issn', 'note'
       if ws_type == 'series'
@@ -1169,10 +1224,10 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
 
-    when 'carrier_type', 'language', 'required_role'
+    when 'carrier_type', 'language', 'required_role', 'manifestation_type', 'country_of_publication'
       val = __send__(ws_col).try(:name) || ''
 
-    when 'frequency', 'country_of_publication'
+    when 'frequency'
       val = __send__(ws_col).try(:display_name) || ''
 
     when 'creator', 'contributor', 'publisher'
@@ -1233,15 +1288,17 @@ class Manifestation < ActiveRecord::Base
     val
   end
 
-  def self.get_missing_issue_list_pdf(manifestations, current_user)
-    manifestations.each do |m|
-      m.missing_issue = 2 unless m.missing_issue == 3
-      m.save!(:validate => false)
+  def self.get_missing_list_pdf(manifestation_ids, current_user)
+    where(:id => manifestation_ids).find_in_batches do |manifestations|
+      manifestations.each do |manifestation|
+        manifestation.missing_issue = 2 unless manifestation.missing_issue == 3
+        manifestation.save!(:validate => false)
+      end
     end
-    get_manifestation_list_pdf(manifestations, current_user)
+    return get_manifestation_list_pdf(manifestation_ids, current_user)
   end
 
-  def self.get_manifestation_list_pdf(manifestations, current_user, search_condition_summary)
+  def self.get_manifestation_list_pdf(manifestation_ids, current_user, summary = nil, type = :book)
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'searchlist.tlf')
 
     # set page_num
@@ -1253,78 +1310,39 @@ class Manifestation < ActiveRecord::Base
         page.item(:total).value(e.report.page_count)
       end
     end
-
+    # set data
     report.start_new_page do |page|
       page.item(:date).value(Time.now)
-      page.item(:query).value(search_condition_summary)
-      manifestations.each do |manifestation|
-        page.list(:list).add_row do |row|
-          # modified data format
-          item_identifiers = manifestation.items.map{|item| item.item_identifier}
-          creator = manifestation.creators.readable_by(current_user).map{|patron| patron.full_name}
-          contributor = manifestation.contributors.readable_by(current_user).map{|patron| patron.full_name}
-          publisher = manifestation.publishers.readable_by(current_user).map{|patron| patron.full_name}
-          reserves = Reserve.waiting.where(:manifestation_id => manifestation.id, :checked_out_at => nil)
-          # set list
-          row.item(:title).value(manifestation.original_title)
-          row.item(:item_identifier).value(item_identifiers.join(',')) unless item_identifiers.empty?
-          row.item(:creator).value(creator.join(',')) unless creator.empty?
-          row.item(:contributor).value(contributor.join(',')) unless contributor.empty?
-          row.item(:publisher).value(publisher.join(',')) unless publisher.empty?
-          row.item(:pub_date).value(manifestation.pub_date)
-#          row.item(:reserves_num).value(reserves.count)
+      page.item(:query).value(summary)
+
+      where(:id => manifestation_ids).find_in_batches do |manifestations|
+        manifestations.each do |manifestation|
+          if type == :book
+             next if manifestation.article?
+          else
+             next unless manifestation.article?
+          end
+          page.list(:list).add_row do |row|
+            # modified data format
+            item_identifiers = manifestation.items.map{ |item| item.item_identifier }
+            creator = manifestation.creators.readable_by(current_user).map{ |patron| patron.full_name }
+            contributor = manifestation.contributors.readable_by(current_user).map{ |patron| patron.full_name }
+            publisher = manifestation.publishers.readable_by(current_user).map{ |patron| patron.full_name }
+            reserves = Reserve.waiting.where(:manifestation_id => manifestation.id, :checked_out_at => nil)
+            # set list
+            row.item(:title).value(manifestation.original_title)
+            if type == :book
+              row.item(:item_identifier).value(item_identifiers.join(',')) unless item_identifiers.empty?
+            end
+            row.item(:creator).value(creator.join(',')) unless creator.empty?
+            row.item(:contributor).value(contributor.join(',')) unless contributor.empty?
+            row.item(:publisher).value(publisher.join(',')) unless publisher.empty?
+            row.item(:pub_date).value(manifestation.pub_date)
+          end
         end
       end
     end
     return report
-  end
-
-  def self.get_manifestation_list_tsv(manifestations, current_user)
-    split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
-    data = String.new
-    data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
-
-    columns = [
-      [:title, 'activerecord.attributes.manifestation.original_title'],
-      [:item_identifier, 'activerecord.attributes.item.item_identifier'],
-      [:creator, 'patron.creator'],
-      [:contributor, 'patron.contributor'],
-      [:publisher, 'patron.publisher'],
-      [:pub_date, 'activerecord.attributes.manifestation.pub_date'],
-      [:reserves_num, 'activerecord.attributes.manifestation.reserves_number']
-    ]
-
-    # title column
-    row = columns.map{|column| I18n.t(column[1])}
-    data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
-
-    manifestations.each do |manifestation|
-      row = []
-      columns.each do |column|
-        case column[0]
-        when :title 
-          row << manifestation.original_title 
-        when :item_identifier
-          item_identifiers = manifestation.items.map{|item| item.item_identifier}
-          row << item_identifiers.join(',') rescue ''
-        when :creator
-          creator = manifestation.creators.readable_by(current_user).map{|patron| patron.full_name}
-          row << creator.join(',') rescue ''
-        when :contributor
-          contributor = manifestation.contributors.readable_by(current_user).map{|patron| patron.full_name}
-          row << contributor.join(',') rescue ''
-        when :publisher
-          publisher = manifestation.publishers.readable_by(current_user).map{|patron| patron.full_name}
-          row << publisher.join(',') rescue ''
-        when :pub_date
-          row << manifestation.pub_date
-        when :reserves_num
-          row << Reserve.waiting.where(:manifestation_id => manifestation.id, :checked_out_at => nil).count rescue 0
-        end
-      end
-      data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
-    end
-    return data
   end
 
   def self.get_manifestation_locate(manifestation, current_user)

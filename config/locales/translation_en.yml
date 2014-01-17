@@ -1684,6 +1684,15 @@ en:
     output_excelx_dialog: Select column(s) for output
     output_excelx_detail: Output checked columns
     output_excelx_default_checked: (default)
+    output_filetype: Output file type
+    output_filetype_format:
+      excelx: Excel(2007 and up)
+      pdf: PDF
+      tsv: TSV
+      csv: CSV
+    output_layout: Output layout
+    output_request: Request
+    output_label: Label
     batch_change: "Batch Change"
     batch_change_dialog: "Select action"
     batch_change_description: "Update the information contained in the basket. <br />Please select the action you want to."
@@ -2372,7 +2381,7 @@ en:
     specify_id: Specify %{model} ID.
   resource_import_textfile:
     wrong_file: can not be imported.
-    wrong_extention: Only files with xlsx extension can be imported.
+    wrong_extention: "files with xlsx extension or %{split_type} can be imported."
     importing_please_wait: Now importing Excel file. Please wait...
     template_download: Download template
     import_request: Import now
@@ -2403,6 +2412,7 @@ en:
         marc_number: MARC number
         ndc: NDC
         carrier_type: Carrier type
+        jpn_or_foreign: Japan or foreign
         frequency: Frequency
         pub_date: Date of publication
         country_of_publication: Country of publication
@@ -2464,31 +2474,40 @@ en:
         access_address: URL
         subject: Subject
     message:
-      read_sheet: Started to read %{sheet} sheet.
+      read_start: Started to read.
+      read_end: End to read.
+      sheet_info: 'sheet: %{sheet}'
       deleted: 'Deleted Item identifier: %{item_identifier}'
       deleted_manifestation: Title：%{original_title}
       deleted_series_statement: Series title：%{series_original_title}
       out_of_manage: '<br />Header has unmanaged colum name: %{columns}'
       without_item: Item won't be created withou item identifier column.
+      manifestation_imported: Manifestation imported
+      item_imported: Item imported
+      manifestation_found: Manifestation found
+      item_found: Item found
+      failed: Failed
     error:
+      failed_to_read_sheet: "Failed to read %{sheet} sheet.\r\n"
       manifestation_type_is_nil: Manifestation type is not selected.
-      blank_sheet: Failed to read %{sheet} sheet. No date in the sheet.
-      overlap: Failed to read %{sheet} sheet. Header has duplicate column name.
+      blank_sheet: No date in the sheet.
+      overlap: Header has duplicate column name.
+      head_require_manifestation_type: Manifestation type id required in first line.
       wrong_data: 'Invalid data %{field}: %{data}'
       delete_requre_item_identifier: Cannnot delete item without item identifier.
       failed_delete_not_find: Failed to delete item. Item is not found.
-      duplicate_item_identifier: 'Failed to read %{sheet} sheet. Duplicate item identifier: %{item_identifier}'
+      duplicate_item_identifier: 'Duplicate item identifier: %{item_identifier}'
       no_item_identifier: No item identifier
       cell_require_manifestation_type: Select manifestation type
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
+      wrong_format: Wrong format type.
       series:
-        head_is_blank: "Failed to read %{sheet} sheet. \r\n One of series name, ISSN, title or ISBN is required."
+        head_is_blank: "One of series name, ISSN, title or ISBN is required."
         cell_is_blank: One of series name, ISSN, title or ISBN is required.
         wrong_issn: ISSN is invalid.
         exist_same_series: Series statement may already registered. Select series statement in manifestation editting screen.
       book:
-        head_is_blank: "Failed to read %{sheet} sheet.\r\n Title or ISBN is required in first line. "
-        head_require_manifestation_type: "Failed to read %{sheet} sheet. \r\n Manifestation type id required in first line."
+        head_is_blank: "Title or ISBN is required in first line."
         cell_is_blank: Select title or ISBN.
         only_integer: 'Only integer is available for %{field} %{field}: %{data}'
         only_numeric: 'Only number is available for %{field} %{field}: %{data}'
@@ -2503,8 +2522,9 @@ en:
         has_not_shelf: There is not specific shelf.
         exist_multiple_same_manifestations: There are multiple identifier manifestations. New data is created.
         record_not_found: Failed to get datas from NDL-OPAC.
+        wrong_jpn_or_foreign: 'Jpn or foreign is invalid. Jpn or foreign: %{data}'
       article:
-        head_is_blank: "Failed to read %{sheet} sheet. \r\n title is requiered in first line. "
+        head_is_blank: "title is requiered in first line."
         cell_is_blank: Title is required.
   item_list:
     list_condition: List Condition
