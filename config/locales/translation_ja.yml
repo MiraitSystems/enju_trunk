@@ -398,13 +398,17 @@ ja:
         country: 国籍
         patron_type: 人物・団体の種類
         language: 言語
-        email: メールアドレス
+        email: メールアドレス1
+        email_2: メールアドレス2
         url: URL
         note_update_at: 注記更新時刻
         note_update_by: 注記更新者
         note_update_library: 注記更新図書館        
         old: 歳
         patron_identifier: 人物団体の識別番号
+        keyperson_1: キーパーソン1
+        keyperson_2: キーパーソン2
+        corporate_type: 団体分類 
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -2068,7 +2072,12 @@ ja:
     last_update_at: 最終更新日時
     last_update_by: 更新者 
     duplicate_user: "同じフルネーム(ヨミ)、電話番号１ー１、生年月日の人が既に登録されています。"
-    patron_identifier: 人物団体の識別番号
+    patron_identifier: 機関を識別するための番号
+    place: 所在地
+    contact:
+      full_name: 発行担当機関
+      full_name_transcription: 発行担当機関(ヨミ)
+      patron_identifier: 担当窓口
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"

@@ -7,14 +7,14 @@ class Patron < ActiveRecord::Base
     :zip_code_2, :address_1, :address_2, :address_1_note, :address_2_note,
     :telephone_number_1, :telephone_number_2, :fax_number_1, :fax_number_2,
     :other_designation, :place, :street, :locality, :region, :language_id,
-    :country_id, :patron_type_id, :note, :required_role_id, :email, :url,
+    :country_id, :patron_type_id, :note, :required_role_id, :email, :email_2, :url,
     :full_name_alternative_transcription, :title, :birth_date, :death_date,
     :patron_identifier,
     :telephone_number_1_type_id, :extelephone_number_1,
     :extelephone_number_1_type_id, :fax_number_1_type_id,
     :telephone_number_2_type_id, :extelephone_number_2,
     :extelephone_number_2_type_id, :fax_number_2_type_id, :user_username,
-    :exclude_state
+    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id
 
   scope :readable_by, lambda{|user| {:conditions => ['required_role_id <= ?', user.try(:user_has_role).try(:role_id) || Role.where(:name => 'Guest').select(:id).first.id]}}
   has_many :creates, :dependent => :destroy
@@ -40,6 +40,8 @@ class Patron < ActiveRecord::Base
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :language
   belongs_to :country
+  belongs_to :place, :class_name => 'Subject', :foreign_key => 'place_id'
+  belongs_to :corporate_type, :class_name => 'Keycode', :foreign_key => 'corporate_type_id'
   has_one :patron_import_result
 
   accepts_nested_attributes_for :patron_aliases
@@ -52,6 +54,7 @@ class Patron < ActiveRecord::Base
   validates :birth_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
+  validates :email_2, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name

@@ -312,7 +312,8 @@ en:
         country: Country
         patron_type: Patron type
         language: Language
-        email: Email
+        email: Email 1
+        email_2: Email 2
         url: URL
         old: old
         address: Address
@@ -323,6 +324,9 @@ en:
         note_update_by: Note update user
         note_update_library: Note update library
         patron_identifier: Patron Identifier
+        keyperson_1: Keyperson 1
+        keyperson_2: Keyperson 2
+        corporate_type: CorporateType
       feeds/app:
         source_url: Source URL
         title: Title
@@ -2080,6 +2084,11 @@ en:
     last_update_by: Last update by
     duplicate_user: Duplicate user was already registered. (same full name(transcription), same telephone number 1-1 and same birth date)
     patron_identifier: Patron identifier
+    subject_place: Place
+    contact:
+      full_name: Full name
+      full_name_transcription: Full name transcription
+      patron_identifier: Contact
     search_placeholder: Please enter a search name
     search_searching: Searching...
     search_nomatch: No matches

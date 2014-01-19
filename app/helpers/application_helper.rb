@@ -7,6 +7,9 @@ module ApplicationHelper
   include EnjuBookmark::BookmarkHelper if defined?(EnjuBookmark)
   include JaDateFormat
   include EnjuTerminalsHelper
+  if defined?(EnjuCustomize) && cutomize_gem = EnjuCustomize.get_gem
+    include cutomize_gem::Engine.helpers
+  end
 
   def form_icon(carrier_type)
     case carrier_type.name

@@ -17,4 +17,8 @@ module PatronsHelper
     patron_relationship = patron.parents.find_by_parent_id(id) unless patron_relationship
     return patron_relationship
   end  
+
+  def corporate_types
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", corporate_types_key, Time.zone.now) rescue nil
+  end
 end

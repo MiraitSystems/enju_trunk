@@ -265,6 +265,7 @@ class PatronsController < ApplicationController
           format.json { render :json => @patron, :status => :created, :location => @patron }
         end
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -286,6 +287,7 @@ class PatronsController < ApplicationController
         end
         format.json { head :no_content }
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "edit" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -308,8 +310,8 @@ class PatronsController < ApplicationController
   def prepare_options
     @countries = Country.all_cache
     @patron_types = PatronType.all
-    @patron_type_patron_id = PatronType.find_by_name('Person').id 
     @roles = Role.all
     @languages = Language.all_cache
+    @places = SubjectType.find_by_name('Place').try(:subjects)
   end
 end
