@@ -1,5 +1,8 @@
 # -*- encoding: utf-8 -*-
 class ApplicationController < ActionController::Base
+  if defined?(EnjuCustomize) && cutomize_gem = EnjuCustomize.get_gem
+    helper cutomize_gem::Engine.helpers
+  end
 
   protect_from_forgery
   require_dependency 'language'
