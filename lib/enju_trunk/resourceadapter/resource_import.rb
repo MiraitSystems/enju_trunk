@@ -21,6 +21,8 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
         resource_import_textfile = ResourceImportTextfile.find(textfile_id)
         extraparams = eval(params.extraparams)
         filename = params.resource_import_text.path
+
+        @article_default_datas = set_article_default_datas
           
         case params.adapter_name
         when 'Tsvfile_Adapter'
