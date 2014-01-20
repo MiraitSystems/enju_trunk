@@ -8,17 +8,19 @@ module EnjuTrunk
     ARTICLE_HEADER_ROW       = 1
     ARTICLE_DATA_ROW         = 2
 
-    # default setting: manifestation
-    ARTICLE_DEFAULT_LANGUAGE           = Language.where(:name => 'unknown').first
-    ARTICLE_DEFAULT_CARRIER_TYPE       = CarrierType.where(:name => 'print').first
-    ARTICLE_DEFAULT_FREQUENCY          = Frequency.where(:name => 'unknown').first
-    ARTICLE_DEFAULT_ROLE               = Role.find('Guest')
-    ARTICLE_DEFAULT_EXCEPT_RECENT      = false
-    # default setting: item
-    ARTICLE_DEFAULT_CIRCULATION_STATUS = CirculationStatus.where(:name => 'Not Available').first
-    ARTICLE_DEFAULT_USE_RESTRICTION    = UseRestriction.where(:name => 'Not For Loan').first
-    ARTICLE_DEFAULT_CHECKOUT_TYPE      = CheckoutType.where(:name => 'article').first
-    ARTICLE_DEFAULT_RANK               = 0 
+    def set_article_default_datas
+      default_datas = Hash::new
+      # default setting: manifestation
+      default_datas.store(:language,     Language.where(:name => 'unknown').first)
+      default_datas.store(:carrier_type, CarrierType.where(:name => 'print').first)
+      default_datas.store(:frequency,    Frequency.where(:name => 'unknown').first)
+      default_datas.store(:role,         Role.find('Guest'))
+      # default setting: item
+      default_datas.store(:circulation_status, CirculationStatus.where(:name => 'Not Available').first)
+      default_datas.store(:use_restriction,    UseRestriction.where(:name => 'Not For Loan').first)
+      default_datas.store(:checkout_type,      CheckoutType.where(:name => 'article').first)
+      default_datas.store(:rank,               0) 
+    end
 
     def check_article_header_has_necessary_field(field)
       require_fields = ARTICLE_REQUIRE_COLUMNS.map { |c| I18n.t("resource_import_textfile.excel.article.#{c}") }
@@ -147,11 +149,11 @@ module EnjuTrunk
       else       
         mode = 'create'
         manifestation = Manifestation.new(
-          :carrier_type   => ARTICLE_DEFAULT_CARRIER_TYPE,
-          :language       => ARTICLE_DEFAULT_LANGUAGE,
-          :frequency      => ARTICLE_DEFAULT_FREQUENCY,
-          :required_role  => ARTICLE_DEFAULT_ROLE,
-          :except_recent  => ARTICLE_DEFAULT_EXCEPT_RECENT,
+          :carrier_type   => @article_default_datas[:carrier_type], 
+          :language       => @article_default_datas[:language],
+          :frequency      => @article_default_datas[:frequency],
+          :required_role  => @article_default_datas[:required_role], 
+          :except_recent  => @article_default_datas[:except_recent],
           :during_import  => true,
         )
       end
@@ -180,10 +182,10 @@ module EnjuTrunk
       end
       p mode == 'create' ? "create new item" : "edit item / id: #{item.id} / item_identifer: #{item.item_identifier}"
 
-      item.circulation_status = ARTICLE_DEFAULT_CIRCULATION_STATUS
-      item.use_restriction    = ARTICLE_DEFAULT_USE_RESTRICTION
-      item.checkout_type      = ARTICLE_DEFAULT_CHECKOUT_TYPE
-      item.rank               = ARTICLE_DEFAULT_RANK
+      item.circulation_status = @article_default_datas[:circulation_status]
+      item.use_restriction    = @article_default_datas[:use_restriction]
+      item.checkout_type      = @article_default_datas[:checkout_type]
+      item.rank               = @article_default_datas[:rank]
       item.shelf_id           = textfile.user.library.article_shelf.id
       item.call_number        = datas['call_number'].to_s unless datas['call_number'].nil?
       while item.item_identifier.nil?
