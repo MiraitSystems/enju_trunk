@@ -194,7 +194,6 @@ en:
       relationship_family: Relationship family
       series_statement_relationship_type: Series statement relationship type
       currency: Currency
-      barcode_registration: Registration bar code
       keycode: Keycode
 
     attributes:
@@ -1829,12 +1828,6 @@ en:
     add_line: "+"
     del_line: "-"
     user_notice: User notice
-    barcode_registration:
-      first_number: First number
-      last_number: Last number
-      submit: submit
-      error: Invalid value has been entered
-      number: Number
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2911,3 +2904,10 @@ en:
   barcode_registration:
     more_than_last_number: " more than last number." 
 
+  activemodel:
+    models:
+      barcode_registration: Registration barcode
+    attributes:
+      barcode_registration:
+        first_number: First number
+        last_number: Last number
