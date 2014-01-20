@@ -165,7 +165,7 @@ gem 'jquery-ui-rails', "~> 4.0.4"
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # FRBR models
-gem 'enju_trunk_frbr', :git => 'git://github.com/MiraitSystems/enju_trunk_frbr.git'
+gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git'
 
 group :operation do
   gem 'enju_trunk_circulation', :git => 'git://github.com/MiraitSystems/enju_trunk_circulation.git'
