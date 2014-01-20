@@ -20,6 +20,8 @@ module EnjuTrunk
       default_datas.store(:use_restriction,    UseRestriction.where(:name => 'Not For Loan').first)
       default_datas.store(:checkout_type,      CheckoutType.where(:name => 'article').first)
       default_datas.store(:rank,               0) 
+logger.info default_datas
+      return default_datas
     end
 
     def check_article_header_has_necessary_field(field)
@@ -152,7 +154,7 @@ module EnjuTrunk
           :carrier_type   => @article_default_datas[:carrier_type], 
           :language       => @article_default_datas[:language],
           :frequency      => @article_default_datas[:frequency],
-          :required_role  => @article_default_datas[:required_role], 
+          :required_role  => @article_default_datas[:role], 
           :except_recent  => @article_default_datas[:except_recent],
           :during_import  => true,
         )
