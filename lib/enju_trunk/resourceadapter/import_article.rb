@@ -20,7 +20,6 @@ module EnjuTrunk
       default_datas.store(:use_restriction,    UseRestriction.where(:name => 'Not For Loan').first)
       default_datas.store(:checkout_type,      CheckoutType.where(:name => 'article').first)
       default_datas.store(:rank,               0) 
-logger.info default_datas
       return default_datas
     end
 
