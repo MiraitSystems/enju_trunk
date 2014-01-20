@@ -13,14 +13,14 @@ gem 'enju_oai', '0.1.0.pre5'
 gem 'enju_book_jacket', '0.1.0.pre2'
 gem 'enju_manifestation_viewer', '0.1.0.pre3'
 #gem 'enju_message', "0.1.14.pre"
-gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git'
+gem 'enju_message', :git => 'git://github.com/MiraitSystems/enju_trunk_message.git'
 #gem "enju_ndl", "0.1.0.pre8"
 gem 'enju_ndl', :git => 'git://github.com/MiraitSystems/enju_trunk_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
-gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :require => 'enju_event'
+gem 'enju_trunk_event', :git => 'git://github.com/MiraitSystems/enju_trunk_event.git', :require => 'enju_event'
 gem 'activerecord-import'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
-#gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
+#gem 'enju_bookmark', :git => 'git://github.com/MiraitSystems/enju_bookmark.git'
 gem 'enju_subject', '0.1.0.pre5'
 
 gem "jpp_customercode_transfer", "~> 0.0.2"
@@ -165,11 +165,11 @@ gem 'jquery-ui-rails', "~> 4.0.4"
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # FRBR models
-gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git'
+gem 'enju_trunk_frbr', :git => 'git://github.com/MiraitSystems/enju_trunk_frbr.git'
 
 group :operation do
-  gem 'enju_trunk_circulation', :git => 'git://github.com/emiko/enju_trunk_circulation.git'
-  gem 'enju_trunk_ill', :git => 'git://github.com/emiko/enju_trunk_ill.git'
-  gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git'
+  gem 'enju_trunk_circulation', :git => 'git://github.com/MiraitSystems/enju_trunk_circulation.git'
+  gem 'enju_trunk_ill', :git => 'git://github.com/MiraitSystems/enju_trunk_ill.git'
+  gem 'enju_trunk_statistics', :git => 'git://github.com/MiraitSystems/enju_trunk_statistics.git'
 end
 gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'
