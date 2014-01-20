@@ -38,10 +38,11 @@
 </div>
 </div>
 
+<%- if false -%>
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <%- if false -%>
       <li><%= link_to t('page.new', :model => t('activerecord.models.system_configuration')), new_system_configuration_path -%></li>
-    <%- end -%>
   </ul>
 </div>
+<%- end -%>
+

@@ -1048,3 +1048,10 @@ system_configuration_00149:
   typename: Boolean
   description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
   category: 'manifestation'
+system_configuration_00150:
+  id: 150
+  keyname: use_patron_type
+  v: "true"
+  typename: Boolean
+  description: "著者・出版者・協力者に役割をつけるか"
+  category: 'manifestation'

@@ -1,0 +1,295 @@
+<script id="script_patron">
+  $(document).ready(function() {
+    $("#patron_search_creator,#patron_search_contributor,#patron_search_publisher").select2({
+      multiple: true,
+      minimumInputLength: 1,
+      width: "220px",
+      placeholder: <%= raw t("patron.search_placeholder").to_json %>,
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("patron.search_nomatch").to_json %>;
+      },
+      formatSearching: function() {
+        return <%= raw t("patron.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("patron.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: '<%= "http://" + request.host.to_s + ":" + request.port.to_s + "/patrons/search_name.json" %>',
+        dataType: 'json',
+        data: function (term, page) {
+            return {search_phrase: term,
+            };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id=$(element).val();
+        if (id!=="") {
+            $.ajax('<%= "http://" + request.host.to_s + ":" + request.port.to_s + "/patrons/search_name.json" + "?patron_id=" %>' + id, {
+                dataType: "json"
+            }).done(function(data) { callback(data); });
+        }
+      },
+//      createSearchChoice: function(term, data) {
+//        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+//          return {id:term, text:term};
+//        }
+//      },
+    });
+  });
+</script>
+
+<script id="script_add_patron">
+  var ItemField_creator = {
+   currentNumber : <%= raw @new_creator_number.to_json %>,
+    itemTemplate : ''
+     + '<input id="creator_full_name___count__" name="creator_full_name[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name") %>">&#10'
+     + '<input id="creator_full_name_transcription___count__" name="creator_full_name_transcription[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name_transcription") %>">&#10'
+     <% if SystemConfiguration.get("use_patron_type") %>
+       + '<select id="creator_type_id___count__" name="creator_type_id[__count__]">'
+       + <%= raw @create_types.collect{ |r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"] }.join().to_json %>
+       + '</select>&#10'
+     <% end %>
+     + '<input type="button" value="+" onClick="ItemField_creator.add();" /> '
+     + '<input type="button" value="-" onClick="ItemField_creator.remove();" />',
+   add : function () {
+      var field = document.getElementById('SF' + this.currentNumber);
+      var replaceCount = this.currentNumber;
+      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+      field.innerHTML = newItem;
+      var nextNumber = this.currentNumber + 1;
+      var new_area = document.createElement("div");
+      new_area.setAttribute("id", "SF" + nextNumber);
+      new_area.setAttribute("class", "field");
+      field.appendChild(new_area);
+      this.currentNumber = nextNumber;
+    },
+    remove : function () {
+      if ( this.currentNumber == 1) { return; }
+      this.currentNumber--;
+      var field = document.getElementById('SF' + this.currentNumber);
+      field.removeChild(field.lastChild);
+      field.innerHTML = '';
+    }
+  }
+  var ItemField_contributor = {
+   currentNumber : <%= raw @new_contributor_number.to_json %>,
+    itemTemplate : ''
+     + '<input id="contributor_full_name___count__" name="contributor_full_name[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name") %>">&#10'
+     + '<input id="contributor_full_name_transcription___count__" name="contributor_full_name_transcription[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name_transcription") %>">&#10'
+     <% if SystemConfiguration.get("use_patron_type") %>
+       + '<select id="contributor_type_id___count__" name="contributor_type_id[__count__]">'
+       + <%= raw @realize_types.collect{|r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"]}.join().to_json %>
+       + '</select>&#10'
+     <% end %>
+     + '<input type="button" value="+" onClick="ItemField_contributor.add();" /> '
+     + '<input type="button" value="-" onClick="ItemField_contributor.remove();" />',
+   add : function () {
+      var field = document.getElementById('TF' + this.currentNumber);
+      var replaceCount = this.currentNumber;
+      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+      field.innerHTML = newItem;
+      var nextNumber = this.currentNumber + 1;
+      var new_area = document.createElement("div");
+      new_area.setAttribute("id", "TF" + nextNumber);
+      new_area.setAttribute("class", "field");
+      field.appendChild(new_area);
+      this.currentNumber = nextNumber;
+    },
+    remove : function () {
+      if ( this.currentNumber == 1) { return; }
+      this.currentNumber--;
+      var field = document.getElementById('TF' + this.currentNumber);
+      field.removeChild(field.lastChild);
+      field.innerHTML = '';
+    }
+  }
+  var ItemField_publisher = {
+   currentNumber : <%= raw @new_publisher_number.to_json %>,
+    itemTemplate : ''
+     + '<input id="publisher_full_name___count__" name="publisher_full_name[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name") %>">&#10'
+     + '<input id="publisher_full_name_transcription___count__" name="publisher_full_name_transcription[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.patron.full_name_transcription") %>">&#10'
+     <% if SystemConfiguration.get("use_patron_type") %>
+       + '<select id="publisher_type_id___count__" name="publisher_type_id[__count__]">'
+       + <%= raw @produce_types.collect{|r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"]}.join().to_json %>
+       + '</select>&#10'
+     <% end %>
+     + '<input type="button" value="+" onClick="ItemField_publisher.add();" /> '
+     + '<input type="button" value="-" onClick="ItemField_publisher.remove();" />',
+   add : function () {
+      var field = document.getElementById('UF' + this.currentNumber);
+      var replaceCount = this.currentNumber;
+      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+      field.innerHTML = newItem;
+      var nextNumber = this.currentNumber + 1;
+      var new_area = document.createElement("div");
+      new_area.setAttribute("id", "UF" + nextNumber);
+      new_area.setAttribute("class", "field");
+      field.appendChild(new_area);
+      this.currentNumber = nextNumber;
+    },
+    remove : function () {
+      if ( this.currentNumber == 1) { return; }
+      this.currentNumber--;
+      var field = document.getElementById('UF' + this.currentNumber);
+      field.removeChild(field.lastChild);
+      field.innerHTML = '';
+    }
+  }
+</script>
+
+<div class="field">
+  <strong><%= t('patron.creator') %></strong><br />
+  <table id="bless">
+  <% @creators.each_with_index do |c, i| %>
+    <tr>
+      <td>
+        <%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%>
+      </td>
+      <% if SystemConfiguration.get("use_patron_type") %>
+        <td>
+          <%= select_tag 'upd_creator[' + c.id.to_s + ']',
+              options_for_select(@create_types.collect{ |r| [r.display_name.localize, r.id] },
+              :selected => @creators_type[i]) %>
+        </td>
+      <% else %>
+        <%= hidden_field_tag 'upd_creator[' + c.id.to_s + ']' %>
+      <% end %>
+      <td>
+        <%= t('page.destroy') %>
+        <%= check_box_tag 'del_creator[' + c.id.to_s + ']', true, @keep_creator_del[i], {} -%>
+      </td>
+    </tr>
+  <% end %>
+  </table>
+  <% if SystemConfiguration.get("add_only_exist_patron") %>
+    <%= text_field :add_creator, :creator_id, :id => 'patron_search_creator', :value => @keep_creator %>
+    <% if SystemConfiguration.get("use_patron_type") %>
+      <%= select_tag 'add_creator[creator_type]',
+          options_for_select(@create_types.collect{ |r| [r.display_name.localize, r.id] },
+          :selected => @keep_creator_type) %>
+    <% end %>
+  <% else %>
+    <% @new_creator.each_with_index do |nc, i| %>
+      <div id="SF<%= i.to_s %>" class="field">
+        <%= text_field_tag 'creator_full_name[' + i.to_s + ']', nc,
+            :placeholder => t("activerecord.attributes.patron.full_name") %>
+        <%= text_field_tag 'creator_full_name_transcription[' + i.to_s + ']',
+            @new_creator_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+        <% if SystemConfiguration.get("use_patron_type") %>
+          <%= select_tag 'creator_type_id[' + i.to_s + ']',
+              options_for_select(@create_types.collect{ |r| [r.display_name.localize, r.id] },
+              :selected => @new_creator_type[i]) %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), 'ItemField_creator.add()' -%>
+    <% end %>
+    <div id="SF<%= @new_creator_number %>" class="field">
+    </div>
+    <% @new_creator_number.to_i.times{ %></div><% } %>
+  <% end %>
+</div>
+
+<div class="field">
+  <strong><%= t('patron.contributor') %></strong><br />
+  <table id="bless">
+    <% @contributors.each_with_index do |c, i| %>
+    <tr>
+      <td>
+        <%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%>
+      </td>
+      <% if SystemConfiguration.get("use_patron_type") %>
+        <td>
+          <%= select_tag 'upd_contributor[' + c.id.to_s + ']',
+            options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] },
+            :selected => @contributors_type[i]) %>
+        </td>
+      <% else %>
+        <%= hidden_field_tag 'upd_contributor[' + c.id.to_s + ']' %>
+      <% end %>
+      <td>
+        <%= t('page.destroy') %>
+        <%= check_box_tag 'del_contributor[' + c.id.to_s + ']', true, @keep_contributor_del[i], {} -%>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+  <% if SystemConfiguration.get("add_only_exist_patron") %>
+    <%= text_field :add_contributor, :contributor_id, :id => 'patron_search_contributor', :value => @keep_contributor %>
+    <% if SystemConfiguration.get("use_patron_type") %>
+      <%= select_tag 'add_contributor[contributor_type]',
+          options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] },
+          :selected => @keep_contributor_type) %>
+    <% end %>
+  <% else %>
+    <% @new_contributor.each_with_index do |nc, i| %>
+      <div id="TF<%= i.to_s %>" class="field">
+        <%= text_field_tag 'contributor_full_name[' + i.to_s + ']', nc,
+            :placeholder => t("activerecord.attributes.patron.full_name") %>
+        <%= text_field_tag 'contributor_full_name_transcription[' + i.to_s + ']',
+            @new_contributor_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+        <% if SystemConfiguration.get("use_patron_type") %>
+          <%= select_tag 'contributor_type_id[' + i.to_s + ']',
+              options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] },
+              :selected => @new_contributor_type[i]) %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), 'ItemField_contributor.add()' -%>
+    <% end %>
+    <div id="TF<%= @new_contributor_number %>" class="field">
+    </div>
+    <% @new_contributor_number.to_i.times{ %></div><% } %>
+  <% end %>
+</div>
+
+<div class="field">
+  <strong><%= t('patron.publisher') %></strong><br />
+  <table id="bless">
+    <% @publishers.each_with_index do |c, i| %>
+      <tr>
+        <td>
+          <%= link_to c.full_name, patron_path(c.id), :target=>["_blank"] -%>
+        </td>
+        <% if SystemConfiguration.get("use_patron_type") %>
+          <td>
+            <%= select_tag 'upd_publisher[' + c.id.to_s + ']',
+                options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] },
+                :selected => @publishers_type[i]) %>
+          </td>
+        <% else %>
+          <%= hidden_field_tag 'upd_publisher[' + c.id.to_s + ']' %>
+        <% end %>
+        <td>
+          <%= t('page.destroy') %>
+          <%= check_box_tag 'del_publisher[' + c.id.to_s + ']', true, @keep_publisher_del[i], {} -%>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <% if SystemConfiguration.get("add_only_exist_patron") %>
+    <%= text_field :add_publisher, :publisher_id, :id => 'patron_search_publisher', :value => @keep_publisher %>
+    <% if SystemConfiguration.get("use_patron_type") %>
+      <%= select_tag 'add_publisher[publisher_type]',
+          options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] },
+          :selected => @keep_publisher_type) %>
+    <% end %>
+  <% else %>
+    <% @new_publisher.each_with_index do |nc, i| %>
+      <div id="UF<%= i.to_s %>" class="field">
+        <%= text_field_tag 'publisher_full_name[' + i.to_s + ']', nc,
+            :placeholder => t("activerecord.attributes.patron.full_name") %>
+        <%= text_field_tag 'publisher_full_name_transcription[' + i.to_s + ']',
+            @new_publisher_transcription[i], :placeholder => t("activerecord.attributes.patron.full_name_transcription") %>
+        <% if SystemConfiguration.get("use_patron_type") %>
+          <%= select_tag 'publisher_type_id[' + i.to_s + ']',
+              options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] },
+              :selected => @new_publisher_type[i]) %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), 'ItemField_publisher.add()' -%>
+    <% end %>
+    <div id="UF<%= @new_publisher_number %>" class="field">
+    </div>
+    <% @new_publisher_number.to_i.times{ %></div><% } %>
+  <% end %>
+</div>

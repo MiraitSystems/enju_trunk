@@ -94,7 +94,7 @@ module ApplicationHelper
     exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
     patrons.each do |patron|
       type_name = ''
-      if manifestation_id.present?
+      if manifestation_id.present? && SystemConfiguration.get("use_patron_type")
         case type
           when 'create'
             create_type = CreateType.find(patron.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
