@@ -12,7 +12,8 @@ module SystemConfigurationsHelper
       'order_list',
       'copy_request',
       'reminder', 
-      'statistics', 
+      'statistics',
+      'function', 
       'sound', 
       'view',
       'nacsis',
@@ -45,6 +46,8 @@ module SystemConfigurationsHelper
       t('system_configuration.reminder')
     when 'statistics'
       t('system_configuration.statistics')
+    when 'function'
+      t('system_configuration.function')
     when 'sound'
       t('system_configuration.sound')
     when 'view'

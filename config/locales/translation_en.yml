@@ -2596,6 +2596,7 @@ en:
     order_list: Order list
     reminder: Reminder
     statistics: Statistics
+    function: Function
     sound: Sound
     disp_date:
       not_display: Not display
