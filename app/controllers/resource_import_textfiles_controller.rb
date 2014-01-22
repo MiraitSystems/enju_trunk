@@ -13,7 +13,6 @@ class ResourceImportTextfilesController < ApplicationController
 
   def new
     @resource_import_textfile = ResourceImportTextfile.new
-    @adapters = EnjuTrunk::ResourceAdapter::Base.default
   end
 
   def show
@@ -34,23 +33,30 @@ class ResourceImportTextfilesController < ApplicationController
     @resource_import_textfile = ResourceImportTextfile.new(params[:resource_import_textfile])
     @resource_import_textfile.user = current_user
     extraparams = params[:extraparams]
-    sheets = []
+    sheets              = []
     manifestation_types = []
-    numberings = []
-    auto_numberings = []
-    extraparams.each do |e, value|
-      if value["sheet"]
-        sheets << value["sheet"]
-        manifestation_types << value["manifestation_type"]
-        numberings << value["numbering"]
-        auto_numberings << (value["auto_numbering"] ? true : false)
-      end
-    end
+    numberings          = []
+    auto_numberings     = []
     params = Hash::new
-    params["sheet"] = sheets
+    case @resource_import_textfile.adapter_name
+    when 'Excelfile_Adapter'
+      extraparams.each do |e, value|
+        if value["sheet"]
+          sheets              << value["sheet"]
+          manifestation_types << value["manifestation_type"]
+          numberings          << value["numbering"]
+          auto_numberings     << (value["auto_numbering"] ? true : false)
+        end
+      end
+      params["sheet"] = sheets
+    when 'Tsvfile_Adapter'
+      manifestation_types << extraparams["manifestation_type"]
+      numberings          << (extraparams["numbering"] || "")
+      auto_numberings     << (extraparams["auto_numbering"] ? true : false)
+    end
     params["manifestation_type"] = manifestation_types
-    params["numbering"] = numberings
-    params["auto_numbering"] = auto_numberings
+    params["numbering"]          = numberings
+    params["auto_numbering"]     = auto_numberings
     @resource_import_textfile.extraparams = params.to_s
 
     respond_to do |format|
@@ -59,7 +65,6 @@ class ResourceImportTextfilesController < ApplicationController
         format.html { redirect_to(@resource_import_textfile) }
         format.json { render :json => @resource_import_textfile, :status => :created, :location => @resource_import_textfile }
       else
-        @adapters = EnjuTrunk::ResourceAdapter::Base.all
         format.html { render :action => "new" }
         format.json { render :json => @resource_import_textfile.errors, :status => :unprocessable_entity }
       end
@@ -94,6 +99,8 @@ class ResourceImportTextfilesController < ApplicationController
       logger.debug "no method template_filename_edit" 
       render :nothing => true, :status => 404 and return
     end
+    @manifestation_types = ManifestationType.all
+    @numberings = Numbering.all
     templatename = a.template_filename_edit
     filename = "lib/enju_trunk/resourceadapter/views/#{templatename}"
     logger.debug "filename=#{filename}"

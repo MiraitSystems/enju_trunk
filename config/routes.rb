@@ -1,15 +1,16 @@
 EnjuLeaf::Application.routes.draw do
   resources :exchange_rates
-
-
   resources :currencies
-
+  resources :keycodes
 
   get "barcode_registrations/index"
 
   resources :series_statement_relationship_types
+  match 'themes/update_all', :to => 'themes#update_all'
   resources :themes
-  resources :barcode_registrations
+  resources :barcode_registrations, :only => [:index] do
+    post :output, :on => :collection
+  end
  
   #resources :identifier_types
   resources :warekis
@@ -78,6 +79,8 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/create' => 'checked_manifestations#create'
   match 'checked_manifestations/delete' => 'checked_manifestations#destroy'
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
+
+  match 'patrons/search_name' => 'patrons#search_name'
 
   resources :patrons do
     resources :works, :controller => 'manifestations'

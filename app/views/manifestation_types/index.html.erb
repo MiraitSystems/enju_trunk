@@ -18,7 +18,7 @@
       <% end %>
     </td>
     <td><%= link_to manifestation_type.name, manifestation_type %></td>
-    <td><%= link_to manifestation_type.display_name, manifestation_type %></td>
+    <td><%= link_to manifestation_type.display_name.localize, manifestation_type %></td>
     <td><%= manifestation_type.note %></td>
     <td>
       <% if can? :update, manifestation_type %>

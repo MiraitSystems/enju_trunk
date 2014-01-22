@@ -88,18 +88,33 @@ module ApplicationHelper
     html.html_safe
   end
 
-  def patrons_list(patrons = [], options = {}, mode = 'html')
+  def patrons_list(patrons = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
     return nil if patrons.blank?
     patrons_list = []
     exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
     patrons.each do |patron|
-      if options[:nolink] or exclude_patrons.include?(patron.full_name)
-        patron = mode == 'html' ? highlight(patron.full_name) : patron.full_name
-        patrons_list << patron
-      else
-        patron = mode == 'html' ? link_to(highlight(patron.full_name), patron, options) : link_to(patron.full_name, patron, options)
-        patrons_list << patron
+      type_name = ''
+      if manifestation_id.present? && SystemConfiguration.get("use_patron_type")
+        case type
+          when 'create'
+            create_type = CreateType.find(patron.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
+            type_name = (create_type and create_type.display) ? create_type.display_name : ''
+          when 'realize'
+            realize_type = RealizeType.find(patron.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
+            type_name = (realize_type and realize_type.display) ? realize_type.display_name : ''
+          when 'produce'
+            produce_type = ProduceType.find(patron.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
+            type_name = (produce_type and produce_type.display) ? produce_type.display_name : ''
+        end
+        type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
       end
+      full_name = patron.full_name << type_name
+      if options[:nolink] or exclude_patrons.include?(patron.full_name)
+        patron = mode == 'html' ? highlight(full_name) : full_name
+      else
+        patron = mode == 'html' ? link_to(highlight(full_name), patron, options) : link_to(full_name, patron, options)
+      end
+      patrons_list << patron
     end
     patrons_list.join(" ").html_safe
   end
@@ -509,21 +524,19 @@ module ApplicationHelper
   end
 
   def tab_menu_width
-    css_name = ''
-    if !user_signed_in?
-      if can_use_purchase_request?
-        css_name = 'fg-4button'
-      else
-        css_name = 'fg-3button'
+    # ライブラリアン権限時未満のとき、タブメニューの表示内容に伴いタブのサイズも変更する
+    if user_signed_in?
+     unless current_user.has_role?('Librarian')
+        # ゲスト権限以上ユーザ権限未満でログイン時
+        return (can_use_purchase_request? or 
+          SystemConfiguration.get('use_copy_request') or 
+          SystemConfiguration.get("user_show_questions")) ?
+            'fg-4button' : 'fg-3button'
       end
-    elsif user_signed_in? and !current_user.has_role?('Librarian')
-      if can_use_purchase_request? || SystemConfiguration.get('use_copy_request') || SystemConfiguration.get("user_show_questions")
-        css_name = 'fg-4button'
-      else
-        css_name = 'fg-3button'
-      end
-    end
-    return css_name
+    else
+      # 未ログイン時
+      return (can_use_purchase_request? or SystemConfiguration.get('use_copy_request')) ? 'fg-4button' : 'fg-3button'
+    end 
   end
 
   if defined?(EnjuTrunkCirculation)

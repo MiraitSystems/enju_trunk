@@ -68,7 +68,7 @@ $(document).keydown(function(e) {
       <%= f.label t('activerecord.models.series_statement') -%>
       <%= link_to @manifestation.series_statement.original_title, @manifestation.series_statement -%>
       (<%= link_to t('series_statement.edit'), series_statements_path(:manifestation_id => @manifestation.id) -%>)
-    <%- else -%> 
+    <%- else -%>
       <%= f.hidden_field :series_statement_id, :value => @manifestation.series_statement.id if @manifestation.series_statement-%>
       <%= f.label t('activerecord.models.series_statement') -%>
       <%= link_to @manifestation.series_statement.original_title, @manifestation.series_statement if @manifestation.series_statement -%>
@@ -97,30 +97,7 @@ $(document).keydown(function(e) {
     <%= f.text_field :article_title, :class => 'resource_title' %>
   </div>
 
- <div class="field">
-    <%= f.label :creator -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :creator, :value => @creator -%>
-  </div>
-  <div class="field">
-    <strong><%= t('manifestation.creator_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :creator_transcription, :value => @creator_transcription, :class => 'resource_title' -%>
-  </div>
-  <div class="field">
-    <%= f.label :contributor -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :contributor, :value => @contributor -%>
-  </div>
-  <div class="field">
-    <strong><%= t('manifestation.contributor_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :contributor_transcription, :value => @contributor_transcription, :class => 'resource_title' -%>
-  </div>
-  <div class="field">
-    <%= f.label :publisher -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :publisher, :value => @publisher -%>
-  </div>
-  <div class="field">
-    <strong><%= t('manifestation.publisher_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :publisher_transcription, :value => @publisher_transcription, :class => 'resource_title' -%>
-  </div>
+  <%= render 'form_patron_field' %>
 
   <div class="field">
     <%= f.label t('page.file') -%><br />
@@ -157,7 +134,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
     <%= f.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
   </div>
-  
+
   <div class="field" id="frequency_field">
     <%= f.label t('activerecord.models.frequency') -%>
     <%= f.select(:frequency_id, @frequencies.collect{|frequency| [frequency.display_name.localize, frequency.id]}) -%>

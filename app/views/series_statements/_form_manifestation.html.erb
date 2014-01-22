@@ -32,7 +32,6 @@ function displayArticleTitle(article_title) {
     $("#article_title_field").html("");
   }
 }
-
 </script>
 
   <div class="field" id="article_title_field">
@@ -40,18 +39,7 @@ function displayArticleTitle(article_title) {
     <%= f_m.text_field :article_title, :class => 'resource_title' %>
   </div>
 
-  <div class="field">
-    <%= f_m.label :creator -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f_m.text_field :creator, :value => @creator -%>
-  </div>
-  <div class="field">
-    <%= f_m.label :contributor -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f_m.text_field :contributor, :value => @contributor -%>
-  </div>
-  <div class="field">
-    <%= f_m.label :publisher -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f_m.text_field :publisher, :value => @publisher -%>
-  </div>
+  <%= render 'manifestations/form_patron_field' %>
 
   <div class="field">
     <%= f_m.label t('page.file') -%><br />

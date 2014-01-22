@@ -788,7 +788,7 @@ system_configuration_00112:
   v: "false"
   typename: Boolean
   description: "資料別利用統計を利用する"
-  category: 'nacsis'
+  category: 'statistics'
 system_configuration_00113:
   id: 113
   keyname: manifestation.search.hide_not_for_loan
@@ -1041,3 +1041,17 @@ system_configuration_00148:
   typename: Boolean
   description: "利用者通知書の出力ボタンを表示するか"
   category: 'user'
+system_configuration_00149:
+  id: 149
+  keyname: add_only_exist_patron
+  v: "true"
+  typename: Boolean
+  description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
+  category: 'manifestation'
+system_configuration_00150:
+  id: 150
+  keyname: use_patron_type
+  v: "true"
+  typename: Boolean
+  description: "著者・出版者・協力者に役割をつけるか"
+  category: 'manifestation'

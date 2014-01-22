@@ -41,4 +41,8 @@ module PatronsHelper
       end
     end
   end
+
+  def corporate_types
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", corporate_types_key, Time.zone.now) rescue nil
+  end
 end

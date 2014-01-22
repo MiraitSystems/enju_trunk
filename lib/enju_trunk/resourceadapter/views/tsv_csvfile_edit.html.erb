@@ -1,0 +1,41 @@
+<script>
+$(document).ready(function(){
+  $(document).on("change", "select[id$='_manifestation_type']", function(){
+    auto_numbering = $("#"+$(this).attr('id').replace(/manifestation_type/, 'auto_numbering'));
+    type = $(this).attr('value');
+    if (type == 9 || type == 10){
+      auto_numbering.attr("checked", true);
+      auto_numbering.attr("disabled", true);
+    } else {
+      auto_numbering.attr("disabled", false);
+      auto_numbering.attr("checked", false);
+    }
+  });
+});
+</script>
+<br />
+<div>
+  <table style="border: 0px;">
+    <% if SystemConfiguration.get('manifestations.split_by_type') %>
+      <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.manifestation_type') %></th>
+    <% end %>
+    <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.numbering') %></th>
+    <th style="border:0px; border-bottom: 1px solid #aaa;"></th>
+    <tr>
+      <% if SystemConfiguration.get('manifestations.split_by_type') %>
+        <td style="border:0px; border-bottom: 1px solid #aaa;">
+          <%= select_tag "extraparams[manifestation_type]", 
+            options_for_select(@manifestation_types.collect{ |m| [m.display_name.localize, m.id] }) %>
+        </td>
+      <% end %>
+      <td style="border:0px; border-bottom: 1px solid #aaa;">
+        <%= select_tag "extraparams[numbering]", 
+          options_for_select(@numberings.map{ |n| [n.display_name, n.name] }.insert(0, '')) %>
+      </td>
+      <td style="border:0px; border-bottom: 1px solid #aaa;">
+        <%= check_box_tag "extraparams[auto_numbering]", true %>
+        <%= t('resource_import_textfile.auto_numbering') %>
+      </td>
+    </tr>
+  </table>
+</div>

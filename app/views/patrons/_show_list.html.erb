@@ -83,10 +83,24 @@
           <td><%= @patron.patron_type.display_name.localize -%></td>
         </tr>
       <%- end -%>
-      <tr>
-        <td><strong><%= t('activerecord.attributes.patron.email') -%>:</strong></td>
-        <td><%= mail_to @patron.email, nil, :class => 'email' -%></td>
-      </tr>
+      <% if @patron.corporate_type_id %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.corporate_type') %>:</strong></td>
+          <td><%= @patron.corporate_type.keyname %></td>
+        </tr>
+      <% end %>
+      <% unless @patron.keyperson_1.blank? %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.keyperson_1') %>:</strong></td>
+          <td><%= @patron.keyperson_1 %></td>
+        </tr>
+      <% end %>
+      <% unless @patron.keyperson_2.blank? %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.keyperson_2') %>:</strong></td>
+          <td><%= @patron.keyperson_2 %></td>
+        </tr>
+      <% end %>
       <tr>
         <td><strong><%= t('activerecord.attributes.patron.url') -%>:</strong></td>
         <td><%= link_to @patron.url, @patron.url, :class => 'url' if @patron.url? -%></td>
@@ -109,16 +123,14 @@
         <td><strong><%= t('activerecord.models.country') -%>:</strong></td>
         <td><%= @patron.country.display_name.localize -%></td>
       </tr>
+      <% if @patron.place %>
+        <tr>
+          <td><strong><%= t('patron.place') %>:</strong></td>
+          <td><%= @patron.place.term %></td>
+        </tr>
+      <% end %>
 <%# - if can? :destroy, @patron -%>
       <%- if user_signed_in? and current_user.try(:has_role?, 'Librarian') -%>
-        <tr>
-          <td><strong><%= t('activerecord.attributes.patron.zip_code_1') -%>:</strong></td>
-          <td><%= @patron.zip_code_1 -%></td>
-        </tr>
-        <tr>
-          <td><strong><%= t('activerecord.attributes.patron.address_1') -%>:</strong></td>
-          <td><%= @patron.address_1 -%></td>
-        </tr>
         <tr>
           <td><strong><%= t('activerecord.attributes.patron.telephone_number_1') -%>:</strong></td>
           <td>
@@ -147,16 +159,20 @@
           </td>
         </tr>
         <tr>
+          <td><strong><%= t('activerecord.attributes.patron.email') -%>:</strong></td>
+          <td><%= mail_to @patron.email, nil, :class => 'email' -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.zip_code_1') -%>:</strong></td>
+          <td><%= @patron.zip_code_1 -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.address_1') -%>:</strong></td>
+          <td><%= @patron.address_1 -%></td>
+        </tr>
+        <tr>
           <td><strong><%= t('activerecord.attributes.patron.address_1_note') -%>:</strong></td>
           <td><%= @patron.address_1_note -%></td>
-        </tr>
-        <tr>
-          <td><strong><%= t('activerecord.attributes.patron.zip_code_2') -%>:</strong></td>
-          <td><%= @patron.zip_code_2 -%></td>
-        </tr>
-        <tr>
-          <td><strong><%= t('activerecord.attributes.patron.address_2') -%>:</strong></td>
-          <td><%= @patron.address_2 -%></td>
         </tr>
         <tr>
           <td><strong><%= t('activerecord.attributes.patron.telephone_number_2') -%>:</strong></td>
@@ -184,6 +200,18 @@
               &nbsp;(<%= i18n_telephone_type(@patron.fax_number_2_type_id) -%>)
             <%- end -%>
             </td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.email_2') %>:</strong></td>
+          <td><%= mail_to @patron.email_2, nil, :class => 'email' %></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.zip_code_2') -%>:</strong></td>
+          <td><%= @patron.zip_code_2 -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.patron.address_2') -%>:</strong></td>
+          <td><%= @patron.address_2 -%></td>
         </tr>
         <tr>
           <td><strong><%= t('activerecord.attributes.patron.address_2_note') -%>:</strong></td>

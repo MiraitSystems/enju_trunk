@@ -7,6 +7,7 @@ editor:
   note: 
   position: 1
   id: 1
+  display: false
 
 translator:
   name: translator
@@ -15,6 +16,7 @@ translator:
   note: 
   position: 2
   id: 2
+  display: true
 
 illustrator:
   name: illustrator
@@ -23,6 +25,7 @@ illustrator:
   note: 
   position: 3
   id: 3
+  display: true
 
 translator_supervisor:
   name: translator_supervisor
@@ -31,5 +34,6 @@ translator_supervisor:
   note: 
   position: 4
   id: 4
+  display: true
 
 

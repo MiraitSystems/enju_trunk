@@ -10,7 +10,7 @@
         <li><%= link_to t('page.best_reader'), manifestation_exstats_bestreader_path -%></li>
         <li><%= link_to t('page.best_request'), manifestation_exstats_bestrequest_path -%></li>
         <li><%= link_to t('activerecord.models.keyword_count'), keyword_counts_path %></li>
-        <% if SystemConfiguration.get("write_search_log_to_file") %>
+        <% unless SystemConfiguration.get("write_search_log_to_file") %>
           <li><%= link_to t('activerecord.models.search_history'), search_histories_path -%></li>
         <% end %>
       </ul>

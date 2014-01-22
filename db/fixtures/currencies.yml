@@ -1,0 +1,9 @@
+---
+currencies_00001:
+  id: 1
+  name: '01' # 通貨単位コード
+  display_name: 'US$' # 内容
+currencies_00002:
+  id: 2
+  name: '02'
+  display_name: 'オーストラリア・ドル'
