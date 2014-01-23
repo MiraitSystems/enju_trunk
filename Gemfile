@@ -27,6 +27,7 @@ gem "jpp_customercode_transfer", "~> 0.0.2"
 
 # special gem here.
 # gem 'enju_xxx', :git => 'https://xxx@github.com/'
+gem 'enju_jst', :git => 'https://github.com/MiraitSystems/enju_jst.git', :branch => 'issue6055'
 
 #
 platforms :ruby do
@@ -173,3 +174,4 @@ group :operation do
   gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git'
 end
 gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'
+

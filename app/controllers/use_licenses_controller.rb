@@ -7,8 +7,6 @@ class UseLicensesController < ApplicationController
   before_filter :set_selector
 
   def set_selector
-    @targets = Keycode.where(name: "UL0D0010")
-    @authors = Keycode.where(name: "UL0D0020")
     @author_fees = [[t('flag.yes'), true], [t('flag.no'), false]]
     @account_kinds = [[t('activerecord.attributes.use_license.account_kinds.normal'), 1],
                       [t('activerecord.attributes.use_license.account_kinds.current'), 2]]

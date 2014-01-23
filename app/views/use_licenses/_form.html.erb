@@ -3,11 +3,19 @@
 
   <div class="field">
     <%= f.label :target %><br />
-    <%= f.select(:target, @targets.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% if targets %>
+      <%= f.select(:target, targets.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% else %>
+      <%= f.select(:target, "") %>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :author %><br />
-    <%= f.select(:author, @authors.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% if authors %>
+      <%= f.select(:author, authors.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% else %>
+      <%= f.select(:author, "") %>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :author_fee %><br />

@@ -9,21 +9,29 @@
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.target') -%>:</strong>
-  <% @targets.collect{|r| %>
-    <% if r.v == @use_license.target then %>
-      <%= r.keyname.localize -%>
-      <% break %>
-    <% end %>
-  <% } %>
+  <% str_target = "----" %>
+  <% if targets %>
+    <% targets.collect{|r| %>
+      <% if r.v == @use_license.target.to_s then %>
+        <% str_target = r.keyname.localize %>
+        <% break %>
+      <% end %>
+    <% } %>
+  <% end %>
+  <%= str_target -%>
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.author') -%>:</strong>
-  <% @authors.collect{|r| %>
-    <% if r.v == @use_license.author then %>
-      <%= r.keyname.localize -%>
-      <% break %>
-    <% end %>
-  <% } %>
+  <% str_author = "----" %>
+  <% if authors %>
+    <% authors.collect{|r| %>
+      <% if r.v == @use_license.author.to_s then %>
+        <% str_author = r.keyname.localize %>
+        <% break %>
+      <% end %>
+    <% } %>
+  <% end %>
+  <%= str_author -%>
 </p>
 <p>
   <strong><%= t('activerecord.attributes.use_license.author_fee') -%>:</strong>

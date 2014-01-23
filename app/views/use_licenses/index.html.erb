@@ -15,24 +15,32 @@
 <%- @use_licenses.each do |use_license| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to use_license.id, use_license -%></td>
-    <% @targets.collect{|r| %>
-      <% if r.v == use_license.target then %>
-        <td><%= link_to r.keyname.localize, use_license -%></td>
-        <% break %>
-      <% end %>
-    <% } %>
-    <% @authors.collect{|r| %>
-      <% if r.v == use_license.author then %>
-        <td><%= link_to r.keyname.localize, use_license -%></td>
-        <% break %>
-      <% end %>
-    <% } %>
+    <% str_target = "----" %>
+    <% if targets %>
+      <% targets.collect{|r| %>
+        <% if r.v == use_license.target.to_s then %>
+          <% str_target = r.keyname.localize %>
+          <% break %>
+        <% end %>
+      <% } %>
+    <% end %>
+    <td><%= str_target -%></td>
+    <% str_author = "----" %>
+    <% if authors %>
+      <% authors.collect{|r| %>
+        <% if r.v == use_license.author.to_s then %>
+          <% str_author = r.keyname.localize %>
+          <% break %>
+        <% end %>
+      <% } %>
+    <% end %>
+    <td><%= str_author -%></td>
     <%- if use_license.author_fee? -%>
-      <td><%= link_to t('flag.yes'), use_license -%></td>
+      <td><%= t('flag.yes') -%></td>
     <%- else -%>
-      <td><%= link_to t('flag.no'), use_license -%></td>
+      <td><%= t('flag.no') -%></td>
     <%- end -%>
-    <td><%= link_to use_license.agency_name, use_license -%></td>
+    <td><%= use_license.agency_name -%></td>
     <td>
       <%= link_to t('page.show'), use_license -%>
       <%- if can? :update, use_license -%>
