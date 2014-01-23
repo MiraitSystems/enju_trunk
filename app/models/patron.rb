@@ -109,6 +109,24 @@ class Patron < ActiveRecord::Base
     integer :patron_type_id
     integer :user_id
     integer :exclude_state
+    integer :relationship_type_child_s, :multiple => true do
+      children.seealso_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_m, :multiple => true do
+      children.member_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_c, :multiple => true do
+      children.child_type.pluck(:child_id)
+    end
+    integer :relationship_type_parent_s, :multiple => true do
+      parents.seealso_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_m, :multiple => true do
+      parents.member_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_c, :multiple => true do
+      parents.child_type.pluck(:parent_id)
+    end
   end
 
   paginates_per 10

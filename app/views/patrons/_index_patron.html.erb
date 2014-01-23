@@ -2,12 +2,13 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.patron')) %></h1>
 <div id="content_list">
   <h2 class="resource_title">
+    <p id="notice"><%= notice %></p>
     [P]
     <%= link_to patron.full_name, patron -%>
   </h2>
   <%= form_for :patrons, :url => patron_patrons_path(patron), :html => {:method => 'get'} do %>
     <p>
-      <%= t('page.search_term') %>: 
+      <%= t('page.search_term') %>:
       <%= search_field_tag 'query', h(@query),
         {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} %>
       <% if can? :update, patron %>
@@ -46,7 +47,8 @@
               <% else %>
                 <% patron_relationship = patron_relationship_anyone(patron, p.id) %>
                 <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
-                    patron_relationship, :confirm => t('page.are_you_sure'), :method => :delete if patron_relationship %>
+                    patron_relationship_path(patron_relationship, :patron_id => patron.id ,:patron_relationship_type => params[:patron_relationship_type]),
+                    :confirm => t('page.are_you_sure'), :method => :delete if patron_relationship %>
               <% end %>
             <% end %>
           </td>
@@ -65,6 +67,9 @@
       <li><%= link_to t('page.merge', :model => t('activerecord.models.patron')), patron_merge_lists_path %></li>
     <% end %>
   </ul>
+  <% unless params[:mode] == "add" %>
+    <%= render 'patrons/relationship_type_facet' if @patron.patrons.present? %>
+  <% end %>
   <%- if can? :create, Patron -%>
     <div id="iconmenu" class="ui-corner-all">
       <strong><%= t('tooltip.icons_info') -%></strong>

@@ -45,4 +45,13 @@ module PatronsHelper
   def corporate_types
     return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", corporate_types_key, Time.zone.now) rescue nil
   end
+
+  def patron_relationship_type_facet(patron_relationship_type, current_patron_relationship_type, count = 0)
+    string = ''
+    current = true if current_patron_relationship_type.include?(patron_relationship_type.id.to_s)
+    string << "<strong>" if current
+    string << link_to("#{patron_relationship_type.display_name.localize} (" + count.to_s + ")", url_for(params.merge(:page => nil, :patron_relationship_type => (current_patron_relationship_type << patron_relationship_type.id.to_s).uniq.join(' '), :view => nil)))
+    string << "</strong>" if current
+    string.html_safe
+  end
 end
