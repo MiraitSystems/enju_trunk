@@ -283,7 +283,7 @@ class Patron < ActiveRecord::Base
     list = []
     patron_lists.uniq.compact.each do |patron_list|
       next if patron_list[:full_name].blank?
-      patron = Patron.where(:full_name => patron_list[:full_name]).first
+      patron = Patron.where(:full_name => patron_list[:full_name].exstrip_with_full_size_space).first
       unless patron
         patron = Patron.new(
           :full_name => patron_list[:full_name].exstrip_with_full_size_space,
