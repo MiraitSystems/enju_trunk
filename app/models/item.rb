@@ -1180,7 +1180,7 @@ class Item < ActiveRecord::Base
     if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
     elsif type == 'author' 
-      @manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name")
+      @manifestations = Manifestation.find(:all, :include => [:creators], :order => "patrons.full_name asc")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")
     end
