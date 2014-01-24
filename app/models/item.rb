@@ -1226,7 +1226,6 @@ class Item < ActiveRecord::Base
     job_name
   end
 
-
   class GenerateItemListJob
     include Rails.application.routes.url_helpers
     include BackgroundJobUtils
@@ -1331,10 +1330,7 @@ class Item < ActiveRecord::Base
         user,
         I18n.t('item_register.export_job_error_subject', :job_name => job_name),
         I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message),
-        method,
-        args,
-        file_type
-        )
+      )
     end
   end
 end
