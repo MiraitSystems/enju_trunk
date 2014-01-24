@@ -35,7 +35,11 @@ class PatronRelationshipsController < InheritedResources::Base
   end
 
   def destroy
-    patron_id_link = @patron_relationship.parent.id == params[:patron_id].to_i ? @patron_relationship.parent.id : @patron_relationship.child.id
-    destroy! {patron_patrons_path(patron_id_link, :mode => 'show', :patron_relationship_type => params[:patron_relationship_type])}
+    patron_id = params[:patron_id]
+    relationship_type_id = params[:patron_relationship_type]
+    destroy! do |format|
+      relationship_type_id = nil if PatronRelationship.count_relationship(patron_id, relationship_type_id) == 0
+      format.html {redirect_to patron_patrons_path(patron_id, :mode => 'show', :patron_relationship_type => relationship_type_id)}
+    end
   end
 end

@@ -23,6 +23,15 @@ class PatronRelationship < ActiveRecord::Base
     self.parent.index
     self.child.index
   end
+
+  def self.count_relationship(patron_id, relation_type_id)
+    return 0 if patron_id.blank?
+    if relation_type_id.blank?
+      self.where("parent_id = ? OR child_id = ?", patron_id, patron_id).count
+    else
+      self.where("(parent_id = ? OR child_id = ?) AND patron_relationship_type_id = ?", patron_id, patron_id, relation_type_id).count
+    end
+  end
 end
 
 # == Schema Information
