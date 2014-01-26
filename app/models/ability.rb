@@ -87,6 +87,8 @@ class Ability
       can :manage, [
         AccessLog,
         Answer,
+        Approval,
+        ApprovalExtext,
         Basket,
         Barcode,
         BarcodeList,
@@ -103,8 +105,10 @@ class Ability
         CopyRequest,
         Create,
         CreateType,
+        Currency,
         Department,
         Donate,
+        ExchangeRate,
         Exemplify,
         Expense,
         Family,
@@ -163,8 +167,6 @@ class Ability
         UserStatus,
         Wareki,
         WorkHasSubject,
-        Currency,
-        ExchangeRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -267,6 +269,8 @@ class Ability
       can :manage, [
         AccessLog,
         Answer,
+        Approval,
+        ApprovalExtext,
         Basket,
         Barcode,
         BarcodeList,
@@ -278,8 +282,10 @@ class Ability
         CopyRequest,
         Create,
         CreateType,
+        Currency,
 	Department,
         Donate,
+        ExchangeRate,
         Exemplify,
         Expense,
         Family,
@@ -322,8 +328,6 @@ class Ability
         Theme,
         UserStatus,
         WorkHasSubject,
-        Currency,
-        ExchangeRate
       ]
       can [:read, :update], [
         SeriesStatementRelationshipType

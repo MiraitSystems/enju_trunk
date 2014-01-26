@@ -1,4 +1,6 @@
 EnjuLeaf::Application.routes.draw do
+
+  resources :approvals
   resources :exchange_rates
   resources :currencies
   resources :keycodes
