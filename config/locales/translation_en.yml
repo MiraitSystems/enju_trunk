@@ -1659,6 +1659,7 @@ en:
     add_manually: Add manually
     import_from_file: Import from TSV file
     import_from_network: Import from networks
+    import_from_nacsis: Import from NACSIS file
     no_record_found: No records found.
     did_you_mean_to_search_for: Did you mean to search for
     not_found_users: Not found users.
@@ -2720,6 +2721,11 @@ en:
     reserved_item: 'It is reserved item. (username: %{username}, user number: %{user_number})'
     invalid_isbn: 'ISBN is invalid ISBN: %{isbn}'
     record_not_found: 'Failed to get data with ISBN: %{isbn}'
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSIS file
+      wrong_file: can not be imported.
+      wrong_extention: "files with xlsx extension or %{split_type} can be imported."
   patron_import_file:
     template_download: Download template
     import_request: Import now
@@ -2903,6 +2909,9 @@ en:
     invalid_started_at: "is invalid"
   barcode_registration:
     more_than_last_number: " more than last number." 
+  manifestations:
+    show_nacsis:
+      local_import: Local import
 
   activemodel:
     models:

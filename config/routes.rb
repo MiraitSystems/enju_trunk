@@ -74,6 +74,7 @@ EnjuLeaf::Application.routes.draw do
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
     get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis', :as => 'nacsis'
+    post :create_from_nacsis, :on => :collection
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'
@@ -278,6 +279,8 @@ EnjuLeaf::Application.routes.draw do
     get :import_request, :on => :collection
     resources :resource_import_results, :only => [:index, :show, :destroy]
   end
+
+  resources :resource_import_nacsisfiles, :only => [:new, :create]
 
   resources :patron_import_files do
     get :import_request, :on => :collection
