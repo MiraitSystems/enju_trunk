@@ -1,0 +1,194 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.approval')) -%></h1>
+
+<%= render 'manifestations/title', :manifestation => @manifestation -%>
+
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.created_by') -%>:</strong>
+  <%= @approval.create_user.username %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.collect_user') -%>:</strong>
+  <%= @approval.collect_user %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.all_process_start_at') -%>:</strong>
+  <%= l(@approval.all_process_start_at, :format => :only_date) if @approval.all_process_start_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.status') -%>:</strong>
+  <%= t("activerecord.attributes.approval.approval_status.#{@approval.status}") %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.publication_status') -%>:</strong>
+  <%= get_keyname_publication_status @approval.publication_status.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.sample_request_at') -%>:</strong>
+  <%= l(@approval.sample_request_at, :format => :only_date)  if @approval.sample_request_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.sample_arrival_at') -%>:</strong>
+  <%= l(@approval.sample_arrival_at, :format => :only_date)  if @approval.sample_arrival_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.sample_carrier_type') -%>:</strong>
+  <%= get_keyname_sample_carrier_type @approval.sample_carrier_type.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.sample_name') -%>:</strong>
+  <%= @approval.sample_name %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.collection_sources') -%>:</strong>
+  <%= @approval.collection_sources %>
+</p>
+
+
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.sample_note') -%>:</strong>
+  <%= @approval.sample_note %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.group_user_id') -%>:</strong>
+  <%= @approval.group_user.username  if @approval.group_user %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.group_approval_at') -%>:</strong>
+  <%= l(@approval.group_approval_at, :format => :only_date)  if @approval.group_approval_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.group_approval_result') -%>:</strong>
+  <%= get_keyname_group_approval_result @approval.group_approval_result.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.group_result_reason') -%>:</strong>
+  <%= get_keyname_group_result_reason @approval.group_result_reason.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.group_note') -%>:</strong>
+  <%= @approval.group_note.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.adoption_report_flg') -%>:</strong>
+  <%= t("page.boolean.#{@approval.adoption_report_flg}") %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.approval_result') -%>:</strong>
+  <%= get_keyname_approval_result @approval.approval_result.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.reason') -%>:</strong>
+  <%= get_keyname_reason @approval.reason.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.approval_end_at') -%>:</strong>
+  <%= l(@approval.approval_end_at, :format => :only_date)  if @approval.approval_end_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.donate_request_at') -%>:</strong>
+  <%= l(@approval.donate_request_at, :format => :only_date)  if @approval.donate_request_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.donate_request_replay_at') -%>:</strong>
+  <%= l(@approval.donate_request_replay_at, :format => :only_date)  if @approval.donate_request_replay_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.refuse_at') -%>:</strong>
+  <%= l(@approval.refuse_at, :format => :only_date)  if @approval.refuse_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.donate_request_result') -%>:</strong>
+    <%= get_keyname_donate_request_result @approval.donate_request_result.to_s %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.all_process_end_at') -%>:</strong>
+  <%= l(@approval.all_process_end_at, :format => :only_date)  if @approval.all_process_end_at %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.reception_patron_id') -%>:</strong>
+  <%= @approval.reception_patron.full_name  if @approval.reception_patron %>
+</p>
+
+
+<% unless @approval.approval_extexts.empty? %>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.approval_extexts') %>:</strong>
+  <ul>
+    <% @approval.approval_extexts.each do |extext| %>
+
+      <li>
+        <p>
+          <strong><%= t('activerecord.attributes.approval_extext.value') %>:</strong>
+          <%= extext.value %>
+        </p>
+
+        <p>
+          <strong><%= t('activerecord.attributes.approval_extext.state') %>:</strong>
+          <%= t("activerecord.attributes.approval.approval_status.#{extext.state}") unless extext.state == ""  %>
+        </p>
+
+        <p>
+          <strong><%= t('activerecord.attributes.approval_extext.created_by') %>:</strong>
+          <%= extext.create_user.username %>
+        </p>
+
+        <p>
+          <strong><%= t('activerecord.attributes.approval_extext.comment_at') %>:</strong>
+          <%= l(extext.comment_at, :format => :only_date )  if extext.comment_at %>
+        </p>
+      </li><br />
+
+    <% end %>
+
+  </ul>
+
+
+
+</p>
+
+
+
+
+<% end %>
+
+
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
+    <li><%= link_to t('page.back'), approvals_path %></li>
+  <ul>
+</div>
