@@ -26,7 +26,7 @@
   <ul>
     <%- if can? :create, Patron -%>
       <li><%= link_to t('patron.add'), new_patron_path -%></li>
-      <li><%= link_to t('page.merge', :model => t('activerecord.models.patron')), patron_merge_lists_path -%></li>
+      <li><%= link_to t('activerecord.models.patron_merge'), patron_merge_lists_path -%></li>
     <%- end -%>
   </ul>
   <%- if can? :create, Patron -%>

@@ -28,7 +28,7 @@ class Patron < ActiveRecord::Base
   has_many :derived_patrons, :through => :children, :source => :child
   has_many :original_patrons, :through => :parents, :source => :parent
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  has_many :donates
+  has_many :donates #TODO :dependent => :destroy が無いため、patronを削除や統合した場合、レコードが残る
   has_many :donated_items, :through => :donates, :source => :item
   has_many :owns, :dependent => :destroy
   has_many :items, :through => :owns
