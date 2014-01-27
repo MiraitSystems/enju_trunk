@@ -7,11 +7,21 @@ class PatronMergeList < ActiveRecord::Base
 
   def merge_patrons(selected_patron)
     self.patrons.each do |patron|
-      Create.update_all(['patron_id = ?', selected_patron.id], ['patron_id = ?', patron.id])
-      Realize.update_all(['patron_id = ?', selected_patron.id], ['patron_id = ?', patron.id])
-      Produce.update_all(['patron_id = ?', selected_patron.id], ['patron_id = ?', patron.id])
-      Own.update_all(['patron_id = ?', selected_patron.id], ['patron_id = ?', patron.id])
-      Donate.update_all(['patron_id = ?', selected_patron.id], ['patron_id = ?', patron.id])
+      Create.where(:patron_id => patron.id).each do |create|
+        create.update_attributes(:patron_id => selected_patron.id)
+      end
+      Realize.where(:patron_id => patron.id).each do |realize|
+        realize.update_attributes(:patron_id => selected_patron.id)
+      end
+      Produce.where(:patron_id => patron.id).each do |produce|
+        produce.update_attributes(:patron_id => selected_patron.id)
+      end
+      Own.where(:patron_id => patron.id).each do |own|
+        own.update_attributes(:patron_id => selected_patron.id)
+      end
+      Donate.where(:patron_id => patron.id).each do |donate|
+        donate.update_attributes(:patron_id => selected_patron.id)
+      end
       patron.destroy unless patron == selected_patron
     end
   end
