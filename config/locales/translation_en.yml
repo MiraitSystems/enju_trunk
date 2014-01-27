@@ -890,7 +890,8 @@ en:
         note: Note
         deleted_at: Deleted at
         subscribes_count: Count
-      patron_merge: 
+      patron_merge:
+        patrons_count: Count
       subject_related_term: 
       library_group:
         name: Name
@@ -1745,6 +1746,10 @@ en:
     related: Related
     see: See
     see_also: See also
+    member: Member
+    organization: Organization
+    child: Child
+    parent: Parent
     history: History
     current_version: Current version
     select: Select
@@ -2083,7 +2088,7 @@ en:
     last_update_by: Last update by
     duplicate_user: Duplicate user was already registered. (same full name(transcription), same telephone number 1-1 and same birth date)
     patron_identifier: Patron identifier
-    subject_place: Place
+    place: Place
     contact:
       full_name: Full name
       full_name_transcription: Full name transcription
@@ -2387,6 +2392,7 @@ en:
   merge_list:
     successfully_merged: '%{model} were merged successfully.'
     specify_id: Specify %{model} ID.
+    not_found: There is no registration to this list now.
   resource_import_textfile:
     wrong_file: can not be imported.
     wrong_extention: "files with xlsx extension or %{split_type} can be imported."
@@ -2903,7 +2909,11 @@ en:
   exchange_rate:
     invalid_started_at: "is invalid"
   barcode_registration:
-    more_than_last_number: " more than last number." 
+    more_than_last_number: " more than last number."
+  patron_merge_list:
+    description: "Select one from the following list, please press the merge button.<br />
+                   * After merging, only the information of the patron selected remains.<br />
+                   &nbsp&nbsp Information of other patron will be deleted."
 
   activemodel:
     models:

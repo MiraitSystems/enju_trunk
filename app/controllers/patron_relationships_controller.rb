@@ -20,6 +20,10 @@ class PatronRelationshipsController < InheritedResources::Base
     @patron_relationship.child = Patron.find(params[:child_id]) rescue nil
   end
 
+  def create
+    create! {patron_patrons_path(@patron_relationship.parent, :mode => 'show')}
+  end
+
   def update
     @patron_relationship = PatronRelationship.find(params[:id])
     if params[:position]
@@ -28,5 +32,14 @@ class PatronRelationshipsController < InheritedResources::Base
       return
     end
     update!
+  end
+
+  def destroy
+    patron_id = params[:patron_id]
+    relationship_type_id = params[:patron_relationship_type]
+    destroy! do |format|
+      relationship_type_id = nil if PatronRelationship.count_relationship(patron_id, relationship_type_id) == 0
+      format.html {redirect_to patron_patrons_path(patron_id, :mode => 'show', :patron_relationship_type => relationship_type_id)}
+    end
   end
 end

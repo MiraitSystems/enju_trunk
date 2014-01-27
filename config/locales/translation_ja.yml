@@ -975,6 +975,7 @@ ja:
         deleted_at: 削除時刻
         subscribes_count: 購読数
       patron_merge:
+        patrons_count: 登録件数
       subject_related_term:
       library_group:
         name: 名前
@@ -1732,6 +1733,10 @@ ja:
     related: "関連"
     see: "を見よ"
     see_also: "をも見よ"
+    member: "メンバー"
+    organization: "所属団体"
+    child: "子"
+    parent: "親"
     history: "履歴"
     current_version: "最新版"
     select: "選択"
@@ -2375,6 +2380,7 @@ ja:
   merge_list:
     successfully_merged: "%{model}は正常に統合されました。"
     specify_id: "%{model}のIDを指定してください。"
+    not_found: "現在このリストへの登録はありません。"
   family:
     add: 追加
     tips_remove: 外す
@@ -2875,6 +2881,9 @@ ja:
     invalid_started_at: "が不正な値です。例: 2011-04-12"
   barcode_registration:
     more_than_last_number: "が終了番号より大きいです。"
+  patron_merge_list:
+    description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
+                 ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
 
   activemodel:
     models:
