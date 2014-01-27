@@ -200,7 +200,6 @@ ja:
       series_statement_relationship_type: 遍歴関係タイプ
       theme: テーマ
       currency: 通貨単位
-      barcode_registration: 資料登録番号バーコード
       keycode: コード管理
 
     attributes:
@@ -431,13 +430,17 @@ ja:
         country: 国籍
         patron_type: 人物・団体の種類
         language: 言語
-        email: メールアドレス
+        email: メールアドレス1
+        email_2: メールアドレス2
         url: URL
         note_update_at: 注記更新時刻
         note_update_by: 注記更新者
         note_update_library: 注記更新図書館        
         old: 歳
         patron_identifier: 人物団体の識別番号
+        keyperson_1: キーパーソン1
+        keyperson_2: キーパーソン2
+        corporate_type: 団体分類 
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -1005,6 +1008,7 @@ ja:
         deleted_at: 削除時刻
         subscribes_count: 購読数
       patron_merge:
+        patrons_count: 登録件数
       subject_related_term:
       library_group:
         name: 名前
@@ -1699,8 +1703,16 @@ ja:
     output_excelx_dialog: "出力対象カラムを選択"
     output_excelx_detail: "チェックした項目を出力"
     output_excelx_default_checked: "(デフォルト)"
-    output_request: "欠号未請求リストの出力(PDF)"
-    batch_change: "その他の機能"
+    output_filetype: "ファイル形式"
+    output_filetype_format:
+      excelx: Excel(2007以降)
+      pdf: PDF
+      tsv: TSV
+      csv: CSV
+    output_layout: "出力対象"
+    output_request: "欠号未請求リスト"
+    output_label: "図書ラベル"
+    batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"
     batch_change_theme: "テーマを追加"
@@ -1746,6 +1758,10 @@ ja:
     related: "関連"
     see: "を見よ"
     see_also: "をも見よ"
+    member: "メンバー"
+    organization: "所属団体"
+    child: "子"
+    parent: "親"
     history: "履歴"
     current_version: "最新版"
     select: "選択"
@@ -2085,7 +2101,12 @@ ja:
     last_update_at: 最終更新日時
     last_update_by: 更新者 
     duplicate_user: "同じフルネーム(ヨミ)、電話番号１ー１、生年月日の人が既に登録されています。"
-    patron_identifier: 人物団体の識別番号
+    patron_identifier: 機関を識別するための番号
+    place: 所在地
+    contact:
+      full_name: 発行担当機関
+      full_name_transcription: 発行担当機関(ヨミ)
+      patron_identifier: 担当窓口
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
@@ -2384,6 +2405,7 @@ ja:
   merge_list:
     successfully_merged: "%{model}は正常に統合されました。"
     specify_id: "%{model}のIDを指定してください。"
+    not_found: "現在このリストへの登録はありません。"
   family:
     add: 追加
     tips_remove: 外す
@@ -2413,9 +2435,9 @@ ja:
     series: シリーズ
     exinfo: その他
     wrong_file: "はインポートできません。"
-    wrong_extention: "拡張子がxlsx形式のファイルのみインポート可能です。"
+    wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
     wrong_content_type: "にはTSVファイルまたはXLSXファイル以外を指定しないでください。"
-    importing_please_wait: "エクセルファイルを読み込み中です。しばらくお待ちください。。。"
+    importing_please_wait: "ファイルを読み込み中です。しばらくお待ちください。。。"
     auto_numbering: "所蔵情報IDを自動採番する"
     excel:
       series:
@@ -2435,6 +2457,7 @@ ja:
         marc_number: MARC番号
         ndc: NDC
         carrier_type: 資料の形態
+        jpn_or_foreign: 和洋区分
         frequency: 発行頻度
         pub_date: 出版日
         country_of_publication: 出版国
@@ -2496,31 +2519,41 @@ ja:
         access_address: ＵＲＬ
         subject: 件名 
     message:
-      read_sheet: "シート『%{sheet}』の読み取りを開始します。"
+      read_start: "読み取りを開始します。"
+      read_end: "読み取りが完了しました。"
+      sheet_info: "シート: 『%{sheet}』"
       deleted: "削除完了  所蔵情報ID: %{item_identifier}"
       deleted_manifestation: "タイトル：%{original_title}"
       deleted_series_statement: "シリーズタイトル：%{series_original_title}"
       out_of_manage: "<br />ヘッダーに管理外のカラム名が存在しています: %{columns}"
       without_item: "所蔵情報IDカラムが存在しないので、所蔵情報はインポート対象外です。"
+      manifestation_imported: 新規資料数
+      item_imported: 新規所蔵数
+      manifestation_found: 資料更新数
+      item_found: 所蔵更新数
+      failed: 失敗数
     error:
+      failed_to_read_sheet: "シート『%{sheet}』の読み取りに失敗しました。
+        <br />シート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。\r\n"
       manifestation_type_is_nil: "資料区分が設定されていません。"
-      blank_sheet: "シート『%{sheet}』の読み取りに失敗しました。データが記述されていません。"
-      overlap: "シート『%{sheet}』の読み取りに失敗しました。ヘッダーのフィールド名に重複したものがあります。"
+      blank_sheet: "データが記述されていません。"
+      overlap: "ヘッダーに重複したフィールド名が存在しています。"
+      head_require_manifestation_type: "1行目には資料区分が必須です。"
       wrong_data: "指定の%{field}は不正です。 %{field}: %{data}"
       delete_requre_item_identifier: "所蔵情報IDが入力されていないため削除を実行できませんでした。"
       failed_delete_not_find: "対象の資料が見つからなかったため削除を実行できませんでした。"
-      duplicate_item_identifier: "シート『%{sheet}』の読み取りに失敗しました。所蔵情報IDが重複しています: %{item_identifier}"
+      duplicate_item_identifier: "所蔵情報IDが重複しています: %{item_identifier}"
       no_item_identifier: "所蔵情報IDが指定されていません。"
       cell_require_manifestation_type: "資料区分を指定してください。"
       wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
+      wrong_format: "インポートのファイル形式が不正です。"
       series:
-        head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目にはシリーズ名またはISSN,またタイトルまたはISBNが必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
+        head_is_blank: "1行目にはシリーズ名あるいはISSN, またタイトルあるいはISBNが必須です。"
         cell_is_blank: "シリーズ名またはISSN,タイトルまたはISBNを指定してください。"
         wrong_issn: "指定のISSNは不正です。"
         exist_same_series: "更新しようとしている内容と同一のシリーズ情報が既に存在しています。資料の編集画面より更新する資料のシリーズ情報を付け替えてください。"
       book:
-        head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目にはタイトルまたはISBNが必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
-        head_require_manifestation_type: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目には資料区分が必須です。"
+        head_is_blank: "1行目にはタイトルまたはISBNが必須です。"
         cell_is_blank: "タイトルまたはISBNを指定してください。"
         only_integer: "%{field}には整数以外の値を指定しないでください。 %{field}: %{data}"
         only_numeric: "%{field}には数値以外の値を指定しないでください。 %{field}: %{data}"
@@ -2535,8 +2568,9 @@ ja:
         has_not_shelf: "図書館が保持していない本棚が指定されています。"
         exist_multiple_same_manifestations: "書誌同定された資料が複数存在します。インポートデータを新規作成しました。"
         record_not_found: "NDL-OPACを参照しましたが、書誌情報を取得できませんでした。"
+        wrong_jpn_or_foreign: "指定の和洋区分は不正です。 和洋区分: %{data}"
       article:
-        head_is_blank: "シート『%{sheet}』の読み取りに失敗しました。\r\n1行目には表題が必須です。\r\nシート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。"
+        head_is_blank: "1行目には表題が必須です。"
         cell_is_blank: "表題を指定してください。"
   resource_import_textresult:
     show_error_list: "エラー行のみ表示"
@@ -2874,3 +2908,14 @@ ja:
     invalid_started_at: "が不正な値です。例: 2011-04-12"
   barcode_registration:
     more_than_last_number: "が終了番号より大きいです。"
+  patron_merge_list:
+    description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
+                 ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
+
+  activemodel:
+    models:
+      barcode_registration: 資料登録番号バーコード
+    attributes:
+      barcode_registration:
+        first_number: 開始番号
+        last_number: 終了番号

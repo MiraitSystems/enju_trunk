@@ -5,6 +5,8 @@ class Keycode < ActiveRecord::Base
   validate :validate_term
   default_scope :order => 'name ASC, started_at ASC'
 
+  has_many :patrons
+
   paginates_per 10
 
   def validate_term

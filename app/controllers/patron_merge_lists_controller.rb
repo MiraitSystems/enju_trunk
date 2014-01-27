@@ -45,7 +45,7 @@ class PatronMergeListsController < ApplicationController
     respond_to do |format|
       if @patron_merge_list.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.patron_merge_list'))
-        format.html { redirect_to(@patron_merge_list) }
+        format.html { redirect_to patron_merge_list_patrons_url(@patron_merge_list.id, :mode =>"add") }
         format.json { render :json => @patron_merge_list, :status => :created, :location => @patron_merge_list }
       else
         format.html { render :action => "new" }
@@ -64,15 +64,17 @@ class PatronMergeListsController < ApplicationController
           if selected_patron
             @patron_merge_list.merge_patrons(selected_patron)
             flash[:notice] = t('merge_list.successfully_merged', :model => t('activerecord.models.patron'))
+            format.html { redirect_to patron_merge_list_patrons_url(@patron_merge_list.id, :mode =>"add") }
+            format.json { head :no_content }
           else
             flash[:notice] = t('merge_list.specify_id', :model => t('activerecord.models.patron'))
-            redirect_to patron_merge_list_url(@patron_merge_list)
+            redirect_to patron_merge_list_patrons_url(@patron_merge_list.id, :mode =>"add", :page =>params[:page], :query => params[:query])
             return
           end
         else
           flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.patron_merge_list'))
         end
-        format.html { redirect_to(@patron_merge_list) }
+        format.html { redirect_to patron_merge_lists_path }
         format.json { head :no_content }
       else
         format.html { render :action => "edit" }
@@ -84,8 +86,9 @@ class PatronMergeListsController < ApplicationController
   # DELETE /patron_merge_lists/1
   # DELETE /patron_merge_lists/1.json
   def destroy
-    @patron_merge_list.destroy
-
+    if @patron_merge_list.destroy
+      flash[:notice] = t('controller.successfully_deleted', :model => t('activerecord.models.patron_merge_list'))
+    end
     respond_to do |format|
       format.html { redirect_to(patron_merge_lists_url) }
       format.json { head :no_content }

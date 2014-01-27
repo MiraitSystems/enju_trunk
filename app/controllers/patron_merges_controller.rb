@@ -48,17 +48,15 @@ class PatronMergesController < ApplicationController
   # POST /patron_merges
   # POST /patron_merges.json
   def create
-    @patron_merge = PatronMerge.new(params[:patron_merge])
+    @patron_merge = PatronMerge.new(:patron_id => params[:patron_id], :patron_merge_list_id => params[:patron_merge_list_id])
 
     respond_to do |format|
       if @patron_merge.save
-        flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.patron_merge'))
-        format.html { redirect_to(@patron_merge) }
         format.json { render :json => @patron_merge, :status => :created, :location => @patron_merge }
       else
-        format.html { render :action => "new" }
         format.json { render :json => @patron_merge.errors, :status => :unprocessable_entity }
       end
+      format.html { redirect_to(patron_merge_list_patrons_url(params[:patron_merge_list_id], :mode =>"add", :page => params[:page], :query => params[:query])) }
     end
   end
 
@@ -80,10 +78,10 @@ class PatronMergesController < ApplicationController
   # DELETE /patron_merges/1
   # DELETE /patron_merges/1.json
   def destroy
-    @patron_merge.destroy
-
+    PatronMerge.destroy(params[:id])
+    
     respond_to do |format|
-      format.html { redirect_to(patron_merges_url) }
+      format.html { redirect_to(patron_merge_list_patrons_url(params[:patron_merge_list_id], :mode =>"add", :page => params[:page], :query => params[:query])) }
       format.json { head :no_content }
     end
   end

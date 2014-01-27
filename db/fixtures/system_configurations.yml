@@ -756,6 +756,10 @@ system_configuration_00107:
   category: 'general'
 system_configuration_00108:
   id: 108
+  keyname: add_only_exist_patron
+  v: "true"
+  typename: Boolean
+  description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
   keyname: statistic_report.yearly_public
   v: "false"
   typename: Boolean
@@ -1047,4 +1051,11 @@ system_configuration_00149:
   v: "true"
   typename: Boolean
   description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
+  category: 'manifestation'
+system_configuration_00150:
+  id: 150
+  keyname: use_patron_type
+  v: "true"
+  typename: Boolean
+  description: "著者・出版者・協力者に役割をつけるか"
   category: 'manifestation'

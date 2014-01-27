@@ -87,11 +87,37 @@ class PatronsController < ApplicationController
         with(:work_ids).equal_to work.id if work
         with(:expression_ids).equal_to expression.id if expression
         with(:manifestation_ids).equal_to manifestation.id if manifestation
-        any_of do
-          with(:original_patron_ids).equal_to patron.id if patron
-          with(:derived_patron_ids).equal_to patron.id if patron
-        end
         with(:patron_merge_list_ids).equal_to patron_merge_list.id if patron_merge_list
+        if patron
+          case params[:patron_relationship_type]
+          when '1'
+            any_of do
+              with(:relationship_type_child_s).equal_to patron.id
+              with(:relationship_type_parent_s).equal_to patron.id
+            end
+          when '2'
+            any_of do
+              with(:relationship_type_child_m).equal_to patron.id
+              with(:relationship_type_parent_m).equal_to patron.id
+            end
+          when '3'
+            any_of do
+              with(:relationship_type_child_c).equal_to patron.id
+              with(:relationship_type_parent_c).equal_to patron.id
+            end
+          else
+            any_of do
+              with(:original_patron_ids).equal_to patron.id
+              with(:derived_patron_ids).equal_to patron.id
+            end
+          end
+        end
+        facet :relationship_type_child_s
+        facet :relationship_type_child_m
+        facet :relationship_type_child_c
+        facet :relationship_type_parent_s
+        facet :relationship_type_parent_m
+        facet :relationship_type_parent_c
       end
     end
 
@@ -104,6 +130,7 @@ class PatronsController < ApplicationController
 
     page = params[:page] || 1
     search.query.paginate(page.to_i, Patron.default_per_page)
+    @search = search
     @patrons = search.execute!.results
 
     respond_to do |format|
@@ -114,7 +141,6 @@ class PatronsController < ApplicationController
       format.json { render :json => @patrons }
       format.mobile
     end
-    
   end
 
   def search_name
@@ -265,6 +291,7 @@ class PatronsController < ApplicationController
           format.json { render :json => @patron, :status => :created, :location => @patron }
         end
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -286,6 +313,7 @@ class PatronsController < ApplicationController
         end
         format.json { head :no_content }
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "edit" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -308,8 +336,8 @@ class PatronsController < ApplicationController
   def prepare_options
     @countries = Country.all_cache
     @patron_types = PatronType.all
-    @patron_type_patron_id = PatronType.find_by_name('Person').id 
     @roles = Role.all
     @languages = Language.all_cache
+    @places = SubjectType.find_by_name('Place').try(:subjects)
   end
 end

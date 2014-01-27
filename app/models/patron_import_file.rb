@@ -74,10 +74,10 @@ class PatronImportFile < ActiveRecord::Base
           next
         end
         #delete_flagの定義
-        delete_flag = row[del_flg].first if row[del_flg]
+        delete_flag = row[del_flg].to_s.strip if row[del_flg]
         user = User.where(:username => row[username].to_s.strip).first
         #削除
-        unless (delete_flag == "delete" || delete_flag == "false" || delete_flag.blank?)
+        unless delete_flag.nil? or delete_flag.blank? or delete_flag.upcase == 'FALSE' or delete_flag.upcase == 'DELETE'
           if user.blank?
             import_result.error_msg = "FAIL[#{row_num}]: #{I18n.t('import.user_does_not_exist')}"
             next
@@ -85,6 +85,7 @@ class PatronImportFile < ActiveRecord::Base
 
           User.transaction do
             import_result.error_msg = I18n.t('controller.successfully_deleted', :model => "#{user.patron.full_name}(#{user.username})")
+            user.patron.destroy
             user.destroy
             num[:patron_imported] += 1
             num[:user_imported] += 1

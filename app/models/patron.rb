@@ -7,14 +7,14 @@ class Patron < ActiveRecord::Base
     :zip_code_2, :address_1, :address_2, :address_1_note, :address_2_note,
     :telephone_number_1, :telephone_number_2, :fax_number_1, :fax_number_2,
     :other_designation, :place, :street, :locality, :region, :language_id,
-    :country_id, :patron_type_id, :note, :required_role_id, :email, :url,
+    :country_id, :patron_type_id, :note, :required_role_id, :email, :email_2, :url,
     :full_name_alternative_transcription, :title, :birth_date, :death_date,
     :patron_identifier,
     :telephone_number_1_type_id, :extelephone_number_1,
     :extelephone_number_1_type_id, :fax_number_1_type_id,
     :telephone_number_2_type_id, :extelephone_number_2,
     :extelephone_number_2_type_id, :fax_number_2_type_id, :user_username,
-    :exclude_state
+    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id
 
   scope :readable_by, lambda{|user| {:conditions => ['required_role_id <= ?', user.try(:user_has_role).try(:role_id) || Role.where(:name => 'Guest').select(:id).first.id]}}
   has_many :creates, :dependent => :destroy
@@ -28,7 +28,7 @@ class Patron < ActiveRecord::Base
   has_many :derived_patrons, :through => :children, :source => :child
   has_many :original_patrons, :through => :parents, :source => :parent
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  has_many :donates
+  has_many :donates #TODO :dependent => :destroy が無いため、patronを削除や統合した場合、レコードが残る
   has_many :donated_items, :through => :donates, :source => :item
   has_many :owns, :dependent => :destroy
   has_many :items, :through => :owns
@@ -40,6 +40,8 @@ class Patron < ActiveRecord::Base
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :language
   belongs_to :country
+  belongs_to :place, :class_name => 'Subject', :foreign_key => 'place_id'
+  belongs_to :corporate_type, :class_name => 'Keycode', :foreign_key => 'corporate_type_id'
   has_one :patron_import_result
 
   accepts_nested_attributes_for :patron_aliases
@@ -52,6 +54,7 @@ class Patron < ActiveRecord::Base
   validates :birth_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
+  validates :email_2, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name
@@ -106,6 +109,24 @@ class Patron < ActiveRecord::Base
     integer :patron_type_id
     integer :user_id
     integer :exclude_state
+    integer :relationship_type_child_s, :multiple => true do
+      children.seealso_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_m, :multiple => true do
+      children.member_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_c, :multiple => true do
+      children.child_type.pluck(:child_id)
+    end
+    integer :relationship_type_parent_s, :multiple => true do
+      parents.seealso_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_m, :multiple => true do
+      parents.member_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_c, :multiple => true do
+      parents.child_type.pluck(:parent_id)
+    end
   end
 
   paginates_per 10
@@ -280,7 +301,7 @@ class Patron < ActiveRecord::Base
     list = []
     patron_lists.uniq.compact.each do |patron_list|
       next if patron_list[:full_name].blank?
-      patron = Patron.where(:full_name => patron_list[:full_name]).first
+      patron = Patron.where(:full_name => patron_list[:full_name].exstrip_with_full_size_space).first
       unless patron
         patron = Patron.new(
           :full_name => patron_list[:full_name].exstrip_with_full_size_space,

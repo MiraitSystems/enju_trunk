@@ -22,7 +22,7 @@ class BarcodeRegistration
     data = String.new
     data << "\xEF\xBB\xBF".force_encoding("UTF-8")
     row = []
-    first_number.upto(last_number) { |num| row << "%09d" % num }
+    first_number.to_i.upto(last_number.to_i) { |num| row << "%09d" % num }
     data << '"'+row.join("\",\n\"")+"\"\n"
   end
  

@@ -15,8 +15,8 @@ class Create < ActiveRecord::Base
     work.try(:index)
   end
 
-  def self.add_creates(manifestation_id, patron_id, type_id, delflg = [], newflg = false)
-    if manifestation_id.blank? or patron_id.blank? or type_id.blank?
+  def self.add_creates(manifestation_id, patron_id, type_id = [], delflg = [], newflg = false)
+    if manifestation_id.blank? or patron_id.blank?
       return nil
     end
     patron_id.each_with_index do |p_id, i|
@@ -26,7 +26,7 @@ class Create < ActiveRecord::Base
          if delflg[i]
             sel_clm.destroy
          else
-           if sel_clm.create_type_id != type_id[i]
+           if type_id[i].present? && sel_clm.create_type_id != type_id[i]
               sel_clm.create_type_id = type_id[i]
               sel_clm.save
            end
