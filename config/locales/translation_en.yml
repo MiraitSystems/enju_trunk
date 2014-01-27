@@ -195,6 +195,7 @@ en:
       series_statement_relationship_type: Series statement relationship type
       currency: Currency
       keycode: Keycode
+      title_type: Title type
 
     attributes:
       enju_terminal:
@@ -1523,6 +1524,10 @@ en:
         started_at: Started date
         ended_at: Ended date
         ended_at_invalid: End date must be later than Start date.
+      title_type:
+        name: Name
+        display_name: Display name
+        note: Note 
 
   page:
     user_title: Welcome %{login_name}

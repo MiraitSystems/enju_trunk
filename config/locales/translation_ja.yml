@@ -198,6 +198,7 @@ ja:
       theme: テーマ
       currency: 通貨単位
       keycode: コード管理
+      title_type: 書名の種類
 
     attributes:
       wareki:
@@ -1511,6 +1512,10 @@ ja:
         started_at: 開始年月日
         ended_at: 終了年月日
         ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
+      title_type:
+        name: 名前
+        display_name: 表示名
+        note: 注記
 
   page:
     user_title: "ようこそ %{login_name} さん"
