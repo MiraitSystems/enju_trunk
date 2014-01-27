@@ -5,6 +5,8 @@ EnjuLeaf::Application.routes.draw do
 
   get "barcode_registrations/index"
 
+  resources :abbreviations
+
   resources :series_statement_relationship_types
   match 'themes/update_all', :to => 'themes#update_all'
   resources :themes
