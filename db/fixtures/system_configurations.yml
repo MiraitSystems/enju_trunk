@@ -756,6 +756,10 @@ system_configuration_00107:
   category: 'general'
 system_configuration_00108:
   id: 108
+  keyname: add_only_exist_patron
+  v: "true"
+  typename: Boolean
+  description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
   keyname: statistic_report.yearly_public
   v: "false"
   typename: Boolean
