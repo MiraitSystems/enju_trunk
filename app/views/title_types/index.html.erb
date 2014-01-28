@@ -13,9 +13,8 @@
 <% @title_types.each do |title_type| %>
   <tr class="line<%= cycle("0", "1") -%>">
 
-    <td><%= title_type.name %></td>
+    <td><%= link_to title_type.name, title_type %></td>
     <td><%= title_type.display_name %></td>
-    <td><%= link_to 'Show', title_type %></td>
     <td>
       <%= link_to t('page.edit'), edit_title_type_path(title_type) %>
       <%= link_to t('page.destroy'), title_type, :confirm => t('page.are_you_sure'), :method => :delete %>

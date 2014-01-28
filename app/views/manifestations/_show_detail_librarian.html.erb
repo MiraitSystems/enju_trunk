@@ -6,6 +6,14 @@
       <%- end -%>
     <%# cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'detail', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
       <table id="resource_detail">
+
+        <% manifestation.work_has_titles.each do |title| %>
+          <tr> 
+            <td>title_type :<%= title.title_type_id %></td>
+            <td><%= title.manifestation_title.title %></td>
+          </tr>
+        <% end %>
+
         <%= embed_content(manifestation) -%>
         <%- if manifestation.try(:external_catalog) && manifestation.external_catalog > 0 -%>
           <tr>

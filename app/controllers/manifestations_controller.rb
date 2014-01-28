@@ -852,6 +852,15 @@ class ManifestationsController < ApplicationController
       format.json { render :json => @manifestation }
     end
 
+    p "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+   # p @manifestation.work_has_titles << WorkHasTitle.new
+   #   @manifestation.work_has_titles[0].created_at = Date.today
+       @manifestation.manifestation_titles << Title.new
+       @manifestation.manifestation_titles[0].title = "test"
+   p @manifestation.manifestation_titles
+      @manifestation.article_title = "----"
+
+
   end
 
   # GET /manifestations/1/edit
@@ -877,6 +886,16 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
+
+
+    if @manifestation.work_has_titles.empty?
+      @title = Title.new(:title => "asd")
+      @workhastitle = WorkHasTitle.new(:title_id => @title.id, :title_type_id => 1, :position => 1)
+      @workhastitle.manifestation_title = @title
+      @manifestation.work_has_titles << @workhastitle
+    end
+    @count_titles = @manifestation.work_has_titles.count
+
   end
 
   # POST /manifestations
@@ -960,6 +979,14 @@ class ManifestationsController < ApplicationController
     @theme = params[:manifestation][:theme]
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+
+   @work_has_titles = params[:manifestation][:work_has_titles_attributes]
+   p @work_has_titles
+   params[:manifestation_title].each do |key, value|
+    @title = Title.new(:title => value)
+    @title.save
+    @work_has_titles[key][:title_id] = @title.id
+   end
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
@@ -1413,6 +1440,7 @@ class ManifestationsController < ApplicationController
     @create_types = CreateType.find(:all, :select => "id, display_name")
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
+    @title_types = TitleType.find(:all, :select => "id, display_name")
   end
 
   def input_patron_parameter
