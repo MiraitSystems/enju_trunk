@@ -78,6 +78,8 @@ EnjuLeaf::Application.routes.draw do
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
     get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis', :as => 'nacsis'
+    get :search_manifestation, :on => :member
+    get :search_manifestation, :on => :collection
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'
