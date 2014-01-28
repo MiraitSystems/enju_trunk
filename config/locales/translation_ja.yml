@@ -1,8 +1,6 @@
 ja:
   activerecord:
     models:
-      keycode: コード管理
-      use_license: 利用許諾
       abbreviation: 略語辞書
       wareki: 和暦
       user_request_log: 利用者操作履歴
@@ -203,33 +201,6 @@ ja:
       keycode: コード管理
 
     attributes:
-      keycode:
-        name: コード識別記号
-        display_name: コード名称
-        v: コードキー値
-        keyname: コード内容
-        started_at: 開始年月日
-        ended_at: 終了年月日
-        ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
-      use_license:
-        target: 利用許諾対象
-        author: 著者抄録許諾
-        author_fee: 著者抄録許諾料金
-        agency_name: 許諾機関名称
-        agency_address: 許諾機関住所
-        responsible_name: 担当者名
-        responsible_tel: 担当者電話
-        responsible_mail: 担当者メール
-        bank_name: 銀行名
-        bank_code: 銀行コード
-        branch_name: 支店名
-        branch_number: 支店番号
-        account_name: 口座名
-        account_number: 口座番号
-        account_kind: 口座種類
-        account_kinds:
-          "normal": 普通
-          "current": 当座
       abbreviation:
         keyword: キーワード
         v: 略語
@@ -1537,6 +1508,14 @@ ja:
         currency: 通貨単位
         rate: レート
         started_at: 利用開始年月日
+      keycode:
+        name: コード識別記号
+        display_name: コード名称
+        v: コードキー値
+        keyname: コード内容
+        started_at: 開始年月日
+        ended_at: 終了年月日
+        ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -2898,9 +2877,16 @@ ja:
     not_necessary: " は必要ありません。"
     failed_destroy: "遍歴の削除に失敗しました。"
     not_exist_series_statement: "は存在してません。"
-  flag:
-    "yes": 有
-    "no": 無
+  abbreviation:
+    description: "
+      <h5>略語登録制限:</h5>
+      <br />
+      ・単語の先頭文字が大文字であること<br /><br />
+      ・単語の先頭文字以外に大文字がないこと<br /><br />
+      ・半角英数字であること<br /><br />
+      ・空白が含まれないこと<br /><br />
+      ・既に登録されているキーワードは登録不可
+      "
   currency:
     invalid_name: "は半角英数字で入力してください。"
     can_not_delete: "通貨単位は削除できません。"

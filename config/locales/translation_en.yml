@@ -1,8 +1,6 @@
 en:
   activerecord:
     models:
-      keycode: Keycode
-      use_license: Use license
       abbreviation: Abbreviation
       library: Library
       question: Question
@@ -198,36 +196,8 @@ en:
       series_statement_relationship_type: Series statement relationship type
       currency: Currency
       keycode: Keycode
-      barcode_registration: Registration barcode
 
     attributes:
-      keycode:
-        name: Name
-        display_name: Display name
-        v: V
-        keyname: Key name
-        started_at: Started date
-        ended_at: Ended date
-        ended_at_invalid: End date must be later than Start date.
-      use_license:
-        target: Target
-        author: Author
-        author_fee: Author fee
-        agency_name: Agency name
-        agency_address: Agency address
-        responsible_name: Responsible name
-        responsible_tel: Responsible tel
-        responsible_mail: Responsible mail
-        bank_name: Bank name
-        bank_code: Bank code
-        branch_name: Branch name
-        branch_number: Branch number
-        account_name: Account name
-        account_number: Account number
-        account_kind: Account kind
-        account_kinds:
-          "normal": Normal
-          "current": Current
       abbreviation:
         keyword: Keyword
         v: V
@@ -1550,6 +1520,14 @@ en:
         currency: Currency
         rate: Rate
         started_at: Started at
+      keycode:
+        name: Name
+        display_name: Display name
+        v: V
+        keyname: Key name
+        started_at: Started date
+        ended_at: Ended date
+        ended_at_invalid: End date must be later than Start date.
 
   page:
     user_title: Welcome %{login_name}
@@ -2928,9 +2906,16 @@ en:
     not_necessary: " is not necessary"
     failed_destroy: "failed destroy series statement relationship"
     not_exist_series_statement: " is not exist"
-  flag:
-    "yes": Yes
-    "no": No
+  abbreviation:
+    description: "
+      <h5>Attention:</h5>
+      <br />
+       caution 1 <br /><br />
+       caution 2 <br /><br />
+       caution 3 <br /><br />
+       caution 4 <br /><br />
+       caution 5 
+      "
   currency:
     invalid_name: "is invalid"
     can_not_delete: "Could not delete currency"
