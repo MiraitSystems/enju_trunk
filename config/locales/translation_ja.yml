@@ -2020,6 +2020,7 @@ ja:
     contributor_transcription: 協力者・編者(ヨミ)
     publisher_transcription: 出版者(ヨミ)
     subject_transcription: 件名(ヨミ)
+    same_manifestation_already_exist: 同じタイトルの資料が既に存在しています。
   missing_issue:
     no_request: 未請求
     requested: 請求済

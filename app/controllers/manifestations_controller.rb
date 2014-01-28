@@ -6,7 +6,7 @@ class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :output_show, :output_pdf]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :output_show, :output_pdf, :search_manifestation]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -1061,6 +1061,17 @@ class ManifestationsController < ApplicationController
     respond_to do |format|
       format.html
     end
+  end
+
+  def search_manifestation
+    return nil unless request.xhr? or params[:original_title].blank?
+    manifestations = Manifestation.where(original_title: params[:original_title])
+    return nil unless manifestations.present?
+    manifestation_urls = []
+    manifestations.each do |m|
+      manifestation_urls << ApplicationController.helpers.link_to(m.original_title, manifestation_path(m))
+    end
+    render :json => { success: 1, manifestation_urls: manifestation_urls }
   end
 
   private
