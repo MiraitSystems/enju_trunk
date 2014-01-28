@@ -1,0 +1,42 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.abbreviation')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.abbreviation.keyword') -%></th>
+    <th><%= t('activerecord.attributes.abbreviation.v') -%></th>
+    <th><%= t('page.created_at') -%></th>
+    <th><%= t('page.updated_at') -%></th>
+    <th></th>
+  </tr>
+
+<%- @abbreviations.each do |abbreviation| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to abbreviation.keyword, abbreviation -%></td>
+    <td><%= link_to abbreviation.v, abbreviation -%></td>
+    <td><%= l(abbreviation.created_at) -%></td>
+    <td><%= l(abbreviation.updated_at) -%></td>
+    <td>
+      <%= link_to t('page.show'), abbreviation -%>
+      <%- if can? :update, abbreviation -%>
+        <%= link_to t('page.edit'), edit_abbreviation_path(abbreviation) -%>
+      <% end %>
+      <%- if can? :destroy, abbreviation -%>
+        <%= link_to t('page.destroy'), abbreviation, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+<%- if can? :create, Abbreviation -%>
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.abbreviation')), new_abbreviation_path -%></li>
+  </ul>
+<%- end -%>
+</div>

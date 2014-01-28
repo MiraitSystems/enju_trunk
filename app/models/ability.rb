@@ -85,6 +85,7 @@ class Ability
       end
       can :show, Theme
       can :manage, [
+        Abbreviation,
         AccessLog,
         Answer,
         Basket,
@@ -265,6 +266,7 @@ class Ability
         remove_reason.items.count == 0
       end
       can :manage, [
+        Abbreviation,
         AccessLog,
         Answer,
         Basket,
