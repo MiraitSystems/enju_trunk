@@ -1,6 +1,7 @@
 en:
   activerecord:
     models:
+      abbreviation: Abbreviation
       library: Library
       question: Question
       patron_import_file: Patron import file
@@ -198,6 +199,9 @@ en:
       approval: Approval
 
     attributes:
+      abbreviation:
+        keyword: Keyword
+        v: V
       enju_terminal:
         ipaddr: IP Address
         name: Hostname
@@ -2947,6 +2951,16 @@ en:
     not_necessary: " is not necessary"
     failed_destroy: "failed destroy series statement relationship"
     not_exist_series_statement: " is not exist"
+  abbreviation:
+    description: "
+      <h5>Attention:</h5>
+      <br />
+       caution 1 <br /><br />
+       caution 2 <br /><br />
+       caution 3 <br /><br />
+       caution 4 <br /><br />
+       caution 5 
+      "
   currency:
     invalid_name: "is invalid"
     can_not_delete: "Could not delete currency"

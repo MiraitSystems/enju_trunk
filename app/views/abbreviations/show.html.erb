@@ -1,0 +1,23 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.abbreviation')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.abbreviation.keyword') -%>:</strong>
+  <%= @abbreviation.keyword.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.abbreviation.v') -%>:</strong>
+  <%= @abbreviation.v.localize -%>
+</p>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_abbreviation_path(@abbreviation) -%></li>
+    <li><%= link_to t('page.back'), abbreviations_path -%></li>
+  </ul>
+</div>
