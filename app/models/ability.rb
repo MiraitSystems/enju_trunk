@@ -88,6 +88,8 @@ class Ability
         Abbreviation,
         AccessLog,
         Answer,
+        Approval,
+        ApprovalExtext,
         Basket,
         Barcode,
         BarcodeList,
@@ -104,8 +106,10 @@ class Ability
         CopyRequest,
         Create,
         CreateType,
+        Currency,
         Department,
         Donate,
+        ExchangeRate,
         Exemplify,
         Expense,
         Family,
@@ -157,6 +161,7 @@ class Ability
         Term,
         Theme,
         EnjuTerminal,
+        UseLicense,
         UserCheckoutStat,
         UserGroupHasCheckoutType,
         UserHasRole,
@@ -164,8 +169,6 @@ class Ability
         UserStatus,
         Wareki,
         WorkHasSubject,
-        Currency,
-        ExchangeRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -269,6 +272,8 @@ class Ability
         Abbreviation,
         AccessLog,
         Answer,
+        Approval,
+        ApprovalExtext,
         Basket,
         Barcode,
         BarcodeList,
@@ -280,8 +285,10 @@ class Ability
         CopyRequest,
         Create,
         CreateType,
+        Currency,
 	Department,
         Donate,
+        ExchangeRate,
         Exemplify,
         Expense,
         Family,
@@ -322,10 +329,9 @@ class Ability
         SystemConfiguration,
         Term,
         Theme,
+        UseLicense,
         UserStatus,
         WorkHasSubject,
-        Currency,
-        ExchangeRate
       ]
       can [:read, :update], [
         SeriesStatementRelationshipType

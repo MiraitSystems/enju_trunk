@@ -174,6 +174,7 @@ $(function(){
             <%- if @manifestation.items.blank? && !@manifestation.ordered? -%>
               <li><%= link_to t('activerecord.models.purchase_request'), new_user_purchase_request_path(current_user, :purchase_request => {:manifestation_id => @manifestation, :url => manifestation_url(@manifestation)}) %>
             <%- end -%>
+            <li><%= link_to t('activerecord.models.approval'), new_approval_path(:manifestation_id => @manifestation) %> </li>
             <li><%= link_to t('manifestation.add_derivation'), manifestation_manifestations_path(@manifestation, :mode => 'add') -%></li>
             <li><%= link_to t('page.listing', :model => t('activerecord.models.subject')), work_subjects_path(@manifestation) -%></li>
             <%- unless @manifestation.bookbinder -%>
