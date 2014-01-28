@@ -2035,7 +2035,7 @@ en:
     contributor_transcription: Contributor transcription
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
-    same_manifestation_already_exist: Same_manifestation_already_exist
+    same_manifestation_already_exist: Same %{attribute} already exist
   item:
     current_checkout: Current checkout
     donor: Donors

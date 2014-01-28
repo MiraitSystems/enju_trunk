@@ -21,13 +21,16 @@ function search_manifestation() {
   $.ajax({
     type: "GET",
     url: "search_manifestation",
-    data: { "original_title": $("#manifestation_original_title").val() },
+    data: { 
+      "original_title": $("#manifestation_original_title").val(),
+      "manifestation_id": "<%= @manifestation.try(:id) %>"
+    },
     success: function(obj) {
       $('#search_manifestation > li').remove();
       $('#search_manifestation').hide();
       if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
         $('#search_manifestation').show();
-        var data = "<strong><%= t('manifestation.same_manifestation_already_exist') %></strong>"
+        var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
         data += "<ui>";
         jQuery.each(obj["manifestation_urls"], function(index, value) {  
           data += "<li>";
