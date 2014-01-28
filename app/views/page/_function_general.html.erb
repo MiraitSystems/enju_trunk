@@ -1,11 +1,9 @@
 <% if user_signed_in? && current_user.has_role?('Librarian') -%>
   <div id="shortcut">
-      <div class="function_key"><h4>F2: <%= t('page.checkout') %></h4></div>
-      <div class="function_key"><h4>F3: <%= t('page.checkin') %></h4></div>
-      <div class="function_key"><h4>F4: <%= t('page.recheckout') %></h4></div>
-      <div class="function_key"><h4>F6: <%= t('page.catalog_search') %></h4></div>
-      <% if SystemConfiguration.get("use_order_lists") %>
-        <div class="function_key"><h4>F7: <%= t('activerecord.models.order_list') %></h4></div>
+      <% 1.upto(9) do |num| %>
+        <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
+          <div class="function_key"><h4>F<%= num %>: <%= SystemConfiguration.get("f#{num}.display_name") %></h4></div>
+        <% end %>
       <% end %>
       <br style="clear:both;">
   </div>
@@ -16,14 +14,31 @@
   <% if user_signed_in? && current_user.has_role?('Librarian') -%>
     $(document).FunctionKeys(
     {
-       F2:function(obj,s,c,a){document.location = '<%= new_basket_path%>';} 
-      ,F3:function(obj,s,c,a){document.location = '<%= checkins_path %>';}
-      ,F4:function(obj,s,c,a){document.location = '<%= extend_checkouts_path %>';}
-      ,F6:function(obj,s,c,a){document.location = '<%= root_path %>';}
-       <% if SystemConfiguration.get("use_order_lists") %>
-      ,F7:function(obj,s,c,a){document.location = '<%= order_lists_path %>';}
+       <% 1.upto(9) do |num| %>
+         <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
+           F<%=num%> :function(obj,s,c,a){ 
+             // document.location = '<%= SystemConfiguration.get("f#{num}.path") %>'; 
+             var path = '<%= SystemConfiguration.get("f#{num}.path") %>';
+             var pathname_array = location.pathname.split('/');
+             if (pathname_array[1] && pathname_array[2]) { 
+               // set routes
+               switch (pathname_array[1]) {
+                 case 'manifestations': path += '?manifestation_id='; break;
+                 case 'users':          path += '?user=';          break;
+               }
+               if (pathname_array[2].match(/[0-9]/gi)) {
+                 // set num
+                 path += pathname_array[2];
+               } else { 
+                 switch (pathname_array[1]) {
+                   case 'users': path += pathname_array[2]; break;
+                 }
+               }
+             }
+             document.location = path;
+           }, 
+         <% end %>
        <% end %>
-      ,F9:function(obj,s,c,a){ }
      });
   <% end %>
 
