@@ -47,6 +47,14 @@
 
 <div id="submenu" class="ui-corner-all">
   <%= render 'manifestations/book_jacket', :manifestation => manifestation -%>
+  <h3>
+    <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"),
+      url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  %>
+  </h3>
+  <% if @count[:query_result] > 0 %>
+    <%= render 'patron_type_facet' %>
+    <br />
+  <% end %>
   <ul>
     <li><%= link_to t('activerecord.models.manifestation'), manifestations_path -%></li>
     <li><%= link_to t('page.listing', :model => t('activerecord.models.item')), manifestation_items_path(manifestation) -%></li>
