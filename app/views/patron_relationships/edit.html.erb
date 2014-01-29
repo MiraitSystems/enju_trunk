@@ -8,6 +8,6 @@
 <div id="submenu" class="ui-corner-all">
   <ul>
     <li><%= link_to t('page.back'),
-            patron_patrons_path(params[:patron_id], :mode => 'show', :page => params[:page], :parent_child_relationship => params[:parent_child_relationship], :patron_relationship_type => params[:patron_relationship_type]) -%></li>
+            patron_patrons_path(params[:patron_id], set_patron_params(params[:patron_id])) -%></li>
   </ul>
 </div>

@@ -2,6 +2,8 @@
   <%= f.error_messages -%>
   <%= hidden_field_tag 'patron_id', params[:patron_id] %>
   <%= hidden_field_tag 'patron_relationship_type', params[:patron_relationship_type] if params[:patron_relationship_type] %>
+  <%= hidden_field_tag 'parent_child_relationship', params[:parent_child_relationship] if params[:parent_child_relationship] %>
+  <%= hidden_field_tag 'patron_type', params[:patron_type] if params[:patron_type] %>
   <%= hidden_field_tag 'page', params[:page] if params[:page] %>
   <div class="field">
     <% if @patron_relationship.try(:parent) %>

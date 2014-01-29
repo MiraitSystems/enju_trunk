@@ -34,7 +34,12 @@ module PatronsHelper
     string = ''
     current = true if select_id == current_type && (select_relation.nil? || select_relation == current_relation)
     string << "<strong>" if current
-    string << link_to("#{display_name} (" + count.to_s + ")", url_for(params.merge(:page => nil, :patron_relationship_type => select_id, :parent_child_relationship => select_relation, :view => nil)))
+    string << link_to("#{display_name} (" + count.to_s + ")",
+                      url_for(params.merge(
+                        :page => nil,
+                        :patron_relationship_type => select_id,
+                        :parent_child_relationship => select_relation,
+                        :view => nil)))
     string << "</strong>" if current
     string.html_safe
   end
@@ -50,5 +55,15 @@ module PatronsHelper
         :view        => nil)))
     string << "</strong>" if current
     string.html_safe
+  end
+
+  def set_patron_params(patron_id)
+    param_hash = Hash.new
+    param_hash.store('patron_id', patron_id)
+    param_hash.store('patron_relationship_type', params[:patron_relationship_type])
+    param_hash.store('parent_child_relationship', params[:parent_child_relationship])
+    param_hash.store('patron_type', params[:patron_type])
+    param_hash.store('page', params[:page])
+    return param_hash
   end
 end
