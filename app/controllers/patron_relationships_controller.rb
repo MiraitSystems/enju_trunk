@@ -32,16 +32,20 @@ class PatronRelationshipsController < InheritedResources::Base
       return
     end
     update! do |format|
-      format.html {redirect_to patron_patrons_path(params[:patron_id], :mode => 'show', :patron_relationship_type => params[:patron_relationship_type], :page =>params[:page] )}
+      format.html {redirect_to patron_patrons_path(params[:patron_id], :mode => 'show', :parent_child_relationship => params[:parent_child_relationship], :patron_relationship_type => params[:patron_relationship_type], :page =>params[:page] )}
     end
   end
 
   def destroy
     patron_id = params[:patron_id]
     relationship_type_id = params[:patron_relationship_type]
+    parent_child_relationship = params[:parent_child_relationship]
     destroy! do |format|
-      relationship_type_id = nil if PatronRelationship.count_relationship(patron_id, relationship_type_id) == 0
-      format.html {redirect_to patron_patrons_path(patron_id, :mode => 'show', :patron_relationship_type => relationship_type_id)}
+      if PatronRelationship.count_relationship(patron_id, relationship_type_id, parent_child_relationship) == 0
+        relationship_type_id = nil
+        parent_child_relationship = nil
+      end
+      format.html {redirect_to patron_patrons_path(patron_id, :mode => 'show', :parent_child_relationship => parent_child_relationship, :patron_relationship_type => relationship_type_id)}
     end
   end
 end

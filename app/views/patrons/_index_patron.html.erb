@@ -45,9 +45,9 @@
               <% else %>
                 <% patron_relationship = patron_relationship_anyone(patron, p.id) %>
                 <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
-                    edit_patron_relationship_path(patron_relationship, :patron_id => patron.id, :patron_relationship_type => params[:patron_relationship_type], :page => params[:page]) %>
+                    edit_patron_relationship_path(patron_relationship, :patron_id => patron.id, :parent_child_relationship => params[:parent_child_relationship], :patron_relationship_type => params[:patron_relationship_type], :page => params[:page]) %>
                 <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
-                    patron_relationship_path(patron_relationship, :patron_id => patron.id ,:patron_relationship_type => params[:patron_relationship_type]),
+                    patron_relationship_path(patron_relationship, :patron_id => patron.id ,:parent_child_relationship => params[:parent_child_relationship], :patron_relationship_type => params[:patron_relationship_type]),
                     :confirm => t('page.are_you_sure'), :method => :delete %>
               <% end %>
             <% end %>
@@ -65,9 +65,14 @@
     <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"),
       url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  %>
   </h3>
-  <% if @count[:query_result] > 0 %>
-    <%= render 'patron_type_facet' %>
+  <% unless params[:mode] == "add" %>
+    <%= render 'relationship_type_facet' if @patron.patrons.present? %>
     <br />
+  <% else %>
+    <% if @count[:query_result] > 0 %>
+      <%= render 'patron_type_facet' %>
+      <br />
+    <% end %>
   <% end %>
   <ul>
     <% if can? :create, Patron %>
@@ -76,9 +81,6 @@
       <li><%= link_to t('activerecord.models.patron_merge'), patron_merge_lists_path %></li>
     <% end %>
   </ul>
-  <% unless params[:mode] == "add" %>
-    <%= render 'patrons/relationship_type_facet' if @patron.patrons.present? %>
-  <% end %>
   <%- if can? :create, Patron -%>
     <div id="iconmenu" class="ui-corner-all">
       <strong><%= t('tooltip.icons_info') -%></strong>
