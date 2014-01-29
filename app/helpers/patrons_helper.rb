@@ -38,4 +38,17 @@ module PatronsHelper
     string << "</strong>" if current
     string.html_safe
   end
+
+  def patron_type_facet(patron_type, current_patron_type, facet)
+    string = ''
+    current = true if current_patron_type.to_s == patron_type.name.to_s
+    string << "<strong>" if current
+    string << link_to("#{patron_type.display_name.localize} (" + facet.count.to_s + ")", 
+      url_for(params.merge(
+        :page        => nil, 
+        :patron_type => patron_type.name, 
+        :view        => nil)))
+    string << "</strong>" if current
+    string.html_safe
+  end
 end

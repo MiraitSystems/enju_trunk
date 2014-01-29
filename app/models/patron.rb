@@ -94,6 +94,9 @@ class Patron < ActiveRecord::Base
     string :username do
       user.username if user
     end
+    string :patron_type do
+      patron_type.name
+    end
     time :created_at
     time :updated_at
     time :date_of_birth

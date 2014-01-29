@@ -1,0 +1,16 @@
+<%= form_for(@abbreviation) do |f| %>
+  <%= f.error_messages %>
+
+  <div class="field">
+    <%= f.label :keyword %><br />
+    <%= f.text_field :keyword %>
+  </div>
+  <div class="field">
+    <%= f.label :v %><br />
+    <%= f.text_field :v %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+

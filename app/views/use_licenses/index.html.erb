@@ -1,0 +1,67 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.use_license')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th>id</th>
+    <th><%= t('activerecord.attributes.use_license.target') -%></th>
+    <th><%= t('activerecord.attributes.use_license.author') -%></th>
+    <th><%= t('activerecord.attributes.use_license.author_fee') -%></th>
+    <th><%= t('activerecord.attributes.use_license.agency_name') -%></th>
+    <th></th>
+  </tr>
+
+<%- @use_licenses.each do |use_license| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to use_license.id, use_license -%></td>
+    <% str_target = "----" %>
+    <% if targets %>
+      <% targets.collect{|r| %>
+        <% if r.v == use_license.target.to_s then %>
+          <% str_target = r.keyname.localize %>
+          <% break %>
+        <% end %>
+      <% } %>
+    <% end %>
+    <td><%= str_target -%></td>
+    <% str_author = "----" %>
+    <% if authors %>
+      <% authors.collect{|r| %>
+        <% if r.v == use_license.author.to_s then %>
+          <% str_author = r.keyname.localize %>
+          <% break %>
+        <% end %>
+      <% } %>
+    <% end %>
+    <td><%= str_author -%></td>
+    <%- if use_license.author_fee? -%>
+      <td><%= t('flag.yes') -%></td>
+    <%- else -%>
+      <td><%= t('flag.no') -%></td>
+    <%- end -%>
+    <td><%= use_license.agency_name -%></td>
+    <td>
+      <%= link_to t('page.show'), use_license -%>
+      <%- if can? :update, use_license -%>
+        <%= link_to t('page.edit'), edit_use_license_path(use_license) -%>
+      <% end %>
+      <%- if can? :destroy, use_license -%>
+        <%= link_to t('page.destroy'), use_license, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+<%- if can? :create, UseLicense -%>
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.use_license')), new_use_license_path -%></li>
+  </ul>
+<%- end -%>
+</div>
+

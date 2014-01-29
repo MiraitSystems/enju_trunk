@@ -123,12 +123,14 @@ class PatronsController < ApplicationController
       with(:user_id).equal_to(nil)
       without(:exclude_state).equal_to(1)
       order_by(:id)
+      facet :patron_type
     end
 
     page = params[:page] || 1
     search.query.paginate(page.to_i, Patron.default_per_page)
     @search = search
     @patrons = search.execute!.results
+    @count[:query_result] = @patrons.total_entries
 
     respond_to do |format|
       format.html # index.html.erb

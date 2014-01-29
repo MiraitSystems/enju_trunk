@@ -1,9 +1,13 @@
 EnjuLeaf::Application.routes.draw do
+  resources :approvals
+  resources :keycodes
+  resources :use_licenses
   resources :exchange_rates
   resources :currencies
-  resources :keycodes
 
   get "barcode_registrations/index"
+
+  resources :abbreviations
 
   resources :series_statement_relationship_types
   match 'themes/update_all', :to => 'themes#update_all'

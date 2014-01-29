@@ -1,6 +1,8 @@
 en:
   activerecord:
     models:
+      use_license: Use license
+      abbreviation: Abbreviation
       library: Library
       question: Question
       patron_import_file: Patron import file
@@ -195,8 +197,31 @@ en:
       series_statement_relationship_type: Series statement relationship type
       currency: Currency
       keycode: Keycode
+      approval: Approval
 
     attributes:
+      use_license:
+        target: Target
+        author: Author
+        author_fee: Author fee
+        agency_name: Agency name
+        agency_address: Agency address
+        responsible_name: Responsible name
+        responsible_tel: Responsible tel
+        responsible_mail: Responsible mail
+        bank_name: Bank name
+        bank_code: Bank code
+        branch_name: Branch name
+        branch_number: Branch number
+        account_name: Account name
+        account_number: Account number
+        account_kind: Account kind
+        account_kinds:
+          "normal": Normal
+          "current": Current
+      abbreviation:
+        keyword: Keyword
+        v: V
       enju_terminal:
         ipaddr: IP Address
         name: Hostname
@@ -1524,6 +1549,50 @@ en:
         started_at: Started date
         ended_at: Ended date
         ended_at_invalid: End date must be later than Start date.
+      approval:
+        manifestation_id: Title
+        created_by: Created by
+        collect_user: Collect user
+        all_process_start_at: All process start at
+        status: Status
+        publication_status: Publication status
+        sample_request_at: Sample request at
+        sample_arrival_at: Sample arrival at
+        sample_carrier_type: Sample carrier type
+        sample_name: Sample name,number
+        collection_sources: Information collection sources
+        sample_note: Sample arrival status－note
+        group_user_id: Group user
+        group_approval_at: Group approval at
+        group_approval_result: Group Approval Result
+        group_result_reason: Group Result Reason
+        group_note: Group approval－note
+        adoption_report_flg: Have adoption report
+        approval_result: Approval result(last)
+        reason: Reason
+        approval_end_at: Approval end at
+        donate_request_at: Aonate request at
+        donate_request_replay_at: Donate request replay at
+        refuse_at: Refuse at
+        donate_request_result: Donate request result
+        all_process_end_at: All process end at
+        reception_patron_id: Reception patron
+        approval_extexts: Approval extexts
+        approval_status:
+          pending: Penging
+          start_approval: Start approval
+          sample_requested: Sample requested
+          sample_arrival: Sample arrival
+          group_approved: Group approved
+          end_approved: End approved
+          donate_requested: Donate requested
+          replied_donate_request: Replied donate request
+          all_process_end: All process end
+      approval_extext:
+        value: Value
+        created_by: Created by
+        state: state
+        comment_at: Comment at
 
   page:
     user_title: Welcome %{login_name}
@@ -2898,6 +2967,19 @@ en:
     not_necessary: " is not necessary"
     failed_destroy: "failed destroy series statement relationship"
     not_exist_series_statement: " is not exist"
+  abbreviation:
+    description: "
+      <h5>Attention:</h5>
+      <br />
+       caution 1 <br /><br />
+       caution 2 <br /><br />
+       caution 3 <br /><br />
+       caution 4 <br /><br />
+       caution 5 
+      "
+  flag:
+    "yes": Yes
+    "no": No
   currency:
     invalid_name: "is invalid"
     can_not_delete: "Could not delete currency"
