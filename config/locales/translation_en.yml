@@ -1745,11 +1745,7 @@ en:
     calendar: Calendar
     related: Related
     see: See
-    see_also: See also
-    member: Member
-    organization: Organization
-    child: Child
-    parent: Parent
+    derivation: Derivation
     history: History
     current_version: Current version
     select: Select

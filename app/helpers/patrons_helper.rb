@@ -19,38 +19,22 @@ module PatronsHelper
   end
 
   def patron_relationship_type_show(patron, id)
-    patron_relationship_child  = patron.children.find_by_child_id(id)
-    patron_relationship_parent = patron.parents.find_by_parent_id(id)
-    if patron_relationship_child
-      case patron_relationship_child.patron_relationship_type_id
-        when 1 # See also
-          t('page.see_also')
-        when 2 # Member
-          t('page.member')
-        when 3 # Child
-          t('page.child')
-      end
-    elsif patron_relationship_parent
-      case patron_relationship_parent.patron_relationship_type_id
-        when 1 # See also
-          t('page.see_also')
-        when 2 # Member
-          t('page.organization')
-        when 3 # Child
-          t('page.parent')
-      end
-    end
+    pr = patron.parents.find_by_parent_id(id)
+    return get_detail_name(pr.patron_relationship_type, 'p', 'c') if pr
+    pr = patron.children.find_by_child_id(id)
+    return get_detail_name(pr.patron_relationship_type, 'c', 'p') if pr
+    return nil
   end
 
   def corporate_types
     return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", corporate_types_key, Time.zone.now) rescue nil
   end
 
-  def patron_relationship_type_facet(patron_relationship_type, current_patron_relationship_type, count = 0)
+  def patron_relationship_type_facet(select_id, select_relation = nil, current_type, current_relation, display_name, count)
     string = ''
-    current = true if current_patron_relationship_type.include?(patron_relationship_type.id.to_s)
+    current = true if select_id == current_type && (select_relation.nil? || select_relation == current_relation)
     string << "<strong>" if current
-    string << link_to("#{patron_relationship_type.display_name.localize} (" + count.to_s + ")", url_for(params.merge(:page => nil, :patron_relationship_type => (current_patron_relationship_type << patron_relationship_type.id.to_s).uniq.join(' '), :view => nil)))
+    string << link_to("#{display_name} (" + count.to_s + ")", url_for(params.merge(:page => nil, :patron_relationship_type => select_id, :parent_child_relationship => select_relation, :view => nil)))
     string << "</strong>" if current
     string.html_safe
   end

@@ -1,6 +1,8 @@
 <%= form_for(@patron_relationship) do |f| %>
   <%= f.error_messages -%>
-
+  <%= hidden_field_tag 'patron_id', params[:patron_id] %>
+  <%= hidden_field_tag 'patron_relationship_type', params[:patron_relationship_type] if params[:patron_relationship_type] %>
+  <%= hidden_field_tag 'page', params[:page] if params[:page] %>
   <div class="field">
     <% if @patron_relationship.try(:parent) %>
       <%= f.label :parent %><br />
@@ -23,7 +25,9 @@
   </div>
   <div class="field">
     <%= f.label :patron_relationship_type_id %><br />
-    <%= f.select(:patron_relationship_type_id, @patron_relationship_types.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%- primary = params[:patron_id] == @patron_relationship.parent_id.to_s ? 'c' : 'p' %>
+    <%- secondary = primary == 'p' ? 'c' : 'p'-%>
+    <%= f.select(:patron_relationship_type_id, @patron_relationship_types.collect{|r| [get_detail_name(r, primary, secondary), r.id]}) -%>
   </div>
   <div class="actions">
     <%= f.submit %>

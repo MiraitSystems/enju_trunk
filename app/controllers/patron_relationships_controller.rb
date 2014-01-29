@@ -31,7 +31,9 @@ class PatronRelationshipsController < InheritedResources::Base
       redirect_to patron_relationships_url
       return
     end
-    update!
+    update! do |format|
+      format.html {redirect_to patron_patrons_path(params[:patron_id], :mode => 'show', :patron_relationship_type => params[:patron_relationship_type], :page =>params[:page] )}
+    end
   end
 
   def destroy
