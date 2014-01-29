@@ -953,6 +953,7 @@ ja:
         hold_cln: 請求記号
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
+        manifestation_identifier: 資料番号
       user_group:
         name: 名前
         display_name: 表示名
