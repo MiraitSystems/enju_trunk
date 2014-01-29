@@ -238,27 +238,35 @@ $(document).keydown(function(e) {
     <%- end -%>
   </div>
 
-  <div style='float: left; padding-right:20px;'>
-    <div class="field">
-      <%= f.label :original_title -%><br />
-      <%= f.text_field :original_title, :class => 'resource_title' -%>
-    </div>
-    <div class="field">
-      <%= f.label :title_transcription -%><br />
-      <%= f.text_field :title_transcription, :class => 'resource_title' -%>
-    </div>
-    <div class="field">
-      <%= f.label :title_alternative -%><br />
-      <%= f.text_field :title_alternative, :class => 'resource_title' -%>
-    </div>
-    <div class="field" id="article_title_field">
-      <%= f.label :article_title %><br />
-      <%= f.text_field :article_title, :class => 'resource_title' %>
-    </div>
-  </div>
-  <div id="search_manifestation">
-  </div>
-  <br style='clear: both;'>
+  <table style='border:none; margin: -4px;'>
+    <tr>
+      <td style='border:none;'>
+        <div class="field">
+          <%= f.label :original_title -%><br />
+          <%= f.text_field :original_title, :class => 'resource_title' -%>
+        </div>
+      </td>
+      <td style='border:none;'>
+        <div id="search_manifestation"></div>
+      </td>
+    </tr>
+    <tr>
+      <td style='border:none;'>
+        <div class="field">
+          <%= f.label :title_transcription -%><br />
+          <%= f.text_field :title_transcription, :class => 'resource_title' -%>
+        </div>
+        <div class="field">
+          <%= f.label :title_alternative -%><br />
+         <%= f.text_field :title_alternative, :class => 'resource_title' -%>
+        </div>
+        <div class="field" id="article_title_field">
+          <%= f.label :article_title %><br />
+          <%= f.text_field :article_title, :class => 'resource_title' %>
+        </div>
+      </td>
+    </tr>
+  </table>
 
   <%= render 'form_patron_field' %>
 
