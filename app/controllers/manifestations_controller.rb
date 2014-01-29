@@ -1065,11 +1065,14 @@ class ManifestationsController < ApplicationController
 
   def search_manifestation
     return nil unless request.xhr? or params[:original_title].blank?
-    manifestations = Manifestation.where(original_title: params[:original_title])
+    manifestations = Manifestation.where(original_title: params[:original_title]).order(:id)
+    manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
     return nil unless manifestations.present?
     manifestation_urls = []
     manifestations.each do |m|
-      manifestation_urls << ApplicationController.helpers.link_to(m.original_title, manifestation_path(m))
+      str =  "ID:#{m.id}"
+      str += "(#{m.manifestation_identifier})" if m.manifestation_identifier.present?
+      manifestation_urls << ApplicationController.helpers.link_to(str, manifestation_path(m))
     end
     render :json => { success: 1, manifestation_urls: manifestation_urls }
   end
