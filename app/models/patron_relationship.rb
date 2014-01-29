@@ -5,7 +5,9 @@ class PatronRelationship < ActiveRecord::Base
   validate :check_parent
   validates_presence_of :parent_id, :child_id
   acts_as_list :scope => :parent_id
-  scope :seealso, where(:patron_relationship_type_id => 1)
+  scope :seealso_type, where(:patron_relationship_type_id => 1)
+  scope :member_type, where(:patron_relationship_type_id => 2)
+  scope :child_type, where(:patron_relationship_type_id => 3)
   after_save :reindex
   after_destroy :reindex
 
@@ -20,6 +22,15 @@ class PatronRelationship < ActiveRecord::Base
   def reindex
     self.parent.index
     self.child.index
+  end
+
+  def self.count_relationship(patron_id, relation_type_id)
+    return 0 if patron_id.blank?
+    if relation_type_id.blank?
+      self.where("parent_id = ? OR child_id = ?", patron_id, patron_id).count
+    else
+      self.where("(parent_id = ? OR child_id = ?) AND patron_relationship_type_id = ?", patron_id, patron_id, relation_type_id).count
+    end
   end
 end
 

@@ -149,6 +149,9 @@ defaults: &defaults
   # 検索結果一覧の出力(TSV)
   manifestation_list_print_tsv:
     filename: "manifestation_list.tsv"
+  # 検索結果一覧の出力(CSV)
+  manifestation_list_print_csv:
+    filename: "manifestation_list.csv"
   # 検索結果一覧の出力(Excelx)
   manifestation_list_print_excelx:
     filename: "manifestation_list.xlsx"
@@ -156,9 +159,21 @@ defaults: &defaults
   # 欠号リストの一覧の出力(PDF)
   missing_list_print_pdf:
     filename: "missing_list.pdf"
+  # 図書ラベルの出力(TSV)
+  manifestation_label_list_print_tsv:
+    filename: "label_list.tsv"
+  # 図書ラベルの出力(CSV)
+  manifestation_label_list_print_csv:
+    filename: "label_list.csv"
   # 資料確認票のファイル名
   manifestation_locate_print:
     filename: "manifestation.pdf"
+  # 図書ラベルの出力(TSV)
+  manifestation_label_list_tsv:
+    filename: "label_list.tsv"
+  # 図書ラベルの出力(CSV)
+  manifestation_label_list_csv:
+    filename: "label_list.csv"
 
   # 貸出票の出力
   checkouts_print:
@@ -263,6 +278,9 @@ defaults: &defaults
   # テキストファイルからの資料インポートの結果の一覧の出力(TSV)
   resource_import_textresults_print_tsv:
     filename: "resource_import_textresults.tsv"
+  # テキストファイルからの資料インポートの結果の一覧の出力(CSV)
+  resource_import_textresults_print_csv:
+    filename: "resource_import_textresults.csv"
   # 催し物インポートの結果の一覧の出力(TSV)
   event_import_results_print_tsv:
     filename: "event_import_results.tsv"
@@ -405,10 +423,6 @@ defaults: &defaults
   checkout:
     auto_checkin: true
  
-  # インポート時取込可能なファイル形式を設定する
-  # カンマ,区切りで利用可能アダプタを指定する
-  resource_adapters: Excelfile_Adapter, Tsvfile_Adapter
-
   # 利用者番号とユーザ名を同じ値にする
   auto_user_number: true
 

@@ -23,10 +23,18 @@
 </div>
 
 <div id="submenu" class="ui-corner-all">
+  <h3>
+    <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"), 
+      url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  %>
+  </h3>
+  <% if @count[:query_result] > 0 %>
+    <%= render 'patron_type_facet' %>
+    <br />
+  <% end %>
   <ul>
     <%- if can? :create, Patron -%>
       <li><%= link_to t('patron.add'), new_patron_path -%></li>
-      <li><%= link_to t('page.merge', :model => t('activerecord.models.patron')), patron_merge_lists_path -%></li>
+      <li><%= link_to t('activerecord.models.patron_merge'), patron_merge_lists_path -%></li>
     <%- end -%>
   </ul>
   <%- if can? :create, Patron -%>

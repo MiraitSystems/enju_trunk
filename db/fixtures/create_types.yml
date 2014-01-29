@@ -7,6 +7,7 @@ author:
   note: 
   position: 1
   id: 1
+  display: false
 
 editor:
   name: editor
@@ -15,6 +16,7 @@ editor:
   note: 
   position: 2
   id: 2
+  display: true
 
 translator:
   name: translator
@@ -23,6 +25,7 @@ translator:
   note: 
   position: 3
   id: 3
+  display: true
 
 illustrator:
   name: illustrator
@@ -31,6 +34,7 @@ illustrator:
   note: 
   position: 4
   id: 4
+  display: true
 
 # == Schema Information
 #

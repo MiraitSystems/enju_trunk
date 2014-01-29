@@ -1,6 +1,8 @@
 en:
   activerecord:
     models:
+      use_license: Use license
+      abbreviation: Abbreviation
       library: Library
       question: Question
       patron_import_file: Patron import file
@@ -193,10 +195,33 @@ en:
       exchange_manifestation: Exchenge manifestation exemplified
       relationship_family: Relationship family
       series_statement_relationship_type: Series statement relationship type
-      barcode_registration: Registration bar code
       currency: Currency
+      keycode: Keycode
+      approval: Approval
 
     attributes:
+      use_license:
+        target: Target
+        author: Author
+        author_fee: Author fee
+        agency_name: Agency name
+        agency_address: Agency address
+        responsible_name: Responsible name
+        responsible_tel: Responsible tel
+        responsible_mail: Responsible mail
+        bank_name: Bank name
+        bank_code: Bank code
+        branch_name: Branch name
+        branch_number: Branch number
+        account_name: Account name
+        account_number: Account number
+        account_kind: Account kind
+        account_kinds:
+          "normal": Normal
+          "current": Current
+      abbreviation:
+        keyword: Keyword
+        v: V
       enju_terminal:
         ipaddr: IP Address
         name: Hostname
@@ -274,7 +299,7 @@ en:
         full_name_alternative: Full name alternative
         full_name_note: The case of not inputting, It is set up as a last name+ " " +first name
         patron_alias: Alternative lavel (See From)
-        patron_aliases_attributes: Full name  Full name transcription  Full name alternative
+        patron_aliases_attributes: Full name,  Full name transcription,  Full name alternative
         deleted_at: Deleted at
         zip_code_1: Zip code 1
         zip_code_2: Zip code 2
@@ -311,7 +336,8 @@ en:
         country: Country
         patron_type: Patron type
         language: Language
-        email: Email
+        email: Email 1
+        email_2: Email 2
         url: URL
         old: old
         address: Address
@@ -322,6 +348,9 @@ en:
         note_update_by: Note update user
         note_update_library: Note update library
         patron_identifier: Patron Identifier
+        keyperson_1: Keyperson 1
+        keyperson_2: Keyperson 2
+        corporate_type: CorporateType
       feeds/app:
         source_url: Source URL
         title: Title
@@ -886,7 +915,8 @@ en:
         note: Note
         deleted_at: Deleted at
         subscribes_count: Count
-      patron_merge: 
+      patron_merge:
+        patrons_count: Count
       subject_related_term: 
       library_group:
         name: Name
@@ -1434,14 +1464,17 @@ en:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       realize_type:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       produce_type:
         name: Name
         display_name: Display name
         note: Note
+        display: Display to manifestation
       series_has_manifestation:
         series_statement_id: Series statement id 
         manifestation_id: Manifestation id
@@ -1508,6 +1541,58 @@ en:
         currency: Currency
         rate: Rate
         started_at: Started at
+      keycode:
+        name: Name
+        display_name: Display name
+        v: V
+        keyname: Key name
+        started_at: Started date
+        ended_at: Ended date
+        ended_at_invalid: End date must be later than Start date.
+      approval:
+        manifestation_id: Title
+        created_by: Created by
+        collect_user: Collect user
+        all_process_start_at: All process start at
+        status: Status
+        publication_status: Publication status
+        sample_request_at: Sample request at
+        sample_arrival_at: Sample arrival at
+        sample_carrier_type: Sample carrier type
+        sample_name: Sample name,number
+        collection_sources: Information collection sources
+        sample_note: Sample arrival status－note
+        group_user_id: Group user
+        group_approval_at: Group approval at
+        group_approval_result: Group Approval Result
+        group_result_reason: Group Result Reason
+        group_note: Group approval－note
+        adoption_report_flg: Have adoption report
+        approval_result: Approval result(last)
+        reason: Reason
+        approval_end_at: Approval end at
+        donate_request_at: Aonate request at
+        donate_request_replay_at: Donate request replay at
+        refuse_at: Refuse at
+        donate_request_result: Donate request result
+        all_process_end_at: All process end at
+        reception_patron_id: Reception patron
+        approval_extexts: Approval extexts
+        approval_status:
+          pending: Penging
+          start_approval: Start approval
+          sample_requested: Sample requested
+          sample_arrival: Sample arrival
+          group_approved: Group approved
+          end_approved: End approved
+          donate_requested: Donate requested
+          replied_donate_request: Replied donate request
+          all_process_end: All process end
+      approval_extext:
+        value: Value
+        created_by: Created by
+        state: state
+        comment_at: Comment at
 
   page:
     user_title: Welcome %{login_name}
@@ -1672,6 +1757,25 @@ en:
     output_excelx_dialog: Select column(s) for output
     output_excelx_detail: Output checked columns
     output_excelx_default_checked: (default)
+    output_filetype: Output file type
+    output_filetype_format:
+      excelx: Excel(2007 and up)
+      pdf: PDF
+      tsv: TSV
+      csv: CSV
+    output_layout: Output layout
+    output_request: Request
+    output_label: Label
+    batch_change: "Batch Change"
+    batch_change_dialog: "Select action"
+    batch_change_description: "Update the information contained in the basket. <br />Please select the action you want to."
+    batch_change_theme: "Add Theme"
+    batch_change_theme_added: "Added theme of manifestations in the basket to %{title}."
+    batch_change_theme_failed: "Failed theme of manifestations in the basket."
+    batch_change_series_statement: "Change Series statement"
+    batch_change_series_statement_updated: "Updated series statement of manifestations in the basket to %{title}."
+    batch_change_series_statement_failed: "Failed series statement of manifestations in the basket."
+    other_function: Other Functions
     patron_management: Patron management
     user_management: User management
     back_to: Back to %{model} index
@@ -1711,6 +1815,10 @@ en:
     related: Related
     see: See
     see_also: See also
+    member: Member
+    organization: Organization
+    child: Child
+    parent: Parent
     history: History
     current_version: Current version
     select: Select
@@ -1791,13 +1899,9 @@ en:
       no_matches_found: No matches found
       hot_topic: Hot topic
       related_manifestation: Related manifestation
+    add_line: "+"
+    del_line: "-"
     user_notice: User notice
-    barcode_registration:
-      first_number: First number
-      last_number: Last number
-      submit: submit
-      error: Invalid value has been entered
-      number: Number
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2053,6 +2157,17 @@ en:
     last_update_by: Last update by
     duplicate_user: Duplicate user was already registered. (same full name(transcription), same telephone number 1-1 and same birth date)
     patron_identifier: Patron identifier
+    place: Place
+    contact:
+      full_name: Full name
+      full_name_transcription: Full name transcription
+      patron_identifier: Contact
+    search_placeholder: Please enter a search name
+    search_searching: Searching...
+    search_nomatch: No matches
+    adding: adding
+    adding_free: (Free input)
+    adding_limitative: (Limitative input)
   question:
     my: My questions
     all: All questions
@@ -2346,9 +2461,10 @@ en:
   merge_list:
     successfully_merged: '%{model} were merged successfully.'
     specify_id: Specify %{model} ID.
+    not_found: There is no registration to this list now.
   resource_import_textfile:
     wrong_file: can not be imported.
-    wrong_extention: Only files with xlsx extension can be imported.
+    wrong_extention: "files with xlsx extension or %{split_type} can be imported."
     importing_please_wait: Now importing Excel file. Please wait...
     template_download: Download template
     import_request: Import now
@@ -2379,6 +2495,7 @@ en:
         marc_number: MARC number
         ndc: NDC
         carrier_type: Carrier type
+        jpn_or_foreign: Japan or foreign
         frequency: Frequency
         pub_date: Date of publication
         country_of_publication: Country of publication
@@ -2440,31 +2557,40 @@ en:
         access_address: URL
         subject: Subject
     message:
-      read_sheet: Started to read %{sheet} sheet.
+      read_start: Started to read.
+      read_end: End to read.
+      sheet_info: 'sheet: %{sheet}'
       deleted: 'Deleted Item identifier: %{item_identifier}'
       deleted_manifestation: Title：%{original_title}
       deleted_series_statement: Series title：%{series_original_title}
       out_of_manage: '<br />Header has unmanaged colum name: %{columns}'
       without_item: Item won't be created withou item identifier column.
+      manifestation_imported: Manifestation imported
+      item_imported: Item imported
+      manifestation_found: Manifestation found
+      item_found: Item found
+      failed: Failed
     error:
+      failed_to_read_sheet: "Failed to read %{sheet} sheet.\r\n"
       manifestation_type_is_nil: Manifestation type is not selected.
-      blank_sheet: Failed to read %{sheet} sheet. No date in the sheet.
-      overlap: Failed to read %{sheet} sheet. Header has duplicate column name.
+      blank_sheet: No date in the sheet.
+      overlap: Header has duplicate column name.
+      head_require_manifestation_type: Manifestation type id required in first line.
       wrong_data: 'Invalid data %{field}: %{data}'
       delete_requre_item_identifier: Cannnot delete item without item identifier.
       failed_delete_not_find: Failed to delete item. Item is not found.
-      duplicate_item_identifier: 'Failed to read %{sheet} sheet. Duplicate item identifier: %{item_identifier}'
+      duplicate_item_identifier: 'Duplicate item identifier: %{item_identifier}'
       no_item_identifier: No item identifier
       cell_require_manifestation_type: Select manifestation type
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
+      wrong_format: Wrong format type.
       series:
-        head_is_blank: "Failed to read %{sheet} sheet. \r\n One of series name, ISSN, title or ISBN is required."
+        head_is_blank: "One of series name, ISSN, title or ISBN is required."
         cell_is_blank: One of series name, ISSN, title or ISBN is required.
         wrong_issn: ISSN is invalid.
         exist_same_series: Series statement may already registered. Select series statement in manifestation editting screen.
       book:
-        head_is_blank: "Failed to read %{sheet} sheet.\r\n Title or ISBN is required in first line. "
-        head_require_manifestation_type: "Failed to read %{sheet} sheet. \r\n Manifestation type id required in first line."
+        head_is_blank: "Title or ISBN is required in first line."
         cell_is_blank: Select title or ISBN.
         only_integer: 'Only integer is available for %{field} %{field}: %{data}'
         only_numeric: 'Only number is available for %{field} %{field}: %{data}'
@@ -2479,8 +2605,9 @@ en:
         has_not_shelf: There is not specific shelf.
         exist_multiple_same_manifestations: There are multiple identifier manifestations. New data is created.
         record_not_found: Failed to get datas from NDL-OPAC.
+        wrong_jpn_or_foreign: 'Jpn or foreign is invalid. Jpn or foreign: %{data}'
       article:
-        head_is_blank: "Failed to read %{sheet} sheet. \r\n title is requiered in first line. "
+        head_is_blank: "title is requiered in first line."
         cell_is_blank: Title is required.
   item_list:
     list_condition: List Condition
@@ -2652,9 +2779,9 @@ en:
     create_family: create family
     please_search_users: Search user
     no_select_users: No user selected 
-    will_change_family: ※To edit family, delete the family and create new family.
-    will_change_patron_type: ※Autimatically removed from family when patron type of family member change to Company.
-    user_will_change_family: ※Please offer librarian to change family information
+    will_change_family: 窶ｻTo edit family, delete the family and create new family.
+    will_change_patron_type: 窶ｻAutimatically removed from family when patron type of family member change to Company.
+    user_will_change_family: 窶ｻPlease offer librarian to change family information
   bookstore:
     not_found: No bookstore is found.
   resource_import_textresult:
@@ -2765,12 +2892,12 @@ en:
 
       %{url}'
     output_job_error_subject: ! 'Failed to create list. [ID: %{job_name}]'
-    output_job_error_body: ! 'job ID: %{job_name}」is failed beacuse of following reason.
+    output_job_error_body: ! 'job ID: %{job_name}縲絞s failed beacuse of following reason.
 
       %{message}'
   opac:
     finish: Finish
-    push_touchpanel: ▼ Select menu
+    push_touchpanel: 笆ｼ Select menu
     catalog_search: Search manifestations
     news: Library new
     login:
@@ -2844,8 +2971,35 @@ en:
     not_necessary: " is not necessary"
     failed_destroy: "failed destroy series statement relationship"
     not_exist_series_statement: " is not exist"
+  abbreviation:
+    description: "
+      <h5>Attention:</h5>
+      <br />
+       caution 1 <br /><br />
+       caution 2 <br /><br />
+       caution 3 <br /><br />
+       caution 4 <br /><br />
+       caution 5 
+      "
+  flag:
+    "yes": Yes
+    "no": No
   currency:
     invalid_name: "is invalid"
     can_not_delete: "Could not delete currency"
   exchange_rate:
     invalid_started_at: "is invalid"
+  barcode_registration:
+    more_than_last_number: " more than last number."
+  patron_merge_list:
+    description: "Select one from the following list, please press the merge button.<br />
+                   * After merging, only the information of the patron selected remains.<br />
+                   &nbsp&nbsp Information of other patron will be deleted."
+
+  activemodel:
+    models:
+      barcode_registration: Registration barcode
+    attributes:
+      barcode_registration:
+        first_number: First number
+        last_number: Last number

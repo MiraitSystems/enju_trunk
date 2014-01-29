@@ -33,40 +33,52 @@
   <%= @resource_import_textfile.file_hash -%>
 </p>
 
-<% if @resource_import_textfile.adapter_name == 'Excelfile_Adapter' %>
-  <br />
-  <% sheets = eval(@resource_import_textfile.extraparams)["sheet"] %>
+<br />
+<table style="border: 0px;">
+  <% line_style = "border:0px; border-bottom: 1px solid #aaa;" %>
+  <tr>
+    <% if @resource_import_textfile.adapter_name == 'Excelfile_Adapter' %>
+      <th style="<%= line_style%>"><%= t('activerecord.attributes.resource_import_textfile.sheet') %></th>
+    <% end %>
+    <% if SystemConfiguration.get('manifestations.split_by_type') %>
+      <th style="<%= line_style%>"><%= t('activerecord.models.manifestation_type') %></th>
+    <% end %>
+    <th style="<%= line_style%>"><%= t('activerecord.models.numbering') %></th>
+    <th style="<%= line_style%>"><%= t('resource_import_textfile.auto_numbering') %></th>
+  </tr>
+
   <% if SystemConfiguration.get('manifestations.split_by_type') %>
     <% manifestation_types = eval(@resource_import_textfile.extraparams)["manifestation_type"] %>
   <% end %>
   <% numberings = eval(@resource_import_textfile.extraparams)["numbering"] %>
   <% auto_numberings = eval(@resource_import_textfile.extraparams)["auto_numbering"] %>
-  <% if sheets.present? %>
-    <table style="border: 0px;">
+  <% if @resource_import_textfile.adapter_name == 'Excelfile_Adapter' %> 
+    <% sheets = eval(@resource_import_textfile.extraparams)["sheet"] %>
+    <% sheets.each_with_index do |sheet, i| %>
       <tr>
-        <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.attributes.resource_import_textfile.sheet') %></th>
+        <td style="<%= line_style%>"><%= sheet %></td>
         <% if SystemConfiguration.get('manifestations.split_by_type') %>
-          <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.manifestation_type') %></th>
+          <td style="<%= line_style%>"><%= get_manifestation_type_name(manifestation_types[i]) rescue nil %></td>
+          <td style="<%= line_style%>"><%= get_numbering_display_name(numberings[i], manifestation_types[i]) rescue nil %></td>
+        <% else %>
+          <td style="<%= line_style%>"><%= get_numbering_display_name(numberings[i]) rescue nil %></td>
         <% end %>
-        <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('activerecord.models.numbering') %></th>
-        <th style="border:0px; border-bottom: 1px solid #aaa;"><%= t('resource_import_textfile.auto_numbering') %></th>
+        <td style="<%= line_style%>"><%= t("page.boolean.#{auto_numberings[i]}") if auto_numberings %></td>
       </tr>
-      <% sheets.each_with_index do |sheet, i| %>
-        <tr>
-          <td style="border:0px; border-bottom: 1px solid #aaa;"><%= sheet %></td>
-          <% if SystemConfiguration.get('manifestations.split_by_type') %>
-            <td style="border:0px; border-bottom: 1px solid #aaa;"><%= get_manifestation_type_name(manifestation_types[i]) rescue nil %></td>
-            <td style="border:0px; border-bottom: 1px solid #aaa;"><%= get_numbering_display_name(numberings[i], manifestation_types[i]) rescue nil %></td>
-          <% else %>
-            <td style="border:0px; border-bottom: 1px solid #aaa;"><%= get_numbering_display_name(numberings[i]) rescue nil %></td>
-          <% end %>
-          <td style="border:0px; border-bottom: 1px solid #aaa;"><%= t("page.boolean.#{auto_numberings[i]}") if auto_numberings %></td>
-        </tr>
+    <% end %>
+  <% else %>
+    <tr>
+      <% if SystemConfiguration.get('manifestations.split_by_type') %>
+        <td style="<%= line_style%>"><%= get_manifestation_type_name(manifestation_types.first) rescue nil %></td>
+        <td style="<%= line_style%>"><%= get_numbering_display_name(numberings.first, manifestation_types.first) rescue nil %></td>
+      <% else %>
+        <td style="<%= line_style%>"><%= get_numbering_display_name(numberings.first) rescue nil %></td>
       <% end %>
-    </table>
+      <td style="<%= line_style%>"><%= t("page.boolean.#{auto_numberings.first}") %></td>
+    </tr>
   <% end %>
-  <br />
-<% end %>
+</table>
+<br />
 
 <p>
   <strong><%= t('page.created_at') -%>:</strong>

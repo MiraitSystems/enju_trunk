@@ -1180,7 +1180,7 @@ class Item < ActiveRecord::Base
     if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
     elsif type == 'author' 
-      @manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name")
+      @manifestations = Manifestation.find(:all, :include => [:creators], :order => "patrons.full_name asc")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")
     end
@@ -1225,7 +1225,6 @@ class Item < ActiveRecord::Base
     Delayed::Job.enqueue GenerateItemListJob.new(job_name, file_name, file_type, method, dumped_query, args, user)
     job_name
   end
-
 
   class GenerateItemListJob
     include Rails.application.routes.url_helpers
@@ -1331,10 +1330,7 @@ class Item < ActiveRecord::Base
         user,
         I18n.t('item_register.export_job_error_subject', :job_name => job_name),
         I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message),
-        method,
-        args,
-        file_type
-        )
+      )
     end
   end
 end

@@ -31,7 +31,7 @@ class MyAccountsController < ApplicationController
     get_carrier_types
     
     respond_to do |format|
-      if defined?(EnjuCustomize)
+      if defined?(EnjuCustomize) && EnjuCustomize.method_defined?(:render_dir) && EnjuCustomize.method_defined?(:render_layout)
         format.html { render :file => "page/#{EnjuCustomize.render_dir}/index", :layout => EnjuCustomize.render_layout}
       else
         format.html

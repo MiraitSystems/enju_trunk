@@ -4,7 +4,7 @@ class PatronsController < ApplicationController
   add_breadcrumb "I18n.t('activerecord.models.patron')", 'patron_path(params[:id])', :only => [:show]
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.patron'))", 'new_patron_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.patron'))", 'edit_patron_path(params[:id])', :only => [:edit, :update]
-  load_and_authorize_resource :except => :index
+  load_and_authorize_resource :except => [:index, :search_name]
   authorize_resource :only => :index
   before_filter :get_user
   helper_method :get_work, :get_expression
@@ -87,11 +87,37 @@ class PatronsController < ApplicationController
         with(:work_ids).equal_to work.id if work
         with(:expression_ids).equal_to expression.id if expression
         with(:manifestation_ids).equal_to manifestation.id if manifestation
-        any_of do
-          with(:original_patron_ids).equal_to patron.id if patron
-          with(:derived_patron_ids).equal_to patron.id if patron
-        end
         with(:patron_merge_list_ids).equal_to patron_merge_list.id if patron_merge_list
+        if patron
+          case params[:patron_relationship_type]
+          when '1'
+            any_of do
+              with(:relationship_type_child_s).equal_to patron.id
+              with(:relationship_type_parent_s).equal_to patron.id
+            end
+          when '2'
+            any_of do
+              with(:relationship_type_child_m).equal_to patron.id
+              with(:relationship_type_parent_m).equal_to patron.id
+            end
+          when '3'
+            any_of do
+              with(:relationship_type_child_c).equal_to patron.id
+              with(:relationship_type_parent_c).equal_to patron.id
+            end
+          else
+            any_of do
+              with(:original_patron_ids).equal_to patron.id
+              with(:derived_patron_ids).equal_to patron.id
+            end
+          end
+        end
+        facet :relationship_type_child_s
+        facet :relationship_type_child_m
+        facet :relationship_type_child_c
+        facet :relationship_type_parent_s
+        facet :relationship_type_parent_m
+        facet :relationship_type_parent_c
       end
     end
 
@@ -100,11 +126,14 @@ class PatronsController < ApplicationController
       with(:required_role_id).less_than role.id
       with(:user_id).equal_to(nil)
       without(:exclude_state).equal_to(1)
+      facet :patron_type
     end
 
     page = params[:page] || 1
     search.query.paginate(page.to_i, Patron.default_per_page)
+    @search = search
     @patrons = search.execute!.results
+    @count[:query_result] = @patrons.total_entries
 
     respond_to do |format|
       format.html # index.html.erb
@@ -113,6 +142,23 @@ class PatronsController < ApplicationController
       format.atom
       format.json { render :json => @patrons }
       format.mobile
+    end
+  end
+
+  def search_name
+    @patron_id = params[:patron_id]
+    if @patron_id.blank?
+       @patrons = Patron.where("full_name like '#{params[:search_phrase]}%'").select("id, full_name")
+    else
+       @patrons = Patron.where(id: @patron_id.split(",")).select("id, full_name")
+    end
+    struct_patron = Struct.new(:id, :text)
+    @struct_patron_array = []
+    @patrons.each do |patron|
+      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+    end
+    respond_to do |format|
+      format.json { render :text => @struct_patron_array.to_json }
     end
   end
 
@@ -247,6 +293,7 @@ class PatronsController < ApplicationController
           format.json { render :json => @patron, :status => :created, :location => @patron }
         end
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -268,6 +315,7 @@ class PatronsController < ApplicationController
         end
         format.json { head :no_content }
       else
+        @countalias = params[:patron][:patron_aliases_attributes].size
         prepare_options
         format.html { render :action => "edit" }
         format.json { render :json => @patron.errors, :status => :unprocessable_entity }
@@ -290,8 +338,8 @@ class PatronsController < ApplicationController
   def prepare_options
     @countries = Country.all_cache
     @patron_types = PatronType.all
-    @patron_type_patron_id = PatronType.find_by_name('Person').id 
     @roles = Role.all
     @languages = Language.all_cache
+    @places = SubjectType.find_by_name('Place').try(:subjects)
   end
 end

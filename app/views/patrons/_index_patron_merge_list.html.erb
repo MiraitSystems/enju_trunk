@@ -1,15 +1,45 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.patron')) -%></h1>
 <div id="content_list">
-
+<p id="notice"><%= notice %></p>
+<%= form_for(:patron_merge_list, :url => patron_merge_list_path(@patron_merge_list, :mode => 'merge', :page => @patrons.current_page, :query => params[:query]), :html => { :method => :put }) do |f| -%>
+  <p><strong><%= t('activerecord.models.patron_merge_list') %>&nbsp:&nbsp<%= @patron_merge_list.title -%></strong></p>
+  <% unless @patron_merge_list.patron_merges.blank? %>
+    <% merge_size = @patron_merge_list.patron_merges.size %>
+    <%= raw t('patron_merge_list.description') if merge_size > 1 %>
+    <table id="bless">
+      <%- @patron_merge_list.patron_merges.each do |patron_merge| -%>
+        <tr>
+          <td>
+            <% if merge_size > 1 %>
+              <%= radio_button_tag 'selected_patron_id', patron_merge.patron.id -%>
+            <% else %>
+              <li>
+            <% end %>
+            <%= link_to patron_merge.patron.full_name, patron_merge.patron -%>
+          </td>
+          <td>
+            <%= link_to t('page.destroy'),
+                patron_merge_path(patron_merge, :patron_merge_list_id => @patron_merge_list.id, :page => @patrons.current_page, :query => params[:query]),
+                :method => :delete -%>
+          </td>
+        </tr>
+      <%- end -%>
+    </table>
+    <%= f.submit t('page.merge'), :confirm => t('page.merge_confirm') if merge_size > 1 %>
+  <% else %>
+    <p><%= t('merge_list.not_found') %></p>
+  <% end %>
+<% end %>
+<hr size="1" width="680">
 <%= form_for :patrons, :url => patron_merge_list_patrons_path(@patron_merge_list), :html => {:method => 'get'} do -%>
   <p>
-    <%= t('page.search_term') -%>: <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
+    <%= t('page.search_term') -%>:
+    <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
     <%- if can? :update, @patron_merge_list -%>
-      <%= render 'page/add' %>
+      <%= hidden_field_tag 'mode', 'add' %>
     <%- end -%>
     <%= submit_tag t('page.search') -%>
-    <%= link_to t('page.back_to_index'), patron_merge_list_patrons_path(@patron_merge_list) -%>
   </p>
 <%- end -%>
 
@@ -20,7 +50,6 @@
     <th><%= t('activerecord.attributes.patron.date_of_birth') -%></th>
     <th id="edit_icons"></th>
   </tr>
-
 <%- @patrons.each do |patron| -%>
   <%- if patron.user.blank? -%>
     <tr class="line<%= cycle("0", "1") -%>">
@@ -29,12 +58,9 @@
       <td><%=l patron.date_of_birth if patron.date_of_birth -%></td>
       <td>
         <%- if can? :destroy, patron -%>
-          <%- if params[:mode] == 'add' -%>
-            <%= link_to t('page.add'), new_patron_merge_list_patron_merge_path(@patron_merge_list, :patron_id => patron.id) unless @patron_merge_list.patrons.include?(patron) -%>
-          <%- else -%>
-            <%- patron_merge = @patron_merge_list.patron_merges.find_by_patron_id(patron) -%>
-            <%= link_to t('page.destroy'), patron_merge_list_patron_merge_path(@patron_merge_list, patron_merge), :confirm => t('page.are_you_sure'), :method => :delete -%>
-          <%- end -%>
+          <%= link_to t('page.add'),
+              patron_merges_path(:patron_id => patron.id, :patron_merge_list_id => @patron_merge_list.id, :page => @patrons.current_page, :query => params[:query]),
+              :method => :post unless @patron_merge_list.patrons.include?(patron) -%>
         <%- end -%>
       </td>
     </tr>
@@ -47,7 +73,15 @@
 </div>
 
 <div id="submenu" class="ui-corner-all">
+  <h3>
+    <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"),
+      url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  %>
+  </h3>
+  <% if @count[:query_result] > 0 %>
+    <%= render 'patron_type_facet' %>
+    <br />
+  <% end %>
   <ul>
-    <li><%= link_to t('page.listing', :model => t('activerecord.models.patron_merge_list')), @patron_merge_list -%></li>
+    <li><%= link_to t('page.back'), patron_merge_lists_path -%></li>
   </ul>
 </div>

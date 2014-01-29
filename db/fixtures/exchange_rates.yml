@@ -1,0 +1,12 @@
+---
+exchange_rates_00001:
+  id: 1
+  currency_id: 1 #  currency.id
+  rate: 122.42 # 通貨レート(下2桁は小数点)
+  started_at: 1997-10-29 # コード利用開始年月日
+exchange_rates_00002:
+  id: 2
+  currency_id: 1
+  rate: 126.65
+  started_at: 1998-10-20
+

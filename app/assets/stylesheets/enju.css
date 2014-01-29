@@ -277,6 +277,11 @@ table{
   border: 1px solid #2779aa;
 }
 
+table#bless, table#bless tr, table#bless tr td{
+  border: none;
+  cellpadding: 1px;
+}
+
 td, th{
   border: 1px solid #2779aa;
   padding: 5px;

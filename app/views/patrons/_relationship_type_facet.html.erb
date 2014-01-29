@@ -1,0 +1,53 @@
+<h4><%= t('activerecord.models.patron_has_patron') -%></h4>
+<ul>
+  <%- patron_relationship_types = params[:patron_relationship_type].to_s.split -%>
+
+  <%- if patron_relationship_types.blank? || patron_relationship_types.include?('1') %>
+    <%- count = 0 %>
+    <%- @search.facet(:relationship_type_child_s).rows.each do |facet| -%>
+      <% count = facet.count if facet.value == @patron.id %>
+    <% end %>
+    <%- @search.facet(:relationship_type_parent_s).rows.each do |facet| -%>
+      <% count += facet.count if facet.value == @patron.id %>
+    <% end %>
+    <% if count > 0 %>
+      <%- current_patron_relationship_type = patron_relationship_types.dup -%>
+      <%- patron_relationship_type = PatronRelationshipType.where(:id => '1').select([:id, :display_name]).first -%>
+      <li><%= patron_relationship_type_facet(patron_relationship_type, current_patron_relationship_type, count) %></li>
+    <%- end -%>
+  <%- end -%>
+
+  <%- if patron_relationship_types.blank? || patron_relationship_types.include?('2') %>
+    <%- count = 0 %>
+    <%- @search.facet(:relationship_type_child_m).rows.each do |facet| -%>
+      <% count = facet.count if facet.value == @patron.id %>
+    <% end %>
+    <%- @search.facet(:relationship_type_parent_m).rows.each do |facet| -%>
+      <% count += facet.count if facet.value == @patron.id %>
+    <% end %>
+    <% if count > 0 %>
+      <%- current_patron_relationship_type = patron_relationship_types.dup -%>
+      <%- patron_relationship_type = PatronRelationshipType.where(:id => '2').select([:id, :display_name]).first -%>
+      <li><%= patron_relationship_type_facet(patron_relationship_type, current_patron_relationship_type, count) %></li>
+    <%- end -%>
+  <%- end -%>
+
+  <%- if patron_relationship_types.blank? || patron_relationship_types.include?('3') %>
+    <%- count = 0 %>
+    <%- @search.facet(:relationship_type_child_c).rows.each do |facet| -%>
+      <% count = facet.count if facet.value == @patron.id %>
+    <% end %>
+    <%- @search.facet(:relationship_type_parent_c).rows.each do |facet| -%>
+      <% count += facet.count if facet.value == @patron.id %>
+    <% end %>
+    <% if count > 0 %>
+      <%- current_patron_relationship_type = patron_relationship_types.dup -%>
+      <%- patron_relationship_type = PatronRelationshipType.where(:id => '3').select([:id, :display_name]).first -%>
+      <li><%= patron_relationship_type_facet(patron_relationship_type, current_patron_relationship_type, count) %></li>
+    <%- end -%>
+  <%- end -%>
+
+  <%- if patron_relationship_types.present? -%>
+    <li><%= link_to t('page.remove_this_facet'), url_for(params.merge(:patron_relationship_type => nil, :page => nil, :veiw => nil)) -%></li>
+  <%- end -%>
+</ul>

@@ -1,0 +1,27 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.approval')) -%></h1>
+<div id="content_list">
+<div style="color: red"><%= flash[:message].to_s -%></div>
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.approval.manifestation_id') %></th>
+    <th><%= t('activerecord.attributes.approval.status') %></th>
+    <th></th>
+  </tr>
+
+<% @approvals.each do |approval| %>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to approval.manifestation.original_title, approval %></td>
+    <td><%= t("activerecord.attributes.approval.approval_status.#{approval.status}") %></td>
+    <td>
+      <%= link_to t('page.edit'), edit_approval_path(approval) %>
+      <%= link_to t('page.destroy'), approval, :confirm => t('page.are_you_sure'), :method => :delete -%>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate(@approvals) -%>
+
+</div>
+</div>

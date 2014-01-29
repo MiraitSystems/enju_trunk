@@ -29,7 +29,7 @@
   <% end %>
   </table>  
 </div>
-<script type="text/javascript" src="../assets/application.js">
+<script>
 $(document).ready(function(){
   $(document).on("change", "select[id$='_manifestation_type']", function(){
     auto_numbering = $("#"+$(this).attr('id').replace(/manifestation_type/, 'auto_numbering')); 
