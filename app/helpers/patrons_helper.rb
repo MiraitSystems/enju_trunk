@@ -57,7 +57,7 @@ module PatronsHelper
     string.html_safe
   end
 
-  def set_patron_params(patron_id)
+  def set_patron_params(patron_id = nil)
     param_hash = Hash.new
     param_hash.store('patron_id', patron_id)
     param_hash.store('patron_relationship_type', params[:patron_relationship_type])

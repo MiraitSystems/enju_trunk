@@ -41,7 +41,7 @@
             <% if can? :edit, p %>
               <% if params[:mode] == "add" %>
                 <%= link_to image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('patron.add_derivation'), :title => t('patron.add_derivation')),
-                    new_patron_patron_relationship_path(patron, :child_id => p.id, :page => params[:page]) unless patron.derived_patrons.include?(p) or patron.original_patrons.include?(p) or p == patron %>
+                    new_patron_patron_relationship_path(patron, set_patron_params.merge(:child_id => p.id)) unless patron.derived_patrons.include?(p) or patron.original_patrons.include?(p) or p == patron %>
               <% else %>
                 <% patron_relationship = patron_relationship_anyone(patron, p.id) %>
                 <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
