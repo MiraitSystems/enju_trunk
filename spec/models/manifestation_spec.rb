@@ -33,6 +33,15 @@ describe Manifestation, :solr => true do
     it '' # TODO
     #validate :check_rank
     it '' # TODO: immediately
+
+    it 'nacsis_identifierが重複していたらエラーとすること' do
+      ncid = 'foobar'
+      FactoryGirl.create(:manifestation, nacsis_identifier: ncid)
+
+      m = Manifestation.new(nacsis_identifier: ncid)
+      m.valid?
+      expect(m.errors).to include(:nacsis_identifier)
+    end
   end
 
   describe 'before_validation' do
@@ -1315,6 +1324,105 @@ describe Manifestation, :solr => true do
         end
       end
       include_examples 'Solrインデックスへの登録'
+    end
+  end
+
+  describe '.create_from_ncidは' do
+    include NacsisCatSpecHelper
+
+    before do
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'japanese_book')
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'foreign_book')
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'japanese_monograph')
+    end
+
+    it '指定されたNCIDからレコードを作成すること' do
+      nacsis_cat = nacsis_cat_with_mock_record
+      ncid = nacsis_cat.ncid
+      NacsisCat.should_receive(:search) do |opts|
+        expect(opts[:dbs]).to eq([:book])
+        expect(opts[:id]).to eq(ncid)
+        {book: [nacsis_cat]}
+      end
+
+      m = Manifestation.create_from_ncid(ncid)
+      expect(m).to be_a(Manifestation)
+
+      expect(m.nacsis_identifier).to eq(ncid)
+      expect(m.original_title).to eq(nacsis_cat.record['TR']['TRD'])
+      expect(m.title_transcription).to eq(nacsis_cat.record['TR']['TRR'])
+      expect(m.title_alternative).to eq(nacsis_cat.record['TR']['TRVR'])
+
+      expect(m).to be_persisted
+    end
+
+    it '指定されたNCIDに対応するレコードが見付からなかったら空のレコードを返すこと' do
+      ncid = 'foobar'
+      NacsisCat.should_receive(:search).and_return({book: []})
+
+      m = Manifestation.create_from_ncid(ncid)
+      expect(m).to be_a_new(Manifestation)
+
+      expect(m.nacsis_identifier).to eq(ncid)
+      expect(m.original_title).to be_blank
+      expect(m.title_transcription).to be_blank
+      expect(m.title_alternative).to be_blank
+    end
+  end
+
+  describe '.batch_create_from_ncidは' do
+    include NacsisCatSpecHelper
+
+    before do
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'japanese_book')
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'foreign_book')
+      FactoryGirl.create(
+        :manifestation_type,
+        name: 'japanese_monograph')
+    end
+
+    it '指定されたNCIDからレコードを作成すること' do
+      nacsis_cat = nacsis_cat_with_mock_record
+      ncid = nacsis_cat.ncid
+      NacsisCat.should_receive(:search) do |opts|
+        expect(opts[:dbs]).to eq([:book])
+        expect(opts[:id]).to eq([ncid])
+        {book: [nacsis_cat]}
+      end
+
+      expect {
+        Manifestation.batch_create_from_ncid([ncid])
+      }.to change(Manifestation, :count).by(1)
+
+      m = Manifestation.last
+      expect(m).to be_present
+      expect(m).to be_a(Manifestation)
+
+      expect(m.nacsis_identifier).to eq(ncid)
+      expect(m.original_title).to eq(nacsis_cat.record['TR']['TRD'])
+      expect(m.title_transcription).to eq(nacsis_cat.record['TR']['TRR'])
+      expect(m.title_alternative).to eq(nacsis_cat.record['TR']['TRVR'])
+
+      expect(m).to be_persisted
+    end
+
+    it '指定されたNCIDに対応するレコードが見付からなかったらレコードを作成しないこと' do
+      ncid = 'foobar'
+      NacsisCat.should_receive(:search).and_return({book: []})
+
+      expect {
+        Manifestation.batch_create_from_ncid([ncid])
+      }.not_to change(Manifestation, :count)
     end
   end
 
