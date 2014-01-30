@@ -28,7 +28,7 @@ class Patron < ActiveRecord::Base
   has_many :derived_patrons, :through => :children, :source => :child
   has_many :original_patrons, :through => :parents, :source => :parent
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  has_many :donates
+  has_many :donates #TODO :dependent => :destroy が無いため、patronを削除や統合した場合、レコードが残る
   has_many :donated_items, :through => :donates, :source => :item
   has_many :owns, :dependent => :destroy
   has_many :items, :through => :owns
@@ -94,6 +94,9 @@ class Patron < ActiveRecord::Base
     string :username do
       user.username if user
     end
+    string :patron_type do
+      patron_type.name
+    end
     time :created_at
     time :updated_at
     time :date_of_birth
@@ -109,6 +112,24 @@ class Patron < ActiveRecord::Base
     integer :patron_type_id
     integer :user_id
     integer :exclude_state
+    integer :relationship_type_child_s, :multiple => true do
+      children.seealso_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_m, :multiple => true do
+      children.member_type.pluck(:child_id)
+    end
+    integer :relationship_type_child_c, :multiple => true do
+      children.child_type.pluck(:child_id)
+    end
+    integer :relationship_type_parent_s, :multiple => true do
+      parents.seealso_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_m, :multiple => true do
+      parents.member_type.pluck(:parent_id)
+    end
+    integer :relationship_type_parent_c, :multiple => true do
+      parents.child_type.pluck(:parent_id)
+    end
   end
 
   paginates_per 10
@@ -283,7 +304,7 @@ class Patron < ActiveRecord::Base
     list = []
     patron_lists.uniq.compact.each do |patron_list|
       next if patron_list[:full_name].blank?
-      patron = Patron.where(:full_name => patron_list[:full_name]).first
+      patron = Patron.where(:full_name => patron_list[:full_name].exstrip_with_full_size_space).first
       unless patron
         patron = Patron.new(
           :full_name => patron_list[:full_name].exstrip_with_full_size_space,

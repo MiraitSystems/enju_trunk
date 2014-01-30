@@ -1,0 +1,76 @@
+<%= form_for(@use_license) do |f| %>
+  <%= f.error_messages %>
+
+  <div class="field">
+    <%= f.label :target %><br />
+    <% if targets %>
+      <%= f.select(:target, targets.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% else %>
+      <%= f.select(:target, "") %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= f.label :author %><br />
+    <% if authors %>
+      <%= f.select(:author, authors.collect{|r| [r.keyname.localize, r.v]}) %>
+    <% else %>
+      <%= f.select(:author, "") %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= f.label :author_fee %><br />
+    <%= f.select(:author_fee, @author_fees) %>
+  </div>
+  <div class="field">
+    <%= f.label :agency_name %><br />
+    <%= f.text_field :agency_name %>
+  </div>
+  <div class="field">
+    <%= f.label :agency_address %><br />
+    <%= f.text_field :agency_address %>
+  </div>
+  <div class="field">
+    <%= f.label :responsible_name %><br />
+    <%= f.text_field :responsible_name %>
+  </div>
+  <div class="field">
+    <%= f.label :responsible_tel %><br />
+    <%= f.text_field :responsible_tel %>
+  </div>
+  <div class="field">
+    <%= f.label :responsible_mail %><br />
+    <%= f.text_field :responsible_mail %>
+  </div>
+  <div class="field">
+    <%= f.label :bank_name %><br />
+    <%= f.text_field :bank_name %>
+  </div>
+  <div class="field">
+    <%= f.label :bank_code %><br />
+    <%= f.text_field :bank_code %>
+  </div>
+  <div class="field">
+    <%= f.label :branch_name %><br />
+    <%= f.text_field :branch_name %>
+  </div>
+  <div class="field">
+    <%= f.label :branch_number %><br />
+    <%= f.text_field :branch_number %>
+  </div>
+  <div class="field">
+    <%= f.label :account_name %><br />
+    <%= f.text_field :account_name %>
+  </div>
+  <div class="field">
+    <%= f.label :account_number %><br />
+    <%= f.text_field :account_number %>
+  </div>
+  <div class="field">
+    <%= f.label :account_kind %><br />
+    <%= f.select(:account_kind, @account_kinds) %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+

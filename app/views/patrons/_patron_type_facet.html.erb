@@ -1,0 +1,13 @@
+<h4><%= t('activerecord.models.patron_type') %></h4>
+<ul>
+  <% current_patron_type = params[:patron_type] %>
+  <% @search.facet(:patron_type).rows.each do |facet| %>
+    <% patron_type = PatronType.where(:name => facet.value).select(['name', 'display_name']).first %>
+    <% if patron_type %>
+      <li><%= patron_type_facet(patron_type, current_patron_type, facet) %></li>
+    <% end %>
+  <% end %>
+  <% if params[:patron_type] %>
+    <li><%= link_to t('page.remove_this_facet'), url_for(params.merge(:patron_type => nil, :page => nil, :view => nil)) %></li>
+  <% end %>
+</ul>

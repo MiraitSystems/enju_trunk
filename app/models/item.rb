@@ -1176,11 +1176,11 @@ class Item < ActiveRecord::Base
     raise "invalid parameter: no path" if out_dir.nil? || out_dir.length < 1
     pdf_file = out_dir + "#{type}_catalog.pdf"
     logger.info "output #{type}_catalog  pdf: #{pdf_file}"
-    FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
-    if type == 'title'
+FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
+if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
     elsif type == 'author' 
-      @manifestations = Manifestation.includes(:creates => :patron).order("patrons.full_name")
+      @manifestations = Manifestation.includes(:creates => :patron).order("patrons.full_name ASC")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")
     end
@@ -1226,7 +1226,6 @@ class Item < ActiveRecord::Base
     Delayed::Job.enqueue GenerateItemListJob.new(job_name, file_name, file_type, method, dumped_query, args, user)
     job_name
   end
-
 
   class GenerateItemListJob
     include Rails.application.routes.url_helpers

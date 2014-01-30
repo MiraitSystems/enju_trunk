@@ -1,0 +1,107 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.use_license')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>id:</strong>
+  <%= @use_license.id -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.target') -%>:</strong>
+  <% str_target = "----" %>
+  <% if targets %>
+    <% targets.collect{|r| %>
+      <% if r.v == @use_license.target.to_s then %>
+        <% str_target = r.keyname.localize %>
+        <% break %>
+      <% end %>
+    <% } %>
+  <% end %>
+  <%= str_target -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.author') -%>:</strong>
+  <% str_author = "----" %>
+  <% if authors %>
+    <% authors.collect{|r| %>
+      <% if r.v == @use_license.author.to_s then %>
+        <% str_author = r.keyname.localize %>
+        <% break %>
+      <% end %>
+    <% } %>
+  <% end %>
+  <%= str_author -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.author_fee') -%>:</strong>
+    <%- if @use_license.author_fee? -%>
+      <%= t('flag.yes') -%>
+    <%- else -%>
+      <%= t('flag.no') -%>
+    <%- end -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.agency_name') -%>:</strong>
+  <%= @use_license.agency_name.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.agency_address') -%>:</strong>
+  <%= @use_license.agency_address.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.responsible_name') -%>:</strong>
+  <%= @use_license.responsible_name.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.responsible_tel') -%>:</strong>
+  <%= @use_license.responsible_tel.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.responsible_mail') -%>:</strong>
+  <%= @use_license.responsible_mail.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.bank_name') -%>:</strong>
+  <%= @use_license.bank_name.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.bank_code') -%>:</strong>
+  <%= @use_license.bank_code.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.branch_name') -%>:</strong>
+  <%= @use_license.branch_name.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.branch_number') -%>:</strong>
+  <%= @use_license.branch_number.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.account_name') -%>:</strong>
+  <%= @use_license.account_name.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.account_number') -%>:</strong>
+  <%= @use_license.account_number.localize -%>
+</p>
+<p>
+  <strong><%= t('activerecord.attributes.use_license.account_kind') -%>:</strong>
+  <% @account_kinds.each do |r| %>
+    <% if r[1] == @use_license.account_kind then %>
+      <%= r[0] -%>
+      <% break %>
+    <% end %>
+  <% end %>
+</p>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_use_license_path(@use_license) -%></li>
+    <li><%= link_to t('page.back'), use_licenses_path -%></li>
+  </ul>
+</div>
+
