@@ -1202,22 +1202,22 @@ if type == 'title'
     report.page.item(:date).value(Time.now)
     report.page.item(:list_name).value(I18n.t("item_register.#{list_title}"))
     0.step(manifestations.count, 100) do |offset|
-    manifestations.each do |manifestation|
-      manifestation.items.each do |item|
-        report.page.list(:list).add_row do |row|
-          row.item(:title).value(item.manifestation.original_title) if item.manifestation
-          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
-          row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
+      manifestations.each do |manifestation|
+        manifestation.items.each do |item|
+          report.page.list(:list).add_row do |row|
+            row.item(:title).value(item.manifestation.original_title) if item.manifestation
+            row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+            row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
 
-          row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
-          row.item(:shelf).value(item.shelf.display_name) if item.shelf
-          row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
-          row.item(:item_identifier).value(item.item_identifier) if item.item_identifier
-          row.item(:call_number).value(call_numberformat(item)) if call_numberformat(item)
+            row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
+            row.item(:shelf).value(item.shelf.display_name) if item.shelf
+            row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
+            row.item(:item_identifier).value(item.item_identifier) if item.item_identifier
+            row.item(:call_number).value(call_numberformat(item)) if call_numberformat(item)
+          end
         end
       end
-    end
-    report.generate_file(pdf_file)
+      report.generate_file(pdf_file)
     end
   end
 
