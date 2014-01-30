@@ -1180,13 +1180,12 @@ class Item < ActiveRecord::Base
     if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
     elsif type == 'author' 
-      @manifestations = Manifestation.joins(:creates).joins(:creates => :patron).order("patrons.full_name")
+      @manifestations = Manifestation.includes(:creates => :patron).order("patrons.full_name")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")
     end
     make_catalog_pdf(pdf_file, @manifestations, "#{type}_catalog") if file_type.nil? || file_type == "pdf"
   end
-
 
   def self.make_catalog_pdf(pdf_file, manifestations, list_title = nil)
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{list_title}.tlf")
@@ -1202,7 +1201,8 @@ class Item < ActiveRecord::Base
     report.start_new_page
     report.page.item(:date).value(Time.now)
     report.page.item(:list_name).value(I18n.t("item_register.#{list_title}"))
-    manifestations.find_each do |manifestation|
+    0.step(manifestations.count, 100) do |offset|
+    manifestations.each do |manifestation|
       manifestation.items.each do |item|
         report.page.list(:list).add_row do |row|
           row.item(:title).value(item.manifestation.original_title) if item.manifestation
@@ -1212,12 +1212,13 @@ class Item < ActiveRecord::Base
           row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library
           row.item(:shelf).value(item.shelf.display_name) if item.shelf
           row.item(:ndc).value(item.manifestation.ndc) if item.manifestation
-          row.item(:item_identifier).value(item.item_identifier)
-          row.item(:call_number).value(call_numberformat(item))
+          row.item(:item_identifier).value(item.item_identifier) if item.item_identifier
+          row.item(:call_number).value(call_numberformat(item)) if call_numberformat(item)
         end
       end
     end
     report.generate_file(pdf_file)
+    end
   end
 
   def self.make_export_item_list_job(file_name, file_type, method, dumped_query, args, user)
@@ -1330,10 +1331,7 @@ class Item < ActiveRecord::Base
       message(
         user,
         I18n.t('item_register.export_job_error_subject', :job_name => job_name),
-        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message),
-        method,
-        args,
-        file_type
+        I18n.t('item_register.export_job_error_body', :job_name => job_name, :message => exception.message)
         )
     end
   end
