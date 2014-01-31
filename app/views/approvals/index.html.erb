@@ -4,7 +4,9 @@
 <div style="color: red"><%= flash[:message].to_s -%></div>
 <table class="index">
   <tr>
-    <th><%= t('activerecord.attributes.approval.manifestation_id') %></th>
+    <th><%= t('activerecord.attributes.manifestation.original_title') %></th>
+    <th><%= t('activerecord.attributes.manifestation.identifier') %></th>
+    <th><nobr><%#= TODO %></nobr></th>
     <th><%= t('activerecord.attributes.approval.status') %></th>
     <th></th>
   </tr>
@@ -12,11 +14,13 @@
 <% @approvals.each do |approval| %>
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to approval.manifestation.original_title, approval %></td>
-    <td><%= t("activerecord.attributes.approval.approval_status.#{approval.status}") %></td>
-    <td>
+    <td><nobr><%= link_to approval.manifestation.identifier, approval.manifestation %></nobr></td>
+    <td><%#= TODO approval identifier %></td>
+    <td><nobr><%= t("activerecord.attributes.approval.approval_status.#{approval.status}") %><nobr></td>
+    <td><nobr>
       <%= link_to t('page.edit'), edit_approval_path(approval) %>
       <%= link_to t('page.destroy'), approval, :confirm => t('page.are_you_sure'), :method => :delete -%>
-    </td>
+    </nobr></td>
   </tr>
 <% end %>
 </table>
@@ -24,4 +28,10 @@
 <%= paginate(@approvals) -%>
 
 </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.approval')), new_approval_path %></li>
+  </ul>
 </div>
