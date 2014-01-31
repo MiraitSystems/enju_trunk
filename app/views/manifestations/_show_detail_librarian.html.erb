@@ -9,11 +9,10 @@
 
         <% manifestation.work_has_titles.each do |title| %>
           <tr> 
-            <td>title_type :<%= title.title_type_id %></td>
-            <td><%= title.manifestation_title.title %></td>
+            <td><%= title.title_type.display_name %>:</td>
+            <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
           </tr>
         <% end %>
-
         <%= embed_content(manifestation) -%>
         <%- if manifestation.try(:external_catalog) && manifestation.external_catalog > 0 -%>
           <tr>

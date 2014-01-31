@@ -201,7 +201,8 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
-      title_type: 書名の種類
+      title_type: 書名種類
+      title: 書名
 
     attributes:
       use_license:
@@ -1875,6 +1876,7 @@ ja:
     add_line: "+"
     del_line: "-"
     user_notice: 利用者通知書
+    select_use_titles: 書名テーブルを利用する
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2978,3 +2980,5 @@ ja:
       barcode_registration:
         first_number: 開始番号
         last_number: 終了番号
+  title_type:
+    cannot_delete: "この書名種類は削除できません"

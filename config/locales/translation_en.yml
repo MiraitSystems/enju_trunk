@@ -199,6 +199,7 @@ en:
       keycode: Keycode
       approval: Approval
       title_type: Title type
+      title: Title
 
     attributes:
       use_license:
@@ -1907,6 +1908,7 @@ en:
     add_line: "+"
     del_line: "-"
     user_notice: User notice
+    select_use_titles: Use titles table
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -3008,3 +3010,5 @@ en:
       barcode_registration:
         first_number: First number
         last_number: Last number
+  title_type:
+    cannot_delete: The title type cannnot be deleted.

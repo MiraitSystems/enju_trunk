@@ -17,7 +17,10 @@
     <td><%= title_type.display_name %></td>
     <td>
       <%= link_to t('page.edit'), edit_title_type_path(title_type) %>
-      <%= link_to t('page.destroy'), title_type, :confirm => t('page.are_you_sure'), :method => :delete %>
+
+      <% if title_type.destroy? %>
+        <%= link_to t('page.destroy'), title_type, :confirm => t('page.are_you_sure'), :method => :delete %>
+      <% end %>
     </td>
   </tr>
 <% end %>
