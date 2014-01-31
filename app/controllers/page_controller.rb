@@ -66,6 +66,12 @@ class PageController < ApplicationController
 
   def configuration
     @title = t('page.configuration')
+    @use_titles = session[:use_titles]
+    if params["use_titles"] != nil
+      @use_titles = params["use_titles"]
+      session[:use_titles] = params["use_titles"]
+    end
+
   end
 
   def import
