@@ -67,7 +67,6 @@ class PatronsController < ApplicationController
     ]
     set_role_query(current_user, search)
 
-
     unless query.blank?
       search.build do
         fulltext query
@@ -82,6 +81,7 @@ class PatronsController < ApplicationController
       manifestation = @manifestation
       patron = @patron
       patron_merge_list = @patron_merge_list
+      @patron_relationship_types = PatronRelationshipType.select("id, name, display_name")
       search.build do
         with(:user).equal_to user.username if user
         with(:work_ids).equal_to work.id if work
@@ -89,21 +89,19 @@ class PatronsController < ApplicationController
         with(:manifestation_ids).equal_to manifestation.id if manifestation
         with(:patron_merge_list_ids).equal_to patron_merge_list.id if patron_merge_list
         if patron
-          case params[:patron_relationship_type]
-          when '1'
-            any_of do
-              with(:relationship_type_child_s).equal_to patron.id
-              with(:relationship_type_parent_s).equal_to patron.id
-            end
-          when '2'
-            any_of do
-              with(:relationship_type_child_m).equal_to patron.id
-              with(:relationship_type_parent_m).equal_to patron.id
-            end
-          when '3'
-            any_of do
-              with(:relationship_type_child_c).equal_to patron.id
-              with(:relationship_type_parent_c).equal_to patron.id
+          param_type_id = params[:patron_relationship_type]
+          param_relationship = params[:parent_child_relationship]
+          if param_type_id
+            case param_relationship
+            when 'p'
+              with(('relationship_type_parent_' + param_type_id).to_sym).equal_to patron.id
+            when 'c'
+              with(('relationship_type_child_' + param_type_id).to_sym).equal_to patron.id
+            else
+              any_of do
+                with(('relationship_type_parent_' + param_type_id).to_sym).equal_to patron.id
+                with(('relationship_type_child_' + param_type_id).to_sym).equal_to patron.id
+              end
             end
           else
             any_of do
@@ -112,12 +110,10 @@ class PatronsController < ApplicationController
             end
           end
         end
-        facet :relationship_type_child_s
-        facet :relationship_type_child_m
-        facet :relationship_type_child_c
-        facet :relationship_type_parent_s
-        facet :relationship_type_parent_m
-        facet :relationship_type_parent_c
+        PatronRelationshipType.pluck(:id).each do |type_id|
+          facet 'relationship_type_parent_' + type_id.to_s
+          facet 'relationship_type_child_' + type_id.to_s
+        end
       end
     end
 
@@ -126,6 +122,7 @@ class PatronsController < ApplicationController
       with(:required_role_id).less_than role.id
       with(:user_id).equal_to(nil)
       without(:exclude_state).equal_to(1)
+      order_by(:id)
       facet :patron_type
     end
 
@@ -171,7 +168,7 @@ class PatronsController < ApplicationController
 
     #get_work; get_expression; get_manifestation; get_item
 
-    case 
+    case
     when @work
       @patron = @work.creators.find(params[:id])
     when @manifestation
@@ -183,6 +180,7 @@ class PatronsController < ApplicationController
         @patron = @patron.versions.find(@version).item if @version
       end
     end
+    @patron_relationship_types = PatronRelationshipType.select("id, name, display_name")
 
     patron = @patron
     role = current_user.try(:role) || Role.default_role
@@ -309,7 +307,7 @@ class PatronsController < ApplicationController
         if params[:checked_item] == 'true'
           flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.user_note'))
           format.html { redirect_to :back }
-        else  
+        else
           flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.patron'))
           format.html { redirect_to(@patron) }
         end

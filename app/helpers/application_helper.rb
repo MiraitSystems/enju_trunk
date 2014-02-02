@@ -526,7 +526,7 @@ module ApplicationHelper
   def tab_menu_width
     # ライブラリアン権限時未満のとき、タブメニューの表示内容に伴いタブのサイズも変更する
     if user_signed_in?
-     unless current_user.has_role?('Librarian')
+      unless current_user.has_role?('Librarian')
         # ゲスト権限以上ユーザ権限未満でログイン時
         return (can_use_purchase_request? or 
           SystemConfiguration.get('use_copy_request') or 
@@ -536,7 +536,16 @@ module ApplicationHelper
     else
       # 未ログイン時
       return (can_use_purchase_request? or SystemConfiguration.get('use_copy_request')) ? 'fg-4button' : 'fg-3button'
-    end 
+    end
+  end
+
+  def get_detail_name(model, primary, secondary = '')
+    return '' if model.blank? or primary.blank?
+    name_ary = model.display_name.localize.split(/[,:]/, -1) rescue []
+    return name_ary.first if name_ary.size.odd?
+    name_hash = Hash[*name_ary]
+    return name_hash[primary] unless name_hash[primary].blank?
+    return name_hash[secondary] unless name_hash[secondary].blank?
   end
 
   if defined?(EnjuTrunkCirculation)
