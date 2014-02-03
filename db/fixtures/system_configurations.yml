@@ -1061,7 +1061,14 @@ system_configuration_00150:
   category: 'manifestation'
 system_configuration_00151:
   id: 151
-  keyname: use_titles
+  keyname: not_use_footer
+  v: "false"
+  typename: Boolean
+  description: "フッターを表示しないか"
+  category: 'general'
+system_configuration_00152:
+  id: 152
+  keyname: manifestation.use_titles
   v: "false"
   typename: Boolean
   description: "書名テーブルを利用する"

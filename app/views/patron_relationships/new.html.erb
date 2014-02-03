@@ -7,6 +7,7 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.back'), patron_relationships_path -%></li>
+    <li><%= link_to t('page.back'),
+            patron_patrons_path(params[:patron_id], set_patron_params(params[:patron_id]).merge(:mode => 'add')) -%></li>
   </ul>
 </div>

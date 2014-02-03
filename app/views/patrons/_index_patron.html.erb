@@ -1,5 +1,5 @@
 <div id="content_detail" class="ui-corner-all">
-<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.patron')) %></h1>
+<h1 class="title"><%= t('page.derivation') %><%= t('page.listing', :model => t('activerecord.models.patron')) %></h1>
 <div id="content_list">
   <h2 class="resource_title">
     <p id="notice"><%= notice %></p>
@@ -39,16 +39,16 @@
           <td><%= patron_relationship_type_show(patron, p.id) %></td>
           <td>
             <% if can? :edit, p %>
-              <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
-                  edit_patron_path(p) %>
               <% if params[:mode] == "add" %>
                 <%= link_to image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('patron.add_derivation'), :title => t('patron.add_derivation')),
-                    new_patron_patron_relationship_path(patron, :child_id => p.id) unless patron.derived_patrons.include?(p) or patron.original_patrons.include?(p) or p == patron %>
+                    new_patron_patron_relationship_path(patron, set_patron_params.merge(:child_id => p.id)) unless patron.derived_patrons.include?(p) or patron.original_patrons.include?(p) or p == patron %>
               <% else %>
                 <% patron_relationship = patron_relationship_anyone(patron, p.id) %>
+                <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
+                    edit_patron_relationship_path(patron_relationship, set_patron_params(patron.id)) %>
                 <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
-                    patron_relationship_path(patron_relationship, :patron_id => patron.id ,:patron_relationship_type => params[:patron_relationship_type]),
-                    :confirm => t('page.are_you_sure'), :method => :delete if patron_relationship %>
+                    patron_relationship_path(patron_relationship, set_patron_params(patron.id)),
+                    :confirm => t('page.are_you_sure'), :method => :delete %>
               <% end %>
             <% end %>
           </td>
@@ -63,29 +63,30 @@
 <div id="submenu" class="ui-corner-all">
   <h3>
     <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"),
-      url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  %>
+        url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil, :patron_relationship_type => nil, :parent_child_relationship => nil))  %>
   </h3>
   <% if @count[:query_result] > 0 %>
     <%= render 'patron_type_facet' %>
-    <br />
   <% end %>
+  <% unless params[:mode] == "add" %>
+    <%= render 'relationship_type_facet' if @patron.patrons.present? %>
+  <% end %>
+  <br />
   <ul>
     <% if can? :create, Patron %>
+      <li><%= link_to t('page.listing', :model => t('activerecord.models.patron')), patrons_path %></li>
       <li><%= link_to t('patron.add'), new_patron_path %></li>
       <li><%= link_to t('activerecord.models.patron_merge'), patron_merge_lists_path %></li>
     <% end %>
   </ul>
-  <% unless params[:mode] == "add" %>
-    <%= render 'patrons/relationship_type_facet' if @patron.patrons.present? %>
-  <% end %>
   <%- if can? :create, Patron -%>
     <div id="iconmenu" class="ui-corner-all">
       <strong><%= t('tooltip.icons_info') -%></strong>
       <ul>
-        <li><%= image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')) -%>:&nbsp;<%=t('page.edit')-%></li>
         <% if params[:mode] == "add" %>
           <li><%= image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('patron.add_derivation'), :title => t('patron.add_derivation')) -%>:&nbsp;<%=t('patron.add_derivation')-%></li>
         <% else %>
+          <li><%= image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')) -%>:&nbsp;<%=t('page.edit')-%></li>
           <li><%= image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')) -%>:&nbsp;<%=t('page.destroy')-%></li>
         <% end %>
       </ul>
