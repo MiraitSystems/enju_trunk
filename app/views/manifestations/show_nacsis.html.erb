@@ -88,6 +88,15 @@
            :manifestation_type => params[:manifestation_type],
            :request_type => "2" } -%>
       </li>
+      <% if @nacsis_cat.book? %>
+        <li>
+          <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
+            <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
+            <%= hidden_field_tag 'manifestation_type', params[:manifestation_type] %>
+            <%= submit_tag t('.local_import') %>
+          <% end %>
+        </li>
+      <% end %>
     </ul>
   </div>
 </div>

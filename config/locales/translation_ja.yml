@@ -1718,6 +1718,7 @@ ja:
     import_from_tsvfile: "TSVファイルからのインポート"
     import_from_file: "ファイルからのインポート"
     import_from_network: "ネットワークからインポート"
+    import_from_nacsis: "NACSISファイルからのインポート"
     no_record_found: "資料が見つかりませんでした。"
     did_you_mean_to_search_for: "もしかして"
     not_found_users: "該当の利用者は見つかりませんでした。"
@@ -2623,6 +2624,13 @@ ja:
     reserved_item : "予約済みの資料です。(ユーザ名: %{username}, 利用者番号: %{user_number})"
     invalid_isbn: "指定ISBNが不正です。 ISBN: %{isbn}"
     record_not_found: "指定ISBNの書誌情報を読み込めませんでした。 ISBN: %{isbn}"
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSISファイル
+      wrong_file: "はインポートできません。"
+      wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
+    successfully_uploaded: "正常に送信されました。"
+    upload_failed: "送信に失敗しました。"
   patron_import_file:
     template_download: "テンプレートをダウンロード"
     import_request: "すぐにインポート"
@@ -2961,7 +2969,9 @@ ja:
   patron_merge_list:
     description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
                  ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
-
+  manifestations:
+    show_nacsis:
+      local_import: "ローカルインポート"
   activemodel:
     models:
       barcode_registration: 資料登録番号バーコード

@@ -8,6 +8,7 @@ module NacsisCatSpecHelper
       'TR' => {
         'TRD' => '本標題:標題関連情報/責任表示',
         'TRR' => 'ホンヒョウダイ ヨミ',
+        'TRVR' => 'ホンヒョウダイ ソノタ ヨミ',
       },
       'PUB' => [
         {
@@ -64,6 +65,7 @@ module NacsisCatSpecHelper
       'TR' => {
         'TRD' => '本標題:標題関連情報/責任表示',
         'TRR' => 'ホンヒョウダイ ヨミ',
+        'TRVR' => 'ホンヒョウダイ ソノタ ヨミ',
       },
       'AL' => [
         {'AHDNG' => '著者1標目形', 'AHDNGR' => 'チョシャ1 ヨミ'},
