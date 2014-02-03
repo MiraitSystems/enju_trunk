@@ -1059,3 +1059,10 @@ system_configuration_00150:
   typename: Boolean
   description: "著者・出版者・協力者に役割をつけるか"
   category: 'manifestation'
+system_configuration_00151:
+  id: 151
+  keyname: not_use_footer
+  v: "false"
+  typename: Boolean
+  description: "フッターを表示しないか"
+  category: 'general'
