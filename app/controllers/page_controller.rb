@@ -66,10 +66,21 @@ class PageController < ApplicationController
 
   def configuration
     @title = t('page.configuration')
-    @use_titles = session[:use_titles]
+    @use_titles = SystemConfiguration.find(:first, :conditions => ['keyname = ?','manifestation.use_titles'])
+    p "====================================="
+    p @use_titles
+
     if params["use_titles"] != nil
-      @use_titles = params["use_titles"]
-      session[:use_titles] = params["use_titles"]
+      if params["use_titles"] == "true"
+        @use_titles.v = "true"
+        p "TRUE=================="
+      else
+        @use_titles.v = "false"
+        p "FALSE========================="
+      end
+      @use_titles.save
+      p "SaVE========"
+      p @use_titles
     end
 
   end

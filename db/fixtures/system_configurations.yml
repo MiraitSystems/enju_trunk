@@ -1059,3 +1059,10 @@ system_configuration_00150:
   typename: Boolean
   description: "著者・出版者・協力者に役割をつけるか"
   category: 'manifestation'
+system_configuration_00151:
+  id: 151
+  keyname: use_titles
+  v: "false"
+  typename: Boolean
+  description: "書名テーブルを利用する"
+  category: 'manifestation'

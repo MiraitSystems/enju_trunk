@@ -849,7 +849,6 @@ class ManifestationsController < ApplicationController
     @original_manifestation = original_manifestation if params[:mode] == 'add'
 
     new_work_has_title
-    @use_titles = session[:use_titles]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -882,8 +881,6 @@ class ManifestationsController < ApplicationController
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
 
     new_work_has_title
-    @use_titles = session[:use_titles]
-
   end
 
   # POST /manifestations
@@ -952,7 +949,7 @@ class ManifestationsController < ApplicationController
         prepare_options
         output_patron_parameter
         new_work_has_title
-        @use_titles = session[:use_titles] 
+
       format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
@@ -1016,7 +1013,7 @@ class ManifestationsController < ApplicationController
         prepare_options
         output_patron_parameter
         new_work_has_title
-        @use_titles = session[:use_titles]
+
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
@@ -1857,7 +1854,7 @@ class ManifestationsController < ApplicationController
 
   def create_titles
  
-    return unless session[:use_titles] == "true"
+    return unless SystemConfiguration.get('manifestation.use_titles')
 
     if params[:manifestation][:work_has_titles_attributes]
       @work_has_titles = params[:manifestation][:work_has_titles_attributes]
@@ -1878,7 +1875,7 @@ class ManifestationsController < ApplicationController
   def new_work_has_title
 
     @count_titles = 0
-    if session[:use_titles] == "true"
+    if SystemConfiguration.get('manifestation.use_titles')
 
       @count_titles = @manifestation.work_has_titles.size
       if @manifestation.work_has_titles.empty?

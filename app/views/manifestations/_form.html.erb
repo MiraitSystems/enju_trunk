@@ -273,7 +273,7 @@ $(document).keydown(function(e) {
     <%= f.text_field :article_title, :class => 'resource_title' %>
   </div>
 
-  <% if @use_titles =="true" %>
+  <% if SystemConfiguration.get('manifestation.use_titles') %>
     <div class="field">
       <% i = 0 %>
       <%= f.fields_for :work_has_titles, @manifestation.work_has_titles do |title| %>

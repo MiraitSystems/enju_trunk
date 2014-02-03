@@ -48,7 +48,7 @@
           <li><%= link_to t('activerecord.models.manifestation_relationship'), manifestation_relationships_path %></li>
           <li>
             <%= t('page.select_use_titles') %>:
-            <% if @use_titles == "true" %>
+            <% if SystemConfiguration.get('manifestation.use_titles') %>
               <strong><%= t('page.boolean.true') %></strong>/
               <%= link_to t('page.boolean.false'), page_configuration_path(:use_titles => false) %>
            <% else %>
