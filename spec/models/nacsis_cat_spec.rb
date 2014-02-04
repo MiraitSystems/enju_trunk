@@ -305,18 +305,30 @@ describe NacsisCat do
 
     it ':id指定からIDの検索式を生成すること' do
       build_query(id: 'foo').should eq('ID="foo"')
+      build_query(id: %w(foo)).should eq('ID="foo"')
+      build_query(id: %w(foo bar)).should eq('ID="foo" ID="bar" OR')
+      build_query(id: %w(foo bar baz)).should eq('ID="foo" ID="bar" OR ID="baz" OR')
     end
 
     it ':bid指定からBIDの検索式を生成すること' do
       build_query(bid: 'foo').should eq('BID="foo"')
+      build_query(bid: %w(foo)).should eq('BID="foo"')
+      build_query(bid: %w(foo bar)).should eq('BID="foo" BID="bar" OR')
+      build_query(bid: %w(foo bar baz)).should eq('BID="foo" BID="bar" OR BID="baz" OR')
     end
 
     it ':isbn指定からISBNKEYの検索式を生成すること' do
       build_query(isbn: 'foo').should eq('ISBNKEY="foo"')
+      build_query(isbn: %w(foo)).should eq('ISBNKEY="foo"')
+      build_query(isbn: %w(foo bar)).should eq('ISBNKEY="foo" ISBNKEY="bar" OR')
+      build_query(isbn: %w(foo bar baz)).should eq('ISBNKEY="foo" ISBNKEY="bar" OR ISBNKEY="baz" OR')
     end
 
     it ':issn指定からISSNKEYの検索式を生成すること' do
       build_query(issn: 'foo').should eq('ISSNKEY="foo"')
+      build_query(issn: %w(foo)).should eq('ISSNKEY="foo"')
+      build_query(issn: %w(foo bar)).should eq('ISSNKEY="foo" ISSNKEY="bar" OR')
+      build_query(issn: %w(foo bar baz)).should eq('ISSNKEY="foo" ISSNKEY="bar" OR ISSNKEY="baz" OR')
     end
 
     it '複数の指定からAND条件の検索式を生成すること' do
@@ -638,6 +650,7 @@ describe NacsisCat do
       expect(nacsis_cat.detail).to eq({
         subject_heading: '本標題:標題関連情報/責任表示',
         subject_heading_reading: 'ホンヒョウダイ ヨミ',
+        subject_heading_reading_alternative: 'ホンヒョウダイ ソノタ ヨミ',
         publisher: ['出版地a,出版者1,2013.6', '出版地b,出版者2,2013.7'],
         publish_year: '2012',
         physical_description: '237p;ll.;23cm;CD-ROM',
@@ -656,6 +669,7 @@ describe NacsisCat do
       expect(nacsis_cat.detail).to eq({
         subject_heading: '本標題:標題関連情報/責任表示',
         subject_heading_reading: 'ホンヒョウダイ ヨミ',
+        subject_heading_reading_alternative: 'ホンヒョウダイ ソノタ ヨミ',
         publisher: ['出版地a,出版者1,2013.6', '出版地b,出版者2,2013.7'],
         publish_year: '2012',
         physical_description: '237p;ll.;23cm;CD-ROM',
