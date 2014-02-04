@@ -23,7 +23,29 @@
     });
   });
 -->
+
 </script>
+
+
+<script id = "key_controll">
+$(document).ready(function() {
+  $('div.container').on('focus', 'li', function() {
+    $this = $(this);
+    $this.addClass('active').siblings().removeClass();
+    $this.closest('div.container').scrollTop($this.index() * $this.outerHeight());
+  }).on('keydown', 'li', function(e) {
+    $this = $(this);
+    if (e.keyCode == 40) {        
+        $this.next().focus();
+        return false;
+    } else if (e.keyCode == 38) {        
+        $this.prev().focus();
+        return false;
+    }
+  }).find('li').first().focus();
+});
+</script>
+
 
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.search_resource', :model => t('page.resource')) -%></h1>

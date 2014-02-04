@@ -1,8 +1,19 @@
-<table class="index" id="manifestation_list">
+<!--<table class="index" id="manifestation_list">a-->
+<table class="container" id="manifestation_list">
   <%- if @binder -%>
     <%= render 'binding_items' %>
   <%- else %>
-    <%= render manifestations %>
+
+<% @key_position = 1 %>
+
+    <div class="container">
+    <ul>
+        <li tabindex=<%= @key_position %>>item<%=@key_position%></li>
+        <li tabindex=<%= @key_position + 1 %> >item<%=@key_position%></li>
+      <%= render manifestations %>
+    </ul>
+   </div>
+      <%# render manifestations %>
   <%- end %>
 </table>
 
