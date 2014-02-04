@@ -579,16 +579,14 @@ div#breadcrumb{
   width: 700px;
 }
 
-.container{
-    /*height:10px;*/
+table.container{
     border-color:black;
     overflow:auto;
 }
-li{
+tr{
     outline: none;
     cursor: default;
 }
 .active{
-    background-color:yellow;    
+    background-color:yellow !important;
 }
-

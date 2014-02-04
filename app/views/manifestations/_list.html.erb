@@ -3,23 +3,16 @@
   <%- if @binder -%>
     <%= render 'binding_items' %>
   <%- else %>
-
-<% @key_position = 1 %>
-
-    <div class="container">
-    <ul>
-        <li tabindex=<%= @key_position %>>item<%=@key_position%></li>
-        <li tabindex=<%= @key_position + 1 %> >item<%=@key_position%></li>
+      <% @key_position = 1 %>
       <%= render manifestations %>
-    </ul>
-   </div>
-      <%# render manifestations %>
   <%- end %>
 </table>
 
 <%- if manifestations == @manifestations_article -%>
   <%= paginate(manifestations, :param_name => :page_article) -%>
 <%- else -%>
+  <%= params[:page] %>
+  <%= link_to "前へ", :page => 5 %>
   <%= paginate(manifestations) -%>
 <%- end -%>
 <br />
