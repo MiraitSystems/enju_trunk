@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 class UsersController < ApplicationController
+  authorize_function
   add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.user'))", 'users_path', :only => [:index]
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.user'))", 'new_user_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.user'))", 'edit_user_path(params[:id])', :only => [:edit, :update]
@@ -500,5 +501,6 @@ class UsersController < ApplicationController
     @patron_type_person = PatronType.find_by_name('Person').id
     @user_statuses = UserStatus.all
     @departments = Department.all
+    @function_classes = FunctionClass.all
   end
 end

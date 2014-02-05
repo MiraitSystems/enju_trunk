@@ -13,17 +13,17 @@ class User < ActiveRecord::Base
   attr_accessible :email, :password, :password_confirmation, :current_password,
     :remember_me, :email_confirmation, :library_id, :locale,
     :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
-    :username, :own_password, :user_status_id
+    :username, :own_password, :user_status_id, :function_class_id
   attr_accessible :email, :password, :password_confirmation, :current_password,
     :remember_me, :email_confirmation, :library_id, :locale,
     :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
-    :username, :own_password, :user_status_id, :department_id, :as => :user_change_department
+    :username, :own_password, :user_status_id, :department_id, :function_class, :as => :user_change_department
   attr_accessible :email, :password, :password_confirmation, :username,
     :current_password, :user_number, :remember_me,
     :email_confirmation, :note, :user_group_id, :library_id, :locale,
     :expired_at, :locked, :unable, :required_role_id, :role_id,
     :keyword_list, :user_has_role_attributes, :auto_generated_password, :own_password,
-    :user_status_id, :department_id, :as => :admin
+    :user_status_id, :department_id, :function_class_id, :as => :admin
 
   scope :administrators, where('roles.name = ?', 'Administrator').includes(:role)
   scope :librarians, where('roles.name = ? OR roles.name = ?', 'Administrator', 'Librarian').includes(:role)
@@ -73,6 +73,7 @@ class User < ActiveRecord::Base
   belongs_to :department
   has_many :copy_requests
   has_many :nacsis_user_requests, :dependent => :destroy
+  belongs_to :function_class
 
   validates :username, :presence => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/, :message => I18n.t('errors.messages.en_expected')} #, :uniqueness => true
   validates_uniqueness_of :username, :unless => proc{|user| SystemConfiguration.get('auto_user_number')}, :allow_blank => true

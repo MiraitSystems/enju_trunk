@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 class SystemConfigurationsController < ApplicationController
   include SystemConfigurationsHelper
+  authorize_function
   before_filter :check_client_ip_address
   load_and_authorize_resource
 

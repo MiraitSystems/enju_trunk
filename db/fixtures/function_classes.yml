@@ -1,0 +1,21 @@
+---
+function_class_00001:
+  id: 1
+  name: admin
+  display_name: "システム管理者"
+  position: 1
+function_class_00002:
+  id: 2
+  name: librarian
+  display_name: "ライブラリアン"
+  position: 2
+function_class_00003:
+  id: 3
+  name: user
+  display_name: "利用者"
+  position: 3
+function_class_00004:
+  id: 4
+  name: nobody
+  display_name: "ゲスト"
+  position: 4
