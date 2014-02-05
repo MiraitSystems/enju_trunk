@@ -29,7 +29,7 @@
       <%= t('activerecord.attributes.checkout.renewal_count')%>: 
       <%= @checkout.checkout_renewal_count -%> / <%= @checkout.item.checkout_status(@checkout.user).checkout_renewal_limit %><br />
     </div>
-    <% if @checkout.checkout_renewable? %>
+    <% if @checkout.checkout_renewable?(current_user) %>
       <%= form_for(@checkout, :url => user_checkout_path(@checkout.user, @checkout, :opac => true)) do |f| %>
         <div>
           <%= t('checkout.new_due_date') %>: <%= l(@renew_due_date, :format => :only_date) if @renew_due_date %>
