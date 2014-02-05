@@ -588,5 +588,10 @@ tr{
     cursor: default;
 }
 .active{
-    background-color:yellow !important;
-}
+    /* 線 */
+    border-color:#993333; 
+    border-style:ridge; 
+    border-width:5px;
+    /* 色 */
+    /*background-color:yellow !important;
+*/}

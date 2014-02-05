@@ -42,7 +42,7 @@ $(document).ready(function() {
         $this.prev().focus();
         return false;
         break;
-      case 37: //<-
+      case 37: //←
         <% move_page = 0 %>
         <% move_page = params[:page].to_i if params[:page] %>
         //今のページを取得
@@ -65,7 +65,7 @@ $(document).ready(function() {
         }
         return false;
         break;
-      case 39: //->
+      case 39: //→
         <% move_page = 0 %>
         <% move_page = params[:page].to_i if params[:page] %>
         <% end_page = 0 %>
@@ -82,6 +82,7 @@ $(document).ready(function() {
             var address = location.search;
             var search_address = address.replace("?", "?page=1&");
           } else {
+            new_page = "page="+ <%=move_page + 2 %>;
             var address = location.search;
             var search_address = address.replace("?", "?"+ new_page + "&");
           }
@@ -98,18 +99,15 @@ $(document).ready(function() {
         return false;
         break;
       case 13: //enter
+        //アドレスの書き換えで対応
+        var tags = document.getElementsByClassName('active');
+        manifestation_tag = tags[0].getAttribute('name');
+        var page_address = location.href;
+        var new_address = page_address.replace("manifestations?", "manifestations/" + manifestation_tag + "?");
+        location.href = new_address;
         return false;
         break;
     } 
-/*
-    if (e.keyCode == 40) {
-        $this.next().focus();
-        return false;
-    } else if (e.keyCode == 38) {
-        $this.prev().focus();
-        return false;
-    }
-*/
   }).find('tr').first().focus();
 });
 </script>
@@ -117,7 +115,7 @@ $(document).ready(function() {
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.search_resource', :model => t('page.resource')) -%></h1>
 <div id="content_list">
-  <div style="color: green"><%= flash[:message] -%></div> 
+  <div style="color: green"><%= flash[:message] -%></div>
   <%= render 'manifestations/title', :manifestation => @manifestation if @manifestation -%>
   <% if @basket %>
     <p id="basket_count"><%= t('basket.show_basket', :count => @basket.try(:checked_manifestations).try(:size)) %></p>
