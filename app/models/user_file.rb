@@ -27,7 +27,9 @@ class UserFile
     },
     resource_import_results: {
       expire: 24.hours,
-    }
+    },
+    resource_import_nacsisfile: {
+    },
   }
 
   class << self
