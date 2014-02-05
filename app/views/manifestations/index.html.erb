@@ -43,9 +43,58 @@ $(document).ready(function() {
         return false;
         break;
       case 37: //<-
+        <% move_page = 0 %>
+        <% move_page = params[:page].to_i if params[:page] %>
+        //今のページを取得
+        var now_page = "page="+ <%=move_page%>;
+        var new_page = "page="+ <%=move_page - 1%>;
+        var page_address = location.href;
+        //現在のページが「取得できない」or「1」の場合
+        if (now_page == "page=0" || now_page == "page=1"){ 
+          var address = location.search;
+          //pageに「page=1」の重複を防ぐため
+          if (address.indexOf("page=1") == -1){
+            var search_address = address.replace("?", "?page=1&");
+          } else {
+            var search_address = address;
+          }
+          location.search = search_address;
+        } else {
+          var new_address = page_address.replace(now_page, new_page);
+          location.href = new_address;
+        }
         return false;
         break;
       case 39: //->
+        <% move_page = 0 %>
+        <% move_page = params[:page].to_i if params[:page] %>
+        <% end_page = 0 %>
+        <% end_page = @manifestations.num_pages if @manifestations.num_pages %>
+        //今のページを取得
+        var now_page = "page="+ <%=move_page %>;
+        var new_page = "page="+ <%=move_page + 1 %>;
+        var last_page = "page="+ <%=end_page %> 
+        var page_address = location.href;
+        //現在のページが「取得できない」場合
+        if (now_page == "page=0"){
+          //ページ上限での処理
+          if (last_page == "page=1") {
+            var address = location.search;
+            var search_address = address.replace("?", "?page=1&");
+          } else {
+            var address = location.search;
+            var search_address = address.replace("?", "?"+ new_page + "&");
+          }
+          location.search = search_address;
+        } else {
+          //ページ上限での処理
+          if (now_page == last_page) {
+            var new_address = page_address.replace(now_page, now_page);
+          } else {
+            var new_address = page_address.replace(now_page, new_page);
+          }
+          location.href = new_address;
+        }
         return false;
         break;
       case 13: //enter

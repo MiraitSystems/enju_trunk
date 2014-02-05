@@ -11,8 +11,6 @@
 <%- if manifestations == @manifestations_article -%>
   <%= paginate(manifestations, :param_name => :page_article) -%>
 <%- else -%>
-  <%= params[:page] %>
-  <%= link_to "前へ", :page => 5 %>
   <%= paginate(manifestations) -%>
 <%- end -%>
 <br />
