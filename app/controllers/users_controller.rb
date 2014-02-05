@@ -177,10 +177,10 @@ class UsersController < ApplicationController
           logger.info @patron
           logger.info @user
 
-          @patron.save!
-          @user.patron = @patron
           @user.set_family(@family) unless @family.blank?
           @user.save!
+          @patron.user = @user
+          @patron.save!
           flash[:temporary_password] = @user.password
           format.html { redirect_to @user, :notice => t('controller.successfully_created.', :model => t('activerecord.models.user')) }
           #format.html { redirect_to new_user_patron_url(@user) }
