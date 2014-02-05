@@ -45,10 +45,10 @@ class NacsisCat
     # 検索条件は引数で指定する。サポートしている形式は以下の通り。
     #  * :dbs => [...] - 検索対象のDB名リスト: :book(一般書誌)、:serial(雑誌書誌)、:bhold(一般所蔵)、:shold(雑誌所蔵)、:all(:bookと:serialからの横断検索)
     #  * :opts => {...} - DBに対するオプション(ページ指定): 指定例: {:book => {:page => 2, :per_page => 30}, :serial => {...}}
-    #  * :id => '...' - NACSIS-CATの書誌IDにより検索する
-    #  * :bid => '...' - NACSIS-CATの書蔵IDにより検索する
-    #  * :isbn => '...' - ISBN(ISBNKEY)により検索する
-    #  * :issn => '...' - ISSN(ISSNKEY)により検索する
+    #  * :id => '...' - NACSIS-CATの書誌IDにより検索する(***)
+    #  * :bid => '...' - NACSIS-CATの書蔵IDにより検索する(***)
+    #  * :isbn => '...' - ISBN(ISBNKEY)により検索する(***)
+    #  * :issn => '...' - ISSN(ISSNKEY)により検索する(***)
     #  * :query => '...' - 一般検索語により検索する(*)
     #  * :title => [...] - 書名(_TITLE_)により検索する(*)
     #  * :author => [...] - 著者名(_AUTH_)により検索する(*)
@@ -58,6 +58,7 @@ class NacsisCat
     #
     # (*) :dbsが:bookまたは:serialのときのみ機能する
     # (**) :query、:title、:author、:publisher、:subjectの否定形に対応
+    # (***) 配列で指定することもでき、その場合は指定した複数キーによるOR検索となる
     #
     # :dbsには基本的に複数のDBを指定する。
     # 検索結果は {:book => aResultArray, ...} のような形となる。
@@ -116,7 +117,9 @@ class NacsisCat
         segments = cond.map do |key, value|
           case key
           when :id, :bid, :isbn, :issn
-            rpn_seg(DB_KEY[key], value)
+            rpn_concat(
+              'OR',
+              [value].flatten.map {|v| rpn_seg(DB_KEY[key], v) })
 
           when :title, :author, :publisher, :subject
             rpn_concat(
@@ -328,6 +331,7 @@ class NacsisCat
     {
       :subject_heading => @record['TR'].try(:[], 'TRD'),
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
+      :subject_heading_reading_alternative => @record['TR'].try(:[], 'TRVR'),
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),

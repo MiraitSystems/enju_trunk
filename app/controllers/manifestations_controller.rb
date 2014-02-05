@@ -6,7 +6,7 @@ class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :output_show, :output_pdf]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -1060,6 +1060,27 @@ class ManifestationsController < ApplicationController
 
     respond_to do |format|
       format.html
+    end
+  end
+
+  # POST /manifestations/create_from_nacsis?ncid=<NCID>&manifestation_type=book
+  def create_from_nacsis
+    ncid = params['ncid']
+    type = params['manifestation_type'] || 'book'
+
+    manifestation = Manifestation.create_from_ncid(ncid)
+
+    respond_to do |format|
+      format.html do
+        if manifestation.persisted?
+          redirect_to manifestation,
+            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
+        elsif record = Manifestation.where(nacsis_identifier: ncid).first
+          redirect_to record
+        else
+          redirect_to nacsis_manifestations_path(ncid: ncid, manifestation_type: type)
+        end
+      end
     end
   end
 

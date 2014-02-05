@@ -1,0 +1,42 @@
+<script type="text/javascript">
+  jQuery(function($) {
+    $(document).on("change", "#resource_import_nacsis", function(){
+      <% split_type = SystemConfiguration.get('set_output_format_type') ? 'tsv' : 'csv' %>
+      var split_type  = "<%= split_type %>";
+      if ((split_type == 'tsv' ? this.value.match(/.tsv$/) : this.value.match(/.csv$/))) {
+        $(".message").html("");
+        $("#submit_nacsis").removeAttr("disabled");
+      } else {
+        var path = this.value.split('\\');
+        var fileName = path.pop();
+        // show error message
+        var data = "<p style='color: red'>"
+                 + fileName + "<%= t('.wrong_file') %><br />"
+                 + "<%= t('.wrong_extention', :split_type => split_type) %></p>";
+        $("#resource_import_nacsis").val('');
+        $(".message").html(data);
+        $("#submit_nacsis").attr("disabled","disabled");
+      }
+    });
+  });
+</script>
+
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.new', :model => t('.resource_import_nacsisfile')) %></h1>
+  <div id="content_list">
+    <p id="notice"><%= notice %></p>
+    <%= form_tag(resource_import_nacsisfiles_path, :multipart => true, :method => 'post') do %>
+      <div class="field" id="select_file">
+        <%= label_tag t('page.file') %><br />
+        <%= file_field_tag :resource_import_nacsis %>
+      </div>
+      <div class="message"></div>
+      <div class="actions">
+        <%= submit_tag t('page.submit'), :id => "submit_nacsis", :disabled => true %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+</div>
