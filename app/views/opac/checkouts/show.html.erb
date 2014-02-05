@@ -15,7 +15,7 @@
   <p id="notice"><%= notice %></p>
   <%= render 'opac/manifestations/manifestation_info', :manifestation => @checkout.item.manifestation %>
 
-  <% if @checkout.checkout_renewable? %>  
+  <% if @checkout.checkout_renewable?(current_user) %>  
     <div id="opac_button_200"><%= link_to t('checkout.renewal'), edit_user_checkout_path(@checkout.user, @checkout, :opac => true) %></div>
     <br style="clear: both;"/> 
   <% else %>
