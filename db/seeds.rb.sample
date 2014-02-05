@@ -31,6 +31,7 @@ user.email = email
 user.password = password
 user.password_confirmation = password
 user.role = Role.find_by_name('Administrator')
+user.function_class = FunctionClass.find_by_name('admin')
 user.operator = user
 user.save!
 #user.confirm!
@@ -42,24 +43,28 @@ user = User.find(2)
 user.password = "enjuenju"
 user.password_confirmation = "enjuenju"
 user.role = Role.find_by_name('Librarian')
+user.function_class = FunctionClass.find_by_name('librarian')
 user.operator = user
 user.save!
 user = User.find(3)
 user.password = "enjuenju"
 user.password_confirmation = "enjuenju"
 user.role = Role.find_by_name('Librarian')
+user.function_class = FunctionClass.find_by_name('librarian')
 user.operator = user
 user.save!
 user = User.find(4)
 user.password = "enjuenju"
 user.password_confirmation = "enjuenju"
 user.role = Role.find_by_name('Librarian')
+user.function_class = FunctionClass.find_by_name('librarian')
 user.operator = user
 user.save!
 user = User.find(5)
 user.password = "enjuenju"
 user.password_confirmation = "enjuenju"
 user.role = Role.find_by_name('Librarian')
+user.function_class = FunctionClass.find_by_name('librarian')
 user.operator = user
 user.save!
 puts 'demo account created.'
