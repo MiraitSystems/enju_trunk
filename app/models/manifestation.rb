@@ -4,6 +4,7 @@ require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation')
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
+  include EnjuTrunk::ArExtend
   has_many :creators, :through => :creates, :source => :patron, :order => :position
   has_many :creators_order_type, :through => :creates, :source => :patron, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :patron, :order => :position
