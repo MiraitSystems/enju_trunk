@@ -338,6 +338,20 @@ class NacsisCat
       :pub_country => @record['CNTRY'], # :pub_country => @record.cntry.try {|cntry| Country.where(:alpha_2 => cntry.upcase).first }, # XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html
       :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
       :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
+
+      :title_alternative_transcription => map_attrs(@record['VT']) {|vt| join_attrs(vt, ['VTVR'], ',')}.compact.uniq.join(","),
+      :publication_place => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP'], ',')}.compact.uniq.join(","),
+      :price => map_attrs(@record['VOLG']) {|volg| join_attrs(volg, ['PRICE'], ',')}.compact.uniq.join(","),
+      :wrong_isbn => map_attrs(@record['VOLG']) {|volg| join_attrs(volg, ['XISBN'], ',')}.compact.uniq.join(","),
+      :ndc => map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSD'], ':')}.compact.uniq.join(","),
+      :note => if @record['NOTE'].is_a?(Array)
+          @record['NOTE'].compact.join(",")
+        else
+          @record['NOTE']
+        end,
+      :size => @record['PHYS'].try(:[],'PHYSS'),
+      :marc => @record['MARCID'],
+
       :classmark => if book?
           map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(';')
         else

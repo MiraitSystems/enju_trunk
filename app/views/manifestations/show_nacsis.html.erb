@@ -31,7 +31,7 @@
             <%# XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html -%>
             <td><%= @nacsis_cat.detail[key] -%></td>
           <%- when :title_language, :text_language -%>
-	    <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
+            <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
           <%- when :author_heading, :isbn -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
           <%- else -%>

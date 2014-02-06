@@ -1489,6 +1489,17 @@ class Manifestation < ActiveRecord::Base
           attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
           attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
 
+          attrs[:place_of_publication] = nacsis_info[:publication_place]
+          attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription]
+          attrs[:price_string] = nacsis_info[:price]
+          attrs[:ndc] = nacsis_info[:ndc]
+          attrs[:note] = nacsis_info[:note]
+          attrs[:isbn] = nacsis_info[:isbn]
+          attrs[:wrong_isbn] = nacsis_info[:wrong_isbn]
+          attrs[:issn] = nacsis_info[:issn]
+          attrs[:marc_number] = nacsis_info[:marc]
+          attrs[:pub_date] = nacsis_info[:publish_year]
+
           # 和書または洋書を設定する
           if nacsis_info[:text_language] &&
               nacsis_info[:text_language].name == 'Japanese'
