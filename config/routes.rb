@@ -2,6 +2,12 @@ EnjuLeaf::Application.routes.draw do
   resources :approvals
   resources :keycodes
   resources :use_licenses
+  resources :function_classes do
+    resources :function_class_abilities, :only => [:index] do
+      post :update_all, :on => :collection
+    end
+  end
+
   resources :exchange_rates
   resources :currencies
 

@@ -90,17 +90,9 @@ class Library < ActiveRecord::Base
     @shelf_in_process.save!
   end
 
-  #def closed?(date, events)
   def closed?(date)
-    logger.error "########## closed? start!! ##########"
-    # event_category_id = Event.find(:select => "event_category_id")
-    # event_categories = EventCategory.all('id = ? AND event_categories.checkin_ng = ?', events.event_category_id, true)
-    logger.error "########## events = #{events} ##########"
-#    events.closing_days.collect{|c| c.start_at.beginning_of_day}.include?(date.beginning_of_day)
+    return false if events.blank?
     events.closing_days.each do |c|
-      logger.error "############ close_start = #{c.start_at.beginning_of_day} #############"
-      logger.error "############ close_end = #{c.end_at.end_of_day} #############"
-      logger.error "############ renew_due_date = #{date.beginning_of_day} #############"
       return true if c.start_at.beginning_of_day <= date.beginning_of_day && c.end_at.end_of_day >= date.beginning_of_day
     end
     false

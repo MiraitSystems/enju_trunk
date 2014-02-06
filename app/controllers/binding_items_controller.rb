@@ -1,4 +1,5 @@
 class BindingItemsController < ApplicationController
+  authorize_function
   load_and_authorize_resource
   before_filter :get_bookbinding
 
