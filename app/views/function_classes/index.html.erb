@@ -1,0 +1,34 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => FunctionClass.model_name.human) %></h1>
+<div id="content_list">
+
+<table class='index'>
+  <tr>
+    <th><%= FunctionClass.human_attribute_name('display_name') %></th>
+    <th><%= FunctionClass.human_attribute_name('name') %></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @function_classes.each do |function_class| %>
+  <tr>
+    <td><%= function_class.display_name %></td>
+    <td><%= function_class.name %></td>
+    <td>
+      <%= link_to t('page.edit'), edit_function_class_path(function_class) %>
+      <%= link_to t('page.destroy'), function_class, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+    </td>
+    <td><%= link_to FunctionClassAbility.model_name.human, function_class_function_class_abilities_path(function_class_id: function_class.id) %></td>
+  </tr>
+<% end %>
+</table>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :create, FunctionClass %>
+      <li><%= link_to t('page.new', :model => FunctionClass.model_name.human), new_function_class_path %></li>
+    <%- end -%>
+  </ul>
+</div>

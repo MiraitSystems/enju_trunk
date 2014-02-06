@@ -449,6 +449,17 @@ class ApplicationController < ActionController::Base
     end  
     patron
   end  
+
+  def self.authorize_function
+    before_filter :authorize_function!
+  end
+
+  def authorize_function!
+    unless FunctionClassAbility.permit?(self.class, action_name, current_user)
+      logger.info "access denied by FunctionClassAbility: user=#{current_user.try(:id)},action=#{action_name},function_class=#{current_user.try(:function_class_id)}"
+      raise CanCan::AccessDenied
+    end
+  end
 end
 
 class InvalidLocaleError < StandardError

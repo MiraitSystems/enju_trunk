@@ -1185,3 +1185,10 @@ system_configuration_00168:
   typename: String
   description: "F9のリンク先"
   category: 'function'
+system_configuration_00169:
+  id: 169
+  keyname: not_use_footer
+  v: "false"
+  typename: Boolean
+  description: "フッターを表示しないか"
+  category: 'general'

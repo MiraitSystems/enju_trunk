@@ -1,0 +1,91 @@
+---
+function_config:
+  id: 1
+  display_name: "システム設定"
+  controller_name: SystemConfigurationsController
+  action_names: |
+                read:index
+                update:update
+                delete:
+  position: 1
+function_user:
+  id: 2
+  display_name: "利用者管理"
+  controller_name: UsersController
+  action_names: |
+                read:index,show
+                update:new,create,edit,update
+                delete:destroy
+  position: 2
+function_approval:
+  id: 3
+  display_name: "見計らい"
+  controller_name: ApprovalsController
+  action_names: |
+                read:index,show
+                update:new,create,edit,update
+                delete:destroy
+  position: 3
+function_00004:
+  id: 4
+  display_name: "目録管理"
+  controller_name: ManifestationsController
+  action_names: |
+                read:index,show
+                update:new,create,edit,update
+                delete:destroy
+  position: 4
+function_00005:
+  id: 5
+  display_name: "資料受入"
+  controller_name: ItemsController
+  action_names:  |
+                 read:index,show
+                 update:new,create,edit,update
+                 delete:destroy
+  position: 5
+function_00006:
+  id: 6
+  display_name: "資料発注"
+  controller_name: OrdersController
+  action_names: |
+                read:index,show
+                update:new,create,edit,update
+                delete:destroy
+  position: 6
+function_00007:
+  id: 7
+  display_name: "資料支払"
+  controller_name: PaymentsController
+  action_names: |
+                read:index,show
+                update:new,create,edit,update
+                delete:destroy
+  position: 7
+function_00008:
+  id: 8
+  display_name: "保管(排架)"
+  controller_name: ItemsController
+  action_names: |
+                read:index,show
+                update:edit,update
+                delete:
+  position: 8
+function_00009:
+  id: 9
+  display_name: "保管(製本)"
+  controller_name: BindingItemsController
+  action_names: |
+                read:
+                update:index,create,destroy
+                delete:
+  position: 9
+function_00010:
+  id: 10
+  display_name: "利用許諾"
+  controller_name: UseLicensesController
+  action_names: |
+                read:
+                update:index,create,destroy
+                delete:
+  position: 10

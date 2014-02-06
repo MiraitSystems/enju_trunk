@@ -1,12 +1,13 @@
 # -* encoding: utf-8 -*-
 class ManifestationsController < ApplicationController
+  authorize_function
   add_breadcrumb "I18n.t('breadcrumb.search_manifestations')", 'manifestations_path', :only => [:index] #, :unless => proc{params}
 #  add_breadcrumb "I18n.t('breadcrumb.search_manifestations')", 'manifestations_path(params)', :only => [:index], :if => proc{params}
   add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.manifestation'))", 'manifestation_path(params[:id])', :only => [:show]
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :output_show, :output_pdf, :search_manifestation]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -1075,6 +1076,27 @@ class ManifestationsController < ApplicationController
       manifestation_urls << ApplicationController.helpers.link_to(str, manifestation_path(m))
     end
     render :json => { success: 1, manifestation_urls: manifestation_urls }
+  end
+
+  # POST /manifestations/create_from_nacsis?ncid=<NCID>&manifestation_type=book
+  def create_from_nacsis
+    ncid = params['ncid']
+    type = params['manifestation_type'] || 'book'
+
+    manifestation = Manifestation.create_from_ncid(ncid)
+
+    respond_to do |format|
+      format.html do
+        if manifestation.persisted?
+          redirect_to manifestation,
+            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
+        elsif record = Manifestation.where(nacsis_identifier: ncid).first
+          redirect_to record
+        else
+          redirect_to nacsis_manifestations_path(ncid: ncid, manifestation_type: type)
+        end
+      end
+    end
   end
 
   private

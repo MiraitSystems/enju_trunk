@@ -198,6 +198,9 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
+      function: Function
+      function_class: Function class
+      function_class_ability: Function class ability
 
     attributes:
       use_license:
@@ -1594,6 +1597,18 @@ en:
         created_by: Created by
         state: state
         comment_at: Comment at
+      function:
+        controller_name: Controller name
+        display_name: Display name
+        position: Position
+      function_class:
+        display_name: Display name
+        name: Function name
+        position: Position
+      function_class_ability:
+        function_class: Function class
+        function: Function
+        ability: Ability
 
   page:
     user_title: Welcome %{login_name}
@@ -1730,6 +1745,7 @@ en:
     add_manually: Add manually
     import_from_file: Import from TSV file
     import_from_network: Import from networks
+    import_from_nacsis: Import from NACSIS file
     no_record_found: No records found.
     did_you_mean_to_search_for: Did you mean to search for
     not_found_users: Not found users.
@@ -1815,11 +1831,7 @@ en:
     calendar: Calendar
     related: Related
     see: See
-    see_also: See also
-    member: Member
-    organization: Organization
-    child: Child
-    parent: Parent
+    derivation: Derivation
     history: History
     current_version: Current version
     select: Select
@@ -2798,6 +2810,11 @@ en:
     reserved_item: 'It is reserved item. (username: %{username}, user number: %{user_number})'
     invalid_isbn: 'ISBN is invalid ISBN: %{isbn}'
     record_not_found: 'Failed to get data with ISBN: %{isbn}'
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSIS file
+      wrong_file: can not be imported.
+      wrong_extention: "files with xlsx extension or %{split_type} can be imported."
   patron_import_file:
     template_download: Download template
     import_request: Import now
@@ -2998,6 +3015,20 @@ en:
     description: "Select one from the following list, please press the merge button.<br />
                    * After merging, only the information of the patron selected remains.<br />
                    &nbsp&nbsp Information of other patron will be deleted."
+  manifestations:
+    show_nacsis:
+      local_import: Local import
+    more_than_last_number: " more than last number." 
+  function_class_abilities:
+    index:
+      ability_label:
+        none: None
+        read: Read
+        update: Update
+        delete: Delete
+    successfully_updated: Successfully updated.
+    partially_updated: Partially updated.
+    update_failed: Update failed.
 
   activemodel:
     models:

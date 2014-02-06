@@ -37,7 +37,9 @@
 </div>
 
 <%= render 'page/function_general' %>
-<%= render 'page/footer' %>
+<% unless SystemConfiguration.get("not_use_footer") %>
+  <%= render 'page/footer' %>
+<% end %>
 
 </body>
 </html>

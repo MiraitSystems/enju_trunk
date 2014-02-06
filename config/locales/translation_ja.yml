@@ -201,6 +201,9 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
+      function: 機能
+      function_class: 機能区分
+      function_class_ability: 機能許可
 
     attributes:
       use_license:
@@ -1582,7 +1585,19 @@ ja:
         created_by: 記入者
         state: 工程
         comment_at: 発生日
-        
+      function:
+        controller_name: コントローラ名
+        display_name: 表示名
+        position: 位置
+      function_class:
+        display_name: 表示名
+        name: 区分名
+        position: 位置
+      function_class_ability:
+        function_class: 機能区分
+        function: 機能
+        ability: 権限
+
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
@@ -1719,6 +1734,7 @@ ja:
     import_from_tsvfile: "TSVファイルからのインポート"
     import_from_file: "ファイルからのインポート"
     import_from_network: "ネットワークからインポート"
+    import_from_nacsis: "NACSISファイルからのインポート"
     no_record_found: "資料が見つかりませんでした。"
     did_you_mean_to_search_for: "もしかして"
     not_found_users: "該当の利用者は見つかりませんでした。"
@@ -1802,11 +1818,7 @@ ja:
     calendar: "カレンダー"
     related: "関連"
     see: "を見よ"
-    see_also: "をも見よ"
-    member: "メンバー"
-    organization: "所属団体"
-    child: "子"
-    parent: "親"
+    derivation: "派生"
     history: "履歴"
     current_version: "最新版"
     select: "選択"
@@ -2629,6 +2641,13 @@ ja:
     reserved_item : "予約済みの資料です。(ユーザ名: %{username}, 利用者番号: %{user_number})"
     invalid_isbn: "指定ISBNが不正です。 ISBN: %{isbn}"
     record_not_found: "指定ISBNの書誌情報を読み込めませんでした。 ISBN: %{isbn}"
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSISファイル
+      wrong_file: "はインポートできません。"
+      wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
+    successfully_uploaded: "正常に送信されました。"
+    upload_failed: "送信に失敗しました。"
   patron_import_file:
     template_download: "テンプレートをダウンロード"
     import_request: "すぐにインポート"
@@ -2968,6 +2987,20 @@ ja:
   patron_merge_list:
     description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
                  ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
+  manifestations:
+    show_nacsis:
+      local_import: "ローカルインポート"
+  function_class_abilities:
+    index:
+      select_function_class: 機能区分の変更
+      ability_label:
+        none: 参照不可
+        read: 参照可
+        update: 更新可
+        delete: 削除可
+    successfully_updated: "正常に更新されました。"
+    partially_updated: "一部を除き正常に更新されました。"
+    update_failed: "更新できませんでした。"
 
   activemodel:
     models:

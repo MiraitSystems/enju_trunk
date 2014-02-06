@@ -31,15 +31,29 @@ class PatronRelationshipsController < InheritedResources::Base
       redirect_to patron_relationships_url
       return
     end
-    update!
+    update! do |format|
+      format.html {redirect_to patron_patrons_path(params[:patron_id], set_params)}
+    end
   end
 
   def destroy
-    patron_id = params[:patron_id]
-    relationship_type_id = params[:patron_relationship_type]
     destroy! do |format|
-      relationship_type_id = nil if PatronRelationship.count_relationship(patron_id, relationship_type_id) == 0
-      format.html {redirect_to patron_patrons_path(patron_id, :mode => 'show', :patron_relationship_type => relationship_type_id)}
+      format.html {redirect_to patron_patrons_path(params[:patron_id], set_params)}
     end
+  end
+
+  def set_params
+    if PatronRelationship.count_relationship(params[:patron_id], params[:patron_relationship_type], params[:parent_child_relationship]) == 0
+      params[:patron_relationship_type] = nil
+      params[:parent_child_relationship] = nil
+      params[:patron_type] = nil
+    end
+    param_hash = Hash.new
+    param_hash.store('mode','show')
+    param_hash.store('patron_relationship_type', params[:patron_relationship_type])
+    param_hash.store('parent_child_relationship', params[:parent_child_relationship])
+    param_hash.store('patron_type', params[:patron_type])
+    param_hash.store('page', params[:page])
+    return param_hash
   end
 end

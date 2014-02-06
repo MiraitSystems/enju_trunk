@@ -49,13 +49,14 @@ class Patron < ActiveRecord::Base
 
   validates_presence_of :language, :patron_type, :country
   validates_associated :language, :patron_type, :country
-  validates :full_name, :uniqueness => true, :presence => true, :length => {:maximum => 255}
+  validates :full_name, :presence => true, :length => {:maximum => 255}
   validates :user_id, :uniqueness => true, :allow_nil => true
   validates :birth_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validates :email_2, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
+  validate :check_full_name
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name
 
@@ -112,23 +113,14 @@ class Patron < ActiveRecord::Base
     integer :patron_type_id
     integer :user_id
     integer :exclude_state
-    integer :relationship_type_child_s, :multiple => true do
-      children.seealso_type.pluck(:child_id)
-    end
-    integer :relationship_type_child_m, :multiple => true do
-      children.member_type.pluck(:child_id)
-    end
-    integer :relationship_type_child_c, :multiple => true do
-      children.child_type.pluck(:child_id)
-    end
-    integer :relationship_type_parent_s, :multiple => true do
-      parents.seealso_type.pluck(:parent_id)
-    end
-    integer :relationship_type_parent_m, :multiple => true do
-      parents.member_type.pluck(:parent_id)
-    end
-    integer :relationship_type_parent_c, :multiple => true do
-      parents.child_type.pluck(:parent_id)
+    integer :id
+    PatronRelationshipType.pluck(:id).each do |type_id|
+      integer 'relationship_type_parent_' + type_id.to_s , :multiple => true do
+        parents.select_type_id(type_id).pluck(:parent_id)
+      end
+      integer 'relationship_type_child_' + type_id.to_s , :multiple => true do
+        children.select_type_id(type_id).pluck(:child_id)
+      end
     end
   end
 
@@ -211,6 +203,13 @@ class Patron < ActiveRecord::Base
         errors.add(:death_date)
       end
     end
+  end
+
+  def check_full_name
+    return unless full_name
+    return if user
+    patrons = Patron.where("full_name = ? AND user_id IS NULL", full_name)
+    errors.add(:full_name, I18n.t('errors.messages.taken')) unless patrons.blank?
   end
 
   #def full_name_generate
