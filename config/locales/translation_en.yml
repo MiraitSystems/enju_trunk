@@ -198,6 +198,9 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
+      function: Function
+      function_class: Function class
+      function_class_ability: Function class ability
 
     attributes:
       use_license:
@@ -1593,6 +1596,18 @@ en:
         created_by: Created by
         state: state
         comment_at: Comment at
+      function:
+        controller_name: Controller name
+        display_name: Display name
+        position: Position
+      function_class:
+        display_name: Display name
+        name: Function name
+        position: Position
+      function_class_ability:
+        function_class: Function class
+        function: Function
+        ability: Ability
 
   page:
     user_title: Welcome %{login_name}
@@ -3000,6 +3015,18 @@ en:
   manifestations:
     show_nacsis:
       local_import: Local import
+    more_than_last_number: " more than last number."
+  function_class_abilities:
+    index:
+      ability_label:
+        none: None
+        read: Read
+        update: Update
+        delete: Delete
+    successfully_updated: Successfully updated.
+    partially_updated: Partially updated.
+    update_failed: Update failed.
+
   activemodel:
     models:
       barcode_registration: Registration barcode

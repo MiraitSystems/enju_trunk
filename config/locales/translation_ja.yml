@@ -201,6 +201,9 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
+      function: 機能
+      function_class: 機能区分
+      function_class_ability: 機能許可
 
     attributes:
       use_license:
@@ -1581,7 +1584,19 @@ ja:
         created_by: 記入者
         state: 工程
         comment_at: 発生日
-        
+      function:
+        controller_name: コントローラ名
+        display_name: 表示名
+        position: 位置
+      function_class:
+        display_name: 表示名
+        name: 区分名
+        position: 位置
+      function_class_ability:
+        function_class: 機能区分
+        function: 機能
+        ability: 権限
+
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
@@ -2972,6 +2987,18 @@ ja:
   manifestations:
     show_nacsis:
       local_import: "ローカルインポート"
+  function_class_abilities:
+    index:
+      select_function_class: 機能区分の変更
+      ability_label:
+        none: 参照不可
+        read: 参照可
+        update: 更新可
+        delete: 削除可
+    successfully_updated: "正常に更新されました。"
+    partially_updated: "一部を除き正常に更新されました。"
+    update_failed: "更新できませんでした。"
+
   activemodel:
     models:
       barcode_registration: 資料登録番号バーコード

@@ -466,7 +466,7 @@ class Manifestation < ActiveRecord::Base
   validates_presence_of :carrier_type, :language, :manifestation_type, :country_of_publication
   validates_associated :carrier_type, :language, :manifestation_type, :country_of_publication
   validates_numericality_of :acceptance_number, :allow_nil => true
-  validates_uniqueness_of :nacsis_identifier
+  validates_uniqueness_of :nacsis_identifier, :allow_nil => true
   validate :check_rank
   before_validation :set_language, :if => :during_import
   before_validation :uniq_options
