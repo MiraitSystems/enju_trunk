@@ -27,12 +27,10 @@
           <%- case key -%>
           <%- when :publisher, :subject -%>
             <td style="width: 490px"><%= @nacsis_cat.detail[key].join(", ") -%></td>
-          <%- when :pub_country -%>
-            <%# XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html -%>
-            <td><%= @nacsis_cat.detail[key] -%></td>
-          <%- when :title_language, :text_language -%>
+          <%- when :title_language, :text_language, :pub_country -%>
             <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
-          <%- when :author_heading, :isbn -%>
+          <%- when :author_heading, :isbn, :price, :wrong_isbn,
+                   :title_alternative_transcription, :publication_place, :ndc -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
           <%- else -%>
             <td><%= @nacsis_cat.detail[key] -%></td>

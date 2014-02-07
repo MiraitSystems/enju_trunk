@@ -1489,16 +1489,22 @@ class Manifestation < ActiveRecord::Base
           attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
           attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
 
-          attrs[:place_of_publication] = nacsis_info[:publication_place]
-          attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription]
-          attrs[:price_string] = nacsis_info[:price]
-          attrs[:ndc] = nacsis_info[:ndc]
-          attrs[:note] = nacsis_info[:note]
-          attrs[:isbn] = nacsis_info[:isbn]
-          attrs[:wrong_isbn] = nacsis_info[:wrong_isbn]
+          attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
+          attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
+
+          attrs[:ndc] = search_clasification(nacsis_info[:classmark], "NDC")
+
+          attrs[:isbn] = nacsis_info[:isbn].try(:join, ",")
+          attrs[:price_string] = nacsis_info[:price].try(:join, ",")
+          attrs[:wrong_isbn] = nacsis_info[:wrong_isbn].try(:join, ",")
+
           attrs[:issn] = nacsis_info[:issn]
+
+          attrs[:note] = nacsis_info[:note]
           attrs[:marc_number] = nacsis_info[:marc]
           attrs[:pub_date] = nacsis_info[:publish_year]
+          attrs[:size] = nacsis_info[:size]
+          attrs[:country_of_publication_id] = nacsis_info[:pub_country].try(:id)
 
           # 和書または洋書を設定する
           if nacsis_info[:text_language] &&
@@ -1511,6 +1517,22 @@ class Manifestation < ActiveRecord::Base
         end
 
         new(attrs)
+      end
+
+      def search_clasification(classmark, key)
+        return nil if classmark.blank? or key.blank?
+        class_name = classmark.split(/[:;]/,-1) rescue[]
+        class_hash = Hash[*class_name]
+        if key == "NDC"
+          ndc_array = ["NDC9","NDC8","NDC7","NDC6","NDC"]
+          ndc_array.each do |ndc|
+            unless class_hash[ndc].blank?
+              return class_hash[ndc]
+            end
+          end
+        else
+          return class_hash[key]
+        end
       end
   end
 

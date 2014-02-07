@@ -288,6 +288,22 @@ class NacsisCat
     end
   end
 
+  def price
+    if book?
+      map_attrs(@record['VOLG'], 'PRICE').compact
+    else
+      nil
+    end
+  end
+
+  def xisbn
+    if book?
+      map_attrs(@record['VOLG'], 'XISBN').compact
+    else
+      nil
+    end
+  end
+
   def issn
     if serial?
       @record['ISSN']
@@ -335,17 +351,14 @@ class NacsisCat
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
-      :pub_country => @record['CNTRY'], # :pub_country => @record.cntry.try {|cntry| Country.where(:alpha_2 => cntry.upcase).first }, # XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html
+      :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
       :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
       :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
 
-      :title_alternative_transcription => map_attrs(@record['VT']) {|vt| join_attrs(vt, ['VTVR'], ',')}.compact.uniq.join(","),
-      :publication_place => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP'], ',')}.compact.uniq.join(","),
-      :price => map_attrs(@record['VOLG']) {|volg| join_attrs(volg, ['PRICE'], ',')}.compact.uniq.join(","),
-      :wrong_isbn => map_attrs(@record['VOLG']) {|volg| join_attrs(volg, ['XISBN'], ',')}.compact.uniq.join(","),
-      :ndc => map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSD'], ':')}.compact.uniq.join(","),
+      :title_alternative_transcription => map_attrs(@record['VT'], 'VTVR').compact.uniq,
+      :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
       :note => if @record['NOTE'].is_a?(Array)
-          @record['NOTE'].compact.join(",")
+          @record['NOTE'].compact.join(" ")
         else
           @record['NOTE']
         end,
@@ -353,7 +366,7 @@ class NacsisCat
       :marc => @record['MARCID'],
 
       :classmark => if book?
-          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(';')
+          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(";")
         else
           nil
         end,
@@ -370,6 +383,8 @@ class NacsisCat
     }.tap do |hash|
         if book?
           hash[:isbn] = isbn
+          hash[:price] = price
+          hash[:wrong_isbn] = xisbn
         else
           hash[:issn] = issn
         end
