@@ -1192,3 +1192,10 @@ system_configuration_00169:
   typename: Boolean
   description: "フッターを表示しないか"
   category: 'general'
+system_configuration_0152:
+  id: 152
+  keyname: focus_start_position 
+  v: "false"
+  typename: Boolean
+  description: "検索結果のフォーカス開始位置"
+  category: 'view'

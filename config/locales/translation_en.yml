@@ -2731,6 +2731,8 @@ en:
     boolean_not_autoprint: Not auto-print
     boolean_output_format_type: TSV
     boolean_not_output_format_type: CSV
+    boolean_focus_start_position: The first manifestation
+    boolean_not_focus_start_position: Search form
     error:
       over_checkouts_print_message: checkouts print message exceed the limit. max
         %{num}.
