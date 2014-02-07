@@ -2802,6 +2802,8 @@ ja:
     boolean_not_rental_certificate_size: "A4"
     boolean_output_format_type: "TSV"
     boolean_not_output_format_type: "CSV"
+    boolean_focus_start_position: "最初の資料"
+    boolean_not_focus_start_position: "検索フォーム"
     error:
       over_checkouts_print_message: "貸出表に表示できるメッセージは最大全角%{num}文字までです"
       over_reminder_postal_card_message: "督促はがきに表示できるメッセージは最大全角%{num}文字までです"

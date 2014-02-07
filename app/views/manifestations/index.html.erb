@@ -98,13 +98,16 @@ $(document).ready(function() {
         location.href = new_address;
         return false;
         break;
-    } 
+    }
+  <%- if SystemConfiguration.get('focus_start_position') -%>
   }).find('tr').first().focus();
-
+  <% else %>
+  })
+  <% end %>
   //検索フォームをクリックした場合の処理
   $(first_focus[0]).click(function(){
     var tags = document.getElementsByClassName('active');
-    if($(tags).size()){
+    if ($(tags).size()){
       var manifestation_tag = tags[0].getAttribute('id');
       $("#"+ manifestation_tag).removeClass('active');
     }
