@@ -63,7 +63,6 @@
   <%= form_for :manifestations, opts do -%>
     <p <% if method == :post %>style='display:none;'<% end %>>
       <%= t('page.search_term') -%>:
-     <% #TODO サーチ %> 
       <%= search_field_tag 'query', h(@query), {:id => "search_form_#{form_pos}", :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%- if form_type == :basic %>
         <%= hidden_field_tag 'user_id', params[:user_id] if params[:user_id] -%>
