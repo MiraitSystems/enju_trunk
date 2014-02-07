@@ -1072,4 +1072,4 @@ system_configuration_0152:
   v: "false"
   typename: Boolean
   description: "検索結果のフォーカス開始位置"
-  category: 'manifestation'
+  category: 'view'
