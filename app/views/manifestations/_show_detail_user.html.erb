@@ -90,6 +90,7 @@
               <%- end -%>
               <%= manifestation_page(manifestation) %>
               <!-- TODO: センチメートル以外の単位 -->
+              <%= manifestation.size if manifestation.size %>
               <%- if manifestation.height -%>
                 <%= manifestation.height -%> cm.
               <%- end -%>
