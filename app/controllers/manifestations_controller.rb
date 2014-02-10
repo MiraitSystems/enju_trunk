@@ -959,6 +959,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
+    @carrier_type_id = params[:manifestation][:carrier_type_id]
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1006,6 +1007,7 @@ class ManifestationsController < ApplicationController
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
+        @select_carrier_type_tags = CarrierType.struct_theme_selects
         @keep_themes = @theme
       end
     end

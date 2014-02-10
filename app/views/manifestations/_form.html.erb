@@ -59,23 +59,18 @@ $(document).keydown(function(e) {
 <!-- TODO -->
 <script>
   $(document).ready(function() { 
-    var data=[{id:0,tag:'印刷物'},{id:1,tag:'CD'},{id:2,tag:'DVD'},{id:3,tag:'加除式'},{id:4,tag:'コンピュータファイル'},{id:5,tag:'視聴覚資料'},{id:6,tag:'マイクロ資料'}];
+    var data=[{id:1,tag:'印刷物'},{id:2,tag:'CD'},{id:3,tag:'DVD'},{id:4,tag:'コンピュータファイル'},{id:5,tag:'視聴覚資料'},{id:6,tag:'加除式'},{id:7,tag:'マイクロ資料'}];
     function format(item) { return item.tag; }
 
-    $("#e10_2").select2({
-      data:{ results: data, text: 'tag' },
+    $("#selector_type").select2({
+      data: <%= raw @select_carrier_type_tags.to_json -%>,
       formatSelection: format,
       formatResult: format,
       matcher: function(term, text) { return text.toUpperCase().indexOf(term.toUpperCase())==0; }
     });
 
     $("#e10_3").select2({
-      data:{ results: data, text: function(item) { return item.tag; } },
-      formatSelection: format,
-      formatResult: format
-    });
-    $("#selector_type").select2({
-      data:function() { return { text:'tag', results: data }; },
+      data:{ results: data, text: 'tag' },
       formatSelection: format,
       formatResult: format
     });
@@ -273,7 +268,8 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
 
-    <input type="hidden" id="selector_type" style="width:200px"/>
+    <input name="manifestation[carrier_type_id]", type="hidden" id="selector_type" style="width:200px"/>
+    <%#= f.hidden_field :carrier_type_id, :id => 'selector_type' -%>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
   </div>
   <div class="field">
