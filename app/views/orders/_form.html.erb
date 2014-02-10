@@ -1,0 +1,316 @@
+<% if @order.manifestation_id %>
+  <% if @order.manifestation.series_statement %>
+    <% if@order.manifestation.series_statement.root_manifestation_id == @order.manifestation.id %>
+      <% @series_statement = @order.manifestation.series_statement %>
+      <%= render 'manifestations/index_form_series_statement_header' -%>
+    <% else %>
+      <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
+    <% end %>
+  <% else %>
+    <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
+  <% end %>
+<% end %>
+
+<script>
+$(function(){
+  $('#order_order_day').setCalendar({src:'/assets/calendar.png'});
+  $('#order_collection_stop_day').setCalendar({src:'/assets/calendar.png'});
+});
+</script>
+<script>
+  $(document).ready(function() {
+    $("#order_order_organization_id").select2({
+      
+multiple: false,
+      data: <%= raw @select_patron_tags.to_json -%>,
+      formatNoMatches: function(user) {
+        return <%= raw t("order.no_matches_found_patron").to_json %>;
+      },
+      width: "300px",
+    });
+  });
+</script>
+<script>
+  var ItemField = {
+    switch_field : function () {
+
+      var checkbox = document.getElementById('order_auto_calculation_flag');
+      var field = document.getElementById('order_manual_field');
+
+      if(checkbox.checked){
+        field.style.display="block";
+      }else{
+        field.style.display="none";
+      }
+    }  
+  };
+
+</script>
+
+
+<%= form_for(@order) do |f| %>
+  <%= f.error_messages %>
+
+  <% unless @order.manifestation_id %>
+    <div class="field">
+      <%= label '', t('activerecord.attributes.order.manifestation_identifier') %><br />
+      <%= text_field_tag "manifestation_identifier", @manifestation_identifier %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :order_identifier %><br />
+    <%= @order.order_identifier %>
+    <%= f.hidden_field :order_identifier %>
+  </div>
+
+  <%= f.hidden_field :manifestation_id %>
+
+  <div class="field">
+    <%= f.label :order_day %><br />
+    <% if @order.order_day %>
+      <%= f.text_field :order_day, :value => @order.order_day.to_date %>
+    <% else %>
+      <%= f.text_field :order_day %>
+    <% end %>
+  </div>
+
+  <div class="field">
+    <%= f.label :publication_year %><br />
+    <%= f.text_field :publication_year %>
+  </div>
+
+  <div class="field">
+    <%= f.label :buying_payment_year %><br />
+    <%= f.text_field :buying_payment_year %>
+  </div>
+
+  <div class="field">
+    <%= f.label :prepayment_settlements_of_account_year %><br />
+    <%= f.text_field :prepayment_settlements_of_account_year %>
+  </div>
+ 
+  <% if paid_flags %>
+    <div class="field">
+      <%= f.label :paid_flag %><br />
+      <%= f.select :paid_flag, paid_flags.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :number_of_acceptance_schedule %><br />
+    <%= f.text_field :number_of_acceptance_schedule %>
+  </div>
+
+
+
+  <div class="field">
+    <%= f.label :meeting_holding_month_1 %><br />
+    <%= f.text_field :meeting_holding_month_1 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :meeting_holding_month_2 %><br />
+    <%= f.text_field :meeting_holding_month_2 %>
+  </div>
+
+  <% if adption_codes %>
+    <div class="field">
+      <%= f.label :adption_code %><br />
+      <%= f.select :adption_code, adption_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <% if deliver_place_codes %>
+    <% @deliver_place_codes = deliver_place_codes.collect{|p| [p.keyname.localize, p.id]} %>
+    <div class="field">
+      <%= f.label :deliver_place_code_1 %><br />
+      <%= f.select :deliver_place_code_1, @deliver_place_codes, :include_blank => true %>
+    </div>
+
+    <div class="field">
+      <%= f.label :deliver_place_code_2 %><br />
+      <%= f.select :deliver_place_code_2, @deliver_place_codes, :include_blank => true %>
+    </div>
+
+    <div class="field">
+      <%= f.label :deliver_place_code_3 %><br />
+      <%= f.select :deliver_place_code_3, @deliver_place_codes, :include_blank => true %>
+    </div>
+
+    <div class="field">
+      <%= f.label :deliver_place_code_4 %><br />
+      <%= f.select :deliver_place_code_4, @deliver_place_codes, :include_blank => true %>
+    </div>
+
+    <div class="field">
+      <%= f.label :deliver_place_code_5 %><br />
+      <%= f.select :deliver_place_code_5, @deliver_place_codes, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <% if application_form_codes %>
+    <% @application_form_codes = application_form_codes.collect{|p| [p.keyname.localize, p.id]} %>
+    <div class="field">
+      <%= f.label :application_form_code_1 %><br />
+      <%= f.select :application_form_code_1, @application_form_codes, :include_blank => true %>
+    </div>
+
+    <div class="field">
+      <%= f.label :application_form_code_2 %><br />
+      <%= f.select :application_form_code_2, @application_form_codes, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :number_of_acceptance %><br />
+    <%= @order.number_of_acceptance %>
+    <%= f.hidden_field :number_of_acceptance %>
+  </div>
+
+  <div class="field">
+    <%= f.label :number_of_missing %><br />
+    <%= f.text_field :number_of_missing %>
+  </div>
+
+  <div class="field">
+    <%= f.label :collection_status_code %><br />
+
+    <% if collection_status_codes %>
+      <%= f.select :collection_status_code, collection_status_codes.collect{|p| [p.keyname.localize, p.id]} %>
+    <% else %>
+      <%= f.text_field :collection_status_code %>
+    <% end %>
+  </div>
+
+  <% if reason_for_collection_stop_codes %>
+    <div class="field">
+      <%= f.label :reason_for_collection_stop_code %><br />
+      <%= f.select :reason_for_collection_stop_code, reason_for_collection_stop_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :collection_stop_day %><br />
+    <%= f.text_field :collection_stop_day %>
+  </div>
+
+  <% if order_form_codes %>
+    <div class="field">
+      <%= f.label :order_form_code %><br />
+      <%= f.select :order_form_code, order_form_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :collection_form_code %><br />
+
+    <% if collection_form_codes %>
+      <%= f.select :collection_form_code, collection_form_codes.collect{|p| [p.keyname.localize, p.id]} %>
+    <% else %>
+      <%= f.text_field :collection_form_code %>
+    <% end %>
+  </div>
+
+  <% if payment_form_codes %>
+    <div class="field">
+      <%= f.label :payment_form_code %><br />
+      <%= f.select :payment_form_code, payment_form_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <% if budget_subject_codes %>
+    <div class="field">
+      <%= f.label :budget_subject_code %><br />
+      <%= f.select :budget_subject_code, budget_subject_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <% if transportation_route_codes %>
+    <div class="field">
+      <%= f.label :transportation_route_code %><br />
+      <%= f.select :transportation_route_code, transportation_route_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <% if bookstore_codes %>
+    <div class="field">
+      <%= f.label :bookstore_code %><br />
+      <%= f.select :bookstore_code, bookstore_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :currency_unit_code %><br />
+    <%= f.collection_select :currency_unit_code, @currencies, :id, :display_name, :include_blank => true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :discount_commision %><br />
+    <%= f.text_field :discount_commision %>
+  </div>
+
+  <% if reason_for_settlements_of_account_codes %>
+    <div class="field">
+      <%= f.label :reason_for_settlements_of_account_code %><br />
+      <%= f.select :reason_for_settlements_of_account_code, reason_for_settlements_of_account_codes.collect{|p| [p.keyname.localize, p.id]} %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :prepayment_principal %><br />
+    <%= f.text_field :prepayment_principal %>
+  </div>
+
+  <div class="filed">
+    <%= f.label t('order.switch_manual_entry') %><br />
+    <%= f.check_box :auto_calculation_flag, {:onchange => 'ItemField.switch_field()', :checked_value => "1", :unchecked_value => "0"} %>
+  </div>
+
+  <% if @order.auto_calculation_flag == 1  %>
+    <div id="order_manual_field">
+  <% else %>
+    <div id="order_manual_field" style="display:none">
+  <% end %>
+    <div class="field">
+      <%= f.label :currency_rate %><br />
+      <%= f.text_field :currency_rate %>
+    </div>
+
+    <div class="field">
+      <%= f.label :yen_imprest %><br />
+      <%= f.text_field :yen_imprest %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= f.label :order_organization_id %><br />
+    <%= f.text_field :order_organization_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :note %><br />
+    <%= f.text_area :note %>
+  </div>
+
+  <div class="field">
+    <%= f.label :group %><br />
+    <%= f.text_field :group %>
+  </div>
+
+  <div class="field">
+    <%= f.label :pair_manifestation_id %><br />
+    <%= f.text_field :pair_manifestation_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :contract_id %><br />
+    <%= f.text_field :contract_id %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+  
+<% end %>
+

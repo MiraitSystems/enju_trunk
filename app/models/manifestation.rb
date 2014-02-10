@@ -40,6 +40,8 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :work_has_titles
   before_save :mark_destroy_manifestaion_titile
 
+  has_many :orders
+
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
 

@@ -4,23 +4,21 @@
 
 <table>
   <tr>
-    <th><%= t('activerecord.models.order_list') -%></th>
-    <th><%= t('activerecord.models.purchase_request') -%></th>
-    <th><%= t('page.updated_at') -%></th>
+    <th><%= t('activerecord.attributes.order.order_identifier') -%></th>
+    <th><%= t('activerecord.attributes.order.order_day') -%></th>
+    <th><%= t('activerecord.attributes.order.manifestation') -%></th>
     <th></th>
+   
   </tr>
 
 <%- @orders.each do |order| -%>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= link_to order.order_list.title, order.order_list -%></td>
-    <td><%= link_to order.purchase_request.title, purchase_request_path(order.purchase_request) -%></td>
-    <td><%= l(order.updated_at) -%></td>
+    <td><%= link_to order.order_identifier, order_path(order) %></td>
+    <td><%= l(order.order_day, :format => :only_date) %></td>
+    <td><%= order.manifestation.original_title %></td>
     <td>
-      <%- if can? :destroy, order -%>
-        <%= link_to t('page.show'), order_path(order) -%>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
         <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
-      <%- end -%>
     </td>
   </tr>
 <%- end -%>

@@ -1,0 +1,74 @@
+<%= form_for(@payment) do |f| %>
+  <%= f.error_messages %>
+
+  <div class="field">
+    <%= f.label :order_id %><br />
+    <%= @payment.order_id %>
+    <%= f.hidden_field :order_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :billing_date %><br />
+    <%= f.text_field :billing_date %>
+  </div>
+
+  <div class="field">
+    <%= f.label :manifestation_id %><br />
+    <%= @payment.manifestation_id %>
+    <%= f.hidden_field :manifestation_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :currency_unit_code %><br />
+    <%= f.select :currency_unit_code, [[1,1],[2,2]] %>
+  </div>
+
+  <div class="field">
+    <%= f.label :currency_rate %><br />
+    <%= f.text_field :currency_rate %>
+  </div>
+
+  <div class="field">
+    <%= f.label :discount_commision %><br />
+    <%= f.text_field :discount_commision %>
+  </div>
+
+  <div class="field">
+    <%= f.label :before_conv_amount_of_payment %><br />
+    <%= f.text_field :before_conv_amount_of_payment %>
+  </div>
+
+  <div class="field">
+    <%= f.label :amount_of_payment %><br />
+    <%= f.text_field :amount_of_payment %>
+  </div>
+
+  <div class="field">
+    <%= f.label :number_of_payment %><br />
+    <%= f.text_field :number_of_payment %>
+  </div>
+
+  <div class="field">
+    <%= f.label :volume_number %><br />
+    <%= f.text_field :volume_number %>
+  </div>
+
+  <div class="field">
+    <%= f.label :note %><br />
+    <%= f.text_area :note %>
+  </div>
+
+  <div class="field">
+    <%= f.label :auto_calculation_flag %><br />
+    <%= f.check_box :auto_calculation_flag, {:checked_value => "1", :unchecked_value => "0"} %>
+  </div>
+
+  <div class="field">
+    <%= f.label :payment_type %><br />
+    <%= f.text_field :billing_date %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

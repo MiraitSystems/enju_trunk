@@ -1,20 +1,10 @@
 class OrdersController < ApplicationController
-  before_filter :check_client_ip_address
   load_and_authorize_resource
-  before_filter :get_order_list
-  before_filter :get_purchase_request
 
   # GET /orders
   # GET /orders.json
   def index
-    case
-    when @order_list
-      @orders = @order_list.orders.page(params[:page])
-    else
       @orders = Order.page(params[:page])
-    end
-    @count = {}
-    @count[:query_result] = @orders.size
 
     respond_to do |format|
       format.html # index.html.erb
@@ -29,7 +19,6 @@ class OrdersController < ApplicationController
   # GET /orders/1.json
   def show
     @order = Order.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render :json => @order }
@@ -39,19 +28,16 @@ class OrdersController < ApplicationController
   # GET /orders/new
   # GET /orders/new.json
   def new
-    @order_lists = OrderList.not_ordered
-    if @order_lists.blank?
-      flash[:notice] = t('order.create_order_list')
-      redirect_to new_order_list_url
-      return
-    end
-    unless @purchase_request
-      flash[:notice] = t('order.specify_purchase_request')
-      redirect_to purchase_requests_url
-      return
-    end
-    @order = Order.new(params[:order])
+    @order = Order.new
+    @order.order_identifier = Numbering.do_numbering('order')
 
+    @select_patron_tags = Order.struct_patron_selects
+    @currencies = Currency.all
+
+      if params[:manifestation_id]
+        @order.manifestation_id = params[:manifestation_id].to_i
+        @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
+      end 
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @order }
@@ -61,14 +47,19 @@ class OrdersController < ApplicationController
   # GET /orders/1/edit
   def edit
     @order = Order.find(params[:id])
-    @order_lists = OrderList.not_ordered
+    @select_patron_tags = Order.struct_patron_selects
+    @currencies = Currency.all
   end
 
   # POST /orders
   # POST /orders.json
   def create
-    @order = Order.new(params[:order])
 
+    @order = Order.new(params[:order])
+    @manifestation_identifier = params[:manifestation_identifier]
+    manifestation = Manifestation.find_by_identifier(@manifestation_identifier) unless @manifestation_identifier.blank?
+    @order.manifestation_id = manifestation.id if manifestation
+ 
     respond_to do |format|
       if @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
@@ -80,6 +71,9 @@ class OrdersController < ApplicationController
           format.json { render :json => @order, :status => :created, :location => @order }
         end
       else
+
+        @select_patron_tags = Order.struct_patron_selects
+        @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "new" }
         format.json { render :json => @order.errors, :status => :unprocessable_entity }
@@ -103,6 +97,8 @@ class OrdersController < ApplicationController
           format.json { head :no_content }
         end
       else
+          @select_patron_tags = Order.struct_patron_selects
+          @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "edit" }
         format.json { render :json => @order.errors, :status => :unprocessable_entity }
@@ -127,4 +123,5 @@ class OrdersController < ApplicationController
       end
     end
   end
+
 end

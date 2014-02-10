@@ -54,8 +54,14 @@ class Numbering < ActiveRecord::Base
       #pp number
     end
 
-    prefix = (n.prefix.blank?)?(""):(n.prefix)
-    suffix = (n.suffix.blank?)?(""):(n.suffix)
+    case n.numbering_type
+      when 'order'
+        prefix = Date.today.year
+        suffix = ""
+      else
+        prefix = (n.prefix.blank?)?(""):(n.prefix)
+        suffix = (n.suffix.blank?)?(""):(n.suffix)
+      end
 
     if n.padding?
       padding_character = n.padding_character ? (n.padding_character.to_s):('')

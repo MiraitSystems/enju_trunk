@@ -44,6 +44,10 @@ class Patron < ActiveRecord::Base
   belongs_to :corporate_type, :class_name => 'Keycode', :foreign_key => 'corporate_type_id'
   has_one :patron_import_result
 
+  has_many :order_has_patrons
+  has_many :orders, :through => :order_has_patrons
+
+
   accepts_nested_attributes_for :patron_aliases
   attr_accessible :patron_aliases_attributes
 

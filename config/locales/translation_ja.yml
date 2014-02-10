@@ -203,6 +203,7 @@ ja:
       approval: 見計らい
       title_type: 書名種類
       title: 書名
+      payment: 支払
 
     attributes:
       use_license:
@@ -810,8 +811,49 @@ ja:
       work_merge_list:
         title: タイトル
       order:
-        position: 位置
-        state: 状態
+        order_identifier: 発注番号
+        manifestation: 資料
+        order_day: 発注年月日
+        publication_year: 雑誌刊行年
+        buying_payment_year: 購入費支払年
+        prepayment_settlements_of_account_year: 前払資料精算年 
+        paid_flag: 精算済フラグ
+        number_of_acceptance_schedule: 受入予定冊数 
+        meeting_holding_month_1: 開催月1
+        meeting_holding_month_2: 開催月2
+        adption_code: 採択コード
+        deliver_place_code_1: 回付先コード1
+        deliver_place_code_2: 回付先コード2
+        deliver_place_code_3: 回付先コード3
+        deliver_place_code_4: 回付先コード4
+        deliver_place_code_5: 回付先コード5
+        application_form_code_1: 申込書指定コード1
+        application_form_code_2: 申込書指定コード2
+        number_of_acceptance: 受入冊数
+        number_of_missing: 欠号数
+        collection_status_code: 収集ステータスコード
+        reason_for_collection_stop_code: 収集中止理由コード
+        collection_stop_day: 収集中止年月日
+        order_form_code: 発注形式コード
+        collection_form_code: 収集形式コード
+        payment_form_code: 支払形式コード
+        budget_subject_code: 予算科目コード
+        transportation_route_code: 輸送経路コード
+        bookstore_code: 書店コード
+        currency_unit_code: 通貨単位コード
+        currency_rate: 通貨レート
+        discount_commision: 割引手数料
+        reason_for_settlements_of_account_code: 精算理由コード
+        prepayment_principal: 換算前発注金額
+        yen_imprest: 発注金額
+        unit_price: 単価
+        order_organization_id: 発注機関番号
+        note: 注記内容
+        group: グループ
+        pair_manifestation_id: コンビ資料番号
+        contract_id: 契約番号
+        auto_calculation_flag: 金額自動計算フラグ
+        manifestation_identifier: 資料番号
       order_list:
         title: 発注リスト名
         bookstore: 書店
@@ -1587,6 +1629,22 @@ ja:
         name: 名前
         display_name: 表示名
         note: 注記        
+      payment:
+        order_id: 発注番号
+        billing_date: 請求年月日
+        manifestation_id: 資料番号
+        currency_unit_code: 通貨単位コード
+        currency_rate: 通貨レート
+        discount_commision: 割引手数料
+        before_conv_amount_of_payment: 換算前支払金額
+        amount_of_payment: 支払金額
+        number_of_payment: 支払冊数
+        volume_number: 巻号
+        note: 摘要内容
+        auto_calculation_flag: 金額自動計算フラグ
+        payment_type: 支払区分
+
+
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -2978,3 +3036,9 @@ ja:
         last_number: 終了番号
   title_type:
     cannot_delete: "この書名種類は削除できません"
+  order:
+    no_matches_found_patron: "発注機関が見つかりません"
+    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
+    switch_manual_entry: "通貨レート、発注金額を手入力する"
+    auto_calculation_flag_0: 自動計算
+    auto_calculation_flag_1: 手入力
