@@ -91,11 +91,11 @@ class Library < ActiveRecord::Base
   end
 
   def closed?(date)
-#    events.closing_days.collect{|c| c.start_at.beginning_of_day}.include?(date.beginning_of_day)
-     events.closing_days.each do |c|
-       return true if c.start_at.beginning_of_day <= date.beginning_of_day && c.end_at.end_of_day >= date.beginning_of_day
-     end
-     false
+    return false if events.blank?
+    events.closing_days.each do |c|
+      return true if c.start_at.beginning_of_day <= date.beginning_of_day && c.end_at.end_of_day >= date.beginning_of_day
+    end
+    false
   end
 
   def web?

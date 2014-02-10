@@ -1,4 +1,5 @@
 class ApprovalsController < ApplicationController
+  authorize_function
   load_and_authorize_resource
 
   def index

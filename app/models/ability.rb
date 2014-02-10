@@ -113,6 +113,8 @@ class Ability
         Exemplify,
         Expense,
         Family,
+        FunctionClass,
+        FunctionClassAbility,
         IdentifierType,
         ImportRequest,
         ItemHasUseRestriction,

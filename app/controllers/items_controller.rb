@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 class ItemsController < ApplicationController
+  authorize_function
   add_breadcrumb "I18n.t('activerecord.models.item')", 'items_path'
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.item'))", 'new_item_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.item'))", 'edit_item_path(params[:id])', :only => [:edit, :update]

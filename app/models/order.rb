@@ -48,6 +48,9 @@ class Order < ActiveRecord::Base
   validates :prepayment_principal, :numericality => true, :allow_blank => true
   validates :yen_imprest, :numericality => true, :if => "auto_calculation_flag == 1"
 
+  validates :collection_form_code, :presence => true
+  validates :collection_status_code, :presence => true
+
   validate :validate_manifestation
 
   def validate_manifestation

@@ -1,0 +1,32 @@
+user_00001:
+  id: 1
+  username: admin
+  email: admin@example.jp
+  library_id: 2
+  locale: ja
+  required_role_id: 1
+  user_number: 0
+user_00002:
+  id: 2
+  username: librarian1
+  library_id: 2
+  locale: ja
+  required_role_id: 1
+user_00003:
+  id: 3
+  username: librarian2
+  library_id: 3
+  locale: ja
+  required_role_id: 1
+user_00004:
+  id: 4
+  username: librarian3
+  library_id: 4
+  locale: ja
+  required_role_id: 1
+user_00005:
+  id: 5
+  username: librarian4
+  library_id: 5
+  locale: ja
+  required_role_id: 1

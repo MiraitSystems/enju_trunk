@@ -53,13 +53,14 @@ class Patron < ActiveRecord::Base
 
   validates_presence_of :language, :patron_type, :country
   validates_associated :language, :patron_type, :country
-  validates :full_name, :uniqueness => true, :presence => true, :length => {:maximum => 255}
+  validates :full_name, :presence => true, :length => {:maximum => 255}
   validates :user_id, :uniqueness => true, :allow_nil => true
   validates :birth_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :death_date, :format => {:with => /^\d+(-\d{0,2}){0,2}$/}, :allow_blank => true
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validates :email_2, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
+#  validate :check_full_name
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name
 
@@ -206,6 +207,13 @@ class Patron < ActiveRecord::Base
         errors.add(:death_date)
       end
     end
+  end
+
+  def check_full_name
+    return unless full_name
+    return if user
+    patrons = Patron.where("full_name = ? AND user_id IS NULL", full_name)
+    errors.add(:full_name, I18n.t('errors.messages.taken')) unless patrons.blank?
   end
 
   #def full_name_generate

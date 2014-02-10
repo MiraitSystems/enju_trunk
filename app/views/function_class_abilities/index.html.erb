@@ -1,0 +1,76 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= FunctionClassAbility.model_name.human %>: <%= @function_class.display_name %></h1>
+<div id="content_list">
+
+<p id="notice"><%= notice %></p>
+
+<%
+  current_url = nil
+  options_for_function_classes = FunctionClass.all.map do |fc|
+    url = function_class_function_class_abilities_path(function_class_id: fc.id)
+    current_url = url if fc == @function_class
+    [fc.display_name, url]
+  end
+
+  ability_list = FunctionClassAbility.labels.inject([]) do |ary, (label, ability)|
+    ary << [t(".ability_label.#{label}"), ability]
+  end
+-%>
+
+<div id="function_class">
+  <%= label_tag 'select_function_class', t('.select_function_class') %>
+  <%= select_tag 'function_class_selector', options_for_select(options_for_function_classes, current_url) -%>
+</div>
+<br />
+<%= form_tag(update_all_function_class_function_class_abilities_path, method: 'post') do %>
+  <table class='index'>
+    <tr>
+      <th><%= FunctionClassAbility.human_attribute_name('function') %></th>
+      <th><%= FunctionClassAbility.human_attribute_name('ability') %></th>
+    </tr>
+
+    <% @function_class_abilities.each do |fc_ability| %>
+      <tr>
+        <td><%= fc_ability.function.display_name %></td>
+        <td><%=
+          select_tag "function_class_abilities[#{fc_ability.function_id}]",
+            options_for_select(ability_list, fc_ability.ability),
+            class: 'function_class_ability_selector'
+        %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <div class="actions">
+    <%= submit_tag t('page.update') %>
+  </div>
+<% end %>
+</div>
+</div>
+<%= javascript_tag do -%>
+  function_class_ability_selector_values = function () {
+    return $(".function_class_ability_selector").map(function() {
+      return $(this).val();
+    }).get().join(",");
+  }
+  var initial_abilities = function_class_ability_selector_values();
+
+  $("#function_class_selector").change(function() {
+    var message = "<%= t('function_key.will_move') -%>";
+    var selected_abilities = function_class_ability_selector_values();
+    if (initial_abilities == selected_abilities || confirm(message)) {
+      location.href = $(this).val();
+      return true;
+    }
+    else {
+      $(this).val("<%= current_url %>");
+      return false;
+    }
+  });
+<% end %>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to FunctionClass.model_name.human, function_classes_path %></li>
+  </ul>
+</div>
