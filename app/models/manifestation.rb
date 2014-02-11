@@ -34,6 +34,11 @@ class Manifestation < ActiveRecord::Base
   belongs_to :manifestation_content_type, :class_name => 'ContentType', :foreign_key => 'content_type_id'
   belongs_to :country_of_publication, :class_name => 'Country', :foreign_key => 'country_of_publication_id'
 
+  has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
+  has_many :manifestation_titles, :through => :work_has_titles
+  accepts_nested_attributes_for :work_has_titles
+  before_save :mark_destroy_manifestaion_titile
+
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
 
@@ -1646,6 +1651,16 @@ class Manifestation < ActiveRecord::Base
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id])
     end
+
+    def mark_destroy_manifestaion_titile
+      work_has_titles.each do |title|
+        if title.manifestation_title.title.blank?
+          Title.destroy([title.title_id])
+          title.mark_for_destruction
+        end
+      end
+    end
+
 end
 
 # == Schema Information

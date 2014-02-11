@@ -66,6 +66,17 @@ class PageController < ApplicationController
 
   def configuration
     @title = t('page.configuration')
+    @use_titles = SystemConfiguration.find(:first, :conditions => ['keyname = ?','manifestation.use_titles'])
+
+    if params["use_titles"] != nil
+      if params["use_titles"] == "true"
+        @use_titles.v = "true"
+      else
+        @use_titles.v = "false"
+      end
+      @use_titles.save
+    end
+
   end
 
   def import

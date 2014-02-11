@@ -162,6 +162,8 @@ class Ability
         SystemConfiguration,
         Term,
         Theme,
+        Title,
+        TitleType,
         EnjuTerminal,
         UseLicense,
         UserCheckoutStat,
@@ -171,6 +173,7 @@ class Ability
         UserStatus,
         Wareki,
         WorkHasSubject,
+        WorkHasTitle
       ]
       can [:read, :update], [
         AcceptType,
@@ -331,9 +334,12 @@ class Ability
         SystemConfiguration,
         Term,
         Theme,
+        Title,
+        TitleType,
         UseLicense,
         UserStatus,
         WorkHasSubject,
+        WorkHasTitle
       ]
       can [:read, :update], [
         SeriesStatementRelationshipType
