@@ -1,5 +1,5 @@
 EnjuLeaf::Application.routes.draw do
-
+  mount EnjuJst::Engine => '/enju_jst'
   resources :title_types
   resources :approvals
   resources :keycodes
