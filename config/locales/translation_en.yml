@@ -2189,6 +2189,12 @@ en:
     adding: adding
     adding_free: (Free input)
     adding_limitative: (Limitative input)
+    conference:
+      full_name: Conference full name
+      title: Conference title
+      place: Conference place
+      birth_date: Conference birth date
+      death_date: Conference death date
   question:
     my: My questions
     all: All questions
