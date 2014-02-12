@@ -94,8 +94,14 @@ $(document).ready(function() {
         var tags = document.getElementsByClassName('active');
         var manifestation_tag = tags[0].getAttribute('name');
         var page_address = location.href;
-        var new_address = page_address.replace("manifestations?", "manifestations/" + manifestation_tag + "?");
-        location.href = new_address;
+        if (page_address.match(/works?/)) {
+          var page_pathname = location.pathname;
+          page_pathname = "manifestations/" + manifestation_tag;
+          location.pathname = page_pathname;
+        } else {
+          var new_address = page_address.replace("manifestations?", "manifestations/" + manifestation_tag + "?");
+          location.href = new_address;
+        }
         return false;
         break;
     }
