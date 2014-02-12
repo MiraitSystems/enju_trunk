@@ -2167,9 +2167,9 @@ ja:
     patron_identifier: 機関を識別するための番号
     place: 所在地
     contact:
-      full_name: 発行担当機関
-      full_name_transcription: 発行担当機関(ヨミ)
-      patron_identifier: 担当窓口
+      full_name: 発行担当機関名称
+      full_name_transcription: 発行担当機関名称(ヨミ)
+      patron_identifier: 担当窓口コード
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
