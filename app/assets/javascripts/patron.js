@@ -1,6 +1,3 @@
-<%#= TODO: for app/assets/javascripts/patron.js -- start --- %>
-
-<script>
   $(document).ready(function(){
     // check full_name_alternative
     <% unless @patron.full_name_alternative.blank? %>
@@ -116,6 +113,13 @@
     $("#zip_code_1").hide();
     $("#address_1").hide();
     $("#address_1_note").hide();
+    $("#telephone_number_2").hide();
+    $("#extelephone_number_2").hide();
+    $("#fax_number_2").hide();
+    $("#email_2").hide();
+    $("#zip_code_2").hide();
+    $("#address_2").hide();
+    $("#address_2_note").hide();
     $("div.patron_full_name_note").hide();
     $("label[for='patron_patron_identifier']").text('<%= t('patron.patron_identifier') %>');
     $("label[for='patron_conference_title']").text('<%= t('patron.conference.title') %>');
@@ -157,9 +161,6 @@
         $("input#patron_zip_code_1").val("");
         $("textarea#patron_address_1").val("");
         $("textarea#patron_address_1_note").val("");
-        if ($('#address_2').is(':visible')){
-          $('#address_2').toggle();
-        }
         $("input#patron_telephone_number_2").val("");
         $("input#patron_extelephone_number_2").val("");
         $("input#patron_fax_number_2").val("");
@@ -195,6 +196,13 @@
         $("#zip_code_1").show();
         $("#address_1").show();
         $("#address_1_note").show();
+        $("#telephone_number_2").show();
+        $("#extelephone_number_2").show();
+        $("#fax_number_2").show();
+        $("#email_2").show();
+        $("#zip_code_2").show();
+        $("#address_2").show();
+        $("#address_2_note").show();
         break;
       /* 人物 */
       case "<%= PatronType.find_by_name('Person').try(:id) %>":
@@ -220,6 +228,13 @@
         $("#zip_code_1").show();
         $("#address_1").show();
         $("#address_1_note").show();
+        $("#telephone_number_2").show();
+        $("#extelephone_number_2").show();
+        $("#fax_number_2").show();
+        $("#email_2").show();
+        $("#zip_code_2").show();
+        $("#address_2").show();
+        $("#address_2_note").show();
         break;
       /* 上記に該当しないもの */
       default:
@@ -246,242 +261,13 @@
         $("#zip_code_1").show();
         $("#address_1").show();
         $("#address_1_note").show();
+        $("#telephone_number_2").show();
+        $("#extelephone_number_2").show();
+        $("#fax_number_2").show();
+        $("#email_2").show();
+        $("#zip_code_2").show();
+        $("#address_2").show();
+        $("#address_2_note").show();
     }
   }
-</script>
 
-<%#= TODO: for app/assets/javascripts/patron.js -- end --- %>
-
-<%= render 'page/required_field' %>
-<%= simple_form_for(@patron) do |f| -%>
-  <%= f.error_messages -%>
-
-  <div class="field">
-    <%= f.label t('activerecord.models.patron_type') -%>
-    <%= f.select(:patron_type_id, @patron_types.collect{|p| [p.display_name.localize, p.id]}) -%>
-  </div>
-
-  <div class="field" id="patron_identifier">
-    <%= f.label :patron_identifier %><br />
-    <%= f.text_field :patron_identifier, :class => 'date_field' %>
-  </div>
-
-  <% if corporate_types %>
-    <div class="field" id="corporate_type_field">
-      <%= f.label :corporate_type %><br />
-      <%= f.select :corporate_type_id, corporate_types.collect{|p| [p.keyname.localize, p.id]} %>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <span id="name_person">
-      <%- if SystemConfiguration.get("family_name_first") == true -%>
-        <%= render 'patrons/form_family_name_first', :f => f -%>
-      <%- else -%>
-        <%= render 'patrons/form_family_name_last', :f => f -%>
-      <%- end -%>
-    </span>
-    <%= f.label :full_name -%><br />
-    <div id="annotation" class="patron_full_name_note"><%= t('activerecord.attributes.patron.full_name_note') -%><br /></div>
-    <%= f.text_field :full_name, :class => 'resource_title' -%><br />
-    <span id="full_name_sub">
-      <%= f.label :full_name_transcription -%><br />
-      <%= f.text_field :full_name_transcription, :class => 'resource_title' -%><br />
-      <%= link_to_function t('activerecord.attributes.patron.full_name_alternative'), "$('#full_name_alternative').toggle()" -%>
-      <span id="full_name_alternative" style="display: none">
-        <br />
-        <%= f.text_field :full_name_alternative, :class => 'resource_title' -%>
-      </span>
-    </span>
-  </div>
-
-  <div class="field" id="patron_alias">
-    <%= f.label :patron_alias -%><br />
-
-    <% i = 0 %>
-    <%= f.fields_for :patron_aliases do |aliasf| %>
-      <span id="<%= 'patron_alias' + i.to_s -%>">
-        <%= aliasf.text_field :full_name , :class => 'resorce_title', :size => '20', :placeholder => t('activerecord.attributes.patron.full_name') %>
-        <%= aliasf.text_field :full_name_transcription , :class => 'resorce_title', :size => '20', :placeholder => t('activerecord.attributes.patron.full_name_transcription') %>
-        <%= aliasf.text_field :full_name_alternative , :class => 'resorce_title', :size => '20', :placeholder => t('activerecord.attributes.patron.full_name_alternative') %>
-        <%= button_to_function '+', 'ItemField.add()' -%>
-        <br />
-      </span>
-      <% i += 1 %>
-    <% end %>
-
-    <div id="SF1" class="field">
-    </div>
-  </div>
-
-  <div class="field" id="title">
-    <%= f.label :conference_title -%><br />
-    <%= f.text_field :title, :class => 'resource_title' -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :date_of_birth -%><br />
-    <%= f.text_field :birth_date, :class => 'date_field' -%>
-  </div>
-
-  <% unless @user %>
-    <div class="field">
-      <%= f.label :date_of_death -%><br />
-      <%= f.text_field :death_date, :class => 'date_field' -%>
-    </div>
-  <% end %>
-
-  <div class="field" id="language_id">
-    <%= f.label t('activerecord.models.language') -%>
-    <%= f.select(:language_id, @languages.collect{|l| [l.display_name.localize, l.id]}) -%>
-  </div>
-
-  <div class="field" id="country_id">
-    <%= f.label t('activerecord.models.country') -%>
-    <%= f.select(:country_id, @countries.collect{|c| [c.display_name.localize, c.id]}) -%>
-  </div>
-
-  <% if @places %>
-    <div class="field">
-      <%= f.label :place %>
-      <%= f.select(:place_id, @places.collect{ |p| [p.term, p.id] }) %>
-    </div>
-  <% end %>
-
-  <div class="field" id="url">
-    <%= f.label :url -%><br />
-    <%= f.url_field :url, :class => 'resource_url' -%>
-  </div>
-
-  <div class="field" id="required_role_id">
-    <%= f.label t('role.required_role') -%>
-    <%= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
-  </div>
-
-  <div class="field" id='keyperson_1_field'>
-    <%= f.label :keyperson_1 %><br />
-    <%= f.text_field :keyperson_1, :class => 'date_field' %>
-  </div>
-
-  <div class="field" id='keyperson_2_field'>
-    <%= f.label :keyperson_2 %><br />
-    <%= f.text_field :keyperson_2, :class => 'date_field' %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-
-  <div id="address">
-    <hr />
-  </div>
-
-  <div class="field" id="telephone_number_1">
-    <%= f.label :telephone_number_1 -%><br />
-    <%= f.phone_field :telephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_1_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="extelephone_number_1">
-    <%= f.label :extelephone_number_1 -%><br />
-    <%= f.phone_field :extelephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_1_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="fax_number_1">
-    <%= f.label :fax_number_1 -%><br />
-    <%= f.phone_field :fax_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_1_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="email">
-    <%= f.label :email -%><br />
-    <%= f.email_field :email, :class => 'resource_email'  -%>
-  </div>
-
-  <div id="address_1">
-  <div class="field" id="zip_code_1">
-    <%= f.label :zip_code_1 -%><br />
-    <%= f.text_field :zip_code_1, :class => 'resource_zip_code' -%>
-  </div>
-
-  <div class="field" id="address_1">
-    <%= f.label :address_1 -%><br />
-    <%= f.text_area :address_1, :class => 'resource_textarea' -%>
-  </div>
-
-  <div class="field" id="address_1_note">
-    <%= f.label :address_1_note -%><br />
-    <%= f.text_area :address_1_note, :class => 'resource_textarea' -%>
-  </div>
-
-  <div class="field"><%= link_to_function t('patron.other_address'), "$('#address_2').toggle()" -%></div>
-  </div>
-
-  <div id="address_2" style="display: none">
-  <hr />
-  <div class="field" id="telephone_number_2">
-    <%= f.label :telephone_number_2 -%><br />
-    <%= f.phone_field :telephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_2_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="extelephone_number_2">
-    <%= f.label :extelephone_number_2 -%><br />
-    <%= f.phone_field :extelephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_2_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="fax_number_2">
-    <%= f.label :fax_number_2 -%><br />
-    <%= f.phone_field :fax_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_2_type_id, {t('activerecord.attributes.patron.home_phone')=>1, t('activerecord.attributes.patron.fax')=>2, t('activerecord.attributes.patron.mobile_phone')=>3, t('activerecord.attributes.patron.company_phone')=>4} -%>
-  </div>
-
-  <div class="field" id="email_2">
-    <%= f.label :email_2 -%><br />
-    <%= f.email_field :email_2, :class => 'resource_email'  -%>
-  </div>
-
-  <div class="field" id="zip_code_2">
-    <%= f.label :zip_code_2 -%><br />
-    <%= f.text_field :zip_code_2, :class => 'resource_zip_code' -%>
-  </div>
-
-  <div class="field" id="address_2">
-    <%= f.label :address_2 -%><br />
-    <%= f.text_area :address_2, :class => 'resource_textarea' -%>
-  </div>
-
-  <div class="field" id="address_2_note">
-    <%= f.label :address_2_note -%><br />
-    <%= f.text_area :address_2_note, :class => 'resource_textarea' -%>
-  </div>
-
-  </div>
-
-  <hr />
-  <div class="field">
-    <%= f.label :note -%>
-    <%- if @patron.note_update_at -%>
-      &nbsp;<%= t('patron.last_update_at') -%>: <%= l(@patron.note_update_at) -%>
-    <%- end -%>
-    <%- if @patron.note_update_by -%>
-      &nbsp;<%= t('patron.last_update_by') -%>: <%= @patron.note_update_by -%>
-    <%- end -%>
-    <%- if @patron.note_update_library -%>
-      (<%= @patron.note_update_library-%>)
-    <%- end -%>
-    <br />
-    <%= f.text_area :note, :class => 'resource_textarea' -%>
-  </div>
-
-  <div class="actions">
-    <%= hidden_field_tag 'work_id', @work.id if @work -%>
-    <%= hidden_field_tag 'expression_id', @expression.id if @expression -%>
-    <%= hidden_field_tag 'manifestation_id', @manifestation.id if @manifestation -%>
-    <%= hidden_field_tag 'item_id', @item.id if @item -%>
-    <%= f.hidden_field :user_username -%>
-    <%= f.submit %>
-  </div>
-<%- end -%>

@@ -437,7 +437,7 @@ ja:
         patron_identifier: 人物団体の識別番号
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
-        corporate_type: 団体分類 
+        corporate_type: 団体分類
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -2176,6 +2176,12 @@ ja:
     adding: "の追加"
     adding_free: "（既存データ以外の追加）"
     adding_limitative: "（既存データのみの追加）"
+    conference:
+      full_name: 会議名
+      title: 会議回次
+      place: 開催地
+      birth_date: 開催開始年月日
+      death_date: 開催終了年月日
   question:
     my: "自分の質問"
     all: "全ての質問"
