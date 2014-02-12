@@ -974,6 +974,20 @@ class Manifestation < ActiveRecord::Base
     end
     return @struct_theme_array
   end
+
+  def self.struct_selects(obj, text='name')
+    struct = Struct.new(:id, :text)
+    struct_array = []
+    selects = obj.all
+    selects.each do |select|
+      unless text == 'name' then
+        struct_array << struct.new(select.id, select.__send__(text).localize)
+      else 
+        struct_array << struct.new(select.id, select.__send__(text))
+      end
+    end
+    return struct_array
+  end
  
   # NOTE: resource_import_textfile.excelとの整合性を維持すること
   BOOK_COLUMNS = lambda { %W(

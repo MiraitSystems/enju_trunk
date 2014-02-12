@@ -64,15 +64,12 @@ $(document).keydown(function(e) {
 
     $("#selector_type").select2({
       data: <%= raw @select_carrier_type_tags.to_json -%>,
-      formatSelection: format,
-      formatResult: format,
       matcher: function(term, text) { return text.toUpperCase().indexOf(term.toUpperCase())==0; }
     });
 
     $("#e10_3").select2({
-      data:{ results: data, text: 'tag' },
-      formatSelection: format,
-      formatResult: format
+      data: [{id:1,"text":'印刷物'},{"id":2,text:'CD'},{"id":3,"text":'DVD'},{"id":4,text:'コンピュータファイル'},{id:5,text:'視聴覚資料'},{id:6,text:'加除式'},{id:7,text:'マイクロ資料'}],
+      matcher: function(term, text) { return text.toUpperCase().indexOf(term.toUpperCase())==0; }
     });
   });
 </script>
@@ -345,8 +342,8 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
 
-    <input name="manifestation[carrier_type_id]", type="hidden" id="selector_type" style="width:200px"/>
-    <%#= f.hidden_field :carrier_type_id, :id => 'selector_type' -%>
+    <!--input name="manifestation[carrier_type_id]", type="hidden" id="e10_3" style="width:200px"/-->
+    <%= f.hidden_field :carrier_type_id, :id => 'selector_type', :style => "width:200px" -%>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
   </div>
   <div class="field">
