@@ -30,6 +30,12 @@
             </tr>
           <% end %>
         <% end %>
+        <% manifestation.work_has_titles.each do |title| %>
+          <tr> 
+            <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name %>:</td>
+            <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
+          </tr>
+        <% end %>
         <% if manifestation.article? %>
           <tr>
             <td><%= t('activerecord.attributes.manifestation.article_title') %></td>

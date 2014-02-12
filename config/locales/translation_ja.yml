@@ -204,6 +204,8 @@ ja:
       function: 機能
       function_class: 機能区分
       function_class_ability: 機能許可
+      title_type: 書名種類
+      title: 書名
 
     attributes:
       use_license:
@@ -1597,6 +1599,10 @@ ja:
         function_class: 機能区分
         function: 機能
         ability: 権限
+      title_type:
+        name: 名前
+        display_name: 表示名
+        note: 注記        
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1883,6 +1889,7 @@ ja:
     add_line: "+"
     del_line: "-"
     user_notice: 利用者通知書
+    select_use_titles: 書名テーブルを利用する
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -3011,3 +3018,5 @@ ja:
       barcode_registration:
         first_number: 開始番号
         last_number: 終了番号
+  title_type:
+    cannot_delete: "この書名種類は削除できません"
