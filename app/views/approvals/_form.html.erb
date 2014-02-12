@@ -1,4 +1,10 @@
-<%= render 'manifestations/title', :manifestation => @manifestation -%>
+<%- if @manifestation -%>
+  <%= render 'manifestations/title', :manifestation => @manifestation -%>
+<%- else -%>
+  <%= TODO input manifestation.identifier %>
+  <strong><%= t('activerecord.attributes.manifestation.identifier') %></strong><br />
+  <%= text_field :identifier %>
+<%- end -%>
 
 <script>
 $(function(){
@@ -53,7 +59,7 @@ $(function(){
 
   <div class="field">
     <%= f.label :created_by %><br />
-    <%= @approval.create_user.username %>
+    <%= @approval.create_user.patron.full_name %>
     <%= f.hidden_field :created_by %>
   </div>
 

@@ -1,4 +1,5 @@
   <ul>
+    <li><%= link_to t('activerecord.models.approval'), @series_statement.try(:root_manifestation).try(:approval) ? @series_statement.root_manifestation.approval : new_approval_path(:manifestation_id => @series_statement.root_manifestation) %> </li>
     <% if can? :create, Manifestation %>
       <li><%= link_to t('page.new', :model => t('activerecord.models.manifestation')), new_series_statement_manifestation_path(@series_statement) %></li>
     <% end %>
