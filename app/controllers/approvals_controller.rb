@@ -14,15 +14,13 @@ class ApprovalsController < ApplicationController
     @approval.created_by = current_user.id
     @approval.all_process_start_at = Date.today
 
-    @manifestation = Manifestation.find(params[:manifestation_id])
+    @manifestation = Manifestation.find(params[:manifestation_id]) if params[:manifestation_id]
 
     @select_user_tags = Approval.struct_user_selects
     @select_patron_tags = Approval.struct_patron_selects
 
     @maxposition = 0
     @approval.approval_extexts << ApprovalExtext.new(:position => 1, :comment_at => Date.today)
-
-
   end
 
   def create

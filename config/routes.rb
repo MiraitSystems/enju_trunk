@@ -1,4 +1,6 @@
 EnjuLeaf::Application.routes.draw do
+
+  resources :title_types
   resources :approvals
   resources :keycodes
   resources :use_licenses
