@@ -1,5 +1,4 @@
 <%- unless manifestation.creators.readable_by(current_user).empty? -%>
-  <%= t('patron.creator') -%>:
   <%- if params[:mode] == 'show_all_creators' -%>
     <%= t('patron.creator') -%>:<%= patrons_list(manifestation.creators_order_type.readable_by(current_user), {}, manifestation.id, 'create') %>
     <%- if manifestation.creators.readable_by(current_user).size > 5 -%>

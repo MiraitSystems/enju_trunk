@@ -848,11 +848,13 @@ class ManifestationsController < ApplicationController
 
     @manifestation = ManifestationsController.helpers.set_serial_number(@manifestation) if params[:mode] == 'new_issue'
     @original_manifestation = original_manifestation if params[:mode] == 'add'
+
+    new_work_has_title
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @manifestation }
     end
-
   end
 
   # GET /manifestations/1/edit
@@ -878,11 +880,16 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
+
+    new_work_has_title
   end
 
   # POST /manifestations
   # POST /manifestations.json
   def create
+
+    create_titles 
+
     @manifestation = Manifestation.new(params[:manifestation])
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if @manifestation.respond_to?(:post_to_scribd)
@@ -942,7 +949,9 @@ class ManifestationsController < ApplicationController
       else
         prepare_options
         output_patron_parameter
-        format.html { render :action => "new" }
+        new_work_has_title
+
+      format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
         @keep_themes = @theme
@@ -955,6 +964,7 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1.json
   def update
     input_patron_parameter
+    create_titles 
 
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
@@ -1004,6 +1014,8 @@ class ManifestationsController < ApplicationController
       else
         prepare_options
         output_patron_parameter
+        new_work_has_title
+
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
@@ -1437,6 +1449,7 @@ class ManifestationsController < ApplicationController
     @create_types = CreateType.find(:all, :select => "id, display_name")
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
+    @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
   end
 
   def input_patron_parameter
@@ -1862,4 +1875,40 @@ class ManifestationsController < ApplicationController
 
     true
   end
+
+  def create_titles
+ 
+    return unless SystemConfiguration.get('manifestation.use_titles')
+
+    if params[:manifestation][:work_has_titles_attributes]
+      @work_has_titles = params[:manifestation][:work_has_titles_attributes]
+      @work_has_titles.each do |key, value|
+        if value[:title_id] != "" 
+          @title = Title.find(value[:title_id])
+          @title.title = params[:manifestation_title][key]
+          @title.save
+        else
+          @title = Title.new(:title => params[:manifestation_title][key])
+          @title.save
+          value[:title_id] = @title.id
+        end
+      end
+    end
+  end
+
+  def new_work_has_title
+
+    @count_titles = 0
+    if SystemConfiguration.get('manifestation.use_titles')
+
+      @count_titles = @manifestation.work_has_titles.size
+      if @manifestation.work_has_titles.empty?
+        @workhastitle = WorkHasTitle.new(:title_id => 1, :title_type_id => 1, :position => 0)
+        @manifestation.work_has_titles << @workhastitle
+        @manifestation.work_has_titles[0].title_id = nil
+        @count_titles = 1
+      end
+    end
+  end
+
 end

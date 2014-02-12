@@ -1,0 +1,38 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.title_type')) -%></h1>
+<div id="content_list">
+<div style="color: red"><%= flash[:message].to_s -%></div>
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.title_type.name') %></th>
+    <th><%= t('activerecord.attributes.title_type.display_name') %></th>
+    <th></th>
+  </tr>
+
+<% @title_types.each do |title_type| %>
+  <tr class="line<%= cycle("0", "1") -%>">
+
+    <td><%= link_to title_type.name, title_type %></td>
+    <td><%= title_type.display_name %></td>
+    <td>
+      <%= link_to t('page.edit'), edit_title_type_path(title_type) %>
+
+      <% if title_type.destroy? %>
+        <%= link_to t('page.destroy'), title_type, :confirm => t('page.are_you_sure'), :method => :delete %>
+      <% end %>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate(@title_types) -%>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.title_type')), new_title_type_path %></li>
+  </ul>
+</div>
+
