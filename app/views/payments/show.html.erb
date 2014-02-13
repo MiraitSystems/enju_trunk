@@ -2,11 +2,24 @@
 <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.payment')) -%></h1>
 <div id="content_list">
 
+
+<% if @payment.order.manifestation.series_statement %>
+  <% if@payment.order.manifestation.series_statement.root_manifestation_id == @payment.order.manifestation.id %>
+    <% @series_statement = @payment.order.manifestation.series_statement %>
+    <%= render 'manifestations/index_form_series_statement_header' -%>
+  <% else %>
+    <%= render 'manifestations/title', :manifestation => @payment.order.manifestation -%>
+  <% end %>
+<% else %>
+  <%= render 'manifestations/title', :manifestation => @payment.order.manifestation -%>
+<% end %>
+
+
 <p id="notice"><%= notice %></p>
 
 <p>
   <strong><%= t('activerecord.attributes.payment.order_id') -%>:</strong>
-  <%= @payment.order_id %>
+  <%= @payment.order.order_identifier %>
 </p>
 
 <p>
@@ -15,13 +28,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.payment.manifestation_id') -%>:</strong>
-  <%= @payment.manifestation_id %>
-</p>
-
-<p>
   <strong><%= t('activerecord.attributes.payment.currency_unit_code') -%>:</strong>
-  <%= @payment.currency_unit_code %>
+  <%= Currency.find(@payment.currency_unit_code).display_name if @payment.currency_unit_code %>
 </p>
 
 <p>
@@ -41,12 +49,22 @@
 
 <p>
   <strong><%= t('activerecord.attributes.payment.amount_of_payment') -%>:</strong>
-  <%= @payment.amount_of_payment %>
+  <%= @payment.amount_of_payment.to_i %>
 </p>
 
 <p>
   <strong><%= t('activerecord.attributes.payment.number_of_payment') -%>:</strong>
   <%= @payment.number_of_payment %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.taxable_amount') %></strong>
+  <%= @payment.taxable_amount%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.tax_exempt_amount') %></strong>
+  <%= @payment.tax_exempt_amount%>
 </p>
 
 <p>
@@ -61,12 +79,12 @@
 
 <p>
   <strong><%= t('activerecord.attributes.payment.auto_calculation_flag') -%>:</strong>
-  <%= @payment.auto_calculation_flag %>
+  <%= t("payment.auto_calculation_flag_#{@payment.auto_calculation_flag}") %>
 </p>
 
 <p>
   <strong><%= t('activerecord.attributes.payment.payment_type') -%>:</strong>
-  <%= @payment.payment_type %>
+  <%= @payment.paymenttype.keyname if @payment.payment_type %>
 </p>
 
 </div>

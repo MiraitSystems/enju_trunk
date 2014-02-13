@@ -1,17 +1,22 @@
 class PaymentsController < ApplicationController
 
+  load_and_authorize_resource
 
   def index
     @payments = Payment.page(params[:page])
+
   end
 
   def new
     @payment = Payment.new
+    @payment.auto_calculation_flag = 1
+    @payment.billing_date = Date.today
 
-    # test s
-    @payment.manifestation_id = 1
-    @payment.order_id = 1
-    # test e
+    if params[:order_id]
+      @order = Order.find(params[:order_id])
+      @payment.manifestation_id = @order.manifestation_id
+      @payment.order_id = @order.id 
+    end
   end
 
   def create
@@ -51,14 +56,14 @@ class PaymentsController < ApplicationController
   def destroy
     @payment = Payment.find(params[:id])
     respond_to do |format|
-      if @payment.destroy?
+      #if @payment.destroy?
         @payment.destroy
         format.html { redirect_to(payments_url) }
-      else
-        flash[:message] = t('payment.cannot_delete')
-        @terms = Payment.all
-        format.html { redirect_to(payments_url) }
-      end
+      #else
+        #flash[:message] = t('payment.cannot_delete')
+        #@terms = Payment.all
+        #format.html { redirect_to(payments_url) }
+      #end
     end
   end
 

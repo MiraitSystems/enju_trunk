@@ -191,6 +191,16 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.order.taxable_amount') %>:</strong>
+  <%= @order.taxable_amount %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.tax_exempt_amount') %>:</strong>
+  <%= @order.tax_exempt_amount %>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.order.unit_price') %>:</strong>
   <%= @order.unit_price.to_i %>  
 </p>
@@ -228,5 +238,6 @@
   <ul>
     <li><%= link_to t('page.edit'), edit_order_path(@order) -%></li>
     <li><%= link_to t('page.back'), orders_path -%></li>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_payment_path(:order_id => @order) -%></li>
   </ul>
 </div>

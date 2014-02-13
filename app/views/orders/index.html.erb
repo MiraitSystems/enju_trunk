@@ -1,8 +1,9 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
 <div id="content_list">
+<div style="color: red"><%= flash[:message].to_s -%></div>
 
-<table>
+<table class="index">
   <tr>
     <th><%= t('activerecord.attributes.order.order_identifier') -%></th>
     <th><%= t('activerecord.attributes.order.order_day') -%></th>
@@ -18,7 +19,9 @@
     <td><%= order.manifestation.original_title %></td>
     <td>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
-        <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <% if order.destroy? %>
+          <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <% end %>
     </td>
   </tr>
 <%- end -%>

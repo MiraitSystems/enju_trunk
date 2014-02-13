@@ -4,37 +4,17 @@
 
 <table>
   <tr>
-    <th>Order</th>
-    <th>Billing date</th>
-    <th>Manifestation</th>
-    <th>Currency unit code</th>
-    <th>Currency rate</th>
-    <th>Discount commision</th>
-    <th>Before conv amount of payment</th>
-    <th>Amount of payment</th>
-    <th>Number of payment</th>
-    <th>Volume number</th>
-    <th>Note</th>
-    <th>Auto calculation flag</th>
-    <th>Payment type</th>
+    <th><%= t('activerecord.attributes.payment.order_id') %></th>
+    <th><%= t('activerecord.attributes.payment.manifestation_id') %></th>
+    <th><%= t('activerecord.attributes.payment.payment_type') %></th>
     <th></th>
   </tr>
 
 <% @payments.each do |payment| %>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= link_to payment.order_id, payment %></td>
-    <td><%= payment.billing_date %></td>
-    <td><%= payment.manifestation_id %></td>
-    <td><%= payment.currency_unit_code %></td>
-    <td><%= payment.currency_rate %></td>
-    <td><%= payment.discount_commision %></td>
-    <td><%= payment.before_conv_amount_of_payment %></td>
-    <td><%= payment.amount_of_payment %></td>
-    <td><%= payment.number_of_payment %></td>
-    <td><%= payment.volume_number %></td>
-    <td><%= payment.note %></td>
-    <td><%= payment.auto_calculation_flag %></td>
-    <td><%= payment.payment_type %></td>
+    <td><%= link_to payment.order.order_identifier, payment %></td>
+    <td><%= Manifestation.find(payment.manifestation_id).original_title %></td>
+    <td><%= payment.paymenttype.keyname if payment.paymenttype %></td>
     <td>
       <%= link_to t('page.edit'), edit_payment_path(payment) %>
       <%= link_to t('page.destroy'), payment, :confirm => t('page.are_you_sure'), :method => :delete -%>
@@ -48,7 +28,7 @@
 </div>
 </div>
 
-
+<!--
 <div id="submenu" class="ui-corner-all">
   <ul>
     <%- if can? :create, Order -%>
@@ -56,4 +36,5 @@
     <%- end -%>
   </ul>
 </div>
+-->
 

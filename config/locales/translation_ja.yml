@@ -857,6 +857,8 @@ ja:
         contract_id: 契約番号
         auto_calculation_flag: 金額自動計算フラグ
         manifestation_identifier: 資料番号
+        taxable_amount: 課税対象金額
+        tax_exempt_amount: 非課税対象金額
       order_list:
         title: 発注リスト名
         bookstore: 書店
@@ -1646,6 +1648,8 @@ ja:
         note: 摘要内容
         auto_calculation_flag: 金額自動計算フラグ
         payment_type: 支払区分
+        taxable_amount: 課税対象金額
+        tax_exempt_amount: 非課税対象金額
       function:
         controller_name: コントローラ名
         display_name: 表示名
@@ -3072,8 +3076,13 @@ ja:
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
+    cannot_delete: "この発注は削除できません"
     no_matches_found_patron: "発注機関が見つかりません"
     no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
     switch_manual_entry: "通貨レート、発注金額を手入力する"
+    auto_calculation_flag_0: 自動計算
+    auto_calculation_flag_1: 手入力
+  payment:
+    switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力

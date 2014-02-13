@@ -32,7 +32,9 @@ class OrdersController < ApplicationController
   # GET /orders/new.json
   def new
     @order = Order.new
+    @order.auto_calculation_flag = 1
     @order.order_identifier = Numbering.do_numbering('order')
+    @order.order_day = Date.today
 
     @select_patron_tags = Order.struct_patron_selects
     @currencies = Currency.all
@@ -114,15 +116,13 @@ class OrdersController < ApplicationController
   def destroy
     @order = Order.find(params[:id])
 
-    @order.destroy
-
     respond_to do |format|
-      if @order_list
-        format.html { redirect_to order_list_purchase_requests_url(@order_list) }
-        format.json { head :no_content }
+      if @order.destroy?
+        @order.destroy
+        format.html {redirect_to(orders_url)}
       else
-        format.html { redirect_to(orders_url) }
-        format.json { head :no_content }
+        flash[:message] = t('order.cannot_delete')
+        format.html {redirect_to(orders_url)}
       end
     end
   end

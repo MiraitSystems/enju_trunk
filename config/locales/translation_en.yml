@@ -779,6 +779,8 @@ en:
         contract_id: Contract id
         auto_calculation_flag: Auto calculation flag
         manifestation_identifier: Manifestation identifier
+        taxable_amount: Taxable amount
+        tax_exempt_amount: Tax exempt amount
       order_list:
         title: Title
         bookstore: Bookstore
@@ -1658,6 +1660,8 @@ en:
         note: Note
         auto_calculation_flag: Auto calculation flag
         payment_type: Payment type
+        taxable_amount: Taxable amount
+        tax_exempt_amount: Tax exempt amount
       function:
         controller_name: Controller name
         display_name: Display name
@@ -3100,8 +3104,13 @@ en:
   title_type:
     cannot_delete: The title type cannnot be deleted.
   order:
+    cannot_delete: The order cannot be deleted.
     no_matches_found_patron: "No matches found patron"
     no_matches_found_manifestation: "No matches found manifestation"
-    switch_manual_entry: "Manual entry currencyrate and yen imprest"
+    switch_manual_entry: "Manual entry currency rate and yen imprest"
+    auto_calculation_flag_0: Auto calculation
+    auto_calculation_flag_1: Manual entry
+  payment:
+    switch_manual_entry: "Manual entry currency rate and amount of payment"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
