@@ -207,6 +207,8 @@ ja:
       function: 機能
       function_class: 機能区分
       function_class_ability: 機能許可
+      title_type: 書名種類
+      title: 書名
 
     attributes:
       use_license:
@@ -438,7 +440,7 @@ ja:
         patron_identifier: 人物団体の識別番号
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
-        corporate_type: 団体分類 
+        corporate_type: 団体分類
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -1662,6 +1664,10 @@ ja:
         function_class: 機能区分
         function: 機能
         ability: 権限
+      title_type:
+        name: 名前
+        display_name: 表示名
+        note: 注記        
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -2227,15 +2233,21 @@ ja:
     patron_identifier: 機関を識別するための番号
     place: 所在地
     contact:
-      full_name: 発行担当機関
-      full_name_transcription: 発行担当機関(ヨミ)
-      patron_identifier: 担当窓口
+      full_name: 発行担当機関名称
+      full_name_transcription: 発行担当機関名称(ヨミ)
+      patron_identifier: 担当窓口コード
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
     adding: "の追加"
     adding_free: "（既存データ以外の追加）"
     adding_limitative: "（既存データのみの追加）"
+    conference:
+      full_name: 会議名
+      title: 会議回次
+      place: 開催地
+      birth_date: 開催開始年月日
+      death_date: 開催終了年月日
   question:
     my: "自分の質問"
     all: "全ての質問"

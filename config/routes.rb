@@ -1,5 +1,6 @@
 EnjuLeaf::Application.routes.draw do
 
+
   resources :payments
   resources :title_types
   resources :approvals

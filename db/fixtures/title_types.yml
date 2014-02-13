@@ -1,0 +1,26 @@
+---
+title_types_00001:
+  id: 3
+  name: '3'
+  display_name: '分出' # 表示名
+  position: 1
+title_types_00002:
+  id: 4
+  name: '4'
+  display_name: '別' # 表示名
+  position: 2
+title_types_00003:
+  id: 5
+  name: '5'
+  display_name: '副出' # 表示名
+  position: 3
+title_types_00004:
+  id: 6
+  name: '6'
+  display_name: '副書名' # 表示名
+  position: 4
+title_types_00005:
+  id: 9
+  name: '9'
+  display_name: 'その他' # 表示名
+  position: 5

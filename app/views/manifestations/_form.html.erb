@@ -185,8 +185,6 @@ $(document).keydown(function(e) {
   var ItemField_title = {
     currentNumber :<%= @count_titles-1 -%>,
     itemTemplate : ''
-                 + '<input id="manifestation_title___count__" name="manifestation_title[__count__]"  placeholder=<%= t('activerecord.models.title') %> type="text" value="" /> '
-
                  + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
 
                  <% @title_types.collect do |m| %>
@@ -279,7 +277,7 @@ $(document).keydown(function(e) {
       <%= f.fields_for :work_has_titles, @manifestation.work_has_titles do |title| %>
         <div id="VF<%= i %>">
           <% if title.object.manifestation_title %>
-            <%= text_field_tag "manifestation_title[#{i}]", title.object.manifestation_title.title, :placeholder => t('activerecord.models.title') %>
+            <%= text_field_tag "manifestation_title[#{i}]", title.object.manifestation_title.title, :placeholder => t('activerecord.models.title'), :class => 'resource_title' %>
           <% else %>
             <%= text_field_tag "manifestation_title[#{i}]", "", :placeholder => t('activerecord.models.title') %>
           <% end %>

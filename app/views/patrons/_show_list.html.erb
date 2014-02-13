@@ -32,6 +32,10 @@
         <td><strong><%= t('activerecord.attributes.patron.full_name_alternative') -%>:</strong></td>
         <td><%= @patron.full_name_alternative -%></td>
       </tr>
+      <tr>
+        <td><strong><%= t('patron.conference.title') -%>:</strong></td>
+        <td><%= @patron.title -%></td>
+      </tr>
       <%- if @patron.user -%>
         <tr>
           <td><strong><%= t('activerecord.attributes.user.username') -%>:</strong></td>

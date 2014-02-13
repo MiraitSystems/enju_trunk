@@ -204,6 +204,8 @@ en:
       function: Function
       function_class: Function class
       function_class_ability: Function class ability
+      title_type: Title type
+      title: Title
 
     attributes:
       use_license:
@@ -1674,6 +1676,10 @@ en:
         function_class: Function class
         function: Function
         ability: Ability
+      title_type:
+        name: Name
+        display_name: Display name
+        note: Note
 
   page:
     user_title: Welcome %{login_name}
@@ -2247,6 +2253,12 @@ en:
     adding: adding
     adding_free: (Free input)
     adding_limitative: (Limitative input)
+    conference:
+      full_name: Conference full name
+      title: Conference title
+      place: Conference place
+      birth_date: Conference birth date
+      death_date: Conference death date
   question:
     my: My questions
     all: All questions
