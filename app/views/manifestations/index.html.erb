@@ -123,11 +123,13 @@ $(document).ready(function() {
   //外側をクリックしたときに枠を外す
   $listover = false;
   $(document).click(function(){
-      if ($listover) {return false;}
-      var tags = document.getElementsByClassName('active');
-      if ($(tags).size()){
-        var manifestation_tag = tags[0].getAttribute('id');
-        $("#"+ manifestation_tag).removeClass('active');
+      if ($listover) {}
+      else{
+        var tags = document.getElementsByClassName('active');
+        if ($(tags).size()){
+          var manifestation_tag = tags[0].getAttribute('id');
+          $("#"+ manifestation_tag).removeClass('active');
+        }
       }
   });
   $("#list").hover(function () {$listover = true;},function () {$listover = false;});
