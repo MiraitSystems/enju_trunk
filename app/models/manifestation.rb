@@ -30,6 +30,7 @@ class Manifestation < ActiveRecord::Base
   has_many :identifiers
   has_many :manifestation_exinfos, :dependent => :destroy
   has_many :manifestation_extexts, :dependent => :destroy
+  has_one :approval
 
   belongs_to :manifestation_content_type, :class_name => 'ContentType', :foreign_key => 'content_type_id'
   belongs_to :country_of_publication, :class_name => 'Country', :foreign_key => 'country_of_publication_id'

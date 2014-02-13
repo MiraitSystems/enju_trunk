@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Context docBase="C:/enju/solr/apache-solr-3.6.2.war" debug="0" crossContext="true">
+  <Environment name="solr/home" type="java.lang.String" value="C:/enju/solr/example/solr" override="true"/>
+</Context>
