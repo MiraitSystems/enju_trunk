@@ -59,17 +59,19 @@ $(document).keydown(function(e) {
 <!-- TODO -->
 <script>
   $(document).ready(function() { 
-    var data=[{id:1,tag:'印刷物'},{id:2,tag:'CD'},{id:3,tag:'DVD'},{id:4,tag:'コンピュータファイル'},{id:5,tag:'視聴覚資料'},{id:6,tag:'加除式'},{id:7,tag:'マイクロ資料'}];
-    function format(item) { return item.tag; }
-
     $("#selector_type").select2({
       data: <%= raw @select_carrier_type_tags.to_json -%>,
-      matcher: function(term, text) { return text.toUpperCase().indexOf(term.toUpperCase())==0; }
+      matcher: function(term, text) {
+        return text.toUpperCase().indexOf(term.toUpperCase())==0
+      }
     });
-
-    $("#e10_3").select2({
-      data: [{id:1,"text":'印刷物'},{"id":2,text:'CD'},{"id":3,"text":'DVD'},{"id":4,text:'コンピュータファイル'},{id:5,text:'視聴覚資料'},{id:6,text:'加除式'},{id:7,text:'マイクロ資料'}],
-      matcher: function(term, text) { return text.toUpperCase().indexOf(term.toUpperCase())==0; }
+  });
+  $(document).ready(function() { 
+    $("#e17_2").select2({
+      matcher: function(term, text, opt) {
+        return text.toUpperCase().indexOf(term.toUpperCase())==0
+            || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+      }
     });
   });
 </script>
@@ -339,11 +341,23 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
-    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-
-    <!--input name="manifestation[carrier_type_id]", type="hidden" id="e10_3" style="width:200px"/-->
-    <%= f.hidden_field :carrier_type_id, :id => 'selector_type', :style => "width:200px" -%>
+    <%= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <br>テストフォーム<br>
+    <%#= f.hidden_field(:carrier_type_id, :id => 'selector_type', :style => "width:200px") -%>
+    <br>
+    <%#= f.select(:carrier_type_id, :id => 'e17_2', :alt => @select_carrier_type_tags.collect{|m| [m.name]}, :value => @select_carrier_type_tags.collect{|m| [m.text.localize, m.id]}, :style => "width:200px") -%>
+    <br>
+    <!--select id="e17_2" style="width:200px">
+      <option alt="print">印刷物</option>
+      <option alt="CD">CD</option>
+      <option alt="DVD">DVD</option>
+      <option alt="file">コンピュータファイル</option>
+      <option alt="AV">視聴覚資料</option>
+      <option alt="sheaf">加除式</option>
+      <option alt="micro">マイクロ資料</option>
+    </select>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
+    <br-->
   </div>
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
