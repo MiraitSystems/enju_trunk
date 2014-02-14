@@ -14,7 +14,7 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to payment.order.order_identifier, payment %></td>
     <td><%= Manifestation.find(payment.manifestation_id).original_title %></td>
-    <td><%= payment.paymenttype.keyname if payment.paymenttype %></td>
+    <td><%= get_keyname_payment_types(payment.payment_type.to_s) if payment.payment_type %></td>
     <td>
       <%= link_to t('page.edit'), edit_payment_path(payment) %>
       <%= link_to t('page.destroy'), payment, :confirm => t('page.are_you_sure'), :method => :delete -%>

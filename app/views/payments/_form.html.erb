@@ -122,7 +122,7 @@ $(function(){
   <div class="field">
     <%= f.label :payment_type %><br />
     <% if payment_types %>
-      <%= f.select :payment_type, payment_types.collect{|p| [p.keyname.localize, p.id]} %>
+      <%= f.select :payment_type, payment_types.collect{|p| [p.keyname.localize, p.v.to_i]} %>
     <% else %>
       <%= f.text_field :payment_type %>
     <% end %>

@@ -265,6 +265,7 @@ EnjuLeaf::Application.routes.draw do
     resource :order
     resources :purchase_requests
   end
+  match 'orders/paid', :to => 'orders#paid'
   resources :orders
 
   resources :inter_library_loans do

@@ -56,16 +56,9 @@ class PaymentsController < ApplicationController
   def destroy
     @payment = Payment.find(params[:id])
     respond_to do |format|
-      #if @payment.destroy?
         @payment.destroy
         format.html { redirect_to(payments_url) }
-      #else
-        #flash[:message] = t('payment.cannot_delete')
-        #@terms = Payment.all
-        #format.html { redirect_to(payments_url) }
-      #end
     end
   end
-
 
 end

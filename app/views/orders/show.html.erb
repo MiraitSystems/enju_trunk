@@ -239,5 +239,6 @@
     <li><%= link_to t('page.edit'), edit_order_path(@order) -%></li>
     <li><%= link_to t('page.back'), orders_path -%></li>
     <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_payment_path(:order_id => @order) -%></li>
+    <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order}, :confirm => t('payment.want_to_paid') -%></li>
   </ul>
 </div>

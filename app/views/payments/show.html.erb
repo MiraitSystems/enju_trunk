@@ -84,7 +84,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.payment.payment_type') -%>:</strong>
-  <%= @payment.paymenttype.keyname if @payment.payment_type %>
+  <%= get_keyname_payment_types(@payment.payment_type.to_s) if @payment.payment_type %>
 </p>
 
 </div>

@@ -127,4 +127,18 @@ class OrdersController < ApplicationController
     end
   end
 
+  def paid
+
+    @order = Order.find(params[:order_id])
+    @flag =  self.class.helpers.get_paid_flag
+    @order.paid_flag = @flag.id if @flag
+    @order.save
+    Payment.create_paid(params[:order_id])
+
+    respond_to do |format|
+      flash[:notice] = t('controller.successfully_created', :model => t('payment.paid'))
+      format.html {redirect_to(@order)}
+    end
+  end
+
 end

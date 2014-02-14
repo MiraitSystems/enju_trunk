@@ -3126,3 +3126,5 @@ en:
     switch_manual_entry: "Manual entry currency rate and amount of payment"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
+    paid: Paid
+    want_to_paid: "Want to paid?"

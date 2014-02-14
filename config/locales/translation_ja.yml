@@ -3098,3 +3098,5 @@ ja:
     switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
+    paid: 精算
+    want_to_paid: "精算しますか?"

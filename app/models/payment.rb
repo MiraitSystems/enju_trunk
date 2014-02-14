@@ -2,7 +2,6 @@ class Payment < ActiveRecord::Base
   attr_accessible :amount_of_payment, :auto_calculation_flag, :before_conv_amount_of_payment, :billing_date, :currency_rate, :currency_unit_code, :discount_commision, :manifestation_id, :note, :number_of_payment, :order_id, :payment_type, :volume_number, :taxable_amount, :tax_exempt_amount
 
   belongs_to :order
-  belongs_to :paymenttype, :class_name => 'Keycode', :foreign_key => 'payment_type'
 
 
   validate :set_default
@@ -62,7 +61,41 @@ class Payment < ActiveRecord::Base
   end
 
 
+  def self.create_paid(order_id)
+    @paid = Payment.new
+    
+    @paid.order_id = order_id
+    @paid.payment_type = 3
+    @paid.billing_date = Date.today
+    @paid.auto_calculation_flag = 1
 
+    @order = Order.find(order_id)
+    @paid.manifestation_id = @order.manifestation_id
+
+    @payments = Payment.where(:order_id => order_id)
+
+    payment_taxable_amount = 0
+    payment_tax_exempt_amount = 0
+    payment_number_of_payment = 0
+    @payments.each do |p|
+      if p.payment_type != 3
+        payment_taxable_amount += p.taxable_amount
+        payment_tax_exempt_amount += p.tax_exempt_amount
+        payment_number_of_payment += p.number_of_payment
+      end
+    end
+
+    @paid.taxable_amount = @order.taxable_amount - payment_taxable_amount
+    @paid.tax_exempt_amount = @order.tax_exempt_amount - payment_tax_exempt_amount
+    @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
+    @paid.number_of_payment = @order.number_of_acceptance_schedule - payment_number_of_payment
+
+    @paid.save
+
+    return @paid
+
+  end
 
   paginates_per 10
+
 end
