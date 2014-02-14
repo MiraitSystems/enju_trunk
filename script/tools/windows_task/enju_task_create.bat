@@ -1,0 +1,10 @@
+schtasks /Create /RU %1 /RP %2 /XML expire.xml /TN enjuTaskDAM0000
+schtasks /Create /RU %1 /RP %2 /XML KeywordCount.xml /TN enjuTaskDAM0010
+schtasks /Create /RU %1 /RP %2 /XML UserCheckoutStat.calculate_stat.xml /TN enjuTaskDAM0100
+schtasks /Create /RU %1 /RP %2 /XML postgresql_backup.xml /TN enjuTaskDAM0200
+schtasks /Create /RU %1 /RP %2 /XML deletefile.xml /TN enjuTaskDAM0210
+schtasks /Create /RU %1 /RP %2 /XML delayed_job_restart.xml /TN enjuTaskDAM0215
+schtasks /Create /RU %1 /RP %2 /XML Statistic.calc_sum_prev_month.xml /TN enjuTaskMAM0030
+schtasks /Create /RU %1 /RP %2 /XML NdlStatistic.calc_sum.xml /TN enjuTaskMAM0400
+schtasks /Create /RU %1 /RP %2 /XML NdlStatistic.calc_sum_prev_year.xml /TN enjuTaskYAM0400
+schtasks /Create /RU %1 /RP %2 /XML ResourceImportTextfile.xml /TN enjuTaskHAM0000
