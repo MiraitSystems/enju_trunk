@@ -41,7 +41,7 @@ function_00005:
   controller_name: ItemsController
   action_names:  |
                  read:index,show
-                 update:new,create,edit,update
+                 update:new,create,edit,update,numbering
                  delete:destroy
   position: 5
 function_00006:
@@ -89,3 +89,12 @@ function_00010:
                 update:index,create,destroy
                 delete:
   position: 10
+function_00011:
+  id: 11
+  display_name: "NACIS利用"
+  controller_name: ManifestationsController
+  action_names: |
+                read:show_nacsis
+                update:create_from_nacsis
+                delete:
+  position: 11
