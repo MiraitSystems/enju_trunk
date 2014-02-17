@@ -15,7 +15,7 @@ use Getopt::Std;
 use Archive::Tar;
 use Cwd;
 
-my $debug = 0;
+my $debug = 1;
 getopts('d');
 if ( $opt_d ) { $debug = 1; }
 

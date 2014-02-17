@@ -20,10 +20,10 @@ getopts('d');
 if ( $opt_d ) { $debug = 1; }
 
 # コンフィグレーションの設定
-require "./conf.pl";
+require "C:/Sites/enju_trunk/script/enjusync/conf.pl";
 
 # syslogモジュール
-require "./logpkg.pl";
+require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 
 # グローバル変数
 my $cur_dir = Cwd::cwd();	# カレントディレクトリ

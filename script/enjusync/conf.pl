@@ -1,9 +1,9 @@
 #
 # コンフィグレーション
 #
-$ProgHome    = "/opt/enju_trunk";
-$BucketDir   = "/var/enjusync";
-$RecvDir     = "/var/enjusync";
+$ProgHome    = "C:/Sites/enju_trunk";
+$BucketDir   = "C:/enju/enjusync";
+$RecvDir     = "C:/enju/enjusync";
 $StatFileDir = "$BucketDir/work";
 $TarFileName = "dumpfiles";
 $LockFile    = "__lock__";

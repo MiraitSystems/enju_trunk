@@ -17,5 +17,6 @@ syslog($priority, "%s", "[$prio]:$prog_name:$message");
 
 closelog();
 
+print("%s\n", "[$prio]:$prog_name:$message\n");
 }
 1;

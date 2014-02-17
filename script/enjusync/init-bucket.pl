@@ -16,15 +16,15 @@ use Getopt::Std;
 use Archive::Tar;
 use Cwd;
 
-my $debug = 0;
+my $debug = 1;
 getopts('d');
 if ( $opt_d ) { $debug = 1; }
 
 # コンフィグレーションの設定
-require "./conf.pl";
+require "C:/Sites/enju_trunk/script/enjusync/conf.pl";
 
 # syslogモジュール
-require "./logpkg.pl";
+require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 
 # グローバル変数
 my $bkt_dir = "";			# 送信バケットディレクトリ
