@@ -201,6 +201,7 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
+      work_has_language: 資料と言語の関係
       function: 機能
       function_class: 機能区分
       function_class_ability: 機能許可
@@ -559,6 +560,9 @@ ja:
         work: 書いた資料
         subject: 件名
         subjectable_type: 件名付与対象の種類
+      work_has_language:
+        work: 資料
+        language: 言語
       picture_file:
         picture_attachable_type: 画像を添付可能な種類
         picture_file_size: ファイルサイズ
@@ -1722,6 +1726,7 @@ ja:
     account: "アカウント"
     form: "形態"
     remove_this_facet: "この絞り込みを解除"
+    remove_facet: "解除"
     no_subject: "件名はついていません。"
     no_tag: "タグはついていません。"
     add_patron: "人物・団体を追加"
