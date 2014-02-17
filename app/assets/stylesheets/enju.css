@@ -578,3 +578,21 @@ div#breadcrumb{
   position: relative;
   width: 700px;
 }
+
+table.container{
+    border-color:black;
+    overflow:auto;
+}
+
+tr{
+    outline: none;
+    cursor: default;
+}
+.active{
+    /* 線 */
+    border-color:#993333; 
+    border-style:ridge; 
+    border-width:5px;
+    /* 色 */
+    /* background-color:yellow !important; */
+}
