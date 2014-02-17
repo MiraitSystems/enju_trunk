@@ -186,9 +186,18 @@
 </div>
 </div>
 
-<div id="submenu" class="ui-corner-all">
-  <ul>
-    <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
-    <li><%= link_to t('page.back'), approvals_path %></li>
-  <ul>
+<div id="submenu_block">
+  <div id="submenu" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
+      <li><%= link_to t('page.back'), approvals_path %></li>
+    <ul>
+  </div>
+
+  <%#TODO 見計らい伝票 %>
+  <div id ="avoucher" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
+    <ul>
+  </div>
 </div>

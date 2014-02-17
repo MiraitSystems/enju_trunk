@@ -147,6 +147,16 @@ div#social_bookmark{
   border: 1px solid #5970B2;
 }
 
+div#avoucher{
+  margin-top: 5px;
+  margin-left: 10px;
+  width: 190px;
+  padding: 5px;
+  clear: left;
+  float: left;
+  border: 1px solid #5970B2;
+}
+
 
 div#manifestation_book_jacket{
   margin-top: 10px;
