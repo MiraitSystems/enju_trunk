@@ -7,7 +7,14 @@ class OrdersController < ApplicationController
   # GET /orders
   # GET /orders.json
   def index
-      @orders = Order.page(params[:page])
+      if params[:manifestation_id]
+        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year desc").page(params[:page])
+        @manifestation = Manifestation.find(params[:manifestation_id])
+      else
+        @orders = Order.order("publication_year desc").page(params[:page])
+      end
+
+    set_select_years
 
     respond_to do |format|
       format.html # index.html.erb
@@ -62,7 +69,8 @@ class OrdersController < ApplicationController
 
     @order = Order.new(params[:order])
     @manifestation_identifier = params[:manifestation_identifier]
-    manifestation = Manifestation.find_by_identifier(@manifestation_identifier) unless @manifestation_identifier.blank?
+    manifestation = Manifestation.where(["manifestation_identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
+
     @order.manifestation_id = manifestation.id if manifestation
  
     respond_to do |format|
@@ -140,5 +148,64 @@ class OrdersController < ApplicationController
       format.html {redirect_to(@order)}
     end
   end
+
+  def search
+
+    unless params[:order][:publication_year].blank?
+
+      unless params[:manifestation_identifier].blank?
+        @orders = Order.joins(:manifestation).where(["publication_year = ? AND manifestation_identifier = ?", params[:order][:publication_year].to_i, params[:manifestation_identifier]]).page(params[:page])
+
+        @search_manifestation = Manifestation.where("manifestation_identifier = ?", params[:manifestation_identifier])
+        if @search_manifestation.size == 0
+          flash.now[:message] = t('order.no_matches_found_manifestation')
+          @search_manifestation = nil
+        else
+          @search_manifestation = @search_manifestation.first
+        end
+
+      else
+        @orders = Order.where(["publication_year = ?", params[:order][:publication_year].to_i]).page(params[:page])
+      end
+    else
+
+      unless params[:manifestation_identifier].blank?
+
+        @orders = Order.joins(:manifestation).where(["manifestation_identifier = ?",params[:manifestation_identifier]]).order("publication_year desc").page(params[:page])
+
+        @search_manifestation = Manifestation.where("manifestation_identifier = ?", params[:manifestation_identifier])
+
+        if @search_manifestation.size == 0
+          flash.now[:message] = t('order.no_matches_found_manifestation')
+          @search_manifestation = nil
+        else
+          @search_manifestation = @search_manifestation.first
+        end
+
+      else
+        @orders = Order.order("publication_year desc").page(params[:page])
+      end
+    end
+
+    @manifestation_selected = params[:manifestation_identifier]
+    @years_selected = params[:order][:publication_year].to_i
+    set_select_years
+
+    respond_to do |format|
+      format.html {render "index"}
+    end
+
+  end
+
+  def set_select_years
+
+    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @select_years = []
+    @years.each do |p|
+      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+    end
+
+  end
+
 
 end

@@ -83,7 +83,8 @@ EnjuLeaf::Application.routes.draw do
     resources :manifestations
     resources :series_statements
     resources :series_has_manifestations
-    resources :reserves
+    resources :reserve
+    resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
@@ -265,7 +266,9 @@ EnjuLeaf::Application.routes.draw do
     resource :order
     resources :purchase_requests
   end
+
   match 'orders/paid', :to => 'orders#paid'
+  match 'orders/search', :to => 'orders#search'
   resources :orders
 
   resources :inter_library_loans do
