@@ -83,6 +83,7 @@ EnjuLeaf::Application.routes.draw do
     resources :series_statements
     resources :series_has_manifestations
     resources :reserves
+    resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
