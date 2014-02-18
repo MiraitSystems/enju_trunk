@@ -977,7 +977,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.struct_selects(obj, text='name')
-    struct = Struct.new(:id, :text, :name)
+    struct = Struct.new(:id, :text, :alt)
     struct_array = []
     selects = obj.all
     selects.each do |select|
