@@ -304,7 +304,7 @@
           <% end %>
           <% manifestation.manifestation_exinfos.each do |exinfo| %> 
             <tr>
-              <td><%= t("manifestation_exinfo.#{exinfo.name}") %>:</td>
+              <td><%=exinfo.name%>:<%= t("manifestation_exinfo.#{exinfo.name}") %>:</td>
               <td><%= exinfo.value  %></td>
             </tr>
           <% end %>

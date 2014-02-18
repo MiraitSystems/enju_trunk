@@ -284,6 +284,23 @@ module EnjuTrunk
         subjects = Subject.import_subjects(subjects_list)
         manifestation.subjects = subjects
       end
+
+      # manifestation_extexts
+      extexts = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_extext').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_extext.#{key.to_s}")]] 
+        extexts[key] = data if data
+      end 
+      manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
+           
+      # manifestation_exinfos
+      exinfos = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_exinfo').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_exinfo.#{key.to_s}")]] 
+        exinfos[key] = data if data
+      end 
+      manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
+       
       import_textresult.error_msg = error_msg if error_msg
       return manifestation, item, mode, import_textresult
     end

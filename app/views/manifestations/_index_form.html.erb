@@ -274,19 +274,40 @@ function change_layout() {
       <div style="width: 33%; float: left;">
         <% cols_book[0, cols_book.length / 2].each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
-          <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% split_cols = x.split('.') %>
+          <% if split_cols[1] == 'manifestation_exinfo' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
+          <% elsif split_cols[1] == 'manifestation_extext' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
+          <% else %>
+            <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% end %>
         <% end %>
       </div>
       <div style="width: 34%; float: left;">
         <% cols_book[cols_book.length / 2, cols_book.length - (cols_book.length / 2)].each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
-          <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% split_cols = x.split('.') %>
+          <% if split_cols[1] == 'manifestation_exinfo' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
+          <% elsif split_cols[1] == 'manifestation_extext' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
+          <% else %>
+            <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% end %>
         <% end %>
       </div>
       <div style="width: 33%; float: left;">
         <% cols_series.each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
-          <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% split_cols = x.split('.') %>
+          <% if split_cols[1] == 'manifestation_exinfo' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
+          <% elsif split_cols[1] == 'manifestation_extext' %>
+            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
+          <% else %>
+            <%= t("resource_import_textfile.excel.#{x}") %><br />
+          <% end %>
         <% end %>
       </div>
     </div>
