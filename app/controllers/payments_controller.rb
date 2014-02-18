@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
-
   load_and_authorize_resource
+  before_filter :get_order
 
   def index
     if params[:order_id]
@@ -62,6 +62,11 @@ class PaymentsController < ApplicationController
         @payment.destroy
         format.html { redirect_to(payments_url) }
     end
+  end
+
+private
+  def get_order
+    @order = Order.find(params[:order_id]) if params[:order_id]
   end
 
 end

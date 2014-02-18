@@ -2,6 +2,14 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.payment')) -%></h1>
 <div id="content_list">
 
+<% if @order %>
+  <strong>
+  <p><%= t('activerecord.attributes.manifestation.original_title') %>: <%= @order.try(:manifestation).try(:original_title) %></p>
+  <p><%= t('activerecord.attributes.order.publication_year') %>: <%= @order.publication_year %></p>
+  <p><%= t('activerecord.attributes.order.order_identifier') %>: <%= @order.order_identifier %></p>
+  </strong>
+<% end %>
+
 <table>
   <tr>
     <th><%= t('activerecord.attributes.payment.id') %></th>
@@ -15,7 +23,7 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to payment.id, payment %></td>
     <td><%= link_to payment.order.order_identifier, order_path(payment.order) %></td>
-    <td><%= Manifestation.find(payment.manifestation_id).original_title %></td>
+    <td><%= payment.try(:manifestation).try(:identifier) %></td>
     <td><%= get_keyname_payment_types(payment.payment_type.to_s) if payment.payment_type %></td>
     <td>
       <%= link_to t('page.edit'), edit_payment_path(payment) %>
