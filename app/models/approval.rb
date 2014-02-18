@@ -113,7 +113,7 @@ class Approval < ActiveRecord::Base
 
   def mark_destroy_extext
     approval_extexts.each do |extext|
-      extext.mark_for_destruction if extext.value.blank? and extext.state.blank?
+      extext.mark_for_destruction if extext.value.blank? 
     end
   end
 

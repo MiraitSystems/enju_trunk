@@ -1,0 +1,15 @@
+<%= form_for(@work_has_language) do |f| %>
+  <%= f.error_messages %>
+
+  <div class="field">
+    <%= t('activerecord.attributes.work_has_language.work') -%>:
+    <%= f.text_field :work_id -%>
+  </div>
+  <div class="field">
+    <%= t('activerecord.attributes.work_has_language.language') -%>:
+    <%= f.text_field :language_id -%>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

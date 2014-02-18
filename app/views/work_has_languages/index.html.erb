@@ -1,0 +1,30 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.work_has_language')) -%></h1>
+  <div id="content_list">
+    <p id="notice"><%= notice %></p>
+    <table class="table table-striped index">
+      <tr>
+        <th><%= t('activerecord.attributes.work_has_language.work') -%></th>
+        <th><%= t('activerecord.attributes.work_has_language.language') -%></th>
+        <th></th>
+      </tr>
+      <% @work_has_languages.each do |work_has_language| %>
+        <tr class="line<%= cycle("0", "1") -%>">
+          <td><%= link_to work_has_language.work.original_title, manifestation_path(work_has_language.work.id) %></td>
+          <td><%= work_has_language.language.display_name.localize %></td>
+          <td>
+            <%= link_to t('page.show'), work_has_language %>
+            <%= link_to t('page.edit'), edit_work_has_language_path(work_has_language) %>
+            <%= link_to t('page.destroy'), work_has_language, method: :delete, data: {confirm: t('page.are_you_sure')} %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.work_has_language')), new_work_has_language_path %></li>
+  <ul>
+</div>

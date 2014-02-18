@@ -14,7 +14,8 @@ class Manifestation < ActiveRecord::Base
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  belongs_to :language
+  has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy
+  has_many :languages, :through => :work_has_languages, :order => :position
   belongs_to :carrier_type
   belongs_to :manifestation_type
   has_one :series_has_manifestation, :dependent => :destroy
@@ -30,9 +31,15 @@ class Manifestation < ActiveRecord::Base
   has_many :identifiers
   has_many :manifestation_exinfos, :dependent => :destroy
   has_many :manifestation_extexts, :dependent => :destroy
+  has_one :approval
 
   belongs_to :manifestation_content_type, :class_name => 'ContentType', :foreign_key => 'content_type_id'
   belongs_to :country_of_publication, :class_name => 'Country', :foreign_key => 'country_of_publication_id'
+
+  has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
+  has_many :manifestation_titles, :through => :work_has_titles
+  accepts_nested_attributes_for :work_has_titles
+  before_save :mark_destroy_manifestaion_titile
 
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
@@ -40,7 +47,7 @@ class Manifestation < ActiveRecord::Base
   SUNSPOT_EAGER_LOADING = {
     include: [
       :creators, :publishers, :contributors, :carrier_type,
-      :manifestation_type, :language, :series_statement,
+      :manifestation_type, :languages, :series_statement,
       :original_manifestations,
       items: :shelf,
       subjects: {classifications: :category},
@@ -162,8 +169,8 @@ class Manifestation < ActiveRecord::Base
     string :library, :multiple => true do
       items.map{|i| item_library_name(i)}
     end
-    string :language do
-      language.try(:name)
+    string :language, :multiple => true do
+      languages.map{|i| item_language_name(i)}
     end
     string :ndc, :multiple => true do
       if root_of_series? # 雑誌の場合
@@ -463,8 +470,8 @@ class Manifestation < ActiveRecord::Base
     has_attached_file :attachment
   end
 
-  validates_presence_of :carrier_type, :language, :manifestation_type, :country_of_publication
-  validates_associated :carrier_type, :language, :manifestation_type, :country_of_publication
+  validates_presence_of :carrier_type, :manifestation_type, :country_of_publication
+  validates_associated :carrier_type, :languages, :manifestation_type, :country_of_publication
   validates_numericality_of :acceptance_number, :allow_nil => true
   validates_uniqueness_of :nacsis_identifier, :allow_nil => true
   validate :check_rank
@@ -536,7 +543,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def set_language
-    self.language = Language.where(:name => "Japanese").first if self.language.nil?
+    self.languages << Language.where(:name => "Japanese").first if self.languages.blank?
   end
 
   def set_manifestation_type
@@ -974,12 +981,12 @@ class Manifestation < ActiveRecord::Base
   BOOK_COLUMNS = lambda { %W(
     #{ 'manifestation_type' unless SystemConfiguration.get('manifestations.split_by_type') } 
     isbn original_title title_transcription title_alternative carrier_type jpn_or_foreign
-    frequency pub_date country_of_publication place_of_publication language
+    frequency pub_date country_of_publication place_of_publication
     edition_display_value volume_number_string issue_number_string serial_number_string lccn
     marc_number ndc start_page end_page height width depth price
     acceptance_number access_address repository_content required_role
     except_recent description supplement note creator contributor publisher
-    subject accept_type acquired_at_string bookstore library shelf checkout_type
+    subject language accept_type acquired_at_string bookstore library shelf checkout_type
     circulation_status retention_period call_number item_price url
     include_supplements use_restriction item_note rank item_identifier
     remove_reason non_searchable missing_issue del_flg
@@ -1094,7 +1101,7 @@ class Manifestation < ActiveRecord::Base
     transaction do
       where(:id => manifestation_ids).
           includes(
-            :carrier_type, :language, :required_role,
+            :carrier_type, :languages, :required_role,
             :frequency, :creators, :contributors,
             :publishers, :subjects, :manifestation_type,
             :series_statement,
@@ -1225,7 +1232,7 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
 
-    when 'carrier_type', 'language', 'required_role', 'manifestation_type', 'country_of_publication'
+    when 'carrier_type', 'required_role', 'manifestation_type', 'country_of_publication'
       val = __send__(ws_col).try(:name) || ''
 
     when 'frequency'
@@ -1242,12 +1249,20 @@ class Manifestation < ActiveRecord::Base
           ws_type == 'article' && japanese_article? && !val.blank?
         val += sep
       end
+
     when 'subject'
       sep = ';'
       if ws_type == 'article' && !japanese_article?
         sep = '*'
       end
       val = __send__(:subjects).map(&:term).join(sep)
+
+    when 'language'
+      sep = ';'
+      if ws_type == 'article' && !japanese_article?
+        sep = '*'
+      end
+      val = __send__(:languages).map(&:name).join(sep)
 
     when 'missing_issue'
       val = helper.missing_status(missing_issue) || ''
@@ -1658,6 +1673,12 @@ class Manifestation < ActiveRecord::Base
       end
     end
 
+    def item_language_name(item)
+      item_attr(:language_name, item.id) do
+        item.name
+      end
+    end
+
     def series_manifestations
       if !reload_for_index &&
           @_series_manifestations_cache
@@ -1679,6 +1700,16 @@ class Manifestation < ActiveRecord::Base
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id])
     end
+
+    def mark_destroy_manifestaion_titile
+      work_has_titles.each do |title|
+        if title.manifestation_title.title.blank?
+          Title.destroy([title.title_id])
+          title.mark_for_destruction
+        end
+      end
+    end
+
 end
 
 # == Schema Information

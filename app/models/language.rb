@@ -6,6 +6,9 @@ class Language < ActiveRecord::Base
   # alias_attribute :iso2, :iso_639_2
   # alias_attribute :iso3, :iso_639_3
 
+  has_many :work_has_languages, :dependent => :destroy
+  has_many :works, :through => :work_has_languages, :class_name => 'Manifestation'
+
   # Validations
   validates_presence_of :iso_639_1, :iso_639_2, :iso_639_3
   after_save :clear_available_languages_cache
@@ -28,6 +31,15 @@ class Language < ActiveRecord::Base
 
   def self.available_languages
     Language.where(:iso_639_1 => I18n.available_locales.map{|l| l.to_s}).order(:position)
+  end
+
+  def self.add_language(language_ids)
+    return [] if language_ids.blank?
+    list = []
+    language_ids.uniq.compact.each do |language_id|
+      list << Language.find(language_id)
+    end
+    return list
   end
 end
 

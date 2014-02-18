@@ -56,7 +56,7 @@ class Patron < ActiveRecord::Base
   validates :email, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validates :email_2, :format => {:with => /^([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})$/i}, :allow_blank => true
   validate :check_birth_date
-  validate :check_full_name
+#  validate :check_full_name
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name
 

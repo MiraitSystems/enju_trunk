@@ -260,6 +260,9 @@ module SystemConfigurationsHelper
      when 'nacsis.search_each'
        string << t('system_configuration.boolean_search_each') if state == 'true'
        string << t('system_configuration.boolean_do_not_search_each') if state == 'false'
+     when 'focus_start_position'
+       string << t('system_configuration.boolean_focus_start_position') if state == 'true'
+       string << t('system_configuration.boolean_not_focus_start_position') if state == 'false'
      else
      # => yes,no
        string << t('system_configuration.boolean_yes') if state == 'true'

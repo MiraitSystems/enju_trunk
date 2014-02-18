@@ -1,0 +1,20 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.work_has_language')) -%></h1>
+  <div id="content_list">
+    <p id="notice"><%= notice %></p>
+    <p>
+      <strong><%= t('activerecord.attributes.work_has_language.work') -%>:</strong>
+      <%= link_to @work_has_language.work.original_title, manifestation_path(@work_has_language.work.id) %>
+    </p>
+    <p>
+      <strong><%= t('activerecord.attributes.work_has_language.language') -%>:</strong>
+      <%= @work_has_language.language.display_name.localize %>
+    </p>
+  </div>
+</div>
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_work_has_language_path(@work_has_language) %></li>
+    <li><%= link_to t('page.listing', :model => t('activerecord.models.work_has_language')), work_has_languages_path %></li>
+  </ul>
+</div>

@@ -201,9 +201,12 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
+      work_has_language: 資料と言語の関係
       function: 機能
       function_class: 機能区分
       function_class_ability: 機能許可
+      title_type: 書名種類
+      title: 書名
 
     attributes:
       use_license:
@@ -435,7 +438,7 @@ ja:
         patron_identifier: 人物団体の識別番号
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
-        corporate_type: 団体分類 
+        corporate_type: 団体分類
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -557,6 +560,9 @@ ja:
         work: 書いた資料
         subject: 件名
         subjectable_type: 件名付与対象の種類
+      work_has_language:
+        work: 資料
+        language: 言語
       picture_file:
         picture_attachable_type: 画像を添付可能な種類
         picture_file_size: ファイルサイズ
@@ -1596,6 +1602,10 @@ ja:
         function_class: 機能区分
         function: 機能
         ability: 権限
+      title_type:
+        name: 名前
+        display_name: 表示名
+        note: 注記        
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1716,6 +1726,7 @@ ja:
     account: "アカウント"
     form: "形態"
     remove_this_facet: "この絞り込みを解除"
+    remove_facet: "解除"
     no_subject: "件名はついていません。"
     no_tag: "タグはついていません。"
     add_patron: "人物・団体を追加"
@@ -1882,6 +1893,7 @@ ja:
     add_line: "+"
     del_line: "-"
     user_notice: 利用者通知書
+    select_use_titles: 書名テーブルを利用する
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2160,15 +2172,21 @@ ja:
     patron_identifier: 機関を識別するための番号
     place: 所在地
     contact:
-      full_name: 発行担当機関
-      full_name_transcription: 発行担当機関(ヨミ)
-      patron_identifier: 担当窓口
+      full_name: 発行担当機関名称
+      full_name_transcription: 発行担当機関名称(ヨミ)
+      patron_identifier: 担当窓口コード
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
     adding: "の追加"
     adding_free: "（既存データ以外の追加）"
     adding_limitative: "（既存データのみの追加）"
+    conference:
+      full_name: 会議名
+      title: 会議回次
+      place: 開催地
+      birth_date: 開催開始年月日
+      death_date: 開催終了年月日
   question:
     my: "自分の質問"
     all: "全ての質問"
@@ -2825,6 +2843,8 @@ ja:
     boolean_not_rental_certificate_size: "A4"
     boolean_output_format_type: "TSV"
     boolean_not_output_format_type: "CSV"
+    boolean_focus_start_position: "最初の資料"
+    boolean_not_focus_start_position: "検索フォーム"
     error:
       over_checkouts_print_message: "貸出表に表示できるメッセージは最大全角%{num}文字までです"
       over_reminder_postal_card_message: "督促はがきに表示できるメッセージは最大全角%{num}文字までです"
@@ -3006,3 +3026,5 @@ ja:
       barcode_registration:
         first_number: 開始番号
         last_number: 終了番号
+  title_type:
+    cannot_delete: "この書名種類は削除できません"

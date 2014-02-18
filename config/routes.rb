@@ -1,4 +1,6 @@
 EnjuLeaf::Application.routes.draw do
+
+  resources :title_types
   resources :approvals
   resources :keycodes
   resources :use_licenses
@@ -400,6 +402,8 @@ EnjuLeaf::Application.routes.draw do
   resources :countries
 
   resources :languages
+
+  resources :work_has_languages
 
   resources :manifestation_relationships
 

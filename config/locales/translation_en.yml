@@ -198,9 +198,12 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
+      work_has_language: Work to language relationship
       function: Function
       function_class: Function class
       function_class_ability: Function class ability
+      title_type: Title type
+      title: Title
 
     attributes:
       use_license:
@@ -476,6 +479,9 @@ en:
         work: Work
         subject: Subject
         subjectable_type: Subjectable type
+      work_has_language:
+        work: Work
+        laguage: Language
       picture_file:
         picture_attachable_type: Picture attachable type
         picture_file_size: Size
@@ -1608,6 +1614,10 @@ en:
         function_class: Function class
         function: Function
         ability: Ability
+      title_type:
+        name: Name
+        display_name: Display name
+        note: Note
 
   page:
     user_title: Welcome %{login_name}
@@ -1728,6 +1738,7 @@ en:
     account: Account
     form: Form
     remove_this_facet: Remove this facet
+    remove_facet: Remove
     no_subject: No subjects.
     no_tag: No tags.
     add_patron: Add a patron
@@ -1914,6 +1925,7 @@ en:
     add_line: "+"
     del_line: "-"
     user_notice: User notice
+    select_use_titles: Use titles table
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2180,6 +2192,12 @@ en:
     adding: adding
     adding_free: (Free input)
     adding_limitative: (Limitative input)
+    conference:
+      full_name: Conference full name
+      title: Conference title
+      place: Conference place
+      birth_date: Conference birth date
+      death_date: Conference death date
   question:
     my: My questions
     all: All questions
@@ -2728,6 +2746,8 @@ en:
     boolean_not_autoprint: Not auto-print
     boolean_output_format_type: TSV
     boolean_not_output_format_type: CSV
+    boolean_focus_start_position: The first manifestation
+    boolean_not_focus_start_position: Search form
     error:
       over_checkouts_print_message: checkouts print message exceed the limit. max
         %{num}.
@@ -3034,3 +3054,5 @@ en:
       barcode_registration:
         first_number: First number
         last_number: Last number
+  title_type:
+    cannot_delete: The title type cannnot be deleted.
