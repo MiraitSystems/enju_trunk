@@ -785,6 +785,7 @@ en:
         manifestation_identifier: Manifestation identifier
         taxable_amount: Taxable amount
         tax_exempt_amount: Tax exempt amount
+        payment_sum: Sum of payments
       order_list:
         title: Title
         bookstore: Bookstore
