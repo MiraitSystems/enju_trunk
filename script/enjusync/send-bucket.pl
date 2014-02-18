@@ -21,18 +21,18 @@ getopts('d');
 if ( $opt_d ) { $debug = 1; }
 
 # コンフィグレーションの設定
-require "./conf.pl";
+require "C:/Sites/enju_trunk/script/enjusync/conf.pl";
 
 # syslogモジュール
-require "./logpkg.pl";
+require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 
 # グローバル変数
 my $cur_dir = Cwd::cwd();	# カレントディレクトリ
 my $snd_bucket = "";
 my $ctrl_file = "";
-my $snd_host = "webopac";
-my $ftp_user = "ftpenju";
-my $ftp_pass = "gota2k12nda";
+my $snd_host = "NPALIBWEB";
+my $ftp_user = "enju";
+my $ftp_pass = "Npaftp14";
 my $exec_date = "";
 my $send_stat = "";
 my $rtry_cnt = 0;

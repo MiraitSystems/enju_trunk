@@ -1830,7 +1830,7 @@ class ManifestationsController < ApplicationController
         send_data output.data, send_opts
       when :delayed
         flash[:message] = t('manifestation.output_job_queued', :job_name => output.job_name)
-        redirect_to manifestations_path(params.dup.tap {|h| h.delete_if {|k, v| /\Aoutput_/ =~ k} })
+        redirect_to manifestations_path(params.dup.tap {|h| h.delete_if {|k, v| /\Aoutput/ =~ k || /\Acol/ =~ k} })
       else
         msg = "unknown result type: #{output.result_type.inspect} (bug?)"
         logger.error msg

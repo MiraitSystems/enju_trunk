@@ -53,7 +53,8 @@ namespace :enju do
           fail "another process is writing to #{ENV['DUMP_FILE']}"
         end
 
-        dump = Marshal.load(File.read(df))
+        #dump = Marshal.load(File.read(df))
+        dump = Marshal.load(df)
 
         if dump[:versions].empty?
           $stderr.puts "no changes found"

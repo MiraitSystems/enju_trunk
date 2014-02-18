@@ -15,15 +15,15 @@ use Getopt::Std;
 use Archive::Tar;
 use Cwd;
 
-my $debug = 0;
+my $debug = 1;
 getopts('d');
 if ( $opt_d ) { $debug = 1; }
 
 # コンフィグレーションの設定
-require "./conf.pl";
+require "C:/Sites/enju_trunk/script/enjusync/conf.pl";
 
 # syslogモジュール
-require "./logpkg.pl";
+require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 
 # グローバル変数
 my $cur_dir = Cwd::cwd();   # カレントディレクトリ
@@ -118,16 +118,16 @@ close(CTL);
 if ($debug) {print "ctrl_sz = $ctrl_sz ctrl_md5sum = '$ctrl_md5sum'\n";}
 
 my $file_sz = -s "$TarFileName.tar.gz";
-chomp(my $file_md5sum = `/usr/bin/md5sum $TarFileName.tar.gz`);
-$file_md5sum =~ /(\w+)\s*(\w+)/;
-my $chk_sum = $1;   # md5sumの値を分離
+#chomp(my $file_md5sum = `/usr/bin/md5sum $TarFileName.tar.gz`);
+#$file_md5sum =~ /(\w+)\s*(\w+)/;
+#my $chk_sum = $1;   # md5sumの値を分離
 
-if ( $ctrl_sz != $file_sz || $ctrl_md5sum ne $chk_sum ) {
-	# ファイルサイズとチェックサムが一致していない
-	wrt_log($pname, 'err', "Does not match file size or checksum: sz=$file_sz chksum=$chk_sum");
-	close(LCK);
-	exit 2;
-}
+#if ( $ctrl_sz != $file_sz || $ctrl_md5sum ne $chk_sum ) {
+#	# ファイルサイズとチェックサムが一致していない
+#	wrt_log($pname, 'err', "Does not match file size or checksum: sz=$file_sz chksum=$chk_sum");
+#	close(LCK);
+#	exit 2;
+#}
 
 # コマンドファイル.tar.gzを展開
 if ( -f "$TarFileName.tar.gz" ) {
@@ -157,7 +157,7 @@ if ($debug) {print "rake enju:sync:import DUMP_FILE=$RecvDir/$rcv_bucket/enjudum
 # 	close(LCK);
 # 	exit 2;
 # }
-my $r_stat = system("rake enju:sync:import DUMP_FILE=$RecvDir/$rcv_bucket/enjudump.marshal STATUS_FILE=$RecvDir/$rcv_bucket/status.marshal");
+my $r_stat = system("bundle exec rake enju:sync:import DUMP_FILE=$RecvDir/$rcv_bucket/enjudump.marshal STATUS_FILE=$RecvDir/$rcv_bucket/status.marshal");
 if ( $r_stat != 0 ) {
  	wrt_log($pname, 'err', "Failed import dumpfile:status=$r_stat:see also /opt/enju_trunk/log/production.log");
 }
