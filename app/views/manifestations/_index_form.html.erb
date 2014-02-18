@@ -96,7 +96,11 @@
       <%= hidden_field_tag 'reservable', params[:reservable] if params[:reservable] -%>
       <%= hidden_field_tag 'carrier_type', params[:carrier_type] if params[:carrier_type] -%>
       <%= hidden_field_tag 'library', params[:library] if params[:library] -%>
-      <%= hidden_field_tag 'language', params[:language] if params[:language] -%>
+      <%- if params[:language].present? && params[:language].kind_of?(Array) -%>
+        <%- params[:language].each do |language| -%>
+          <%= hidden_field_tag 'language[]', language -%>
+        <%- end -%>
+      <%- end -%>
       <%- if form_type != :series_statement -%>
         <%= hidden_field_tag 'in_process', params[:in_process] if params[:in_process] -%>
         <%#= hidden_field_tag 'manifestation_type', params[:manifestation_type] if params[:manifestation_type] -%>
