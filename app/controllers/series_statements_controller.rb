@@ -91,6 +91,7 @@ class SeriesStatementsController < ApplicationController
   def edit
     @series_statement.work = @work if @work
     @series_statement.root_manifestation = Manifestation.new unless @series_statement.root_manifestation
+    @series_statement_languages = @series_statement.root_manifestation.languages.reorder('work_has_languages.position').pluck(:id)
     output_patron_parameter_for_new_edit
     if @series_statement.root_manifestation
       manifestation = @series_statement.root_manifestation
@@ -110,7 +111,9 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
         @series_statement.root_manifestation.periodical_master = true
         @subject = params[:manifestation][:subject]
-        @series_statement.root_manifestation.subjects     = Subject.import_subject(@subject) unless @subject.blank?
+        @series_statement.root_manifestation.subjects = Subject.import_subject(@subject) unless @subject.blank?
+        @language = params[:language_id].values
+        @series_statement.root_manifestation.languages = Language.add_language(@language) unless @language.blank?
         @series_statement.root_manifestation.save! # if @series_statement.periodical
         @series_statement.manifestations << @series_statement.root_manifestation
       end
@@ -146,6 +149,7 @@ class SeriesStatementsController < ApplicationController
     end
     rescue Exception => e
       logger.error "Failed to create: #{e}"
+      @series_statement_languages = @language
       prepare_options
       output_patron_parameter
       respond_to do |format|
@@ -169,6 +173,7 @@ class SeriesStatementsController < ApplicationController
       begin
         SeriesStatement.transaction do
           @subject = params[:manifestation][:subject]
+          @language = params[:language_id].values
           if params[:series_statement][:periodical].to_s == "1"
             if @series_statement.root_manifestation
               @series_statement.root_manifestation.assign_attributes(params[:manifestation])
@@ -180,7 +185,8 @@ class SeriesStatementsController < ApplicationController
               @series_statement.root_manifestation.periodical_master = true
             end
             #TODO update position to edit patrons without destroy
-            @series_statement.root_manifestation.subjects     = Subject.import_subjects(@subject)
+            @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject)
+            @series_statement.root_manifestation.languages = Language.add_language(@language)
             @series_statement.root_manifestation.save!
             @series_statement.manifestations << @series_statement.root_manifestation unless @series_statement.manifestations.include?(@series_statement.root_manifestation)
           else
@@ -190,7 +196,6 @@ class SeriesStatementsController < ApplicationController
             end
             @series_statement.periodical = false
           end
-
           @series_statement.save!
           @series_statement.manifestations.map { |manifestation| manifestation.index } if @series_statement.manifestations
 
@@ -221,6 +226,7 @@ class SeriesStatementsController < ApplicationController
       rescue Exception => e
         logger.error "Failed to update: #{e}"
         @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
+        @series_statement_languages = @language
         prepare_options
         output_patron_parameter
         format.html { render :action => "edit" }
@@ -265,6 +271,8 @@ class SeriesStatementsController < ApplicationController
     @create_types = CreateType.find(:all, :select => "id, display_name")
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
+    @series_statement_languages_count = @series_statement_languages.blank? ? 1 : @series_statement_languages.size
+    @default_language = Language.where(:iso_639_1 => @locale).first
   end
 
   def input_patron_parameter

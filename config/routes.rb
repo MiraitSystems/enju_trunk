@@ -403,6 +403,8 @@ EnjuLeaf::Application.routes.draw do
 
   resources :languages
 
+  resources :work_has_languages
+
   resources :manifestation_relationships
 
   resources :items do
