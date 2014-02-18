@@ -16,5 +16,5 @@
     <% if can? :destroy, @series_statement %>
        <li><%= link_to t('page.destroy'), @series_statement, :confirm => t('page.are_you_sure'), :method => :delete %></li>
     <% end %>
-       <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
+    <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
   </ul>

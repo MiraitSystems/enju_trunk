@@ -21,6 +21,7 @@
 
 <table class="index">
   <tr>
+    <th><%= t('activerecord.attributes.order.publication_year') -%></th>
     <th><%= t('activerecord.attributes.order.order_identifier') -%></th>
     <th><%= t('activerecord.attributes.order.order_day') -%></th>
     <th><%= t('activerecord.attributes.order.manifestation') -%></th>
@@ -30,10 +31,10 @@
 
 <%- @orders.each do |order| -%>
   <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= order.publication_year %></td>
     <td><%= link_to order.order_identifier, order_path(order) %></td>
     <td><%= l(order.order_day, :format => :only_date) %></td>
     <td><%= order.manifestation.original_title %></td>
-    <td><%= order.publication_year %></td>
     <td>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
         <% if order.destroy? %>

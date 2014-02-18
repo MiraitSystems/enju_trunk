@@ -3,8 +3,11 @@ class PaymentsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @payments = Payment.page(params[:page])
-
+    if params[:order_id]
+      @payments = Payment.where(["order_id = ?",params[:order_id]]).page(params[:page])
+    else
+      @payments = Payment.page(params[:page])
+    end
   end
 
   def new

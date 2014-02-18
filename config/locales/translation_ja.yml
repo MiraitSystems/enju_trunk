@@ -1637,6 +1637,7 @@ ja:
         display_name: 表示名
         note: 注記        
       payment:
+        id: ID
         order_id: 発注番号
         billing_date: 請求年月日
         manifestation_id: 資料番号
@@ -3094,6 +3095,7 @@ ja:
     switch_manual_entry: "通貨レート、発注金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
+    payments: 支払情報
   payment:
     switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算

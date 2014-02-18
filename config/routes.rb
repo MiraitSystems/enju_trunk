@@ -1,7 +1,6 @@
 EnjuLeaf::Application.routes.draw do
 
 
-  resources :payments
   resources :title_types
   resources :approvals
   resources :keycodes
@@ -83,7 +82,7 @@ EnjuLeaf::Application.routes.draw do
     resources :manifestations
     resources :series_statements
     resources :series_has_manifestations
-    resources :reserve
+    resources :reserves
     resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
@@ -269,7 +268,11 @@ EnjuLeaf::Application.routes.draw do
 
   match 'orders/paid', :to => 'orders#paid'
   match 'orders/search', :to => 'orders#search'
-  resources :orders
+  resources :orders do
+    resources :payments
+    get :paid, :on => :member
+  end
+  resources :payments
 
   resources :inter_library_loans do
     post :export_loan_lists, :on => :collection
