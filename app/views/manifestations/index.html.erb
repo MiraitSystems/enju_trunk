@@ -25,18 +25,130 @@
 -->
 </script>
 
+<script id = "key_controll">
+$(document).ready(function() {
+  var first_focus = document.getElementsByClassName("search_form");
+  first_focus[0].focus();
+  
+  $('table.container').on('focus', 'tr', function() {
+    $this = $(this);
+    $this.addClass('active').siblings().removeClass('active');
+    $this.closest('table.container').scrollTop($this.index() * $this.outerHeight());
+  }).on('keydown', 'tr', function(e) {
+    $this = $(this);
+    switch(e.keyCode){
+      case 40: //↓
+        $this.next().focus();
+        return false;
+        break;
+      case 38: //↑
+        $this.prev().focus();
+        return false;
+        break;
+      case 37: //←
+        <% move_page = 0 %>
+        <% move_page = params[:page].to_i if params[:page] %>
+        //今のページを取得
+        var now_page = "page="+ <%=move_page%>;
+        var new_page = "page="+ <%=move_page - 1%>;
+        var page_address = location.href;
+        //現在のページが「取得できない」or「1」の場合
+        if (now_page == "page=0" || now_page == "page=1"){ 
+        } else {
+          var new_address = page_address.replace(now_page, new_page);
+          location.href = new_address;
+        }
+        return false;
+        break;
+      case 39: //→
+        <% move_page = 0 %>
+        <% move_page = params[:page].to_i if params[:page] %>
+        <% end_page = 0 %>
+        <% end_page = @manifestations.num_pages if @manifestations.num_pages %>
+        //今のページを取得
+        var now_page = "page="+ <%=move_page %>;
+        var new_page = "page="+ <%=move_page + 1 %>;
+        var last_page = "page="+ <%=end_page %> 
+        var page_address = location.href;
+        //現在のページが「取得できない」場合
+        if (now_page == "page=0"){
+          //ページ上限での処理
+          if (last_page == "page=1") {
+          } else {
+            new_page = "page="+ <%=move_page + 2 %>;
+            var address = location.search;
+            var search_address = address.replace("?", "?"+ new_page + "&");
+            location.search = search_address;
+          }
+        } else {
+          //ページ上限での処理
+          if (now_page == last_page) {
+          } else {
+            var new_address = page_address.replace(now_page, new_page);
+            location.href = new_address;
+          }
+        }
+        return false;
+        break;
+      case 13: //enter
+        var tags = document.getElementsByClassName('active');
+        var manifestation_tag = tags[0].getAttribute('name');
+        var page_address = location.href;
+        if (page_address.match(/works?/)) {
+          var page_pathname = location.pathname;
+          page_pathname = "manifestations/" + manifestation_tag;
+          location.pathname = page_pathname;
+        } else {
+          var new_address = page_address.replace("manifestations?", "manifestations/" + manifestation_tag + "?");
+          location.href = new_address;
+        }
+        return false;
+        break;
+    }
+  <%- if SystemConfiguration.get('focus_start_position') -%>
+  }).find('tr').first().focus();
+  <% else %>
+  })
+  <% end %>
+  //検索フォームをクリックした場合の処理
+  <!--
+  $(first_focus[0]).click(function(){
+    var tags = document.getElementsByClassName('active');
+    if ($(tags).size()){
+      var manifestation_tag = tags[0].getAttribute('id');
+      $("#"+ manifestation_tag).removeClass('active');
+    }
+  });
+  -->
+  //外側をクリックしたときに枠を外す
+  $listover = false;
+  $(document).click(function(){
+      if ($listover) {}
+      else{
+        var tags = document.getElementsByClassName('active');
+        if ($(tags).size()){
+          var manifestation_tag = tags[0].getAttribute('id');
+          $("#"+ manifestation_tag).removeClass('active');
+        }
+      }
+  });
+  $("#list").hover(function () {$listover = true;},function () {$listover = false;});
+});
+
+</script>
+
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.search_resource', :model => t('page.resource')) -%></h1>
 <div id="content_list">
-  <div style="color: green"><%= flash[:message] -%></div> 
+  <div style="color: green"><%= flash[:message] -%></div>
   <%= render 'manifestations/title', :manifestation => @manifestation if @manifestation -%>
   <% if @basket %>
     <p id="basket_count"><%= t('basket.show_basket', :count => @basket.try(:checked_manifestations).try(:size)) %></p>
     <%= link_to t('basket.out'), manifestations_path %>
   <% end %>
-
+  <div id="container">
   <%= render 'index_form' %>
-
+  </div>
   <% if @series_statement %>
     <%= render 'show_series_statement' %>
   <% end %>

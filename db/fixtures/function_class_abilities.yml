@@ -39,6 +39,10 @@ function_class_ability_110:
   function_class_id: 1 # Administrator
   function_id: 10
   ability: 3 # can delete
+function_class_ability_111:
+  function_class_id: 1 # Administrator
+  function_id: 11
+  ability: 3 # can delete
 
 function_class_ability_21:
   function_class_id: 2 # Librarian
@@ -79,6 +83,10 @@ function_class_ability_29:
 function_class_ability_210:
   function_class_id: 2 # Librarian
   function_id: 10
+  ability: 3 # can delete
+function_class_ability_211:
+  function_class_id: 2 # Librarian
+  function_id: 11
   ability: 3 # can delete
 
 function_class_ability_34:

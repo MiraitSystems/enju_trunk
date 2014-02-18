@@ -198,9 +198,8 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
-      title_type: Title type
-      title: Title
       payment: Payment
+      work_has_language: Work to language relationship
       function: Function
       function_class: Function class
       function_class_ability: Function class ability
@@ -481,6 +480,9 @@ en:
         work: Work
         subject: Subject
         subjectable_type: Subjectable type
+      work_has_language:
+        work: Work
+        laguage: Language
       picture_file:
         picture_attachable_type: Picture attachable type
         picture_file_size: Size
@@ -1801,6 +1803,7 @@ en:
     account: Account
     form: Form
     remove_this_facet: Remove this facet
+    remove_facet: Remove
     no_subject: No subjects.
     no_tag: No tags.
     add_patron: Add a patron
@@ -2808,6 +2811,8 @@ en:
     boolean_not_autoprint: Not auto-print
     boolean_output_format_type: TSV
     boolean_not_output_format_type: CSV
+    boolean_focus_start_position: The first manifestation
+    boolean_not_focus_start_position: Search form
     error:
       over_checkouts_print_message: checkouts print message exceed the limit. max
         %{num}.

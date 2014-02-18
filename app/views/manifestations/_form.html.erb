@@ -57,127 +57,28 @@ $(document).keydown(function(e) {
     }); 
   });
 </script>
-<script id="script_patron">
-  $(document).ready(function() {
-    $("#patron_search_creator,#patron_search_contributor,#patron_search_publisher").select2({
-      multiple: true,
-      minimumInputLength: 1,
-      width: "220px",
-      placeholder: <%= raw t("patron.search_placeholder").to_json %>,
-      formatNoMatches: function(term) {
-        return "'" + term + "' " + <%= raw t("patron.search_nomatch").to_json %>;
-      },
-      formatSearching: function() {
-        return <%= raw t("patron.search_searching").to_json %>;
-      },
-      formatInputTooShort: function(term, minLength){
-        return <%= raw t("patron.search_placeholder").to_json %>;
-      },
-      ajax: {
-        url: '<%= "http://" + request.host.to_s + ":" + request.port.to_s + "/patrons/search_name.json" %>',
-        dataType: 'json',
-        data: function (term, page) {
-            return {search_phrase: term,
-            };
-        },
-        results: function (data, page) {
-            return {results: data};
-        },
-      },
-      initSelection: function(element, callback) {
-        var id=$(element).val();
-        if (id!=="") {
-            $.ajax('<%= "http://" + request.host.to_s + ":" + request.port.to_s + "/patrons/search_name.json" + "?patron_id=" %>' + id, {
-                dataType: "json"
-            }).done(function(data) { callback(data); });
-        }
-      },
-    });
-  });
-</script>
-<script id="script_add_patron">
-  var ItemField_creator = {
-   currentNumber : <%= raw @new_creator_number.to_json %>,
+
+<script>
+  var ItemField_language = {
+    currentNumber : <%= raw @manifestation_languages_count.to_json %>,
     itemTemplate : ''
-     + '<input id="creator_full_name___count__" name="creator_full_name[__count__]" size="20" type="text">&#10'
-     + '<input id="creator_full_name_transcription___count__" name="creator_full_name_transcription[__count__]" size="20" type="text">&#10'
-     + '<select id="creator_type_id___count__" name="creator_type_id[__count__]">'
-     + <%= raw @create_types.collect{|r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"]}.join().to_json %>
-     + '</select>&#10',
-   add : function () {
-      var field = document.getElementById('SF' + this.currentNumber);
-      var replaceCount = this.currentNumber;
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      field.innerHTML = newItem;
-      var nextNumber = this.currentNumber + 1;
+      + '<select id="language_id___count__" name="language_id[__count__]">'
+      + <%= raw @languages.collect{ |language| ["<option value='" + language.id.to_s + "'>" + language.display_name.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
+      + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
+      + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
+    add : function () {
+      var field = document.getElementById('language');
       var new_area = document.createElement("div");
-      new_area.setAttribute("id", "SF" + nextNumber);
-      new_area.setAttribute("class", "field");
+      new_area.setAttribute("id", "LANG" + this.currentNumber);
+      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+      new_area.innerHTML = newItem;
       field.appendChild(new_area);
-      this.currentNumber = nextNumber;
+      this.currentNumber += 1;
     },
-    remove : function () {
-      if ( this.currentNumber == 1) { return; }
-      this.currentNumber--;
-      var field = document.getElementById('SF' + this.currentNumber);
-      field.removeChild(field.lastChild);
-      field.innerHTML = '';
-    }
-  }
-  var ItemField_contributor = {
-   currentNumber : <%= raw @new_contributor_number.to_json %>,
-    itemTemplate : ''
-     + '<input id="contributor_full_name___count__" name="contributor_full_name[__count__]" size="20" type="text">&#10'
-     + '<input id="contributor_full_name_transcription___count__" name="contributor_full_name_transcription[__count__]" size="20" type="text">&#10'
-     + '<select id="contributor_type_id___count__" name="contributor_type_id[__count__]">'
-     + <%= raw @realize_types.collect{|r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"]}.join().to_json %>
-     + '</select>&#10',
-   add : function () {
-      var field = document.getElementById('TF' + this.currentNumber);
-      var replaceCount = this.currentNumber;
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      field.innerHTML = newItem;
-      var nextNumber = this.currentNumber + 1;
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "TF" + nextNumber);
-      new_area.setAttribute("class", "field");
-      field.appendChild(new_area);
-      this.currentNumber = nextNumber;
-    },
-    remove : function () {
-      if ( this.currentNumber == 1) { return; }
-      this.currentNumber--;
-      var field = document.getElementById('TF' + this.currentNumber);
-      field.removeChild(field.lastChild);
-      field.innerHTML = '';
-    }
-  }
-  var ItemField_publisher = {
-   currentNumber : <%= raw @new_publisher_number.to_json %>,
-    itemTemplate : ''
-     + '<input id="publisher_full_name___count__" name="publisher_full_name[__count__]" size="20" type="text">&#10'
-     + '<input id="publisher_full_name_transcription___count__" name="publisher_full_name_transcription[__count__]" size="20" type="text">&#10'
-     + '<select id="publisher_type_id___count__" name="publisher_type_id[__count__]">'
-     + <%= raw @produce_types.collect{|r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"]}.join().to_json %>
-     + '</select>&#10',
-   add : function () {
-      var field = document.getElementById('UF' + this.currentNumber);
-      var replaceCount = this.currentNumber;
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      field.innerHTML = newItem;
-      var nextNumber = this.currentNumber + 1;
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "UF" + nextNumber);
-      new_area.setAttribute("class", "field");
-      field.appendChild(new_area);
-      this.currentNumber = nextNumber;
-    },
-    remove : function () {
-      if ( this.currentNumber == 1) { return; }
-      this.currentNumber--;
-      var field = document.getElementById('UF' + this.currentNumber);
-      field.removeChild(field.lastChild);
-      field.innerHTML = '';
+    remove : function (div_num) {
+      var field = document.getElementById('LANG' + div_num);
+      if(field != null){ field.parentNode.removeChild(field); }
     }
   }
 </script>
@@ -354,9 +255,26 @@ $(document).keydown(function(e) {
     <%= f.text_field :place_of_publication %>
   </div>
 
-  <div class="field">
+  <div class="field" id="language">
     <%= f.label t('activerecord.models.language') -%>
-    <%= f.select(:language_id, @languages.collect{|language| [language.display_name.localize, language.id]}) -%>
+    <% if @manifestation_languages.blank? %>
+      <div id="LANG0">
+        <%= select_tag 'language_id[0]',
+            options_for_select(@languages.collect{ |language| [language.display_name.localize, language.id] },
+            :selected => @default_language.id ) %>
+        <%= button_to_function '+', 'ItemField_language.add()' -%>
+      </div>
+    <% else %>
+      <% @manifestation_languages.each_with_index do |language, i| %>
+        <div id="LANG<%= i.to_s %>">
+          <%= select_tag 'language_id[' + i.to_s + ']',
+              options_for_select(@languages.collect{|language| [language.display_name.localize, language.id] },
+              :selected => language ) %>
+          <%= button_to_function '+', 'ItemField_language.add()' -%>
+          <%= button_to_function '-', 'ItemField_language.remove(' + i.to_s + ')' if i > 0 -%>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 
   <%- if @manifestation.series_statement -%>

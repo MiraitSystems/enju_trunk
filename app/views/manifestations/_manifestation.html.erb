@@ -1,4 +1,4 @@
-            <tr id="tr_basket_<%=manifestation.id%>" class="line<% unless not_rent_book?(manifestation) %><%= cycle("0", "1") %><% else %>2<% end%>">
+            <tr tabindex=<%=@key_position%> id="tr_basket_<%=manifestation.id%>" class="line<% unless not_rent_book?(manifestation) %><%= cycle("0", "1") %><% else %>2<% end%>" name=<%=manifestation.id %>>
               <td style="480px">
                <%- if manifestation.article? %>
                   <%= render 'manifestations/show_index_article', :manifestation => manifestation -%>
@@ -79,3 +79,4 @@
                 </td>
               <%- end -%>
             </tr>
+      <% @key_position = @key_position + 1 %>

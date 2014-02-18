@@ -1066,10 +1066,17 @@ system_configuration_00151:
   typename: Boolean
   description: "フッターを表示しないか"
   category: 'general'
-system_configuration_00152:
+system_configuration_0152:
   id: 152
   keyname: manifestation.use_titles
   v: "false"
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
+system_configuration_0153:
+  id: 153
+  keyname: focus_start_position 
+  v: "false"
+  typename: Boolean
+  description: "検索結果のフォーカス開始位置"
+  category: 'view'

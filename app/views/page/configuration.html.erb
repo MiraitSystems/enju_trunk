@@ -46,16 +46,6 @@
         <ul>
           <li><%= link_to t('item.all_item'), items_path %></li>
           <li><%= link_to t('activerecord.models.manifestation_relationship'), manifestation_relationships_path %></li>
-          <li>
-            <%= t('page.select_use_titles') %>:
-            <% if SystemConfiguration.get('manifestation.use_titles') %>
-              <strong><%= t('page.boolean.true') %></strong>/
-              <%= link_to t('page.boolean.false'), page_configuration_path(:use_titles => false) %>
-           <% else %>
-              <%= link_to t('page.boolean.true'), page_configuration_path(:use_titles => true) %>/
-              <strong><%= t('page.boolean.false') %></strong>
-            <% end %>
-          </li>
         </ul>
         </li>
         <% if defined?(EnjuBookmark) %>
