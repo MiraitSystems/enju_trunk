@@ -1065,10 +1065,13 @@ class Manifestation < ActiveRecord::Base
       'article' => [], # 文献(manifestation_type.is_article?がtrue)
     }
     selected_column.each do |type_col|
-      next unless ALL_COLUMNS.include?(type_col)
-      next unless /\A([^.]+)\.([^.]+)\z/ =~ type_col
-      column[$1]       << [$1, $2]
-      column['series'] << [$1, $2] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
+#      next unless ALL_COLUMNS.include?(type_col) #TODO
+      next unless /\A([^.]+)\.([^.]+)\.*([^.]+)*([^.]+)\z/ =~ type_col
+      val = $2
+      val += ".#{$3}" if $3
+      val += $4 if $4
+      column[$1]       << [$1, val]
+      column['series'] << [$1, val] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
     end
     return column
   end
@@ -1114,14 +1117,12 @@ class Manifestation < ActiveRecord::Base
 
           # 出力すべきカラムがない場合はスキップ
           next if column[type].blank?
-
           target.each do |m|
             if m.items.blank?
               items = [nil]
             else
               items = m.items
             end
-
             items.each do |i|
               row = []
               column[type].each do |(t, c)|
@@ -1246,6 +1247,17 @@ class Manifestation < ActiveRecord::Base
 
     when 'del_flg'
       val = '' # モデルには格納されない情報
+
+    else
+      splits = ws_col.split('.')
+      case splits[0]
+      when 'manifestation_extext'
+        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).first 
+        val =  extext.value if extext
+      when 'manifestation_exinfo'
+        exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).first
+        val =  exinfo.value if exinfo
+      end
     end
     return val unless val.nil?
 
@@ -1277,8 +1289,8 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
     end
- 
     val
+
   end
 
   def self.get_missing_list_pdf(manifestation_ids, current_user)
