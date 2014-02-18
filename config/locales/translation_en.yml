@@ -198,6 +198,7 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
+      payment: Payment
       work_has_language: Work to language relationship
       function: Function
       function_class: Function class
@@ -739,8 +740,52 @@ en:
       work_merge_list:
         title: Title
       order:
-        position: Position
-        state: State
+        order_identifier: Order identifier
+        manifestation: Manifestation
+        order_day: Order day
+        publication_year: Publication year
+        buying_payment_year: Buying payment year 
+        prepayment_settlements_of_account_year: Prepayment settlements of account year 
+        paid_flag: Paid flag 
+        number_of_acceptance_schedule: Number of acceptance schedule 
+        meeting_holding_month_1: Meeting holding month 1
+        meeting_holding_month_2: Meeting holding month 2
+        adption_code: Adption_Code
+        deliver_place_code_1: Deliver place code 1
+        deliver_place_code_2: Deliver place code 2
+        deliver_place_code_3: Deliver place code 3
+        deliver_place_code_4: Deliver place code 4
+        deliver_place_code_5: Deliver place code 5
+        application_form_code_1: Application form code 1
+        application_form_code_2: Application form code 2
+        number_of_acceptance: Number of acceptance
+        number_of_missing: Number of missing
+        collection_status_code: Collection status code
+        reason_for_collection_stop_code: Reason for collection stop code
+        collection_stop_day: Collection stop day
+        order_form_code: Order form code
+        collection_form_code: Collection form code
+        payment_form_code: 
+        budget_subject_code: Budget subject code
+        transportation_route_code: Transportation route code
+        bookstore_code: Bookstore code
+        currency_unit_code: Currency unit code
+        currency_rate: Currency rate
+        discount_commision: Discount commision
+        reason_for_settlements_of_account_code: Reason for settlements of account code
+        prepayment_principal: Prepayment principal
+        yen_imprest: Yen imprest
+        unit_price: Unit price
+        order_organization_id: Order organization id
+        note: Note
+        group: Group
+        pair_manifestation_id: Pair manifestation id 
+        contract_id: Contract id
+        auto_calculation_flag: Auto calculation flag
+        manifestation_identifier: Manifestation identifier
+        taxable_amount: Taxable amount
+        tax_exempt_amount: Tax exempt amount
+        payment_sum: Sum of payments
       order_list:
         title: Title
         bookstore: Bookstore
@@ -1602,6 +1647,27 @@ en:
         created_by: Created by
         state: state
         comment_at: Comment at
+      title_type:
+        name: Name
+        display_name: Display name
+        note: Note
+      payment:
+        id: Id
+        order_id: Order id
+        billing_date: Billing date
+        manifestation_id: Manifestation id
+        currency_unit_code: Currency unit id
+        currency_rate: Currency rate
+        discount_commision: Discount commision
+        before_conv_amount_of_payment: Before conv amount of payment
+        amount_of_payment: Amount of payment
+        number_of_payment: Number of payment
+        volume_number: Volume number
+        note: Note
+        auto_calculation_flag: Auto calculation flag
+        payment_type: Payment type
+        taxable_amount: Taxable amount
+        tax_exempt_amount: Tax exempt amount
       function:
         controller_name: Controller name
         display_name: Display name
@@ -3056,3 +3122,17 @@ en:
         last_number: Last number
   title_type:
     cannot_delete: The title type cannnot be deleted.
+  order:
+    cannot_delete: The order cannot be deleted.
+    no_matches_found_patron: "No matches found patron"
+    no_matches_found_manifestation: "No matches found manifestation"
+    switch_manual_entry: "Manual entry currency rate and yen imprest"
+    auto_calculation_flag_0: Auto calculation
+    auto_calculation_flag_1: Manual entry
+    payments: Payments
+  payment:
+    switch_manual_entry: "Manual entry currency rate and amount of payment"
+    auto_calculation_flag_0: Auto calculation
+    auto_calculation_flag_1: Manual entry
+    paid: Paid
+    want_to_paid: "Want to paid?"

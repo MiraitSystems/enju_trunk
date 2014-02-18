@@ -6,6 +6,7 @@ class Keycode < ActiveRecord::Base
   default_scope :order => 'name ASC, started_at ASC'
 
   has_many :patrons
+  has_many :orders
 
   paginates_per 10
 

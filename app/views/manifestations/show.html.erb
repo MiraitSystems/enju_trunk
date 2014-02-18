@@ -183,6 +183,7 @@ $(function(){
             <%- if @manifestation.bookbinder -%>
               <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :manifestation_id => @manifestation.id}, :confirm => t('page.are_you_sure')) -%></li>
             <%- end -%>
+            <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@manifestation) %></li>
           </ul>
         <% else %>
           <% if can_use_purchase_request? %>
