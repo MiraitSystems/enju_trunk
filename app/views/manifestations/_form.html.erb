@@ -61,16 +61,15 @@ $(document).keydown(function(e) {
   $(document).ready(function() { 
     $("#e10").select2({
       data: <%= raw @select_carrier_type_tags.to_json -%>, 
-      matcher: function(term, text, opt) {
-        return text.toUpperCase().indexOf(term.toUpperCase())>=0
-            || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())>=0;
+      matcher: function(term, text) {
+        return text.toUpperCase().indexOf(term.toUpperCase())=0;
       }
     });
   });
 </script>
 <script>
   $(document).ready(function() { 
-    $("#manifestation_carrier_type_id").select2({
+    $("#selector_type").select2({
       matcher: function(term, text, opt) {
         return text.toUpperCase().indexOf(term.toUpperCase())==0
             || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
@@ -254,14 +253,15 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
-    <%= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+
     <br>テストフォーム<br>
+
+    Loading Array data selector
     <%= f.hidden_field(:carrier_type_id, :id => 'e10', :style => "width:200px") -%>
     <br>
-    <%#= f.select(:carrier_type_id, :id => 'e17_2', :alt => @select_carrier_type_tags.collect{|m| [m.name]}, :value => @select_carrier_type_tags.collect{|m| [m.text.localize, m.id]}, :style => "width:200px") -%>
-    <%= f.select(:carrier_type_id, @select_carrier_type_tags.collect{|m| [m.text, m.id]}, :alt => @select_carrier_type_tags.collect{|m| [m.alt]}, :style => "width:200px") -%>
-    <%#= logger.error "############## #{@select_carrier_type_tags.collect{|m| [m.text, m.id, m.alt]}} ###############" -%>
-    <br>
+
+    Custom Matcher selector
     <select id="e17_2" style="width:200px">
       <option alt="print", value="1">印刷物</option>
       <option alt="CD", value="2">CD</option>
@@ -271,6 +271,18 @@ $(document).keydown(function(e) {
       <option alt="sheaf", value="5">加除式</option>
       <option alt="micro", value="7">マイクロ資料</option>
     </select>
+    <br>
+
+    Test selector
+    <%#= f.select(:carrier_type_id, @select_carrier_type_tags.collect{|m| [m.text, m.id]}, {}, {:style => "width:200px", :alt => @select_carrier_type_tags.collect{|m| [m.alt]}, :id => "selector_type"}) -%>
+    <select id="selector_type" style="width:200px">
+      <% @select_carrier_type_tags.each do |carrier_types| %>
+        <option alt=<%= carrier_types.alt %> value=<%= carrier_types.id %>>
+          <%= carrier_types.text %>
+        </option>
+      <% end %>
+    </select>
+    <%#= logger.error "############## #{@select_carrier_type_tags.collect{|m| [m.alt]}} ###############" -%>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
