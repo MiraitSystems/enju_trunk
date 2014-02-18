@@ -1503,32 +1503,37 @@ class Manifestation < ActiveRecord::Base
           attrs[:original_title] = nacsis_info[:subject_heading]
           attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
           attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
-
           attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
           attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
-
           attrs[:ndc] = search_clasification(nacsis_info[:classmark], "NDC")
-
           attrs[:isbn] = nacsis_info[:isbn].try(:join, ",")
           attrs[:price_string] = nacsis_info[:price].try(:join, ",")
           attrs[:wrong_isbn] = nacsis_info[:wrong_isbn].try(:join, ",")
-
           attrs[:issn] = nacsis_info[:issn]
-
           attrs[:note] = nacsis_info[:note]
           attrs[:marc_number] = nacsis_info[:marc]
           attrs[:pub_date] = nacsis_info[:publish_year]
           attrs[:size] = nacsis_info[:size]
-          attrs[:country_of_publication_id] = nacsis_info[:pub_country].try(:id)
-
-          # 和書または洋書を設定する
-          if nacsis_info[:text_language] &&
-              nacsis_info[:text_language].name == 'Japanese'
-            type = book_types.detect {|bt| /japanese/io =~ bt.name }
+          # 出版国がnilの場合、unknownを設定する。
+          if nacsis_info[:pub_country]
+            attrs[:country_of_publication] = nacsis_info[:pub_country]
           else
-            type = book_types.detect {|bt| /foreign/io =~ bt.name }
+            attrs[:country_of_publication] = Country.where(:name => 'unknown').first
           end
-          attrs[:manifestation_type] = type
+          # 和書または洋書を設定し、同時に言語も設定する。
+          # テキストの言語がnilの場合、未分類、不明を設定する。
+          attrs[:languages] = []
+          if nacsis_info[:text_language]
+            if nacsis_info[:text_language].name == 'Japanese'
+              attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
+            else
+              attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
+            end
+            attrs[:languages] << nacsis_info[:text_language]
+          else
+            attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
+            attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
+          end
         end
 
         new(attrs)

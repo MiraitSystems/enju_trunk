@@ -348,28 +348,15 @@ class NacsisCat
       :subject_heading => @record['TR'].try(:[], 'TRD'),
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
       :subject_heading_reading_alternative => @record['TR'].try(:[], 'TRVR'),
+      :title_alternative_transcription => map_attrs(@record['VT'], 'VTVR').compact.uniq,
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
+      :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
+      :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
-      :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
+      :size => @record['PHYS'].try(:[],'PHYSS'),
       :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
       :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
-
-      :title_alternative_transcription => map_attrs(@record['VT'], 'VTVR').compact.uniq,
-      :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
-      :note => if @record['NOTE'].is_a?(Array)
-          @record['NOTE'].compact.join(" ")
-        else
-          @record['NOTE']
-        end,
-      :size => @record['PHYS'].try(:[],'PHYSS'),
-      :marc => @record['MARCID'],
-
-      :classmark => if book?
-          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(";")
-        else
-          nil
-        end,
       :author_heading => map_attrs(@record['AL']) do |al|
         if al['AHDNG'].blank? && al['AHDNGR'].blank?
           nil
@@ -380,11 +367,22 @@ class NacsisCat
         end
       end.compact,
       :subject => map_attrs(@record['SH'], 'SHD'),
+      :note => if @record['NOTE'].is_a?(Array)
+          @record['NOTE'].compact.join(" ")
+        else
+          @record['NOTE']
+        end,
+      :marc => @record['MARCID'],
+      :classmark => if book?
+          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(";")
+        else
+          nil
+        end,
     }.tap do |hash|
         if book?
           hash[:isbn] = isbn
-          hash[:price] = price
           hash[:wrong_isbn] = xisbn
+          hash[:price] = price
         else
           hash[:issn] = issn
         end
