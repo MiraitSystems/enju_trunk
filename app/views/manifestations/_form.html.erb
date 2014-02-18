@@ -88,7 +88,6 @@ $(document).keydown(function(e) {
     itemTemplate : ''
                  + '<input id="manifestation_title___count__" name="manifestation_title[__count__]"  placeholder=<%= t('activerecord.models.title') %> type="text" value="" class="resource_title" /> '
                  + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
-
                  <% @title_types.collect do |m| %>
                    + '<option value="<%= m.id %>"><%= m.display_name %></option>'
                  <% end %>
