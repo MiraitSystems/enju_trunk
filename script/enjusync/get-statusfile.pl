@@ -29,9 +29,9 @@ require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 my $cur_dir = Cwd::cwd();	# カレントディレクトリ
 my $get_bucket = "";
 my $ctrl_file = "";
-my $snd_host = "webopac";
-my $ftp_user = "ftpenju";
-my $ftp_pass = "gota2k12nda";
+my $snd_host = "NPALIBWEB";
+my $ftp_user = "enju";
+my $ftp_pass = "Npaftp14";
 my $send_stat = "";
 
 # 引数のチェック
