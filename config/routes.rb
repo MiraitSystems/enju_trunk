@@ -1,5 +1,6 @@
 EnjuLeaf::Application.routes.draw do
   mount EnjuJst::Engine => '/enju_jst'
+
   resources :title_types
   resources :approvals
   resources :keycodes
@@ -82,6 +83,7 @@ EnjuLeaf::Application.routes.draw do
     resources :series_statements
     resources :series_has_manifestations
     resources :reserves
+    resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
@@ -265,7 +267,14 @@ EnjuLeaf::Application.routes.draw do
     resource :order
     resources :purchase_requests
   end
-  resources :orders
+
+  match 'orders/paid', :to => 'orders#paid'
+  match 'orders/search', :to => 'orders#search'
+  resources :orders do
+    resources :payments
+    get :paid, :on => :member
+  end
+  resources :payments
 
   resources :inter_library_loans do
     post :export_loan_lists, :on => :collection
@@ -404,6 +413,8 @@ EnjuLeaf::Application.routes.draw do
   resources :countries
 
   resources :languages
+
+  resources :work_has_languages
 
   resources :manifestation_relationships
 

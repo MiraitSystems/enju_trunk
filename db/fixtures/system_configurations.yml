@@ -1206,3 +1206,10 @@ system_configuration_00153:
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
+system_configuration_0153:
+  id: 153
+  keyname: focus_start_position 
+  v: "false"
+  typename: Boolean
+  description: "検索結果のフォーカス開始位置"
+  category: 'view'

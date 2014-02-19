@@ -1,0 +1,99 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.payment')) -%></h1>
+<div id="content_list">
+
+
+<% if @payment.order.manifestation.series_statement %>
+  <% if@payment.order.manifestation.series_statement.root_manifestation_id == @payment.order.manifestation.id %>
+    <% @series_statement = @payment.order.manifestation.series_statement %>
+    <%= render 'manifestations/index_form_series_statement_header' -%>
+  <% else %>
+    <%= render 'manifestations/title', :manifestation => @payment.order.manifestation -%>
+  <% end %>
+<% else %>
+  <%= render 'manifestations/title', :manifestation => @payment.order.manifestation -%>
+<% end %>
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.order_id') -%>:</strong>
+  <%= @payment.order.order_identifier %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.billing_date') -%>:</strong>
+  <%= l(@payment.billing_date, :format => :only_date) if @payment.billing_date %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.currency_unit_code') -%>:</strong>
+  <%= Currency.find(@payment.currency_unit_code).display_name if @payment.currency_unit_code %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.currency_rate') -%>:</strong>
+  <%= @payment.currency_rate %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.discount_commision') -%>:</strong>
+  <%= @payment.discount_commision %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.before_conv_amount_of_payment') -%>:</strong>
+  <%= @payment.before_conv_amount_of_payment %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.amount_of_payment') -%>:</strong>
+  <%= @payment.amount_of_payment.to_i %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.number_of_payment') -%>:</strong>
+  <%= @payment.number_of_payment %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.taxable_amount') %></strong>
+  <%= @payment.taxable_amount%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.tax_exempt_amount') %></strong>
+  <%= @payment.tax_exempt_amount%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.volume_number') -%>:</strong>
+  <%= @payment.volume_number %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.note') -%>:</strong>
+  <%= @payment.note %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.auto_calculation_flag') -%>:</strong>
+  <%= t("payment.auto_calculation_flag_#{@payment.auto_calculation_flag}") %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.payment.payment_type') -%>:</strong>
+  <%= get_keyname_payment_types(@payment.payment_type.to_s) if @payment.payment_type %>
+</p>
+
+</div>
+</div>
+
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_payment_path(@payment) -%></li>
+    <li><%= link_to t('page.back'), payments_path -%></li>
+  </ul>
+</div>
