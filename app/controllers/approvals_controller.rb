@@ -94,8 +94,14 @@ class ApprovalsController < ApplicationController
 
   # POST /approvals/1/get_approval_report
   def get_approval_report
-    @approval = Approval.find(params[:id])
-    file = ReportExport.get_approval_report_pdf(@approval)
-    send_data file, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
+    begin
+      @approval = Approval.find(params[:id])
+      file = ReportExport.get_approval_report_pdf(@approval)
+      send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
+    rescue Exception => e
+      flash[:error] = "hogehoge"
+      redirect_to :back
+    end
   end
+
 end
