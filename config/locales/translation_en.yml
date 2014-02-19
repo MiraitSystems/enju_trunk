@@ -3122,6 +3122,7 @@ en:
   title_type:
     cannot_delete: The title type cannnot be deleted.
   order:
+    system_menu_title: Order search
     cannot_delete: The order cannot be deleted.
     no_matches_found_patron: "No matches found patron"
     no_matches_found_manifestation: "No matches found manifestation"
@@ -3134,8 +3135,11 @@ en:
     create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
     copy: Copy and create new order
   payment:
+    system_menu_title: Payment search
     switch_manual_entry: "Manual entry currency rate and amount of payment"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     paid: Paid
     want_to_paid: "Want to paid?"
+    no_matches_found_order: "No matches found order"
+    no_matches_found_manifestation: "No matches found manifestation"

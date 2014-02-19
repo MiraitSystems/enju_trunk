@@ -115,7 +115,7 @@ class Order < ActiveRecord::Base
       self.unit_price = 0
     else   
       begin
-        self.unit_price = self.yen_imprest / self.number_of_acceptance_schedule
+        self.unit_price = (self.yen_imprest / self.number_of_acceptance_schedule).to_i
       rescue
         self.unit_price = 0
       end

@@ -273,6 +273,7 @@ EnjuLeaf::Application.routes.draw do
     resources :payments
     get :paid, :on => :member
   end
+  match 'payments/search', :to => 'payments#search'
   resources :payments
 
   resources :inter_library_loans do

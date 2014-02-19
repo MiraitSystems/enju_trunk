@@ -3094,6 +3094,7 @@ ja:
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
+    system_menu_title: 発注検索
     cannot_delete: "この発注は削除できません"
     no_matches_found_patron: "発注機関が見つかりません"
     no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
@@ -3106,8 +3107,11 @@ ja:
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
     copy: コピーして新規作成
   payment:
+    system_menu_title: 支払検索
     switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     paid: 精算
     want_to_paid: "精算しますか?"
+    no_matches_found_order: "発注番号に該当する発注が見つかりません。"
+    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"

@@ -1,8 +1,11 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
-<div id="content_list">
 
-<% unless @manifestation %>
+<div id="content_list">
+<% if @manifestation %>
+  <%= t('activerecord.attributes.order.manifestation_identifier') %>:
+  <%= @manifestation.identifier %>
+<% else %>
   <%= form_tag({:action => "search"},  {:method => "get"}) do %>
     <%= t('activerecord.attributes.order.manifestation_identifier') %>:
     <%= text_field_tag :manifestation_identifier, @manifestation_selected %>

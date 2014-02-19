@@ -44,7 +44,7 @@ class OrdersController < ApplicationController
     if original_order
       @order = original_order.dup
       @order.set_probisional_identifier(Date.today.year.to_i + 1)
-      @order.order_day = original_order.order_day + 1.years
+      @order.order_day = original_order.order_day.year.to_i + 1
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
     else

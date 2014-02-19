@@ -5,6 +5,7 @@ class PaymentsController < ApplicationController
   def index
     if params[:order_id]
       @payments = Payment.where(["order_id = ?",params[:order_id]]).page(params[:page])
+      @order = Order.find(params[:order_id])
     else
       @payments = Payment.page(params[:page])
     end
@@ -63,5 +64,43 @@ class PaymentsController < ApplicationController
         format.html { redirect_to(payments_url) }
     end
   end
+
+
+  def search
+    unless params[:manifestation_identifier].blank?
+      manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identifier])
+      flash.now[:message] = t('payment.no_matches_found_manifestation') if manifestation_num.size == 0
+    end
+
+    unless params[:order_identifier].blank?
+      order_num = Order.where("order_identifier = ?", params[:order_identifier])
+      flash.now[:message] = t('payment.no_matches_found_order') if order_num.size == 0
+    end
+
+    unless params[:order_identifier].blank?
+
+      unless params[:manifestation_identifier].blank?
+        @payments = Payment.joins(:order, :manifestation).where("order_identifier = ? AND identifier = ?", params[:order_identifier], params[:manifestation_identifier]).page(params[:page])
+      else
+        @payments = Payment.joins(:order).where("order_identifier = ?", params[:order_identifier]).page(params[:page])
+      end
+    else
+      unless params[:manifestation_identifier].blank?
+        @payments = Payment.joins(:manifestation).where("identifier = ?", params[:manifestation_identifier]).page(params[:page])
+      else
+        @payments = Payment.page(params[:page])
+      end
+    end
+
+    @order_identifier_selected = params[:order_identifier]
+    @manifestation_selected = params[:manifestation_identifier]
+
+
+    respond_to do |format|
+      format.html {render "index"}
+    end
+
+  end
+
 
 end

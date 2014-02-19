@@ -2,6 +2,26 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.payment')) -%></h1>
 <div id="content_list">
 
+<% if @order %>
+  <%=  t('activerecord.attributes.payment.order_id') %>:
+  <%= @order.order_identifier  %>
+  <%=  t('activerecord.attributes.order.manifestation_identifier') %>:
+  <%= @order.manifestation.identifier %>
+<% else %>
+  <%= form_tag({:action => 'search'}, {:method => 'get'}) do %>
+    <%= t('activerecord.attributes.payment.order_id') %>:
+    <%= text_field_tag :order_identifier, @order_identifier_selected %>
+    <%= t('activerecord.attributes.order.manifestation_identifier') %>:
+    <%= text_field_tag :manifestation_identifier, @manifestation_selected %>
+
+    <%= submit_tag t('page.search') %>
+  <% end %>
+
+<% end %>
+
+<div style="color: red"><%= flash[:message].to_s -%></div>
+
+
 <table>
   <tr>
     <th><%= t('activerecord.attributes.payment.id') %></th>
