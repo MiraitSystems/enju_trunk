@@ -28,8 +28,7 @@ class Order < ActiveRecord::Base
 
 
   belongs_to :contract
-  has_one :patron, :through => :ordrs_has_patron
-  has_one :order_has_patron, :dependent => :destroy
+  belongs_to :patron, :foreign_key => :order_organization_id
   has_many :payments
 
   validate :set_default
@@ -123,20 +122,23 @@ class Order < ActiveRecord::Base
     end
   end
 
-=begin
   before_create :set_order_identifier
   def set_order_identifier
     identifier = Numbering.do_numbering('order')
 
-    p "BEFORE_CREATE========================="
-    p self.order_identifier
-    p identifier
-
     if self.order_identifier != identifier
-      self.order_identifier = '99999999'
+      identifier.slice!(0,4)
+      self.order_identifier = self.order_identifier[0,4] + identifier
     end
   end
-=end
+
+  def set_probisional_identifier(year = Date.today.year)
+
+    @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
+    number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s);
+    self.order_identifier = year.to_s + number
+
+  end
 
 
   def destroy?

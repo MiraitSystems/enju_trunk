@@ -42,28 +42,19 @@ class OrdersController < ApplicationController
 
     original_order = Order.where(:id => params[:order_id]).first
     if original_order
-#/////////////
       @order = original_order.dup
-      @order.order_identifier = Numbering.do_numbering('order')
-      @order.order_identifier.slice!(0,4)
-      @order.order_identifier = (Date.today.year.to_i + 1).to_s + @order.order_identifier
+      @order.set_probisional_identifier(Date.today.year.to_i + 1)
       @order.order_day = original_order.order_day + 1.years
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
-#////////////
     else
       @order.auto_calculation_flag = 1
       @order.order_day = Date.today
+      @order.set_probisional_identifier
       if params[:manifestation_id]
         @order.manifestation_id = params[:manifestation_id].to_i
       end 
-
-      @order.order_identifier = Numbering.do_numbering('order')#Date.today.year.to_s 
     end
-#    @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
-#    number = @numbering.last_number.to_i
-#    number = (number + 1).to_s
-#    @order.order_identifier += number.rjust(@numbering.padding_number,@numbering.padding_character.to_s);
 
     @select_patron_tags = Order.struct_patron_selects
     @currencies = Currency.all
@@ -231,30 +222,24 @@ class OrdersController < ApplicationController
       @orders = Order.where(["publication_year = ?", params[:year].to_i])
     else
       @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ?", params[:year].to_i, params[:manifestation_identifier]]).readonly(false)
-
     end
 
+    create_count = 0
     @orders.each do |order|
       if order.order_form && order.order_form.v == '1'
-
         @new_order = order.dup
-        @new_order.order_identifier = Numbering.do_numbering('order')
-        @new_order.order_identifier.slice!(0,4)
-        @new_order.order_identifier = (Date.today.year.to_i + 1).to_s + @new_order.order_identifier
+        @new_order.set_probisional_identifier(Date.today.year.to_i + 1)
         @new_order.order_day = @new_order.order_day + 1.years
         @new_order.publication_year = Date.today.year.to_i + 1
         @new_order.paid_flag = 0
         @new_order.save
+        create_count += 1
       end
     end
     
-    flash[:notice] = t('controller.successfully_created', :model => t('order.subsequent_year_orders'))
+    flash[:notice] = t('controller.successfully_created', :model => t('order.subsequent_year_orders')) if create_count != 0
 
     redirect_to :action => "search", :publication_year => params[:year], :test => "test", :manifestation_identifier => params[:manifestation_identifier]
-
-    #respond_to do |format|
-    #  format.html {redirect_to :action => "index"}
-    #end
 
   end
 
