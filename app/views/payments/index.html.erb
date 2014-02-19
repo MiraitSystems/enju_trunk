@@ -3,10 +3,11 @@
 <div id="content_list">
 
 <% if @order %>
-  <%=  t('activerecord.attributes.payment.order_id') %>:
-  <%= @order.order_identifier  %>
-  <%=  t('activerecord.attributes.order.manifestation_identifier') %>:
-  <%= @order.manifestation.identifier %>
+  <strong>
+  <p><%= t('activerecord.attributes.manifestation.original_title') %>: <%= @order.try(:manifestation).try(:original_title) %></p>
+  <p><%= t('activerecord.attributes.order.publication_year') %>: <%= @order.publication_year %></p>
+  <p><%= t('activerecord.attributes.order.order_identifier') %>: <%= @order.order_identifier %></p>
+  </strong>
 <% else %>
   <%= form_tag({:action => 'search'}, {:method => 'get'}) do %>
     <%= t('activerecord.attributes.payment.order_id') %>:
@@ -21,7 +22,6 @@
 
 <div style="color: red"><%= flash[:message].to_s -%></div>
 
-
 <table>
   <tr>
     <th><%= t('activerecord.attributes.payment.id') %></th>
@@ -35,7 +35,7 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to payment.id, payment %></td>
     <td><%= link_to payment.order.order_identifier, order_path(payment.order) %></td>
-    <td><%= Manifestation.find(payment.manifestation_id).original_title %></td>
+    <td><%= payment.try(:manifestation).try(:identifier) %></td>
     <td><%= get_keyname_payment_types(payment.payment_type.to_s) if payment.payment_type %></td>
     <td>
       <%= link_to t('page.edit'), edit_payment_path(payment) %>

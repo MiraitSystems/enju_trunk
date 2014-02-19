@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
-
   load_and_authorize_resource
+  before_filter :get_order
 
   def index
     if params[:order_id]
@@ -102,5 +102,8 @@ class PaymentsController < ApplicationController
 
   end
 
-
+private
+  def get_order
+    @order = Order.find(params[:order_id]) if params[:order_id]
+  end
 end

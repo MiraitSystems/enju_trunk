@@ -1,10 +1,11 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
 
-<div id="content_list">
 <% if @manifestation %>
-  <%= t('activerecord.attributes.order.manifestation_identifier') %>:
-  <%= @manifestation.identifier %>
+  <strong>
+  <p><%= t('activerecord.attributes.manifestation.original_title') %>: <%= @manifestation.original_title %></p>
+  <p><%= t('activerecord.attributes.manifestation.identifier') %>: <%= @manifestation.identifier %></p>
+  </strong>
 <% else %>
   <%= form_tag({:action => "search"},  {:method => "get"}) do %>
     <%= t('activerecord.attributes.order.manifestation_identifier') %>:
@@ -26,8 +27,9 @@
   <tr>
     <th><%= t('activerecord.attributes.order.publication_year') -%></th>
     <th><%= t('activerecord.attributes.order.order_identifier') -%></th>
-    <th><%= t('activerecord.attributes.order.order_day') -%></th>
-    <th><%= t('activerecord.attributes.order.manifestation') -%></th>
+    <th><%= t('activerecord.attributes.order.yen_imprest') -%></th>
+    <th><%= t('activerecord.attributes.order.payment_sum') -%></th>
+    <th><%= t('activerecord.attributes.manifestation.identifier') -%></th>
     <th></th>
    
   </tr>
@@ -36,8 +38,9 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= order.publication_year %></td>
     <td><%= link_to order.order_identifier, order_path(order) %></td>
-    <td><%= l(order.order_day, :format => :only_date) %></td>
-    <td><%= order.manifestation.original_title %></td>
+    <td><%= order.yen_imprest %></td>
+    <td></td> 
+    <td><%= link_to order.manifestation.identifier, order.manifestation %></td>
     <td>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
         <% if order.destroy? %>
