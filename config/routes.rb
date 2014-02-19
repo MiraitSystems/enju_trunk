@@ -266,6 +266,7 @@ EnjuLeaf::Application.routes.draw do
     resources :purchase_requests
   end
 
+  match 'orders/create_subsequent_year_orders', :to => 'orders#create_subsequent_year_orders'
   match 'orders/paid', :to => 'orders#paid'
   match 'orders/search', :to => 'orders#search'
   resources :orders do

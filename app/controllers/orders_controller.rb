@@ -39,17 +39,35 @@ class OrdersController < ApplicationController
   # GET /orders/new.json
   def new
     @order = Order.new
-    @order.auto_calculation_flag = 1
-    @order.order_identifier = Numbering.do_numbering('order')
-    @order.order_day = Date.today
+
+    original_order = Order.where(:id => params[:order_id]).first
+    if original_order
+#/////////////
+      @order = original_order.dup
+      @order.order_identifier = Numbering.do_numbering('order')
+      @order.order_identifier.slice!(0,4)
+      @order.order_identifier = (Date.today.year.to_i + 1).to_s + @order.order_identifier
+      @order.order_day = original_order.order_day + 1.years
+      @order.publication_year = Date.today.year.to_i + 1
+      @order.paid_flag = 0
+#////////////
+    else
+      @order.auto_calculation_flag = 1
+      @order.order_day = Date.today
+      if params[:manifestation_id]
+        @order.manifestation_id = params[:manifestation_id].to_i
+      end 
+
+      @order.order_identifier = Numbering.do_numbering('order')#Date.today.year.to_s 
+    end
+#    @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
+#    number = @numbering.last_number.to_i
+#    number = (number + 1).to_s
+#    @order.order_identifier += number.rjust(@numbering.padding_number,@numbering.padding_character.to_s);
 
     @select_patron_tags = Order.struct_patron_selects
     @currencies = Currency.all
 
-      if params[:manifestation_id]
-        @order.manifestation_id = params[:manifestation_id].to_i
-        @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
-      end 
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @order }
@@ -69,7 +87,7 @@ class OrdersController < ApplicationController
 
     @order = Order.new(params[:order])
     @manifestation_identifier = params[:manifestation_identifier]
-    manifestation = Manifestation.where(["manifestation_identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
+    manifestation = Manifestation.where(["identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
 
     @order.manifestation_id = manifestation.id if manifestation
  
@@ -151,12 +169,13 @@ class OrdersController < ApplicationController
 
   def search
 
-    unless params[:order][:publication_year].blank?
+    unless params[:publication_year].blank?
+    @years_selected = params[:publication_year].to_i
 
       unless params[:manifestation_identifier].blank?
-        @orders = Order.joins(:manifestation).where(["publication_year = ? AND manifestation_identifier = ?", params[:order][:publication_year].to_i, params[:manifestation_identifier]]).page(params[:page])
+        @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ?", params[:publication_year].to_i, params[:manifestation_identifier]]).page(params[:page])
 
-        @search_manifestation = Manifestation.where("manifestation_identifier = ?", params[:manifestation_identifier])
+        @search_manifestation = Manifestation.where("identifier = ?", params[:manifestation_identifier])
         if @search_manifestation.size == 0
           flash.now[:message] = t('order.no_matches_found_manifestation')
           @search_manifestation = nil
@@ -165,15 +184,15 @@ class OrdersController < ApplicationController
         end
 
       else
-        @orders = Order.where(["publication_year = ?", params[:order][:publication_year].to_i]).page(params[:page])
+        @orders = Order.where(["publication_year = ?", params[:publication_year].to_i]).page(params[:page])
       end
     else
 
       unless params[:manifestation_identifier].blank?
 
-        @orders = Order.joins(:manifestation).where(["manifestation_identifier = ?",params[:manifestation_identifier]]).order("publication_year desc").page(params[:page])
+        @orders = Order.joins(:manifestation).where(["identifier = ?",params[:manifestation_identifier]]).order("publication_year desc").page(params[:page])
 
-        @search_manifestation = Manifestation.where("manifestation_identifier = ?", params[:manifestation_identifier])
+        @search_manifestation = Manifestation.where("identifier = ?", params[:manifestation_identifier])
 
         if @search_manifestation.size == 0
           flash.now[:message] = t('order.no_matches_found_manifestation')
@@ -188,7 +207,6 @@ class OrdersController < ApplicationController
     end
 
     @manifestation_selected = params[:manifestation_identifier]
-    @years_selected = params[:order][:publication_year].to_i
     set_select_years
 
     respond_to do |format|
@@ -206,6 +224,41 @@ class OrdersController < ApplicationController
     end
 
   end
+
+  def create_subsequent_year_orders
+
+    if params[:manifestation_identifier].blank?
+      @orders = Order.where(["publication_year = ?", params[:year].to_i])
+    else
+      @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ?", params[:year].to_i, params[:manifestation_identifier]]).readonly(false)
+
+    end
+
+    @orders.each do |order|
+      if order.order_form && order.order_form.v == '1'
+
+        @new_order = order.dup
+        @new_order.order_identifier = Numbering.do_numbering('order')
+        @new_order.order_identifier.slice!(0,4)
+        @new_order.order_identifier = (Date.today.year.to_i + 1).to_s + @new_order.order_identifier
+        @new_order.order_day = @new_order.order_day + 1.years
+        @new_order.publication_year = Date.today.year.to_i + 1
+        @new_order.paid_flag = 0
+        @new_order.save
+      end
+    end
+    
+    flash[:notice] = t('controller.successfully_created', :model => t('order.subsequent_year_orders'))
+
+    redirect_to :action => "search", :publication_year => params[:year], :test => "test", :manifestation_identifier => params[:manifestation_identifier]
+
+    #respond_to do |format|
+    #  format.html {redirect_to :action => "index"}
+    #end
+
+  end
+
+
 
 
 end

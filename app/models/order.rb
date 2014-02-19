@@ -123,6 +123,22 @@ class Order < ActiveRecord::Base
     end
   end
 
+=begin
+  before_create :set_order_identifier
+  def set_order_identifier
+    identifier = Numbering.do_numbering('order')
+
+    p "BEFORE_CREATE========================="
+    p self.order_identifier
+    p identifier
+
+    if self.order_identifier != identifier
+      self.order_identifier = '99999999'
+    end
+  end
+=end
+
+
   def destroy?
     return false if Payment.where(:order_id => self.id).first
     return true

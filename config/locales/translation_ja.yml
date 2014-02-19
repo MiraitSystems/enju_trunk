@@ -3101,6 +3101,10 @@ ja:
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    subsequent_year_orders: 次年度発注
+    create_subsequent_year_orders: 次年度発注生成
+    create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    copy: コピーして新規作成
   payment:
     switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算

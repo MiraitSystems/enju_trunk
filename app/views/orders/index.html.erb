@@ -8,7 +8,7 @@
     <%= text_field_tag :manifestation_identifier, @manifestation_selected %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select(:order, :publication_year, @select_years, {:selected => @years_selected, :prompt => t('page.all_search_term')}) %>
+    <%= select('', :publication_year, @select_years, {:selected => @years_selected, :prompt => t('page.all_search_term')}) %>
 
     <%= submit_tag t('page.search') %>
   <% end %>
@@ -17,7 +17,7 @@
 <br />
 
 <div style="color: red"><%= flash[:message].to_s -%></div>
-
+<p id="notice"><%= notice %></p>
 
 <table class="index">
   <tr>
@@ -57,11 +57,18 @@
     </ul>
   </div>
 <% else %>
-  <% if @search_manifestation && @orders.size == 0 %>
+  <% if (@search_manifestation && @orders.size == 0) || (@years_selected && @orders.size != 0) %>
     <div id="submenu" class="ui-corner-all">
-      <ul>  
-        <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @search_manifestation) -%></li>
+      <ul>
+        <% if (@search_manifestation && @orders.size == 0) %>
+          <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @search_manifestation) -%></li>
+        <% end %>
+        <% if (@orders.size != 0 && @years_selected) %>
+          <li><%= link_to t('order.create_subsequent_year_orders'), {:controller => 'orders', :action =>'create_subsequent_year_orders', :year => @years_selected, :manifestation_identifier => @manifestation_selected}, :confirm => t('order.create_year_orders_confirm', :year => (Date.today.year.to_i+1)) %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
 <% end %>
+
+
