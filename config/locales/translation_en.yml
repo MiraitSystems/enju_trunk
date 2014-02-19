@@ -2606,6 +2606,7 @@ en:
         height: Height(cm)
         width: Width(cm)
         depth: Depth(cm)
+        size: Size
         price: Price
         price_string: Price
         access_address: Access address

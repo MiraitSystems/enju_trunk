@@ -1009,11 +1009,9 @@ class ManifestationsController < ApplicationController
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
         @manifestation.languages.destroy_all; @manifestation.languages = Language.add_language(@language)
         if params[:exinfos]
-          @manifestation.manifestation_exinfos.destroy_all;
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
         if params[:extexts]
-          @manifestation.manifestation_extexts.destroy_all;
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
         end
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
