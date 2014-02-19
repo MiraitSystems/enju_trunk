@@ -11,7 +11,6 @@ module EnjuTrunk
     def set_article_default_datas
       default_datas = Hash::new
       # default setting: manifestation
-      default_datas.store(:language,     Language.where(:name => 'unknown').first)
       default_datas.store(:carrier_type, CarrierType.where(:name => 'print').first)
       default_datas.store(:frequency,    Frequency.where(:name => 'unknown').first)
       default_datas.store(:role,         Role.find('Guest'))
@@ -151,7 +150,6 @@ module EnjuTrunk
         mode = 'create'
         manifestation = Manifestation.new(
           :carrier_type   => @article_default_datas[:carrier_type], 
-          :language       => @article_default_datas[:language],
           :frequency      => @article_default_datas[:frequency],
           :required_role  => @article_default_datas[:role], 
           :except_recent  => @article_default_datas[:except_recent],
@@ -169,6 +167,7 @@ module EnjuTrunk
       manifestation.save!
       manifestation.creators = Patron.add_patrons(datas['creators'].to_s) unless datas['creators'].nil?
       manifestation.subjects = Subject.import_subjects(datas['subjects'].to_s) unless datas['subjects'].nil?
+      manifestation.languages = Language.where(:name => 'unknown')
       return manifestation, mode
     end
 

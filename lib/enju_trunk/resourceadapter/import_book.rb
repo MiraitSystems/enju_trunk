@@ -165,7 +165,6 @@ module EnjuTrunk
       country_of_publication = set_data(field, datas, mode, Country, 'country_of_publication', { :default => 'unknown' }) 
       pub_date               = datas[field[I18n.t('resource_import_textfile.excel.book.pub_date')]]
       place_of_publication   = datas[field[I18n.t('resource_import_textfile.excel.book.place_of_publication')]]
-      language               = set_data(field, datas, mode,  Language, 'language', { :default => 'Japanese' })
       edition                = datas[field[I18n.t('resource_import_textfile.excel.book.edition_display_value')]]
       volume_number_string   = datas[field[I18n.t('resource_import_textfile.excel.book.volume_number_string')]]
       issue_number_string    = datas[field[I18n.t('resource_import_textfile.excel.book.issue_number_string')]]
@@ -199,7 +198,6 @@ module EnjuTrunk
       manifestation.pub_date                  = pub_date.to_s             unless pub_date.nil?
       manifestation.country_of_publication_id = country_of_publication.id unless country_of_publication.nil? 
       manifestation.place_of_publication      = place_of_publication.to_s unless place_of_publication.nil?
-      manifestation.language                  = language                  unless language.nil?
       manifestation.edition_display_value     = edition                   unless edition.nil?
       manifestation.volume_number_string      = volume_number_string.to_s unless volume_number_string.nil?
       manifestation.issue_number_string       = issue_number_string.to_s  unless issue_number_string.nil?
@@ -284,6 +282,44 @@ module EnjuTrunk
         subjects = Subject.import_subjects(subjects_list)
         manifestation.subjects = subjects
       end
+
+      # language
+      languages_list   = []
+      languages_string = datas[field[I18n.t('resource_import_textfile.excel.book.language')]]
+      languages        = languages_string.nil? ? nil : languages_string.to_s.gsub('；', ';').split(';').uniq.compact
+      if languages.blank?
+        languages_list << Language.where(:name => 'Japanese').first
+      else
+        languages.each do |language|
+          next if language.blank?
+          obj = Language.where(:name => language).first
+          if obj.nil?
+            raise I18n.t('resource_import_textfile.error.wrong_data',
+                          :field => I18n.t("resource_import_textfile.excel.book.language"),
+                          :data => language)
+          else
+            languages_list << obj
+          end
+        end
+      end
+      manifestation.languages = languages_list unless languages_list.blank?
+
+      # manifestation_extexts
+      extexts = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_extext').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_extext.#{key.to_s}")]] 
+        extexts[key] = data if data
+      end 
+      manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
+           
+      # manifestation_exinfos
+      exinfos = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_exinfo').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_exinfo.#{key.to_s}")]] 
+        exinfos[key] = data if data
+      end 
+      manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
+       
       import_textresult.error_msg = error_msg if error_msg
       return manifestation, item, mode, import_textresult
     end
