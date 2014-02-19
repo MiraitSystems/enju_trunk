@@ -92,4 +92,10 @@ class ApprovalsController < ApplicationController
     end
   end
 
+  # POST /approvals/1/get_approval_report
+  def get_approval_report
+    @approval = Approval.find(params[:id])
+    file = ReportExport.get_approval_report_pdf(@approval)
+    send_data file, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
+  end
 end

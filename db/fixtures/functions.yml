@@ -23,7 +23,7 @@ function_approval:
   controller_name: ApprovalsController
   action_names: |
                 read:index,show
-                update:new,create,edit,update
+                update:new,create,edit,update,get_approval_report
                 delete:destroy
   position: 3
 function_00004:
