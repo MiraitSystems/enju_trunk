@@ -253,17 +253,18 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <select id="selector_type" style="width:200px">
+      <% @select_carrier_type_tags.each do |carrier_types| %>
+        <option alt="<%= carrier_types.alt %>", value="<%= carrier_types.id %>"><%= carrier_types.text %></option>
+      <% end %>
+    </select>
 
-    <br>テストフォーム<br>
-
-    Loading Array data selector
-    <%= f.hidden_field(:carrier_type_id, :id => 'e10', :style => "width:200px") -%>
-    <br>
+    <!--br>テストフォーム<br>
 
     Custom Matcher selector
     <select id="e17_2" style="width:200px">
       <option alt="print", value="1">印刷物</option>
-      <option alt="CD", value="2">CD</option>
+      <option alt="test", value="2">CD</option>
       <option alt="DVD", value="3">DVD</option>
       <option alt="file", value="6">コンピュータファイル</option>
       <option alt="AV", value="4">視聴覚資料</option>
@@ -276,12 +277,9 @@ $(document).keydown(function(e) {
     <%#= f.select(:carrier_type_id, @select_carrier_type_tags.collect{|m| [m.text, m.id]}, {}, {:style => "width:200px", :alt => @select_carrier_type_tags.collect{|m| [m.alt]}, :id => "selector_type"}) -%>
     <select id="selector_type" style="width:200px">
       <% @select_carrier_type_tags.each do |carrier_types| %>
-        <option alt=<%= carrier_types.alt %> value=<%= carrier_types.id %>>
-          <%= carrier_types.text %>
-        </option>
+        <option alt="<%= carrier_types.alt %>", value="<%= carrier_types.id %>"><%= carrier_types.text %></option>
       <% end %>
-    </select>
-    <%#= logger.error "############## #{@select_carrier_type_tags.collect{|m| [m.alt]}} ###############" -%>
+    </select-->
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
