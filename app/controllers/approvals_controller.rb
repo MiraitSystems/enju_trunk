@@ -94,7 +94,8 @@ class ApprovalsController < ApplicationController
 
   def get_approval_report
     begin
-      @approval = Approval.find(params[:id])
+      @approval = Approval.find(params[:param])
+      logger.info("####################### = #{params[:output]}")
       file = ReportExport.get_approval_report_pdf(@approval)
       #TODO ファイル名の変更箇所　:filename => ここにファイル名
       send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'

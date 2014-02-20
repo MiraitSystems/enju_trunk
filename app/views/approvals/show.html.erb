@@ -200,10 +200,9 @@
   <% if ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
 
   <div id ="submenu_2" class="ui-corner-all">
-    <%= form_tag :action => :get_approval_report, :id => @approval do %>
     <ul>
-      <li><%= submit_tag t('statistic_report.submit'), :style => 'border:none;background-color:transparent;cursor:pointer;text-decoration:underline;' %></li>
-    <% end %>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.approval_report')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'report' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_postcard')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'postcard' %>
     <ul>
   </div>
   <% end %>

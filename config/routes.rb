@@ -3,7 +3,7 @@ EnjuLeaf::Application.routes.draw do
 
   resources :title_types
   resources :approvals do
-    post :get_approval_report, :on => :collection
+    get :get_approval_report, :on => :collection
   end
   resources :keycodes
   resources :use_licenses

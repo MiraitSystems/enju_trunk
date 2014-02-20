@@ -1630,6 +1630,8 @@ ja:
           donate_requested: 寄付依頼送付済
           replied_donate_request: 寄付依頼返信済
           all_process_end: 全工程完了
+        donation_postcard: 寄贈はがき
+        approval_report: 見計らい伝票
       approval_extext:
         value: メモ
         created_by: 記入者
