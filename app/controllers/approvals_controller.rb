@@ -92,14 +92,14 @@ class ApprovalsController < ApplicationController
     end
   end
 
-  # POST /approvals/1/get_approval_report
   def get_approval_report
     begin
       @approval = Approval.find(params[:id])
       file = ReportExport.get_approval_report_pdf(@approval)
+      #TODO ファイル名の変更箇所　:filename => ここにファイル名
       send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
     rescue Exception => e
-      flash[:error] = "hogehoge"
+      flash[:error] = I18n.t('page.error_file')
       redirect_to :back
     end
   end

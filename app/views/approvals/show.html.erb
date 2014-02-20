@@ -2,8 +2,9 @@
 <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.approval')) -%></h1>
 <div id="content_list">
 
-<%= flash[:error] if flash[:error]%>
-
+<% if flash[:error] %>
+<div style="color: red;"><b><%= flash[:error] %></b></div>
+<% end %>
 <%= render 'manifestations/title', :manifestation => @manifestation -%>
 
 <p id="notice"><%= notice %></p>
@@ -197,10 +198,13 @@
   </div>
 
   <% if ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
+
   <div id ="submenu_2" class="ui-corner-all">
     <%= form_tag :action => :get_approval_report, :id => @approval do %>
-    <li><%= submit_tag t('statistic_report.submit') %></li>
+    <ul>
+      <li><%= submit_tag t('statistic_report.submit'), :style => 'border:none;background-color:transparent;cursor:pointer;text-decoration:underline;' %></li>
     <% end %>
+    <ul>
   </div>
   <% end %>
 </div>
