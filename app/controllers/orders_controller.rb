@@ -43,7 +43,7 @@ class OrdersController < ApplicationController
     if original_order
       @order = original_order.dup
       @order.set_probisional_identifier(Date.today.year.to_i + 1)
-      @order.order_day = original_order.order_day.year.to_i + 1
+      @order.order_day = Date.new((Date.today + 1.years).year, original_order.order_day.month, original_order.order_day.day)
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
     else
@@ -167,8 +167,13 @@ class OrdersController < ApplicationController
   def search
 
     unless params[:manifestation_identifier].blank?
-      manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identigier])
-      flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.identifier')) if manifestation_num.size == 0
+      manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identifier])
+
+      if manifestation_num.size == 0
+        flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.identifier'))
+      else
+        @search_manifestation = manifestation_num.first
+      end
     end
 
     unless params[:manifestation_original_title].blank?
@@ -229,9 +234,12 @@ class OrdersController < ApplicationController
       if order.order_form && order.order_form.v == '1'
         @new_order = order.dup
         @new_order.set_probisional_identifier(Date.today.year.to_i + 1)
-        @new_order.order_day = @new_order.order_day + 1.years
+        @new_order.order_day = Date.new((Date.today + 1.years).year, order.order_day.month, order.order_day.day)
         @new_order.publication_year = Date.today.year.to_i + 1
         @new_order.paid_flag = 0
+        @new_order.buying_payment_year = nil
+        @new_order.prepayment_settlements_of_account_year = nil
+        @new_order.auto_calculation_flag = 1
         @new_order.save
         create_count += 1
       end
