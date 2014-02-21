@@ -6,4 +6,10 @@ class WorkHasLanguage < ActiveRecord::Base
   validates_associated :work, :language
   validates_uniqueness_of :language_id, :scope => :work_id
   acts_as_list :scope => :work_id
+  after_save :reindex
+  after_destroy :reindex
+
+  def reindex
+    self.work.try(:index)
+  end
 end
