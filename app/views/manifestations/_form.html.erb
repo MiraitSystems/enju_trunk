@@ -60,7 +60,7 @@ $(document).keydown(function(e) {
 
 <script>
   var ItemField_language = {
-    currentNumber : <%= raw @manifestation_languages_count.to_json %>,
+    currentNumber : <%= raw (@manifestation_languages.blank? ? 1 : @manifestation_languages.size).to_json %>,
     itemTemplate : ''
       + '<select id="language_id___count__" name="language_id[__count__]">'
       + <%= raw @languages.collect{ |language| ["<option value='" + language.id.to_s + "'>" + language.display_name.localize + "</option>"] }.join().to_json %>
