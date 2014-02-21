@@ -880,8 +880,7 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
-    # @select_carrier_type_tags = CarrierType.find(:all, :select => "id, name")
-    @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
+    # @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
 
     new_work_has_title
   end
@@ -1025,8 +1024,7 @@ class ManifestationsController < ApplicationController
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
-        # @select_carrier_type_tags = CarrierType.find(:all, :select => "id, name, display_name")
-        @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
+        # @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
         @keep_themes = @theme
       end
     end
@@ -1920,4 +1918,21 @@ class ManifestationsController < ApplicationController
     end
   end
 
+=begin
+  # TODO
+  def make_select_form(:article, @inputs, width)
+    require 'cgi'　# CGIライブラリを読み込み
+    cgi = CGI.new　# 初期化
+    print cgi.header("type"=>"text/html")
+    print <<EOF
+      <html lang="ja">
+        <select id="change_select2" name="#{:article}" style=width:#{width}px>
+          @inputs.each do |input|
+            <option alt=#{input.alt}, value=#{input.id}>#{input.text}</option>
+          end
+        </select>
+      </html>
+EOF
+  end
+=end
 end

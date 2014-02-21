@@ -59,27 +59,7 @@ $(document).keydown(function(e) {
 <!-- TODO -->
 <script>
   $(document).ready(function() { 
-    $("#e10").select2({
-      data: <%= raw @select_carrier_type_tags.to_json -%>, 
-      matcher: function(term, text) {
-        return text.toUpperCase().indexOf(term.toUpperCase())=0;
-      }
-    });
-  });
-</script>
-<script>
-  $(document).ready(function() { 
-    $("#selector_type").select2({
-      matcher: function(term, text, opt) {
-        return text.toUpperCase().indexOf(term.toUpperCase())==0
-            || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-      }
-    });
-  });
-</script>
-<script>
-  $(document).ready(function() { 
-    $("#e17_2").select2({
+    $("#change_select2").select2({
       matcher: function(term, text, opt) {
         return text.toUpperCase().indexOf(term.toUpperCase())==0
             || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
@@ -252,15 +232,14 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
-    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <select id="selector_type" style="width:200px">
-      <% @select_carrier_type_tags.each do |carrier_types| %>
-        <option alt="<%= carrier_types.alt %>", value="<%= carrier_types.id %>"><%= carrier_types.text %></option>
+    <%= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <select id="change_select2" name="manifestation[carrier_type_id]" style="width:200px">
+      <% @carrier_types.each do |carrier_types| %>
+        <option alt="<%= carrier_types.name %>", value="<%= carrier_types.id %>"><%= carrier_types.display_name.localize %></option>
       <% end %>
     </select>
 
-    <!--br>テストフォーム<br>
-
+    <!--br>
     Custom Matcher selector
     <select id="e17_2" style="width:200px">
       <option alt="print", value="1">印刷物</option>
@@ -271,21 +250,18 @@ $(document).keydown(function(e) {
       <option alt="sheaf", value="5">加除式</option>
       <option alt="micro", value="7">マイクロ資料</option>
     </select>
-    <br>
-
-    Test selector
-    <%#= f.select(:carrier_type_id, @select_carrier_type_tags.collect{|m| [m.text, m.id]}, {}, {:style => "width:200px", :alt => @select_carrier_type_tags.collect{|m| [m.alt]}, :id => "selector_type"}) -%>
-    <select id="selector_type" style="width:200px">
-      <% @select_carrier_type_tags.each do |carrier_types| %>
-        <option alt="<%= carrier_types.alt %>", value="<%= carrier_types.id %>"><%= carrier_types.text %></option>
-      <% end %>
-    </select-->
+    <br-->
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <!--select id="change_select2" name="manifestation[manifestation_type_id]" style="width:200px">
+      <% @manifestation_types.each do |manifestation_types| %>
+        <option alt="<%= manifestation_types.name %>", value="<%= manifestation_types.id %>"><%= manifestation_types.display_name.localize %></option>
+      <% end %>
+    </select-->
   </div>
 
   <div class="field">

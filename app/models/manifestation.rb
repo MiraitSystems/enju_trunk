@@ -980,22 +980,22 @@ class Manifestation < ActiveRecord::Base
     return @struct_theme_array
   end
 
+=begin
   def self.struct_selects(obj, text='name')
     struct = Struct.new(:id, :text, :alt)
     struct_array = []
     selects = obj.all
     selects.each do |select|
-=begin
       unless text == 'name' then
         struct_array << struct.new(select.id, select.__send__(text).localize)
       else 
         struct_array << struct.new(select.id, select.__send__(text))
       end
-=end
       struct_array << struct.new(select.id, select.__send__(text).localize, select.name)
     end
     return struct_array
   end
+=end
  
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
