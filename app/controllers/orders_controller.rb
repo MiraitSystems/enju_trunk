@@ -39,7 +39,6 @@ class OrdersController < ApplicationController
   # GET /orders/new.json
   def new
     @order = Order.new
-
     original_order = Order.where(:id => params[:order_id]).first
     if original_order
       @order = original_order.dup
@@ -59,6 +58,10 @@ class OrdersController < ApplicationController
     @select_patron_tags = Order.struct_patron_selects
     @currencies = Currency.all
 
+      if params[:manifestation_id]
+        @order.manifestation_id = params[:manifestation_id].to_i
+        @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
+      end 
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @order }
@@ -77,11 +80,13 @@ class OrdersController < ApplicationController
   def create
 
     @order = Order.new(params[:order])
+    @manifestation_identifier = params[:manifestation_identifier]
+    manifestation = Manifestation.where(["manifestation_identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
 
     @manifestation_identifier = params[:manifestation_identifier]
     manifestation = Manifestation.where(["identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
 
-    @order.manifestation_id = manifestation.id if manifestation
+    #@order.manifestation_id = manifestation.id if manifestation
  
     respond_to do |format|
       if @order.save
@@ -183,7 +188,6 @@ class OrdersController < ApplicationController
     else
 
       unless params[:manifestation_identifier].blank?
-
         @orders = Order.joins(:manifestation).where(["identifier = ? AND original_title ILIKE ?",params[:manifestation_identifier], "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
 
       else
@@ -238,8 +242,5 @@ class OrdersController < ApplicationController
     redirect_to :action => "search", :publication_year => params[:year], :test => "test", :manifestation_identifier => params[:manifestation_identifier]
 
   end
-
-
-
 
 end

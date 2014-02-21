@@ -2612,6 +2612,7 @@ ja:
         height: 高さ(cm) 
         width: 幅(cm) 
         depth: 奥行き(cm)
+        size: サイズ
         price: 価格
         price_string: 価格
         access_address: アクセスアドレス

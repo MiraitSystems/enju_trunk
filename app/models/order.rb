@@ -142,7 +142,6 @@ class Order < ActiveRecord::Base
 
   end
 
-
   def destroy?
     return false if Payment.where(:order_id => self.id).first
     return true

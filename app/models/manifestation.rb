@@ -4,6 +4,7 @@ require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation')
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
+  include Manifestation::OutputColumns
   has_many :creators, :through => :creates, :source => :patron, :order => :position
   has_many :creators_order_type, :through => :creates, :source => :patron, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :patron, :order => :position
@@ -980,32 +981,6 @@ class Manifestation < ActiveRecord::Base
     return @struct_theme_array
   end
  
-  # NOTE: resource_import_textfile.excelとの整合性を維持すること
-  BOOK_COLUMNS = lambda { %W(
-    #{ 'manifestation_type' unless SystemConfiguration.get('manifestations.split_by_type') } 
-    isbn original_title title_transcription title_alternative carrier_type jpn_or_foreign
-    frequency pub_date country_of_publication place_of_publication
-    edition_display_value volume_number_string issue_number_string serial_number_string lccn
-    marc_number ndc start_page end_page height width depth price
-    acceptance_number access_address repository_content required_role
-    except_recent description supplement note creator contributor publisher
-    subject language accept_type acquired_at_string bookstore library shelf checkout_type
-    circulation_status retention_period call_number item_price url
-    include_supplements use_restriction item_note rank item_identifier
-    remove_reason non_searchable missing_issue del_flg
-  ).map{ |c| c unless  c == '' }.compact }
-  SERIES_COLUMNS = %w(
-    issn original_title title_transcription periodical
-    series_statement_identifier note
-  )
-  ARTICLE_COLUMNS = %w(
-    creator original_title title volume_number_string number_of_page pub_date
-    call_number access_address subject
-  )
-  # 出力時の順番に関わるので SERIES_COLUMNS と BOOK_COLUMNS の順番を入れ替えないこと
-  ALL_COLUMNS =
-    SERIES_COLUMNS.map { |c| "series.#{c}" } + BOOK_COLUMNS.call.map { |c| "book.#{c}" } + ARTICLE_COLUMNS.map {|c| "article.#{c}" }
-
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
     excel_filepath, excel_fileinfo = user_file.create(:manifestation_list, Setting.manifestation_list_print_excelx.filename)
@@ -1091,10 +1066,13 @@ class Manifestation < ActiveRecord::Base
       'article' => [], # 文献(manifestation_type.is_article?がtrue)
     }
     selected_column.each do |type_col|
-      next unless ALL_COLUMNS.include?(type_col)
-      next unless /\A([^.]+)\.([^.]+)\z/ =~ type_col
-      column[$1]       << [$1, $2]
-      column['series'] << [$1, $2] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
+#      next unless ALL_COLUMNS.include?(type_col) #TODO
+      next unless /\A([^.]+)\.([^.]+)\.*([^.]+)*([^.]+)\z/ =~ type_col
+      val = $2
+      val += ".#{$3}" if $3
+      val += $4 if $4
+      column[$1]       << [$1, val]
+      column['series'] << [$1, val] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
     end
     return column
   end
@@ -1140,14 +1118,12 @@ class Manifestation < ActiveRecord::Base
 
           # 出力すべきカラムがない場合はスキップ
           next if column[type].blank?
-
           target.each do |m|
             if m.items.blank?
               items = [nil]
             else
               items = m.items
             end
-
             items.each do |i|
               row = []
               column[type].each do |(t, c)|
@@ -1272,6 +1248,17 @@ class Manifestation < ActiveRecord::Base
 
     when 'del_flg'
       val = '' # モデルには格納されない情報
+
+    else
+      splits = ws_col.split('.')
+      case splits[0]
+      when 'manifestation_extext'
+        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).first 
+        val =  extext.value if extext
+      when 'manifestation_exinfo'
+        exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).first
+        val =  exinfo.value if exinfo
+      end
     end
     return val unless val.nil?
 
@@ -1303,8 +1290,8 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
     end
- 
     val
+
   end
 
   def self.get_missing_list_pdf(manifestation_ids, current_user)

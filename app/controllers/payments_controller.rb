@@ -2,6 +2,7 @@ class PaymentsController < ApplicationController
   load_and_authorize_resource
   before_filter :get_order
 
+
   def index
     if params[:order_id]
       @payments = Payment.where(["order_id = ?",params[:order_id]]).page(params[:page])
@@ -65,7 +66,6 @@ class PaymentsController < ApplicationController
         format.html { redirect_to(payments_url) }
     end
   end
-
 
   def search
     
