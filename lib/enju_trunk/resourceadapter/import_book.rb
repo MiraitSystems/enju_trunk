@@ -287,7 +287,8 @@ module EnjuTrunk
 
       # manifestation_extexts
       extexts = {}
-      if I18n.t('resource_import_textfile.excel.book.manifestation_extext').blank?
+      
+      if I18n.t('resource_import_textfile.excel.book.manifestation_extext').class == Hash
         I18n.t('resource_import_textfile.excel.book.manifestation_extext').keys.each do |key|
           data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_extext.#{key.to_s}")]] 
           extexts[key] = data if data
@@ -297,7 +298,7 @@ module EnjuTrunk
      
       # manifestation_exinfos
       exinfos = {}
-      if I18n.t('resource_import_textfile.excel.book.manifestation_extext').blank?
+      if I18n.t('resource_import_textfile.excel.book.manifestation_exinfo').class == Hash
         I18n.t('resource_import_textfile.excel.book.manifestation_exinfo').keys.each do |key|
           data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_exinfo.#{key.to_s}")]] 
           exinfos[key] = data if data
