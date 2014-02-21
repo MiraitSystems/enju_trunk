@@ -1,0 +1,42 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.payment')) -%></h1>
+<div id="content_list">
+
+<table>
+  <tr>
+    <th><%= t('activerecord.attributes.payment.id') %></th>
+    <th><%= t('activerecord.attributes.payment.order_id') %></th>
+    <th><%= t('activerecord.attributes.payment.manifestation_id') %></th>
+    <th><%= t('activerecord.attributes.payment.payment_type') %></th>
+    <th></th>
+  </tr>
+
+<% @payments.each do |payment| %>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to payment.id, payment %></td>
+    <td><%= link_to payment.order.order_identifier, order_path(payment.order) %></td>
+    <td><%= Manifestation.find(payment.manifestation_id).original_title %></td>
+    <td><%= get_keyname_payment_types(payment.payment_type.to_s) if payment.payment_type %></td>
+    <td>
+      <%= link_to t('page.edit'), edit_payment_path(payment) %>
+      <%= link_to t('page.destroy'), payment, :confirm => t('page.are_you_sure'), :method => :delete -%>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate(@payments) -%>
+
+</div>
+</div>
+
+<!--
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <%- if can? :create, Order -%>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_payment_path -%></li>
+    <%- end -%>
+  </ul>
+</div>
+-->
+
