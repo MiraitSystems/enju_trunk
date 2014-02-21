@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 #ruby "1.9.3"
 
@@ -28,6 +28,7 @@ gem "jpp_customercode_transfer", "~> 0.0.2"
 # special gem here.
 # gem 'enju_xxx', :git => 'https://xxx@github.com/'
 
+
 #
 platforms :ruby do
   gem 'pg'
@@ -35,6 +36,10 @@ platforms :ruby do
   ##gem 'ruby-prof', :group => [:development, :test]
   ##gem 'zipruby'
   gem 'kgio'
+end
+
+platforms :mingw do
+  gem 'activerecord-postgresql-adapter'
 end
 
 platforms :ruby do
@@ -110,7 +115,7 @@ gem 'awesome_nested_set', '~> 2.0'
 gem 'paranoia'
 gem 'thinreports', :git => 'git://github.com/emiko/thinreports-generator.git'
 gem 'prawn', '1.0.0.rc1'
-gem "rmagick", :require => false
+gem "rmagick","2.13.2", :require => false
 #gem "crypt19"
 gem "rails_autolink"
 gem 'parallel'
@@ -131,7 +136,7 @@ group :development, :test do
   #gem 'metric_fu', '~> 2.1'
   gem 'timecop'
   gem 'sunspot-rails-tester'
-  gem 'vcr', '~> 2.0.0.rc2'
+  #gem 'vcr', '~> 2.0.0.rc2'
   gem 'fakeweb'
   #gem 'churn', '0.0.13'
   gem 'ci_reporter'
