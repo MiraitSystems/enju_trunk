@@ -96,9 +96,17 @@ class ApprovalsController < ApplicationController
     begin
       @approval = Approval.find(params[:param])
       logger.info("####################### = #{params[:output]}")
-      file = ReportExport.get_approval_report_pdf(@approval)
-      #TODO ファイル名の変更箇所　:filename => ここにファイル名
-      send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
+      if params[:output] == 'report' 
+      logger.info("############if##########")
+        file = ReportExport.get_approval_report_pdf(@approval)
+        #TODO ファイル名の変更箇所　:filename => ここにファイル名
+        send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
+      else
+      logger.info("############else############")
+        file = ReportExport.get_approval_postcard_pdf(@approval)
+        #TODO ファイル名の変更箇所　:filename => ここにファイル名
+        send_data file.generate, :filename => "approval_postcard", :type => 'application/pdf', :disposition => 'attachment'
+      end
     rescue Exception => e
       flash[:error] = I18n.t('page.error_file')
       redirect_to :back
