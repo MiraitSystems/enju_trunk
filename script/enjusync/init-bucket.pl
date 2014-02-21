@@ -84,11 +84,12 @@ unless (open(OUT, "> $Ctl_File")) {
 
 # チェックサム(md5)とファイルサイズをコントロールファイルに書き込む
 my $file_sz = -s "$TarFileName.tar.gz";
-chomp(my $file_md5sum = `/usr/bin/md5sum $TarFileName.tar.gz`);
-$file_md5sum =~ /(\w+)\s*(\w+)/;
-my $chk_sum = $1;	# md5sumの値を分離
+#chomp(my $file_md5sum = `/usr/bin/md5sum $TarFileName.tar.gz`);
+#$file_md5sum =~ /(\w+)\s*(\w+)/;
+#my $chk_sum = $1;	# md5sumの値を分離
 print OUT "$file_sz\n";
-print OUT "$chk_sum\n";
+#print OUT "$chk_sum\n";
+print OUT "$dummymd5sum\n";
 
 close(OUT);
 
