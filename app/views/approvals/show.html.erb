@@ -210,6 +210,11 @@
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_collection')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'collection' %>
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.refusal_latter')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'refuse' %></li>
 
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.sample_request')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'request_cover' %></li>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_usually')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'usually_cover' %>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_sample')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'sample_cover' %></li>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_collection')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'collection_cover' %>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.refusal_latter')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'refuse_cover' %></li>
     <ul>
   </div>
   <% end %>

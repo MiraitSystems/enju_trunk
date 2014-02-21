@@ -1840,6 +1840,7 @@ ja:
     editing: "%{model}の編集"
     showing: "%{model}の表示"
     output: "%{model}の出力"
+    output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
     output_csv: "%{model}の出力(CSV)"
     output_tsv: "%{model}の出力(TSV)"

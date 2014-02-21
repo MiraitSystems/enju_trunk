@@ -1850,6 +1850,7 @@ en:
     editing: Editing %{model}
     showing: Showing %{model}
     output: Output %{model}
+    output_cover: Output %{model} cover
     output_pdf: Output %{model}(PDF)
     output_csv: Output %{model}(CSV)
     output_tsv: Output %{model}(TSV)

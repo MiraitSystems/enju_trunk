@@ -107,7 +107,7 @@ class ApprovalsController < ApplicationController
       when 'request', 'refuse'
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         file_name = 'sample_request' if params[:output] == 'request'
-        file_name = 'refusal_latter' if params[:output] == 'refuse'
+        file_name = 'refusal_letter' if params[:output] == 'refuse'
         file = ReportExport.get_approval_donation_pdf(@approval, file_name)
         send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
       when 'usually', 'sample', 'collection'
@@ -115,6 +115,14 @@ class ApprovalsController < ApplicationController
         file_name = 'donation_request_' + params[:output] 
         file = ReportExport.get_approval_donation_pdf(@approval, file_name)
         send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+      when /\_cover$/
+        #TODO ファイル名の変更箇所　:filename => ここにファイル名
+        file_name = params[:output]
+        file = ReportExport.get_approval_cover_pdf(@approval, file_name)
+        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+      else
+        flash[:error] = I18n.t('page.error_file')
+        redirect_to :back
       end
     rescue Exception => e
       flash[:error] = I18n.t('page.error_file')
