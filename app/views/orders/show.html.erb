@@ -1,23 +1,245 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.order')) -%></h1>
 <div id="content_list">
+
+<% if @order.manifestation.series_statement %>
+  <% if@order.manifestation.series_statement.root_manifestation_id == @order.manifestation.id %>
+    <% @series_statement = @order.manifestation.series_statement %>
+    <%= render 'manifestations/index_form_series_statement_header' -%>
+  <% else %>
+    <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
+  <% end %>
+<% else %>
+  <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
+<% end %>
+
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong><%= t('activerecord.models.order_list') -%>:</strong>
-  <%= link_to @order.order_list.title, order_list_purchase_requests_path(@order.order_list) -%>
+  <strong><%= t('activerecord.attributes.order.order_identifier') -%>:</strong>
+  <%= @order.order_identifier -%>
 </p>
 
 <p>
-  <strong><%= t('activerecord.models.purchase_request') -%>:</strong>
-  <%= link_to @order.purchase_request.title, purchase_request_path(@order.purchase_request) -%>
+  <strong><%= t('activerecord.attributes.order.order_day') -%>:</strong>
+  <%= l(@order.order_day, :format => :only_date) if @order.order_day -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.publication_year') -%>:</strong>
+  <%= @order.publication_year -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.buying_payment_year') -%>:</strong>
+  <%= @order.buying_payment_year -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.prepayment_settlements_of_account_year') -%>:</strong>
+  <%= @order.prepayment_settlements_of_account_year -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.paid_flag') -%>:</strong>
+  <%= @order.paidflag.keyname  if @order.paidflag -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.number_of_acceptance_schedule') -%>:</strong>
+  <%= @order.number_of_acceptance_schedule -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.meeting_holding_month_1') -%>:</strong>
+  <%= @order.meeting_holding_month_1 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.meeting_holding_month_2') -%>:</strong>
+  <%= @order.meeting_holding_month_2 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.adption_code') -%>:</strong>
+  <%= @order.adption.keyname if @order.adption -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.deliver_place_code_1') -%>:</strong>
+  <%= @order.deliver_place_1.keyname if @order.deliver_place_1 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.deliver_place_code_2') -%>:</strong>
+  <%= @order.deliver_place_2.keyname if @order.deliver_place_2 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.deliver_place_code_3') -%>:</strong>
+  <%= @order.deliver_place_3.keyname if @order.deliver_place_3 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.deliver_place_code_4') -%>:</strong>
+  <%= @order.deliver_place_4.keyname if @order.deliver_place_4 -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.deliver_place_code_5') -%>:</strong>
+  <%= @order.deliver_place_5.keyname if @order.deliver_place_5-%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.application_form_code_1') -%>:</strong>
+  <%= @order.application_form_1.keyname if @order.application_form_1 -%>
+</p> 
+
+<p>
+  <strong><%= t('activerecord.attributes.order.application_form_code_2') -%>:</strong>
+  <%= @order.application_form_2.keyname if @order.application_form_2-%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.number_of_acceptance') -%>:</strong>
+  <%= @order.number_of_acceptance -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.number_of_missing') -%>:</strong>
+  <%= @order.number_of_missing -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.collection_status_code') -%>:</strong>
+  <%= @order.collection_status.keyname if @order.collection_status -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.reason_for_collection_stop_code') -%>:</strong>
+  <%= @order.reason_for_collection_stop.keyname if @order.reason_for_collection_stop -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.collection_stop_day') -%>:</strong>
+  <%= l(@order.collection_stop_day, :format => :only_date) if @order.collection_stop_day -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.order_form_code') -%>:</strong>
+  <%= @order.order_form.keyname if @order.order_form -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.collection_form_code') -%>:</strong>
+  <%= @order.collection_form.keyname if @order.collection_form -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.payment_form_code') -%>:</strong>
+  <%= @order.payment_form.keyname if @order.payment_form -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.budget_subject_code') -%>:</strong>
+  <%= @order.budget_subject.keyname if @order.budget_subject -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.transportation_route_code') -%>:</strong>
+  <%= @order.transportation_route.keyname if @order.transportation_route -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.bookstore_code') -%>:</strong>
+  <%= @order.bookstore.keyname if @order.bookstore -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.auto_calculation_flag') -%>:</strong>
+  <%= t("order.auto_calculation_flag_#{@order.auto_calculation_flag}") -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.currency_unit_code') -%>:</strong>
+  <%= Currency.find(@order.currency_unit_code).display_name if @order.currency_unit_code -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.currency_rate') -%>:</strong>
+  <%= @order.currency_rate -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.discount_commision') -%>:</strong>
+  <%= @order.discount_commision -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.reason_for_settlements_of_account_code') -%>:</strong>
+  <%= @order.reason_for_settlements_of_account.keyname if @order.reason_for_settlements_of_account -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.prepayment_principal') -%>:</strong>
+  <%= @order.prepayment_principal -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.yen_imprest') -%>:</strong>
+  <%= @order.yen_imprest.to_i -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.taxable_amount') %>:</strong>
+  <%= @order.taxable_amount %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.tax_exempt_amount') %>:</strong>
+  <%= @order.tax_exempt_amount %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.unit_price') %>:</strong>
+  <%= @order.unit_price.to_i %>  
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.order_organization_id') -%>:</strong>
+  <%= Patron.find(@order.order_organization_id).full_name  if @order.order_organization_id %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.note') -%>:</strong>
+  <%= @order.note -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.group') -%>:</strong>
+  <%= @order.group -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.pair_manifestation_id') -%>:</strong>
+  <%= @order.pair_manifestation_id -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.order.contract_id') -%>:</strong>
+  <%= @order.contract_id -%>
 </p>
 
 </div>
 </div>
 
+
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.back_to', :model => t('activerecord.models.purchase_request')), order_list_purchase_requests_path(@order.order_list) -%></li>
+    <li><%= link_to t('page.edit'), edit_order_path(@order) -%></li>
+    <li><%= link_to t('page.back'), orders_path -%></li>
+    <li><%= link_to t('page.listing', :model => t('order.payments')), order_payments_path(@order) %></li>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_order_payment_path(@order) -%></li>
+    <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order}, :confirm => t('payment.want_to_paid') -%></li>
   </ul>
 </div>

@@ -2,25 +2,51 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
 <div id="content_list">
 
-<table>
+<% if @manifestation %>
+  <strong>
+  <p><%= t('activerecord.attributes.manifestation.original_title') %>: <%= @manifestation.original_title %></p>
+  <p><%= t('activerecord.attributes.manifestation.identifier') %>: <%= @manifestation.identifier %></p>
+  </strong>
+<% else %>
+  <%= form_tag({:action => "search"},  {:method => "get"}) do %>
+    <%= t('activerecord.attributes.order.manifestation_identifier') %>:
+    <%= text_field_tag :manifestation_identifier, @manifestation_selected %>
+
+    <%= t('activerecord.attributes.order.publication_year') %>:
+    <%= select(:order, :publication_year, @select_years, {:selected => @years_selected, :prompt => t('page.all_search_term')}) %>
+
+    <%= submit_tag t('page.search') %>
+  <% end %>
+<% end %>
+
+<br />
+
+<div style="color: red"><%= flash[:message].to_s -%></div>
+
+
+<table class="index">
   <tr>
-    <th><%= t('activerecord.models.order_list') -%></th>
-    <th><%= t('activerecord.models.purchase_request') -%></th>
-    <th><%= t('page.updated_at') -%></th>
+    <th><%= t('activerecord.attributes.order.publication_year') -%></th>
+    <th><%= t('activerecord.attributes.order.order_identifier') -%></th>
+    <th><%= t('activerecord.attributes.order.yen_imprest') -%></th>
+    <th><%= t('activerecord.attributes.order.payment_sum') -%></th>
+    <th><%= t('activerecord.attributes.manifestation.identifier') -%></th>
     <th></th>
+   
   </tr>
 
 <%- @orders.each do |order| -%>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= link_to order.order_list.title, order.order_list -%></td>
-    <td><%= link_to order.purchase_request.title, purchase_request_path(order.purchase_request) -%></td>
-    <td><%= l(order.updated_at) -%></td>
+    <td><%= order.publication_year %></td>
+    <td><%= link_to order.order_identifier, order_path(order) %></td>
+    <td><%= order.yen_imprest %></td>
+    <td></td> 
+    <td><%= link_to order.manifestation.identifier, order.manifestation %></td>
     <td>
-      <%- if can? :destroy, order -%>
-        <%= link_to t('page.show'), order_path(order) -%>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
-        <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
-      <%- end -%>
+        <% if order.destroy? %>
+          <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <% end %>
     </td>
   </tr>
 <%- end -%>
@@ -31,10 +57,18 @@
 </div>
 </div>
 
-<div id="submenu" class="ui-corner-all">
-  <ul>
-    <%- if can? :create, Order -%>
-      <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path -%></li>
-    <%- end -%>
-  </ul>
-</div>
+<% if @manifestation %>
+  <div id="submenu" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @manifestation) %></li>
+    </ul>
+  </div>
+<% else %>
+  <% if @search_manifestation && @orders.size == 0 %>
+    <div id="submenu" class="ui-corner-all">
+      <ul>  
+        <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @search_manifestation) -%></li>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

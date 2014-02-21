@@ -1005,11 +1005,9 @@ class ManifestationsController < ApplicationController
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
         @manifestation.languages.destroy_all; @manifestation.languages = Language.add_language(@language)
         if params[:exinfos]
-          @manifestation.manifestation_exinfos.destroy_all;
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
         if params[:extexts]
-          @manifestation.manifestation_extexts.destroy_all;
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
         end
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
@@ -1452,7 +1450,6 @@ class ManifestationsController < ApplicationController
     @create_types = CreateType.find(:all, :select => "id, display_name")
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
-    @manifestation_languages_count = @manifestation_languages.blank? ? 1 : @manifestation_languages.size
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
   end
