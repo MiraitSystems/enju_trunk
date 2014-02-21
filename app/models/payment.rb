@@ -1,8 +1,9 @@
 class Payment < ActiveRecord::Base
-  attr_accessible :amount_of_payment, :auto_calculation_flag, :before_conv_amount_of_payment, :billing_date, :currency_rate, :currency_unit_code, :discount_commision, :manifestation_id, :note, :number_of_payment, :order_id, :payment_type, :volume_number, :taxable_amount, :tax_exempt_amount
+  attr_accessible :amount_of_payment, :auto_calculation_flag, :before_conv_amount_of_payment, :billing_date, :currency_rate, :currency_id, :discount_commision, :manifestation_id, :note, :number_of_payment, :order_id, :payment_type, :volume_number, :taxable_amount, :tax_exempt_amount
 
   belongs_to :order
   belongs_to :manifestation
+  belongs_to :currency
 
   validate :set_default
 
@@ -43,7 +44,7 @@ class Payment < ActiveRecord::Base
       date = Date.today
       date = self.billing_date unless self.billing_date.blank?
 
-      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_unit_code, date])
+      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, date])
 
       if exchangerate
         self.currency_rate = exchangerate.rate
@@ -51,7 +52,7 @@ class Payment < ActiveRecord::Base
         self.currency_rate = 1
       end
 
-      if self.currency_unit_code == 28
+      if self.currency_id == 28
         self.amount_of_payment = (self.currency_rate * self.discount_commision * self.before_conv_amount_of_payment).to_i
       else
         self.amount_of_payment = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.before_conv_amount_of_payment).to_i

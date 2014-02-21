@@ -769,7 +769,7 @@ en:
         budget_subject_code: Budget subject code
         transportation_route_code: Transportation route code
         bookstore_code: Bookstore code
-        currency_unit_code: Currency unit code
+        currency_id: Currency
         currency_rate: Currency rate
         discount_commision: Discount commision
         reason_for_settlements_of_account_code: Reason for settlements of account code
@@ -1656,7 +1656,7 @@ en:
         order_id: Order id
         billing_date: Billing date
         manifestation_id: Manifestation id
-        currency_unit_code: Currency unit id
+        currency_id: Currency
         currency_rate: Currency rate
         discount_commision: Discount commision
         before_conv_amount_of_payment: Before conv amount of payment
@@ -3126,7 +3126,7 @@ en:
     system_menu_title: Order search
     cannot_delete: The order cannot be deleted.
     no_matches_found_patron: "No matches found patron"
-    no_matches_found_manifestation: "No matches found manifestation"
+    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     switch_manual_entry: "Manual entry currency rate and yen imprest"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
@@ -3142,5 +3142,5 @@ en:
     auto_calculation_flag_1: Manual entry
     paid: Paid
     want_to_paid: "Want to paid?"
-    no_matches_found_order: "No matches found order"
-    no_matches_found_manifestation: "No matches found manifestation"
+    no_matches_found_order: "No matches found order to %{attribute}"
+    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"

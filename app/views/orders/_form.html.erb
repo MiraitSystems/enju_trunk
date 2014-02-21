@@ -249,8 +249,8 @@ multiple: false,
   <% end %>
 
   <div class="field">
-    <%= f.label :currency_unit_code %><br />
-    <%= f.collection_select :currency_unit_code, @currencies, :id, :display_name, :include_blank => true %>
+    <%= f.label :currency_id %><br />
+    <%= f.collection_select :currency_id, @currencies, :id, :display_name, :include_blank => true %>
   </div>
 
   <div class="field">

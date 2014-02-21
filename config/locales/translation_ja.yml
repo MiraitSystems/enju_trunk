@@ -847,7 +847,7 @@ ja:
         budget_subject_code: 予算科目コード
         transportation_route_code: 輸送経路コード
         bookstore_code: 書店コード
-        currency_unit_code: 通貨単位コード
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
         reason_for_settlements_of_account_code: 精算理由コード
@@ -1644,7 +1644,7 @@ ja:
         order_id: 発注番号
         billing_date: 請求年月日
         manifestation_id: 資料番号
-        currency_unit_code: 通貨単位コード
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
         before_conv_amount_of_payment: 換算前支払金額
@@ -3098,7 +3098,7 @@ ja:
     system_menu_title: 発注検索
     cannot_delete: "この発注は削除できません"
     no_matches_found_patron: "発注機関が見つかりません"
-    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
     switch_manual_entry: "通貨レート、発注金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
@@ -3114,5 +3114,5 @@ ja:
     auto_calculation_flag_1: 手入力
     paid: 精算
     want_to_paid: "精算しますか?"
-    no_matches_found_order: "発注番号に該当する発注が見つかりません。"
-    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"

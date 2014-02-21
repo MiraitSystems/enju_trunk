@@ -8,13 +8,19 @@
   </strong>
 <% else %>
   <%= form_tag({:action => "search"},  {:method => "get"}) do %>
-    <%= t('activerecord.attributes.order.manifestation_identifier') %>:
-    <%= text_field_tag :manifestation_identifier, @manifestation_selected %>
+    <strong>
+      <p style="display:inline;"><%= t('activerecord.attributes.manifestation.original_title') -%></p>
+      <%= text_field_tag :manifestation_original_title , @selected_title, :class => 'resource_title'%><br />
+      <p style="display:inline"><%= t('activerecord.attributes.manifestation.identifier') -%></p>
+      <%= text_field_tag :manifestation_identifier, @selected_manifestation %>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @years_selected, :prompt => t('page.all_search_term')}) %>
+     <br />
+     <%= t('activerecord.attributes.order.publication_year') %>
+      <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %><br />
 
     <%= submit_tag t('page.search') %>
+
+    </strong>
   <% end %>
 <% end %>
 
@@ -30,6 +36,12 @@
     <th><%= t('activerecord.attributes.order.yen_imprest') -%></th>
     <th><%= t('activerecord.attributes.order.payment_sum') -%></th>
     <th><%= t('activerecord.attributes.manifestation.identifier') -%></th>
+    <th><%= t('activerecord.attributes.order.adption_code') %></th>
+    <th><%= t('activerecord.attributes.order.payment_form_code') %></th>
+    <th><%= t('activerecord.attributes.order.bookstore_code') %></th>
+    <th><%= t('activerecord.attributes.order.collection_status_code') %></th>
+    <th><%= t('activerecord.attributes.order.deliver_place_code_1') %></th>
+    <th><%= t('activerecord.attributes.order.deliver_place_code_5') %></th>
     <th></th>
    
   </tr>
@@ -41,6 +53,13 @@
     <td><%= order.yen_imprest %></td>
     <td></td> 
     <td><%= link_to order.manifestation.identifier, order.manifestation %></td>
+    <td><%= order.adption.keyname if order.adption -%></td>
+    <td><%= order.payment_form.keyname if order.payment_form -%></td>
+    <td><%= order.bookstore.keyname if order.bookstore -%></td>
+    <td><%= order.collection_status.keyname if order.collection_status -%></td>
+    <td><%= order.deliver_place_1.keyname if order.deliver_place_1 -%></td>
+    <td><%= order.deliver_place_5.keyname if order.deliver_place_5 -%></td>
+
     <td>
         <%= link_to t('page.edit'), edit_order_path(order) -%>
         <% if order.destroy? %>

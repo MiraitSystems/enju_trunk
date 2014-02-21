@@ -8,6 +8,7 @@ class PaymentsController < ApplicationController
       @order = Order.find(params[:order_id])
     else
       @payments = Payment.page(params[:page])
+      set_select_years
     end
   end
 
@@ -67,40 +68,64 @@ class PaymentsController < ApplicationController
 
 
   def search
+    
+    unless params[:manifestation_original_title].blank?
+      manifestation_num = Manifestation.where("original_title ILIKE ?", "\%#{params[:manifestation_original_title]}\%")
+      flash.now[:message] = t('payment.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.original_title')) if manifestation_num.size == 0
+    end
+
     unless params[:manifestation_identifier].blank?
       manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identifier])
-      flash.now[:message] = t('payment.no_matches_found_manifestation') if manifestation_num.size == 0
+
+      flash.now[:message] = t('payment.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.identifier')) if manifestation_num.size == 0
     end
 
     unless params[:order_identifier].blank?
       order_num = Order.where("order_identifier = ?", params[:order_identifier])
-      flash.now[:message] = t('payment.no_matches_found_order') if order_num.size == 0
+      flash.now[:message] = t('payment.no_matches_found_order', :attribute => t('activerecord.attributes.order.order_identifier')) if order_num.size == 0
     end
+
+
+    where_str = ""
+    where_str += "original_title ILIKE ?" 
 
     unless params[:order_identifier].blank?
-
-      unless params[:manifestation_identifier].blank?
-        @payments = Payment.joins(:order, :manifestation).where("order_identifier = ? AND identifier = ?", params[:order_identifier], params[:manifestation_identifier]).page(params[:page])
-      else
-        @payments = Payment.joins(:order).where("order_identifier = ?", params[:order_identifier]).page(params[:page])
-      end
-    else
-      unless params[:manifestation_identifier].blank?
-        @payments = Payment.joins(:manifestation).where("identifier = ?", params[:manifestation_identifier]).page(params[:page])
-      else
-        @payments = Payment.page(params[:page])
-      end
+      where_str += " AND order_identifier = '#{params[:order_identifier]}'"
     end
 
-    @order_identifier_selected = params[:order_identifier]
-    @manifestation_selected = params[:manifestation_identifier]
+    unless params[:publication_year].blank?
+      where_str += " AND publication_year = #{params[:publication_year].to_i}"
+    end
 
+    unless params[:manifestation_identifier].blank?
+      where_str += " AND identifier = '#{params[:manifestation_identifier]}'"
+    end
+
+
+    @payments = Payment.joins(:order,:manifestation).where([where_str, "\%#{params[:manifestation_original_title]}\%"]).page(params[:page])
+
+    @selected_order_identifier = params[:order_identifier]
+    @selected_manifestation = params[:manifestation_identifier]
+    @selected_year = params[:publication_year]
+    @selected_title = params[:manifestation_original_title]
+
+    set_select_years
 
     respond_to do |format|
       format.html {render "index"}
     end
 
   end
+
+  def set_select_years
+    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @select_years = []
+    @years.each do |p|
+      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+    end
+
+  end
+
 
 private
   def get_order
