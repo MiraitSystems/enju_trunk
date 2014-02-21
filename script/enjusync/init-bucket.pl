@@ -89,7 +89,7 @@ my $file_sz = -s "$TarFileName.tar.gz";
 #my $chk_sum = $1;	# md5sumの値を分離
 print OUT "$file_sz\n";
 #print OUT "$chk_sum\n";
-print OUT "$dummymd5sum\n";
+print OUT "dummymd5sum\n";
 
 close(OUT);
 
