@@ -95,17 +95,26 @@ class ApprovalsController < ApplicationController
   def get_approval_report
     begin
       @approval = Approval.find(params[:param])
-      logger.info("####################### = #{params[:output]}")
-      if params[:output] == 'report' 
-      logger.info("############if##########")
+      case params[:output]
+      when 'report'
         file = ReportExport.get_approval_report_pdf(@approval)
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         send_data file.generate, :filename => "approval_report", :type => 'application/pdf', :disposition => 'attachment'
-      else
-      logger.info("############else############")
+      when 'postcard'
         file = ReportExport.get_approval_postcard_pdf(@approval)
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         send_data file.generate, :filename => "approval_postcard", :type => 'application/pdf', :disposition => 'attachment'
+      when 'request', 'refuse'
+        #TODO ファイル名の変更箇所　:filename => ここにファイル名
+        file_name = 'sample_request' if params[:output] == 'request'
+        file_name = 'refusal_latter' if params[:output] == 'refuse'
+        file = ReportExport.get_approval_donation_pdf(@approval, file_name)
+        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+      when 'usually', 'sample', 'collection'
+        #TODO ファイル名の変更箇所　:filename => ここにファイル名
+        file_name = 'donation_request_' + params[:output] 
+        file = ReportExport.get_approval_donation_pdf(@approval, file_name)
+        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
       end
     rescue Exception => e
       flash[:error] = I18n.t('page.error_file')

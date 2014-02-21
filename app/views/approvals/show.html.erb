@@ -203,6 +203,13 @@
     <ul>
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.approval_report')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'report' %></li>
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_postcard')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'postcard' %>
+      
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.sample_request')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'request' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_usually')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'usually' %>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_sample')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'sample' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_collection')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'collection' %>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.refusal_latter')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'refuse' %></li>
+
     <ul>
   </div>
   <% end %>

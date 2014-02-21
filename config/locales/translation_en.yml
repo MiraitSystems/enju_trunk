@@ -1643,7 +1643,12 @@ en:
           replied_donate_request: Replied donate request
           all_process_end: All process end
         donation_postcard: Donation postcard
-        approval_report: approval report
+        approval_report: Approval report
+        sample_request: Sample request
+        donation_request_usually: Donation request usually
+        donation_request_sample: Donation request sample
+        donation_request_collection: Donation request collection
+        refusal_latter: Refusal_latter
       approval_extext:
         value: Value
         created_by: Created by
