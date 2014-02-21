@@ -21,16 +21,18 @@
       <%# 詳細の項目表示 %>
       <div id="detail">
         <table>
+        <%# 表示をしない項目の設定 %>
+        <%#- omit_display = ['size','publication_place','subjects','creators','publishers']-%>
         <%- @nacsis_cat.detail.each_key do |key| -%>
+          <%#- next if omit_display.include?(key.to_s) -%>
           <tr>
             <td style="width: 200px"><%= t('activerecord.attributes.nacsis_user_request.'+key.to_s) -%></td>
           <%- case key -%>
-          <%- when :publisher, :subject -%>
+          <%- when :publisher_info, :subject -%>
             <td style="width: 490px"><%= @nacsis_cat.detail[key].join(", ") -%></td>
           <%- when :title_language, :text_language, :pub_country -%>
             <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
-          <%- when :author_heading, :isbn, :price, :wrong_isbn,
-                   :title_alternative_transcription, :publication_place, :ndc -%>
+          <%- when :author_heading, :title_alternative_transcription, :publication_place -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
           <%- else -%>
             <td><%= @nacsis_cat.detail[key] -%></td>

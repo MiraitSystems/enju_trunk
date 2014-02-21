@@ -288,25 +288,36 @@ class NacsisCat
     end
   end
 
-  def price
-    if book?
-      map_attrs(@record['VOLG'], 'PRICE').compact
-    else
-      nil
-    end
-  end
-
-  def xisbn
-    if book?
-      map_attrs(@record['VOLG'], 'XISBN').compact
-    else
-      nil
-    end
-  end
-
   def issn
     if serial?
       @record['ISSN']
+    else
+      nil
+    end
+  end
+
+  def volume_info
+    if book?
+      map_attrs(@record['VOLG']) { |volg|
+        {:vol => volg['VOL'], :isbn => volg['ISBN'], :wrong_isbn => volg['XISBN'], :price => volg['PRICE']}
+      }
+    else
+      nil
+    end
+  end
+
+  def classification_info
+    cls = @record['CLS']
+    return nil if serial? || cls.nil?
+    case true
+    when cls.is_a?(Hash)
+      { cls['CLSK'] => cls['CLSD'] }
+    when cls.is_a?(Array)
+      hash = {}
+      cls.each do |cl|
+        hash.store(cl['CLSK'], cl['CLSD'])
+      end
+      hash
     else
       nil
     end
@@ -349,7 +360,7 @@ class NacsisCat
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
       :subject_heading_reading_alternative => @record['TR'].try(:[], 'TRVR'),
       :title_alternative_transcription => map_attrs(@record['VT'], 'VTVR').compact.uniq,
-      :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
+      :publisher_info => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
       :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
       :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
@@ -366,26 +377,28 @@ class NacsisCat
           al['AHDNG'] || al['AHDNGR']
         end
       end.compact,
-      :subject => map_attrs(@record['SH'], 'SHD'),
+      :creators => map_attrs(@record['AL']) do |al|
+        {:id => al['AID'], :name => al['AHDNG'], :reading => al['AHDNGR']}
+      end,
+      :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
+      :subject => map_attrs(@record['SH'], 'SHD').compact.uniq,
+      :subjects => map_attrs(@record['SH']) do |sh|
+        {:name => sh['SHD'], :reading => sh['SHR'], :type => sh['SHK']}
+      end,
       :note => if @record['NOTE'].is_a?(Array)
           @record['NOTE'].compact.join(" ")
         else
           @record['NOTE']
         end,
       :marc => @record['MARCID'],
-      :classmark => if book?
-          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(";")
-        else
-          nil
-        end,
     }.tap do |hash|
-        if book?
-          hash[:isbn] = isbn
-          hash[:wrong_isbn] = xisbn
-          hash[:price] = price
-        else
-          hash[:issn] = issn
-        end
+      if book?
+        hash[:cls_info] = classification_info
+        hash[:vol_info] = volume_info
+        hash[:ptb_info] = @record['PTBL']
+      else
+        hash[:issn] = issn
+      end
     end
   end
 

@@ -1505,21 +1505,21 @@ class Manifestation < ActiveRecord::Base
           attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
           attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
           attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
-          attrs[:ndc] = search_clasification(nacsis_info[:classmark], "NDC")
-          attrs[:isbn] = nacsis_info[:isbn].try(:join, ",")
-          attrs[:price_string] = nacsis_info[:price].try(:join, ",")
-          attrs[:wrong_isbn] = nacsis_info[:wrong_isbn].try(:join, ",")
-          attrs[:issn] = nacsis_info[:issn]
           attrs[:note] = nacsis_info[:note]
           attrs[:marc_number] = nacsis_info[:marc]
           attrs[:pub_date] = nacsis_info[:publish_year]
           attrs[:size] = nacsis_info[:size]
+
+          # NDCは最新のバージョンのものを検索して設定する。
+          attrs[:ndc] = search_clasification(nacsis_info[:cls_info], "NDC")
+
           # 出版国がnilの場合、unknownを設定する。
           if nacsis_info[:pub_country]
             attrs[:country_of_publication] = nacsis_info[:pub_country]
           else
             attrs[:country_of_publication] = Country.where(:name => 'unknown').first
           end
+
           # 和書または洋書を設定し、同時に言語も設定する。
           # テキストの言語がnilの場合、未分類、不明を設定する。
           attrs[:languages] = []
@@ -1534,24 +1534,70 @@ class Manifestation < ActiveRecord::Base
             attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
             attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
           end
+
+          # 関連テーブル：著者の設定
+          attrs[:creators] = []
+          nacsis_info[:creators].each do |creator|
+            if creator[:id].blank?
+              patron =
+                Patron.where(:full_name => creator[:name].to_s).first_or_create do |p|
+                  if p.new_record?
+                    p.full_name_transcription = creator[:reading].to_s
+                  end
+                end
+            else
+              # 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
+              patron = Patron.where(:full_name => creator[:name].to_s).first
+              if patron.blank?
+                # ここで取得する
+                patron = Patron.create(:full_name => creator[:name].to_s)
+              end
+            end
+          attrs[:creators] << patron
+          end
+
+          # 関連テーブル：出版者の設定
+          attrs[:publishers] = []
+          nacsis_info[:publishers].each do |publisher|
+            attrs[:publishers] << Patron.where(:full_name => publisher.to_s).first_or_create
+          end
+
+          # 関連テーブル：件名の設定
+          attrs[:subjects] = []
+          nacsis_info[:subjects].each do |subject|
+            subject_type = SubjectType.where(:name => subject[:type]).first
+            subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
+            if subject[:name].present? && subject_type
+              sub = Subject.where(["term = ? and subject_type_id = ?", subject[:name].to_s, subject_type.id]).first
+              if sub
+                attrs[:subjects] << sub
+              else
+                attrs[:subjects] << Subject.create(:term => subject[:name], :subject_type_id => subject_type.id)
+              end
+            end
+          end
+
+          # 関連テーブル：ISBNの設定
+          identifier_type = IdentifierType.where(:name => 'isbn').first
+          if identifier_type
+            attrs[:identifiers] = []
+            nacsis_info[:vol_info].each do |vol_info|
+              attrs[:identifiers] << Identifier.create(:body => vol_info[:isbn], :identifier_type_id => identifier_type.id) if vol_info[:isbn]
+            end
+          end
         end
 
         new(attrs)
       end
 
-      def search_clasification(classmark, key)
-        return nil if classmark.blank? or key.blank?
-        class_name = classmark.split(/[:;]/,-1) rescue[]
-        class_hash = Hash[*class_name]
+      def search_clasification(cls_hash, key)
+        return nil if cls_hash.blank? or key.blank?
         if key == "NDC"
-          ndc_array = ["NDC9","NDC8","NDC7","NDC6","NDC"]
-          ndc_array.each do |ndc|
-            unless class_hash[ndc].blank?
-              return class_hash[ndc]
-            end
+          ["NDC9","NDC8","NDC7","NDC6","NDC"].each do |ndc|
+            return cls_hash[ndc] if cls_hash[ndc].present?
           end
         else
-          return class_hash[key]
+          return cls_hash[key]
         end
       end
   end
