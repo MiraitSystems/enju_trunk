@@ -33,7 +33,6 @@ class Version < ActiveRecord::Base
     end
 
     def import_for_incremental_synchronization!(dump)
-      logfile = "#{Rails.root}/log/sync_import.log"
       last_processed = current_proccessing = nil
       item_attributes = nil
 
@@ -63,57 +62,42 @@ class Version < ActiveRecord::Base
 
         model_class = version.item_type.constantize
         event = version.event
-        begin
-          case event
-          when 'destroy'
-            record = model_class.find(version.item_id) rescue nil
-            record.destroy if record 
-            item_attributes = nil
-            last_processed = current_proccessing
+        case event
+        when 'destroy'
+          record = model_class.find(version.item_id) rescue nil
+          record.destroy if record
 
-          when 'create', 'update'
-            if next_version
-              item_attributes = next_version.reify.attributes
-            else
-              # PaperTrailによる「その次」の記録がない場合、
-              # そのレコードの「最新」の状態を別に取得する。
-              item_attributes = dump[:latest][version.item_type][version.item_id]
-            end
+          item_attributes = nil
+          last_processed = current_proccessing
 
-            if event == 'update'
-              # 復元対象となるレコードの
-              # 現能の状態を取得してそれを更新する。
-              current = model_class.find(item_attributes['id']) rescue nil
-              if current
-                copy_attributes(current, item_attributes)
-                current.save! 
-                last_processed = current_proccessing
-                next
-              end
-            end
+        when 'create', 'update'
+          if next_version
+            item_attributes = next_version.reify.attributes
+          else
+            # PaperTrailによる「その次」の記録がない場合、
+            # そのレコードの「最新」の状態を別に取得する。
+            item_attributes = dump[:latest][version.item_type][version.item_id]
+          end
 
-            # レコードがないので作成する
-            transaction do
-              created = model_class.create! do |r|
-                copy_attributes(r, item_attributes)
-                incremental_synchronization_hook(:before_create, r)
-              end
-              incremental_synchronization_hook(:after_create, created)
-            end
+          if event == 'update'
+            # 復元対象となるレコードの現在の状態を取得する
+            record = model_class.find(item_attributes['id']) rescue nil
+          end
 
-            last_processed = current_proccessing
-          end # case event
+          unless record
+            # レコード作成イベントであるか、または
+            # 既存レコードが見付からないので新たにレコードを作成する
+            record = model_class.new
+          end
 
-          Sunspot.commit
-        rescue Exception => e
-          time = Time.now
-          str = "#{time}: version.id => #{version.id}, version.item_type => #{version.item_type}, version.item_id => #{version.item_id}, version.event => #{version.event}"
-          File.open logfile, 'a' do |f|
-            f.puts str
-            f.puts e
-            f.puts
-          end 
-        end
+          transaction do
+            save_for_import(record, item_attributes, version)
+          end
+
+          last_processed = current_proccessing
+        end # case event
+
+        Sunspot.commit
       end # dump[:versions].each
 
       {
@@ -125,13 +109,9 @@ class Version < ActiveRecord::Base
         failed_event_id: nil,
       }
     rescue => ex
-      failed_event = {
-        event_type: current_proccessing.event,
-        item_type: current_proccessing.item_type,
-        item_id: current_proccessing.item_id,
-        item_attributes: item_attributes,
-      }
+      failed_event = event_summary(current_proccessing, item_attributes)
       logger.warn "import failed on \"#{failed_event[:event_type]} #{failed_event[:item_type]}\##{failed_event[:item_id]}\" (Version\##{current_proccessing.id}): #{ex.try(:message)} (#{ex.class})"
+      logger.debug "\t" + ex.backtrace.join("\n\t") if ex.backtrace
       {
         success: false,
         exception: {
@@ -150,6 +130,8 @@ class Version < ActiveRecord::Base
     end
 
     private
+
+      IMPORT_LOGFILE = File.join(Rails.root, 'log', 'sync_import.log')
 
       NON_PERSONAL_ATTRIBUTES = %w(
         id
@@ -179,6 +161,11 @@ class Version < ActiveRecord::Base
                 value = nil
               end
             end
+            if value.is_a?(Time)
+              # Marshalの際に "year too big to marshal" 例外が
+              # 起きるのを回避するためDateTimeに変換する
+              value = value.to_datetime
+            end
             hash[name] = value
           end
         end
@@ -207,6 +194,40 @@ class Version < ActiveRecord::Base
           next if c == "lock_version"
           record.__send__(:"#{c}=", attributes[c])
         end
+      end
+
+      def save_for_import(record, attrs, version)
+        call_hook = record.new_record? ? true : false
+        incremental_synchronization_hook(:before_create, record) if call_hook
+
+        copy_attributes(record, attrs)
+        begin
+          record.save!
+
+        rescue ActiveRecord::RecordInvalid => ex
+          failed_event = event_summary(version, attrs)
+          logger.warn "ignored validation error on \"#{failed_event[:event_type]} #{failed_event[:item_type]}\##{failed_event[:item_id]}\" (Version\##{version.id}): #{ex.try(:message)} (#{ex.class})"
+
+          File.open(IMPORT_LOGFILE, 'a') do |f|
+            f.puts "#{Time.now}: version.id => #{version.id}, version.item_type => #{failed_event[:item_type]}, version.item_id => #{failed_event[:item_id]}, version.event => #{failed_event[:event_type]}"
+            f.puts ex
+            f.puts
+          end
+
+        ensure
+          incremental_synchronization_hook(:after_create, record) if call_hook
+        end
+
+        record
+      end
+
+      def event_summary(version, attrs)
+        {
+          event_type: version.event,
+          item_type: version.item_type,
+          item_id: version.item_id,
+          item_attributes: attrs,
+        }
       end
 
       def incremental_synchronization_hook(hook, record)
