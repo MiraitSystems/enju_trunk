@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-namespace :enju do
+namespace :enju_sakura do
   namespace :sync do
     desc 'export for synchronization'
     task :export => :environment do
@@ -38,6 +38,8 @@ namespace :enju do
 
     desc 'import for synchronization'
     task :import => :environment do
+      puts "import job start"
+
       unless ENV['DUMP_FILE']
         fail 'please specify DUMP_FILE=path/to/file'
       end
@@ -74,6 +76,7 @@ namespace :enju do
         failed_event = status[:failed_event]
         fail "import failed on \"#{failed_event[:event_type]} #{failed_event[:item_type]}\##{failed_event[:item_id]}\" (Version\##{status[:failed_event_id]}): #{status[:exception][:message]} (#{status[:exception][:class].name})"
       end
+      puts "end import job succes"
     end
   end
 end

@@ -1,4 +1,5 @@
 require 'digest/sha1'
+require 'net/ftp'
 
 SCRIPT_ROOT = "#{Rails.root.to_s}/script/enjusync"
 INIT_BUCKET = "#{SCRIPT_ROOT}/init-bucket.pl"
@@ -6,9 +7,10 @@ SEND_BUCKET = "#{SCRIPT_ROOT}/send-bucket.pl"
 RECV_BUCKET = "#{SCRIPT_ROOT}/recv-bucket.pl"
 GET_STATUS_FILE = "#{SCRIPT_ROOT}/get-statusfile.pl"
 
-DUMPFILE_PREFIX = "/var/enjusync"
+DUMPFILE_PREFIX = "/enju/enjusync"
 DUMPFILE_NAME = "enjudump.marshal"
-PERLBIN = "/usr/bin/perl"
+#PERLBIN = "/usr/bin/perl"
+PERLBIN = "perl"
 STATUS_FILE = "#{DUMPFILE_PREFIX}/work/status.marshal"
 
 $enju_log_head = ""
@@ -21,16 +23,16 @@ end
 
 def ftpsyncpush(last_id)
   taglogger "call task [init_backet] start"
-  sh "#{PERLBIN} #{INIT_BUCKET} #{last_id}"
+  sh "#{PERLBIN}","#{INIT_BUCKET}","#{last_id}"
   taglogger "call task [init_backet] end"
 
   taglogger "call task [send_backet] start"
-  sh "#{PERLBIN} #{SEND_BUCKET}"
+  sh "#{PERLBIN}","#{SEND_BUCKET}"
   taglogger "call task [send_backet] end"
 end
 
-namespace :enju_trunk do
-  namespace :sync do
+namespace :enju_sakura do
+  namespace :sync_export do
     desc 'sync first'
     task :first => :environment do
       $enju_log_head = "sync::first"
@@ -57,13 +59,13 @@ namespace :enju_trunk do
       FileUtils.mkdir_p(dumpfiledir)
       taglogger "mkdir_p end"
 
-      taglogger "call task [enju::sync::export] start"
+      taglogger "call task [enju_sakura::sync::export] start"
 
       ENV['EXPORT_FROM'] = last_event_id.to_s
       ENV['DUMP_FILE'] = dumpfile
-      Rake::Task["enju:sync:export"].invoke
+      Rake::Task["enju_sakura:sync:export"].invoke
 
-      taglogger "call task [enju::sync::export] end"
+      taglogger "call task [enju_sakura::sync::export] end"
 
       Dir::chdir(SCRIPT_ROOT)  
       ftpsyncpush(last_event_id) 
@@ -88,9 +90,9 @@ namespace :enju_trunk do
       Dir::chdir(SCRIPT_ROOT)  
       taglogger "call task [get_status_file] start"
       sh "#{PERLBIN} #{GET_STATUS_FILE}"
+
       taglogger "call task [get_status_file] end"
 
-      #
       taglogger "mkdir_p begin"
       FileUtils.mkdir_p(dumpfiledir)
       taglogger "mkdir_p end"
@@ -98,16 +100,16 @@ namespace :enju_trunk do
       # b.同期データを出力
       ENV['STATUS_FILE'] = STATUS_FILE
       ENV['DUMP_FILE'] = dumpfile
-      Rake::Task["enju:sync:export"].invoke
+      Rake::Task["enju_sakura:sync:export"].invoke
 
       # c.バケット作成, d.データ転送
       Dir::chdir(SCRIPT_ROOT)  
-      ftpsyncpush(last_id) 
+      ftpsyncpush(last_id)
     end
 
     desc 'Scheduled process'
     task :scheduled_import => :enviroment do
-      Rake::Task["enju:sync:import"].invoke
+      Rake::Task["enju_sakura:sync:import"].invoke
     end
   end
 end

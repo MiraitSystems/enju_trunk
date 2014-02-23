@@ -15,7 +15,7 @@ use Getopt::Std;
 use Net::FTP;
 use Cwd;
 
-my $debug = 0;
+my $debug = 1;
 getopts('d');
 if ( $opt_d ) { $debug = 1; }
 
@@ -29,9 +29,9 @@ require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 my $cur_dir = Cwd::cwd();	# カレントディレクトリ
 my $get_bucket = "";
 my $ctrl_file = "";
-my $snd_host = "localhost";
+my $snd_host = "NPALIBWEB";
 my $ftp_user = "enju";
-my $ftp_pass = "password";
+my $ftp_pass = "Npaftp14";
 my $send_stat = "";
 
 # 引数のチェック
@@ -70,7 +70,7 @@ $ftp->pasv();
 $ftp->binary;
 
 # バケットのあるディレクトリへ移動
-$ftp->cwd("$RecvDir");
+#$ftp->cwd("$RecvDir");
 if ($debug) {printf "current dir = %s\n", $ftp->pwd();}
 
 # 受信開始
@@ -78,7 +78,6 @@ if ($debug) {printf "current dir = %s\n", $ftp->pwd();}
 wrt_log($pname, 'info', "START receive status.marshal");
 
 # 該当する status.marshal を検索
-
 my @file_lst = $ftp->ls('*');
 my @imp_lst = grep(/^\d*\/\d+.*-IMP-\d+\.ctl/, @file_lst);
 
@@ -101,7 +100,7 @@ $get_bucket = $1;
 if ($debug) {print "get_bucket = $get_bucket\n";}
 
 # 該当するバケットへ移動
-$ftp->cwd("$get_bucket");
+#$ftp->cwd("$get_bucket");
 if ($debug) {printf "current dir = %s\n", $ftp->pwd();}
 
 # status.marshal を取得
