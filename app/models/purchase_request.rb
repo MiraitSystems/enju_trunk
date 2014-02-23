@@ -10,8 +10,8 @@ class PurchaseRequest < ActiveRecord::Base
   scope :ordered, where("state = ordered")
 
   belongs_to :user, :validate => true
-  has_one :order, :dependent => :destroy
-  has_one :order_list, :through => :order
+#  has_one :order, :dependent => :destroy
+#  has_one :order_list, :through => :order
   belongs_to :manifestation
 
   validates_associated :user
@@ -50,9 +50,9 @@ class PurchaseRequest < ActiveRecord::Base
     string :url
     integer :price
     integer :user_id
-    integer :order_list_id do
-      order_list.id if order_list
-    end
+#    integer :order_list_id do
+#      order_list.id if order_list
+#    end
     time :pub_date do
       date_of_publication
     end
@@ -60,9 +60,9 @@ class PurchaseRequest < ActiveRecord::Base
     time :accepted_at
     time :denied_at
     string :state
-    boolean :ordered do
-      order_list.try(:ordered_at).present? ? true : false
-    end
+#    boolean :ordered do
+#      order_list.try(:ordered_at).present? ? true : false
+#    end
   end
 
   paginates_per 10
@@ -191,12 +191,12 @@ class PurchaseRequest < ActiveRecord::Base
           created_at = ""
           created_at = purchase_request.created_at.strftime("%Y%m%d") if purchase_request.created_at
           row << created_at
-        when :title
-          order_list_title = purchase_request.order_list.title rescue ""
-          row << order_list_title
-        when :bookstore
-          order_list_bookstore = purchase_request.order_list.bookstore.name rescue ""
-          row << order_list_bookstore
+#        when :title
+#          order_list_title = purchase_request.order_list.title rescue ""
+#          row << order_list_title
+#        when :bookstore
+#          order_list_bookstore = purchase_request.order_list.bookstore.name rescue ""
+#          row << order_list_bookstore
         end
       end
       data << '"' + row.join("\"\t\"") + "\"\n"
