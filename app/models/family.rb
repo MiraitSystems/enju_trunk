@@ -52,7 +52,7 @@ class Family < ActiveRecord::Base
             row.item(:line_member).style(:border_width, 0.5) if family.id == before_family_id
             row.item(:line_member).style(:border_color, '#bfbfbf') if family.id == before_family_id
             users.each_with_index do |user, i|
-              row.item("member#{i}").value(user.patron.full_name) 
+              row.item("member#{i}").value(user.agent.full_name) 
             end
           end
           before_family_id = family.id
@@ -83,7 +83,7 @@ class Family < ActiveRecord::Base
       row = []
       row << family.id
       family.users.each do |user|
-        row << user.patron.full_name
+        row << user.agent.full_name
       end
       data << '"'+row.join("\"\t\"")+"\"\n"
     end

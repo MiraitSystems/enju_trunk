@@ -30,14 +30,14 @@ xml.tag! "OAI-PMH", :xmlns => "http://www.openarchives.org/OAI/2.0/",
               "xmlns:oai_dc" => "http://www.openarchives.org/OAI/2.0/oai_dc/",
               "xmlns:dc" => "http://purl.org/dc/elements/1.1/" do
               xml.tag! "dc:title", manifestation.original_title
-              manifestation.creators.readable_by(current_user).each do |patron|
-                xml.tag! "dc:creator", patron.full_name
+              manifestation.creators.readable_by(current_user).each do |agent|
+                xml.tag! "dc:creator", agent.full_name
               end
-              manifestation.contributors.readable_by(current_user).each do |patron|
-                xml.tag! "dc:contributor", patron.full_name
+              manifestation.contributors.readable_by(current_user).each do |agent|
+                xml.tag! "dc:contributor", agent.full_name
               end
-              manifestation.publishers.readable_by(current_user).each do |patron|
-                xml.tag! "dc:publisher", patron.full_name
+              manifestation.publishers.readable_by(current_user).each do |agent|
+                xml.tag! "dc:publisher", agent.full_name
               end
               manifestation.subjects.each do |subject|
                 xml.tag! "dc:subject", subject.term

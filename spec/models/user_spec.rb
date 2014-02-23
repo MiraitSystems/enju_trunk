@@ -130,8 +130,8 @@ describe User do
       it '' # TODO:
     end
 
-    describe 'patron' do
-      # validates_associated :patron
+    describe 'agent' do
+      # validates_associated :agent
       it '' #TODO
     end
     describe 'user_group' do
@@ -231,7 +231,7 @@ describe User do
     it '' #TODO immediately
   end
 
-  describe '#set_role_and_patron' do
+  describe '#set_role_and_agent' do
     #TODO: 何も return していない。不要なら削除すること
     it ''
   end
@@ -251,7 +251,7 @@ describe User do
     it '' #TODO immediately
   end 
 
-  describe '#index_patron' do
+  describe '#index_agent' do
     it '' #TODO 
   end
 
@@ -469,8 +469,8 @@ describe User do
 464
 465     logger.debug "create_with_params create-10"
 466
-467     if user.patron_id
-468       user.patron = Patron.find(user.patron_id) rescue nil
+467     if user.agent_id
+468       user.agent = Agent.find(user.agent_id) rescue nil
 469     end
 470     logger.debug "create_with_params end."
 471     user
@@ -834,9 +834,9 @@ describe User do
   end
 
   it "should send_message" do
-    assert users(:librarian1).send_message('reservation_expired_for_patron', :manifestations => users(:librarian1).reserves.not_sent_expiration_notice_to_patron.collect(&:manifestation))
+    assert users(:librarian1).send_message('reservation_expired_for_agent', :manifestations => users(:librarian1).reserves.not_sent_expiration_notice_to_agent.collect(&:manifestation))
     users(:librarian1).reload
-    users(:librarian1).reserves.not_sent_expiration_notice_to_patron.should be_empty
+    users(:librarian1).reserves.not_sent_expiration_notice_to_agent.should be_empty
   end
 
   it "should lock all expired users" do

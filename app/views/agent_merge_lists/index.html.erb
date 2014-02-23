@@ -1,0 +1,36 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.agent_merge_list')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.agent_merge_list.title') -%></th>
+    <th><%= t('activerecord.attributes.agent_merge.agents_count') -%></th>
+    <th><%= t('page.created_at') -%></th>
+    <th></th>
+  </tr>
+
+<%- @agent_merge_lists.each do |agent_merge_list| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to agent_merge_list.title, agent_merge_list_agents_path(agent_merge_list, :mode => :add) -%></td>
+    <td><%= agent_merge_list.agent_merges.size -%></td>
+    <td><%= l(agent_merge_list.created_at) -%></td>
+    <td>
+      <%= link_to t('activerecord.attributes.agent_merge_list.title') + t('page.edit'), edit_agent_merge_list_path(agent_merge_list) -%>
+      <%= link_to t('page.destroy'), agent_merge_list, :confirm => t('page.are_you_sure'), :method => :delete -%>
+  </td>
+  </tr>
+<%- end -%>
+</table>
+
+<%= paginate(@agent_merge_lists) -%>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.agent_merge_list')), new_agent_merge_list_path -%></li>
+    <li><%= link_to t('page.back'), agents_path -%></li>
+  </ul>
+</div>

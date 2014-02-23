@@ -1,0 +1,95 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.derivation') %><%= t('page.listing', :model => t('activerecord.models.agent')) %></h1>
+<div id="content_list">
+  <h2 class="resource_title">
+    <p id="notice"><%= notice %></p>
+    [P]
+    <%= link_to agent.full_name, agent -%>
+  </h2>
+  <%= form_for :agents, :url => agent_agents_path(agent), :html => {:method => 'get'} do %>
+    <p>
+      <%= t('page.search_term') %>:
+      <%= search_field_tag 'query', h(@query),
+        {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} %>
+      <% if can? :update, agent %>
+        <%= render 'page/add' %>
+      <% end %>
+      <%= submit_tag t('page.search') %>
+    </p>
+  <% end %>
+
+  <table class="index">
+    <tr>
+      <th><%= t('activerecord.attributes.agent.full_name') %></th>
+      <th><%= t('activerecord.models.agent_type') %></th>
+      <th><%= t('activerecord.attributes.agent.date_of_birth') %></th>
+      <th><%= t('activerecord.models.agent_relationship_type') %></th>
+      <th></th>
+    </tr>
+
+    <% @agents.each do |p| %>
+      <% if p.user.blank? %>
+        <tr class="line<%= cycle("0", "1") %>">
+          <td>
+            <%= link_to p.full_name, p %><br />
+            <%= p.full_name_transcription %>
+          </td>
+          <td><%= p.agent_type.display_name.localize %></td>
+          <td><%= l(p.date_of_birth, :format => :only_date) if p.date_of_birth %></td>
+          <td><%= agent_relationship_type_show(agent, p.id) %></td>
+          <td>
+            <% if can? :edit, p %>
+              <% if params[:mode] == "add" %>
+                <%= link_to image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('agent.add_derivation'), :title => t('agent.add_derivation')),
+                    new_agent_agent_relationship_path(agent, set_agent_params.merge(:child_id => p.id)) unless agent.derived_agents.include?(p) or agent.original_agents.include?(p) or p == agent %>
+              <% else %>
+                <% agent_relationship = agent_relationship_anyone(agent, p.id) %>
+                <%= link_to image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')),
+                    edit_agent_relationship_path(agent_relationship, set_agent_params(agent.id)) %>
+                <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')),
+                    agent_relationship_path(agent_relationship, set_agent_params(agent.id)),
+                    :confirm => t('page.are_you_sure'), :method => :delete %>
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </table>
+  <%= paginate(@agents) %>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <h3>
+    <%= link_to h("#{t('page.total')}: #{@count[:query_result]}"),
+        url_for(params.merge(:action => 'index', :library => nil, :role => nil, :agent_type => nil, :agent_relationship_type => nil, :parent_child_relationship => nil))  %>
+  </h3>
+  <% if @count[:query_result] > 0 %>
+    <%= render 'agent_type_facet' %>
+  <% end %>
+  <% unless params[:mode] == "add" %>
+    <%= render 'relationship_type_facet' if @agent.agents.present? %>
+  <% end %>
+  <br />
+  <ul>
+    <% if can? :create, Agent %>
+      <li><%= link_to t('page.listing', :model => t('activerecord.models.agent')), agents_path %></li>
+      <li><%= link_to t('agent.add'), new_agent_path %></li>
+      <li><%= link_to t('activerecord.models.agent_merge'), agent_merge_lists_path %></li>
+    <% end %>
+  </ul>
+  <%- if can? :create, Agent -%>
+    <div id="iconmenu" class="ui-corner-all">
+      <strong><%= t('tooltip.icons_info') -%></strong>
+      <ul>
+        <% if params[:mode] == "add" %>
+          <li><%= image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('agent.add_derivation'), :title => t('agent.add_derivation')) -%>:&nbsp;<%=t('agent.add_derivation')-%></li>
+        <% else %>
+          <li><%= image_tag('icons/page_white_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.edit')) -%>:&nbsp;<%=t('page.edit')-%></li>
+          <li><%= image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')) -%>:&nbsp;<%=t('page.destroy')-%></li>
+        <% end %>
+      </ul>
+    </div>
+  <%- end -%>
+</div>

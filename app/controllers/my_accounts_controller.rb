@@ -10,8 +10,8 @@ class MyAccountsController < ApplicationController
     end
 
     session[:user_return_to] = nil
-    unless @user.patron
-      redirect_to new_user_patron_url(@user); return
+    unless @user.agent
+      redirect_to new_user_agent_url(@user); return
     end
 
     @themes = Theme.where(publish: 0).order('position ASC').limit(10)
@@ -61,11 +61,11 @@ class MyAccountsController < ApplicationController
 =end
 #      if saved
       begin
-        # update patron
+        # update agent
         if params[:opac]
-          @user.patron.update_attributes!(params[:patron])
-          @user.patron.email = params[:user][:email] if params[:user] and params[:user][:email]
-          @user.patron.save!
+          @user.agent.update_attributes!(params[:agent])
+          @user.agent.email = params[:user][:email] if params[:user] and params[:user][:email]
+          @user.agent.save!
         end
   
         # update user
@@ -86,8 +86,8 @@ class MyAccountsController < ApplicationController
 #      else
       rescue 
         @user = current_user
-        if params[:opac] and @user.patron.errors
-          @user.patron.errors.each do |attr, msg|
+        if params[:opac] and @user.agent.errors
+          @user.agent.errors.each do |attr, msg|
             @user.errors.add(attr, msg)
           end
         end

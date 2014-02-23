@@ -41,12 +41,12 @@
   <div class="opac_sort_button_<%= params[:sort_by] == 'author' ? 'on' : 'off'%>">
     <% if params[:order] == 'asc' and params[:sort_by] == 'author'%>
       <%= link_to params.merge(:sort_by => 'author', :order => 'desc') do %>
-        <%= t('opac.search.sort', :target => t('patron.creator')) %>
+        <%= t('opac.search.sort', :target => t('agent.creator')) %>
         <img src="/assets/opac/arrow-down.png"/ style="width:20px;">
       <% end %>
     <% else %>
       <%= link_to params.merge(:sort_by => 'author', :order => 'asc') do %>
-        <%= t('opac.search.sort', :target => t('patron.creator')) %>
+        <%= t('opac.search.sort', :target => t('agent.creator')) %>
         <img src="/assets/opac/arrow-up.png"/ style="width:20px;">
       <% end %>
     <% end %>

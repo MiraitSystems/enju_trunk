@@ -13,20 +13,20 @@
   form_sub_header = nil
   need_to_render_add_mode_tags = false
   case
-  when @index_patron[:creator]
+  when @index_agent[:creator]
     form_type = :creator
-    form_opts = {:url => creator_manifestations_path(@index_patron[:creator]), :method => :get}
-    form_opts_ex = {:url => output_excelx_creator_manifestations_path(@index_patron[:creator])}
+    form_opts = {:url => creator_manifestations_path(@index_agent[:creator]), :method => :get}
+    form_opts_ex = {:url => output_excelx_creator_manifestations_path(@index_agent[:creator])}
     need_to_render_add_mode_tags = true if can?(:create, Create)
-  when @index_patron[:contributor]
+  when @index_agent[:contributor]
     form_type = :contributor
-    form_opts = {:url => contributor_manifestations_path(@index_patron[:contributor]), :method => :get}
-    form_opts_ex = {:url => output_excelx_contributor_manifestations_path(@index_patron[:contributor])}
+    form_opts = {:url => contributor_manifestations_path(@index_agent[:contributor]), :method => :get}
+    form_opts_ex = {:url => output_excelx_contributor_manifestations_path(@index_agent[:contributor])}
     need_to_render_add_mode_tags = true if can?(:create, Realize)
-  when @index_patron[:publisher]
+  when @index_agent[:publisher]
     form_type = :publisher
-    form_opts = {:url => publisher_manifestations_path(@index_patron[:publisher]), :method => :get}
-    form_opts_ex = {:url => output_excelx_publisher_manifestations_path(@index_patron[:publisher])}
+    form_opts = {:url => publisher_manifestations_path(@index_agent[:publisher]), :method => :get}
+    form_opts_ex = {:url => output_excelx_publisher_manifestations_path(@index_agent[:publisher])}
     need_to_render_add_mode_tags = true if can?(:create, Produce)
   when @manifestation
     form_type = :manifestation

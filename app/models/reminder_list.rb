@@ -56,8 +56,8 @@ class ReminderList < ActiveRecord::Base
 
     text :full_name do
       full_name = []
-      full_name << self.checkout.user.patron.full_name if self.try(:checkout).try(:user).try(:patron)
-      full_name << self.checkout.user.patron.full_name_transcription if self.try(:checkout).try(:user).try(:patron)
+      full_name << self.checkout.user.agent.full_name if self.try(:checkout).try(:user).try(:agent)
+      full_name << self.checkout.user.agent.full_name_transcription if self.try(:checkout).try(:user).try(:agent)
     end
 
     text :title do
@@ -104,7 +104,7 @@ class ReminderList < ActiveRecord::Base
             row.item(:checkout_id).value(reminder_list.checkout.id)
             row.item(:title).value(reminder_list.checkout.item.manifestation.original_title)
             row.item(:call_number).value(reminder_list.checkout.try(:item).try(:call_number))
-            row.item(:user).value(reminder_list.try(:checkout).try(:user).try(:patron).try(:full_name) + "(" + reminder_list.try(:checkout).try(:user_username) + ")") rescue nil
+            row.item(:user).value(reminder_list.try(:checkout).try(:user).try(:agent).try(:full_name) + "(" + reminder_list.try(:checkout).try(:user_username) + ")") rescue nil
             row.item(:state).value(reminder_list.status_name)
             row.item(:due_date).value(reminder_list.checkout.due_date)
             row.item(:number_of_day_overdue).value(reminder_list.checkout.day_of_overdue)
@@ -148,7 +148,7 @@ class ReminderList < ActiveRecord::Base
           when :call_number
             row << reminder_list.try(:checkout).try(:item).try(:call_number) || "" rescue ""
           when :user
-            row << (reminder_list.try(:checkout).try(:user).try(:patron).try(:full_name) + "(" + reminder_list.try(:checkout).try(:user_username) + ")" || "" rescue "")
+            row << (reminder_list.try(:checkout).try(:user).try(:agent).try(:full_name) + "(" + reminder_list.try(:checkout).try(:user_username) + ")" || "" rescue "")
           when :state
             row << reminder_list.try(:status_name) || "" rescue ""
           when :due_date 
@@ -174,9 +174,9 @@ class ReminderList < ActiveRecord::Base
       #report.start_new_page do |page|
       start_new_page :layout => File.join(Rails.root, 'report', 'reminder_postal_card_front.tlf') do |page|
         max_column = 16
-        page.item(:zip_code).value(user.patron.zip_code_1) if user.patron.zip_code_1
-        if user.patron.address_1
-          address = user.patron.address_1
+        page.item(:zip_code).value(user.agent.zip_code_1) if user.agent.zip_code_1
+        if user.agent.address_1
+          address = user.agent.address_1
           cnt, str_num = 0.0, 0
           while address.length > max_column
             address.length.times { |i|
@@ -201,7 +201,7 @@ class ReminderList < ActiveRecord::Base
         # space
         page.list(:list).add_row
         # name
-        name = user.patron.full_name
+        name = user.agent.full_name
         cnt, str_num = 0.0, 0
         while name.length > max_column
           name.length.times { |i|
@@ -228,7 +228,7 @@ class ReminderList < ActiveRecord::Base
       start_new_page do |page|
         page.item(:date).value(Time.now)
         page.item(:user_number).value(user.user_number) if user.user_number
-        page.item(:user).value(user.patron.full_name + " " + I18n.t('activerecord.attributes.reminder_list.honorific2')) if user.patron.full_name
+        page.item(:user).value(user.agent.full_name + " " + I18n.t('activerecord.attributes.reminder_list.honorific2')) if user.agent.full_name
         page.item(:message).value(SystemConfiguration.get("reminder_postal_card_message"))
         page.item(:library).value(LibraryGroup.system_name(@locale))
         library = Library.find(current_user.library_id) rescue nil
@@ -279,7 +279,7 @@ class ReminderList < ActiveRecord::Base
     report.start_new_page do |page|
       page.item(:date).value(Time.now)
       page.item(:user_number).value(user.user_number) if user.user_number
-      page.item(:user).value(user.patron.full_name + " " + I18n.t('activerecord.attributes.reminder_list.honorific2')) if user.patron.full_name
+      page.item(:user).value(user.agent.full_name + " " + I18n.t('activerecord.attributes.reminder_list.honorific2')) if user.agent.full_name
       page.item(:message).value(SystemConfiguration.get("reminder_letter_message"))
       page.item(:library).value(LibraryGroup.system_name(@locale))
       library = Library.find(current_user.library_id) rescue nil

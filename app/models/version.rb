@@ -154,23 +154,23 @@ class Version < ActiveRecord::Base
       NON_PERSONAL_ATTRIBUTES = %w(
         id
         created_at updated_at deleted_at
-        language_id country_id patron_type_id
+        language_id country_id agent_type_id
         required_role_id required_score
-        patron_identifier exclude_state
+        agent_identifier exclude_state
       )
 
       PERSONAL_ATTRIBUTE_MASK = {
         'full_name' => proc do |item_attributes|
-          "(Patron\##{item_attributes['id']})"
+          "(Agent\##{item_attributes['id']})"
         end,
       }
 
       def filterout_personal_attributes(item_type, item_attributes)
         item_attributes.dup.tap do |hash|
           hash.each_pair do |name, value|
-            # user_idがnilでないPatronレコードは
+            # user_idがnilでないAgentレコードは
             # 一部を除いた属性を空にする
-            if item_type == 'Patron' &&
+            if item_type == 'Agent' &&
                 item_attributes['user_id'].present? &&
                 !NON_PERSONAL_ATTRIBUTES.include?(name)
               if PERSONAL_ATTRIBUTE_MASK.include?(name)
@@ -215,11 +215,11 @@ class Version < ActiveRecord::Base
           if hook == :before_create
             class << record
               extend IncrementalSynchronization
-              hide_methods_for_incremental_synchronization(:create_shelf, :set_patron)
+              hide_methods_for_incremental_synchronization(:create_shelf, :set_agent)
             end
           elsif hook == :after_create
             class << record
-              revert_methods_for_incremental_synchronization(:create_shelf, :set_patron)
+              revert_methods_for_incremental_synchronization(:create_shelf, :set_agent)
             end
           end
         end

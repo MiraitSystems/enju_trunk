@@ -20,7 +20,7 @@ describe "approvals/show" do
       :approval_result => 9,
       :reason => 10,
       :donate_request_result => 11,
-      :reception_patron_id => 12
+      :reception_agent_id => 12
     ))
   end
 

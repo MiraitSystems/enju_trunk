@@ -5,7 +5,7 @@ class BookmarksControllerTest < ActionController::TestCase
     fixtures :bookmarks, :form_of_works, :content_types, :frequencies,
       :languages, :circulation_statuses, :users, :roles,
       :manifestations, :carrier_types, :tags, :taggings, :shelves, :items,
-      :creates, :realizes, :produces, :owns, :patrons, :patron_types
+      :creates, :realizes, :produces, :owns, :agents, :agent_types
 
   def test_guest_should_not_get_index
     get :index

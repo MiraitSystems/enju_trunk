@@ -14,7 +14,7 @@ describe ResourceImportFile do
       it "should be imported" do
         old_manifestations_count = Manifestation.count
         old_items_count = Item.count
-        old_patrons_count = Patron.count
+        old_agents_count = Agent.count
         old_import_results_count = ResourceImportResult.count
         @file.import_start.should eq({:manifestation_imported => 7, :item_imported => 6, :manifestation_found => 4, :item_found => 3, :failed => 5})
         manifestation = Item.where(:item_identifier => '11111').first.manifestation
@@ -23,7 +23,7 @@ describe ResourceImportFile do
         manifestation.publishers.second.full_name_transcription.should eq 'てすと5'
         Manifestation.count.should eq old_manifestations_count + 7
         Item.count.should eq old_items_count + 6
-        Patron.count.should eq old_patrons_count + 5
+        Agent.count.should eq old_agents_count + 5
         ResourceImportResult.count.should eq old_import_results_count + 16
         Item.find_by_item_identifier('10101').manifestation.creators.size.should eq 2
         # 以下2行に関しては、timestampで比較すると通らないため文字型変換してから比較をしている。
@@ -48,7 +48,7 @@ describe ResourceImportFile do
       it "should be imported" do
         old_manifestations_count = Manifestation.count
         old_items_count = Item.count
-        old_patrons_count = Patron.count
+        old_agents_count = Agent.count
         old_import_results_count = ResourceImportResult.count
         @file.import_start.should eq({:manifestation_imported => 7, :item_imported => 6, :manifestation_found => 4, :item_found => 3, :failed => 5})
         manifestation = Item.where(:item_identifier => '11111').first.manifestation
@@ -57,7 +57,7 @@ describe ResourceImportFile do
         manifestation.publishers.second.full_name_transcription.should eq 'てすと5'
         Manifestation.count.should eq old_manifestations_count + 7
         Item.count.should eq old_items_count + 6
-        Patron.count.should eq old_patrons_count + 5
+        Agent.count.should eq old_agents_count + 5
         ResourceImportResult.count.should eq old_import_results_count + 16
         Item.find_by_item_identifier('10101').manifestation.creators.size.should eq 2
         # 以下2行に関しては、timestampで比較すると通らないため文字型変換してから比較をしている。
@@ -81,10 +81,10 @@ describe ResourceImportFile do
 
       it "should be imported" do
         old_manifestations_count = Manifestation.count
-        old_patrons_count = Patron.count
+        old_agents_count = Agent.count
         @file.import_start
         Manifestation.count.should eq old_manifestations_count + 1
-        Patron.count.should eq old_patrons_count + 4
+        Agent.count.should eq old_agents_count + 4
       end
     end
   end

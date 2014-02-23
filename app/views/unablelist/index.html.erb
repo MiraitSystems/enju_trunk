@@ -21,7 +21,7 @@
     <%= hidden_field_tag :sort_by,     params[:sort_by] %>
     <%= hidden_field_tag :library,     params[:library]     if params[:library] %>
     <%= hidden_field_tag :role,        params[:role]        if params[:role] %>
-    <%= hidden_field_tag :patron_type, params[:patron_type] if params[:patron_type] %>
+    <%= hidden_field_tag :agent_type, params[:agent_type] if params[:agent_type] %>
     <%= submit_tag t('page.output_pdf', :model => t('page.listing', :model => t('activerecord.models.unablelist'))), :onclick => "push_submit('pdf');" %>
     <%= submit_tag t('page.output_tsv', :model => t('page.listing', :model => t('activerecord.models.unablelist'))), :onclick => "push_submit('tsv');" %>
     <br />
@@ -40,14 +40,14 @@
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'user_number', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'user_number', :order => 'desc')) -%>
     </th>
-    <th><%= t('activerecord.attributes.patron.full_name') %></th>
-    <th><%= t('activerecord.attributes.patron.telephone_number_1') %></th>
+    <th><%= t('activerecord.attributes.agent.full_name') %></th>
+    <th><%= t('activerecord.attributes.agent.telephone_number_1') %></th>
     <%- if false -%>
-      <th><%= t('activerecord.attributes.patron.extelephone_number_1') %></th>
-      <th><%= t('activerecord.attributes.patron.fax_number_1') %></th>
+      <th><%= t('activerecord.attributes.agent.extelephone_number_1') %></th>
+      <th><%= t('activerecord.attributes.agent.fax_number_1') %></th>
     <%- end -%>
     <%- if SystemConfiguration.get('use_birth_day') -%>
-      <th><%= t('activerecord.attributes.patron.date_of_birth') %></th> 
+      <th><%= t('activerecord.attributes.agent.date_of_birth') %></th> 
     <%- end -%>
     <th><%= t('activerecord.attributes.user.email') %></th>
   </tr>
@@ -55,14 +55,14 @@
       <tr class="line<%= cycle("0", "1") -%>">
         <td><%= link_to user.library.display_name, user.library -%></td>
         <td><%= link_to user.user_number if user.user_number -%></td>
-        <td><%= link_to user.try(:patron).try(:full_name), user -%></td>
-        <td><%= user.try(:patron).try(:telephone_number_1) -%></td>
+        <td><%= link_to user.try(:agent).try(:full_name), user -%></td>
+        <td><%= user.try(:agent).try(:telephone_number_1) -%></td>
         <%- if false -%>
-          <td><%= user.try(:patron).try(:extelephone_number_1) -%></td>
-          <td><%= user.try(:patron).try(:fax_number_1) -%></td>
+          <td><%= user.try(:agent).try(:extelephone_number_1) -%></td>
+          <td><%= user.try(:agent).try(:fax_number_1) -%></td>
         <%- end -%>
         <%- if SystemConfiguration.get('use_birth_day') -%>
-          <td><%= l(user.patron.date_of_birth, :format => :only_date) if user.try(:patron).try(:date_of_birth) -%></td>
+          <td><%= l(user.agent.date_of_birth, :format => :only_date) if user.try(:agent).try(:date_of_birth) -%></td>
         <%- end -%>
         <td><%= user.email -%></td>
       </tr>

@@ -1,0 +1,20 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+agent_relationship_type_00001:
+  id: 1
+  name: See also
+  display_name: "en:p:See also,c:See also from\r\nja:p:をも参照,c:よりも参照あり"
+  note: 
+  position: 1
+agent_relationship_type_00002:
+  id: 2
+  name: Member
+  display_name: "en:p:Organization,c:Member\r\nja:p:所属団体,c:メンバー"
+  note: 
+  position: 2
+agent_relationship_type_00003:
+  id: 3
+  name: Child
+  display_name: "en:p:Parent,c:Child\r\nja:p:親,c:子"
+  note: 
+  position: 3

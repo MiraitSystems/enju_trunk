@@ -141,7 +141,7 @@ describe ManifestationsController do
         before do
           Sunspot.remove_all!
 
-          patrons = [
+          agents = [
             ['青森県',             'あおもりけん'],           #0
               ['青森県弘前市',     'あおもりけんひろさきし'], #1
               ['青森県八戸市',     'あおもりけんはちのへし'], #2
@@ -161,21 +161,21 @@ describe ManifestationsController do
                 ['成田市　千葉県', 'なりたし　ちばけん'],     #16
           ].map do |n, t|
             FactoryGirl.create(
-              :patron, full_name: n, full_name_transcription: t)
+              :agent, full_name: n, full_name_transcription: t)
           end
 
           [
-            ['北海道',             'ほっかいどう',           patrons[0, 2]],
-              ['北海道札幌市',     'ほっかいどうさっぽろし', patrons[2, 1]],
-              ['北海道千歳市',     'ほっかいどうちとせし',   patrons[3, 1]],
-                ['根室市北海道',   'ねむろしほっかいどう',   patrons[4, 2]],
-            ['秋田県',             'あきたけん',             patrons[6, 3]],
-              ['秋田県能代市',     'あきたけんのしろし',     patrons[9, 2]],
-            ['群馬県',             'ぐんまけん',             patrons[12, 1]],
-              ['群馬県 前橋市',    'ぐんまけん まえばしし',  patrons[13, 1]],
-                ['前橋市 群馬県',  'まえばしし ぐんまけん',  patrons[14, 1]],
-              ['群馬県　高崎市',   'ぐんまけん　たかさきし', patrons[15, 2]],
-                ['高崎市　群馬県', 'たかさきし　ぐんまけん', patrons[16, 2]],
+            ['北海道',             'ほっかいどう',           agents[0, 2]],
+              ['北海道札幌市',     'ほっかいどうさっぽろし', agents[2, 1]],
+              ['北海道千歳市',     'ほっかいどうちとせし',   agents[3, 1]],
+                ['根室市北海道',   'ねむろしほっかいどう',   agents[4, 2]],
+            ['秋田県',             'あきたけん',             agents[6, 3]],
+              ['秋田県能代市',     'あきたけんのしろし',     agents[9, 2]],
+            ['群馬県',             'ぐんまけん',             agents[12, 1]],
+              ['群馬県 前橋市',    'ぐんまけん まえばしし',  agents[13, 1]],
+                ['前橋市 群馬県',  'まえばしし ぐんまけん',  agents[14, 1]],
+              ['群馬県　高崎市',   'ぐんまけん　たかさきし', agents[15, 2]],
+                ['高崎市　群馬県', 'たかさきし　ぐんまけん', agents[16, 2]],
           ].each do |o, t, p|
             m = FactoryGirl.create(
               :manifestation,
@@ -443,17 +443,17 @@ describe ManifestationsController do
               title_transcription: 'やまがたけんよねざわし',
               creators: [
                 FactoryGirl.create(
-                  :patron, full_name: '福島県郡山市',
+                  :agent, full_name: '福島県郡山市',
                   full_name_transcription: 'ふくしまけんこおりやまし'),
               ],
               contributors: [
                 FactoryGirl.create(
-                  :patron, full_name: '茨城県水戸市',
+                  :agent, full_name: '茨城県水戸市',
                   full_name_transcription: 'いばらきけんみとし'),
               ],
               publishers: [
                 FactoryGirl.create(
-                  :patron, full_name: '栃木県宇都宮市',
+                  :agent, full_name: '栃木県宇都宮市',
                   full_name_transcription: 'とちぎけんうつのみやし'),
               ],
               isbn: '9784010000007', isbn10: '4010000007',
@@ -474,17 +474,17 @@ describe ManifestationsController do
               title_transcription: 'あ',
               creators: [
                 FactoryGirl.create(
-                  :patron, full_name: '衣',
+                  :agent, full_name: '衣',
                   full_name_transcription: 'い'),
               ],
               contributors: [
                 FactoryGirl.create(
-                  :patron, full_name: '宇',
+                  :agent, full_name: '宇',
                   full_name_transcription: 'う'),
               ],
               publishers: [
                 FactoryGirl.create(
-                  :patron, full_name: '絵',
+                  :agent, full_name: '絵',
                   full_name_transcription: 'え'),
               ],
               isbn: '9784020000004', isbn10: '402000000X',

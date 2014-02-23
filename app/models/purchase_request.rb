@@ -120,8 +120,8 @@ class PurchaseRequest < ActiveRecord::Base
       case status
       when 'accepted'
         if self.user
-          if SystemConfiguration.get("send_message.purchase_request_accepted_for_patron")
-            message_template = MessageTemplate.localized_template('purchase_request_accepted_for_patron', self.user.locale)
+          if SystemConfiguration.get("send_message.purchase_request_accepted_for_agent")
+            message_template = MessageTemplate.localized_template('purchase_request_accepted_for_agent', self.user.locale)
             request = MessageRequest.new
             request.assign_attributes({ :sender => system_user, :receiver => self.user, :message_template => message_template }, :as => :admin)
             request.save_message_body(:purchase_request => Array[self], :user => self.user)

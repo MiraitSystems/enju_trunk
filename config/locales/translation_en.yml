@@ -5,11 +5,11 @@ en:
       abbreviation: Abbreviation
       library: Library
       question: Question
-      patron_import_file: Patron import file
+      agent_import_file: Agent import file
       circulation_status: Circulation status
       remove_reason: Remove reason
       inventory: Inventory
-      patron: Patron
+      agent: Agent
       user_note: Note
       feeds/app: Feeds/App
       feeds/persistence: Feeds/Persistence
@@ -22,7 +22,7 @@ en:
       subject_has_classification: Subject has classification
       expression: Expression
       language: Language
-      patron_merge_list: Patron merge list
+      agent_merge_list: Agent merge list
       user: User
       work_has_subject: Resource has subject
       picture_file: Picture file
@@ -63,7 +63,7 @@ en:
       content_type: Content type
       work_merge: Work merge
       aaws_response: Aaws response
-      patron_type: Patron type
+      agent_type: Agent type
       work_merge_list: Work merge list
       order: Order
       order_list: Order list
@@ -84,7 +84,7 @@ en:
       checkout: Checkout
       checkout_family: "Family's checkout"
       subscription: Subscription
-      patron_merge: Patron merge
+      agent_merge: Agent merge
       subject_related_term: Subject related term
       library_group: Library group
       attachment_file: Attachment file
@@ -123,10 +123,10 @@ en:
       unablelist: Unable
       subject_heading_type_has_subject: Subject heading type to subject relationship
       user_has_shelf: User to shelf relationship
-      patron_has_patron: Patron to patron relationship
+      agent_has_agent: Agent to agent relationship
       extent: Extent
       medium_of_performance: Medium of performance
-      patron_relationship_type: Patron relationship type
+      agent_relationship_type: Agent relationship type
       manifestation_relationship_type: Resource relationship type
       lending_policy: Lending policy
       nii_type: NII metadata type
@@ -141,10 +141,10 @@ en:
       import_request: Import request
       resource: Resource
       user_has_role: User and roles
-      patron_relationship: Patron relationship
+      agent_relationship: Agent relationship
       manifestation_relationship: Resource relationship
       resource_import_result: Resource Import Result
-      patron_import_result: Patron Import Result
+      agent_import_result: Agent Import Result
       series_statement_merge: Series statement merge
       series_statement_merge_list: Series statement merge list
       series_has_manifestation: Series statement to manifestation
@@ -268,14 +268,14 @@ en:
         shared: Shared
         solved: Solved
         answers_count: Answers count
-      patron_import_file:
-        patron_import_file_name: Filename
-        patron_import_content_type: Content type
-        patron_import_file_size: Size
+      agent_import_file:
+        agent_import_file_name: Filename
+        agent_import_content_type: Content type
+        agent_import_file_size: Size
         file_hash: File hash
         note: Note
         imported_at: Imported at
-        patron_import_updated_at: Updated at
+        agent_import_updated_at: Updated at
         state: State
         edit_mode: Edit mode
         import_request: Import now
@@ -292,7 +292,7 @@ en:
         position: Position
       inventory:
         note: Note
-      patron:
+      agent:
         last_name: Last name
         middle_name: Middle name
         first_name: Name
@@ -305,8 +305,8 @@ en:
         full_name_transcription: Full name transcription
         full_name_alternative: Full name alternative
         full_name_note: The case of not inputting, It is set up as a last name+ " " +first name
-        patron_alias: Alternative lavel (See From)
-        patron_aliases_attributes: Full name,  Full name transcription,  Full name alternative
+        agent_alias: Alternative lavel (See From)
+        agent_aliases_attributes: Full name,  Full name transcription,  Full name alternative
         deleted_at: Deleted at
         zip_code_1: Zip code 1
         zip_code_2: Zip code 2
@@ -341,7 +341,7 @@ en:
         lock_version: Lock version
         note: Note
         country: Country
-        patron_type: Patron type
+        agent_type: Agent type
         language: Language
         email: Email 1
         email_2: Email 2
@@ -354,7 +354,7 @@ en:
         note_update_at: Note update date
         note_update_by: Note update user
         note_update_library: Note update library
-        patron_identifier: Patron Identifier
+        agent_identifier: Agent Identifier
         keyperson_1: Keyperson 1
         keyperson_2: Keyperson 2
         corporate_type: CorporateType
@@ -420,7 +420,7 @@ en:
         iso_639_3: ISO 639 3
         note: Note
         position: Position
-      patron_merge_list:
+      agent_merge_list:
         title: Title
       user:
         login: Login
@@ -451,7 +451,7 @@ en:
         keyword_list: Keyword list
         user_number: User number
         state: State
-        patron: Patron
+        agent: Agent
         library: Library
         user_group: User group
         full_name: Full name
@@ -568,7 +568,7 @@ en:
       porta_response:
         body: Body
       donate:
-        patron: Patron
+        agent: Agent
         item: Item
       basket:
         user: User
@@ -693,7 +693,7 @@ en:
         reason: Reason
       realize:
         position: Position
-        patron: Patron
+        agent: Agent
         expression: Expression
       reify:
         position: Position
@@ -727,7 +727,7 @@ en:
       work_merge: 
       aaws_response:
         body: Body
-      patron_type:
+      agent_type:
         name: Name
         display_name: Display name
         note: Note
@@ -969,8 +969,8 @@ en:
         note: Note
         deleted_at: Deleted at
         subscribes_count: Count
-      patron_merge:
-        patrons_count: Count
+      agent_merge:
+        agents_count: Count
       subject_related_term: 
       library_group:
         name: Name
@@ -1223,9 +1223,9 @@ en:
       item_has_item:
         from_item: From
         to_item: To
-      patron_has_patron:
-        from_patron: From
-        to_patron: To
+      agent_has_agent:
+        from_agent: From
+        to_agent: To
       shelf_has_manifestation:
         shelf: Shelf
         manifestation: Manifestation
@@ -1240,7 +1240,7 @@ en:
         display_name: Display name
         note: Note
         position: Position
-      patron_relationship_type:
+      agent_relationship_type:
         name: Name
         display_name: Display name
         note: Note
@@ -1324,12 +1324,12 @@ en:
         approve: Approve
         publish: Publish
         deleted_at: Deleted at
-      patron_relationship:
+      agent_relationship:
         parent_id: Parent
         child_id: Child
-        patron_relationship_type_id: Patron relationship type
-        parent: Original patron
-        child: Related patron
+        agent_relationship_type_id: Agent relationship type
+        parent: Original agent
+        child: Related agent
       manifestation_relationship:
         parent_id: Parent
         child_id: Child
@@ -1348,7 +1348,7 @@ en:
         error_msg: Message
         body: Body
         imported_row: Number of imported rows
-      patron_import_result:
+      agent_import_result:
         body: Body
         error_msg: Message
         index: Index
@@ -1630,7 +1630,7 @@ en:
         refuse_at: Refuse at
         donate_request_result: Donate request result
         all_process_end_at: All process end at
-        reception_patron_id: Reception patron
+        reception_agent_id: Reception agent
         approval_extexts: Approval extexts
         approval_status:
           pending: Penging
@@ -1807,7 +1807,7 @@ en:
     remove_facet: Remove
     no_subject: No subjects.
     no_tag: No tags.
-    add_patron: Add a patron
+    add_agent: Add a agent
     total: Total
     sort_by: Sort by
     bookmarklet: Bookmarklet
@@ -1869,7 +1869,7 @@ en:
     batch_change_series_statement_updated: "Updated series statement of manifestations in the basket to %{title}."
     batch_change_series_statement_failed: "Failed series statement of manifestations in the basket."
     other_function: Other Functions
-    patron_management: Patron management
+    agent_management: Agent management
     user_management: User management
     back_to: Back to %{model} index
     add_picture: Add a picture
@@ -2120,17 +2120,17 @@ en:
     advanced: Advanced search
     solr_search: Search with solr query
   work:
-    patrons_work: ! "%{patron_name}'s works"
+    agents_work: ! "%{agent_name}'s works"
     library_group_work: Works in %{library_group_name}
     add: Add a work
   expression:
-    patrons_expression: ! "%{patron_name}'s expressions"
+    agents_expression: ! "%{agent_name}'s expressions"
     manifestations_expression: Expressions in %{manifestation_title}
     library_group_expression: Expressions in %{library_group_name}
     add: Add an expression
     specify_work: Specify the work.
     specify_manifestation: Specify the manifestation.
-    patron_expression: ! "%{patron_name}'s expressions"
+    agent_expression: ! "%{agent_name}'s expressions"
   manifestation:
     date_of_acquisition: Date of acquisition
     physical_description: Physical description
@@ -2174,7 +2174,7 @@ en:
     output_job_error_body: ! 'The requested file (ID: %{job_name}) couldn''t get generated because of the following error: %{message}'
     format_numbers: ! '%{volume} (%{issue}) %{serial}'
     copy: Copy and create new manifestation
-    patron_manifestation: ! "%{patron_name}'s Manifestation"
+    agent_manifestation: ! "%{agent_name}'s Manifestation"
     new_serial: (New)
     invalid_query: Search query is invalid.
     delete_attachment: Delete attachment
@@ -2225,14 +2225,14 @@ en:
     not_found: Not found
     search_bookstore: Search bookstore
     search_bookstore_description: Input bookstore name
-  patron:
-    library_group_patron: Patrons of %{library_group_name}
-    work_patron: Creaters of %{work_title}
-    expression_patron: Realizers of %{expression_title}
-    manifestation_patron: Producers of %{manifestation_title}
+  agent:
+    library_group_agent: Agents of %{library_group_name}
+    work_agent: Creaters of %{work_title}
+    expression_agent: Realizers of %{expression_title}
+    manifestation_agent: Producers of %{manifestation_title}
     activate_as_user: Activate as an user
     deactivate: Deactivate this user
-    add: Add a patron
+    add: Add a agent
     publication: Publications
     recent_publication: Recent publications
     all_publication: All publications
@@ -2246,12 +2246,12 @@ en:
     last_update_at: Last update at
     last_update_by: Last update by
     duplicate_user: Duplicate user was already registered. (same full name(transcription), same telephone number 1-1 and same birth date)
-    patron_identifier: Patron identifier
+    agent_identifier: Agent identifier
     place: Place
     contact:
       full_name: Full name
       full_name_transcription: Full name transcription
-      patron_identifier: Contact
+      agent_identifier: Contact
     search_placeholder: Please enter a search name
     search_searching: Searching...
     search_nomatch: No matches
@@ -2345,7 +2345,7 @@ en:
     edit_profile: Edit profile
     edit_account: Edit account
     already_activated: Already activated.
-    specify_patron: Specify the patron.
+    specify_agent: Specify the agent.
     wrong_password: Wrong password.
     password_mismatch: Password mismatch.
     cannot_destroy_myself: You can't destroy yourself.
@@ -2353,7 +2353,7 @@ en:
     last_librarian: This user is the last librarian in this system.
     only_administrator_can_destroy: Only administrators can destroy this user.
     this_user_has_checked_out_item: This user has checked-out items.
-    patron_profile: Patron profile
+    agent_profile: Agent profile
     set_auto_generated_password: Set auto-generated password
     history: History
     account_management: Account management
@@ -2389,7 +2389,7 @@ en:
     all_reservation: All reservations
     this_manifestation_is_already_reserved: This manifestation is already reserved.
     excessed_reservation_limit: Excessed reservation limit.
-    this_patron_cannot_reserve: This patron can't reserve this manifestation.
+    this_agent_cannot_reserve: This agent can't reserve this manifestation.
     reservation_was_canceled: Reservation was canceled.
     this_item_is_not_reserved: This item is not reserved.
     this_user_is_locked: This user is locked.
@@ -2852,7 +2852,7 @@ en:
     library_report: Library report
     ndl_report: Annual report for ndl
   worki:
-    patron_work: ! "%{patron_name}'s works"
+    agent_work: ! "%{agent_name}'s works"
     library_group_work: 'works in %{library_group_name} '
     add: Add
   missing_issue:
@@ -2879,7 +2879,7 @@ en:
     please_search_users: Search user
     no_select_users: No user selected 
     will_change_family: 窶ｻTo edit family, delete the family and create new family.
-    will_change_patron_type: 窶ｻAutimatically removed from family when patron type of family member change to Company.
+    will_change_agent_type: 窶ｻAutimatically removed from family when agent type of family member change to Company.
     user_will_change_family: 窶ｻPlease offer librarian to change family information
   bookstore:
     not_found: No bookstore is found.
@@ -2899,7 +2899,7 @@ en:
       resource_import_nacsisfile: NACSIS file
       wrong_file: can not be imported.
       wrong_extention: "files with xlsx extension or %{split_type} can be imported."
-  patron_import_file:
+  agent_import_file:
     template_download: Download template
     import_request: Import now
     start_importing: Stated to import.
@@ -3095,10 +3095,10 @@ en:
     invalid_started_at: "is invalid"
   barcode_registration:
     more_than_last_number: " more than last number."
-  patron_merge_list:
+  agent_merge_list:
     description: "Select one from the following list, please press the merge button.<br />
-                   * After merging, only the information of the patron selected remains.<br />
-                   &nbsp&nbsp Information of other patron will be deleted."
+                   * After merging, only the information of the agent selected remains.<br />
+                   &nbsp&nbsp Information of other agent will be deleted."
   manifestations:
     show_nacsis:
       local_import: Local import
@@ -3125,7 +3125,7 @@ en:
     cannot_delete: The title type cannnot be deleted.
   order:
     cannot_delete: The order cannot be deleted.
-    no_matches_found_patron: "No matches found patron"
+    no_matches_found_agent: "No matches found agent"
     no_matches_found_manifestation: "No matches found manifestation"
     switch_manual_entry: "Manual entry currency rate and yen imprest"
     auto_calculation_flag_0: Auto calculation

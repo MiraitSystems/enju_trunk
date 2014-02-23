@@ -1,91 +1,91 @@
 <script>
   $(document).ready(function(){
     // check full_name_alternative
-    <% unless @patron.full_name_alternative.blank? %>
-      if ("<%= @patron.full_name_alternative.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    <% unless @agent.full_name_alternative.blank? %>
+      if ("<%= @agent.full_name_alternative.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         $("#full_name_alternative").show();
     <%- end -%>
     // check address2
     var input_address2 = false;
-    "<%- if @patron.zip_code_2 -%>"
-      if ("<%=@patron.zip_code_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.zip_code_2 -%>"
+      if ("<%=@agent.zip_code_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
-    "<%- if @patron.address_2 -%>"
-      if ("<%=@patron.address_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.address_2 -%>"
+      if ("<%=@agent.address_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
-    "<%- if @patron.telephone_number_2 -%>"
-      if ("<%=@patron.telephone_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.telephone_number_2 -%>"
+      if ("<%=@agent.telephone_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
-    "<%- if @patron.extelephone_number_2 -%>"
-      if ("<%=@patron.extelephone_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.extelephone_number_2 -%>"
+      if ("<%=@agent.extelephone_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
-    "<%- if @patron.fax_number_2 -%>"
-      if ("<%=@patron.fax_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.fax_number_2 -%>"
+      if ("<%=@agent.fax_number_2.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
-    "<%- if @patron.address_2_note -%>"
-      if ("<%=@patron.address_2_note.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
+    "<%- if @agent.address_2_note -%>"
+      if ("<%=@agent.address_2_note.gsub(/[　\s\t]+$/o, "").gsub(/^[　\s\t]+/o, "") -%>" != "")
         input_address2 = true;
     "<%- end -%>"
     if (input_address2 == true)
       $("#address_2").show();
-    // check patron_type
-    if ("<%= @patron.patron_type_id -%>" == <%= @patron_type_person %>) {
+    // check agent_type
+    if ("<%= @agent.agent_type_id -%>" == <%= @agent_type_person %>) {
       $("#name_person").show();
-      $("label[for='patron_date_of_birth']").text('<%= t('activerecord.attributes.patron.date_of_birth') -%>');
-      $("label[for='patron_date_of_death']").text('<%= t('activerecord.attributes.patron.date_of_death') -%>');
+      $("label[for='agent_date_of_birth']").text('<%= t('activerecord.attributes.agent.date_of_birth') -%>');
+      $("label[for='agent_date_of_death']").text('<%= t('activerecord.attributes.agent.date_of_death') -%>');
     } else {
-      $("div.patron_full_name_note").hide();
+      $("div.agent_full_name_note").hide();
       $("#name_person").hide();
-      $("label[for='patron_date_of_birth']").text('<%= t('activerecord.attributes.patron.date_of_establishment') -%>');
-      $("label[for='patron_date_of_death']").text('<%= t('activerecord.attributes.patron.date_of_dissolution') -%>');
+      $("label[for='agent_date_of_birth']").text('<%= t('activerecord.attributes.agent.date_of_establishment') -%>');
+      $("label[for='agent_date_of_death']").text('<%= t('activerecord.attributes.agent.date_of_dissolution') -%>');
     }
-    // change patron_type
-    $("select#patron_patron_type_id").change(function(){
-      str = $("select#patron_patron_type_id option:selected").val();
-      if (str == <%= @patron_type_person -%>) {
-        $("div.patron_full_name_note").show();
+    // change agent_type
+    $("select#agent_agent_type_id").change(function(){
+      str = $("select#agent_agent_type_id option:selected").val();
+      if (str == <%= @agent_type_person -%>) {
+        $("div.agent_full_name_note").show();
         $("#name_person").show();
-        $("label[for='patron_date_of_birth']").text('<%= t('activerecord.attributes.patron.date_of_birth') -%>');
-        $("label[for='patron_date_of_death']").text('<%= t('activerecord.attributes.patron.date_of_death') -%>');
+        $("label[for='agent_date_of_birth']").text('<%= t('activerecord.attributes.agent.date_of_birth') -%>');
+        $("label[for='agent_date_of_death']").text('<%= t('activerecord.attributes.agent.date_of_death') -%>');
         $("#family_users").show();
       } else {
-        $("input#patron_last_name").val("");
-        $("input#patron_last_name_transcription").val("");
-        $("input#patron_first_name").val("");
-        $("input#patron_first_name_transcription").val("");
-        $("div.patron_full_name_note").hide();
+        $("input#agent_last_name").val("");
+        $("input#agent_last_name_transcription").val("");
+        $("input#agent_first_name").val("");
+        $("input#agent_first_name_transcription").val("");
+        $("div.agent_full_name_note").hide();
         $("#name_person").hide();
-        $("label[for='patron_date_of_birth']").text('<%= t('activerecord.attributes.patron.date_of_establishment') -%>');
-        $("label[for='patron_date_of_death']").text('<%= t('activerecord.attributes.patron.date_of_dissolution') -%>');
+        $("label[for='agent_date_of_birth']").text('<%= t('activerecord.attributes.agent.date_of_establishment') -%>');
+        $("label[for='agent_date_of_death']").text('<%= t('activerecord.attributes.agent.date_of_dissolution') -%>');
         $("#family_users").hide();
       }
     });
 
     // seach_family
     <%- if current_user.has_role?('Librarian') -%>
-      $("#patron_telephone_number_1").change(function(){
+      $("#agent_telephone_number_1").change(function(){
         clear_family_search();
         search_family();
       })
       .change();
-      $("#patron_last_name").change(function(){
+      $("#agent_last_name").change(function(){
         clear_family_search();
         search_family();
       })
       .change();
-      $("#patron_address_1").change(function(){
+      $("#agent_address_1").change(function(){
         clear_family_search();
         search_family();
       })
       .change();
-      $("#patron_patron_type_id").change(function(){
-        var patron_type_id = $("#patron_patron_type_id").val();
-        if (patron_type_id == 1)
+      $("#agent_agent_type_id").change(function(){
+        var agent_type_id = $("#agent_agent_type_id").val();
+        if (agent_type_id == 1)
           search_family();
         else
           clear_family_search();
@@ -95,9 +95,9 @@
   });
 
   function search_family(){
-    var tel_1 = $("#patron_telephone_number_1").val().replace(/^\s+|\s+$/g, "");
-    var last_name = $("#patron_last_name").val().replace(/^\s+|\s+$/g, "");
-    var address_1 = $("#patron_address_1").val().replace(/^\s+|\s+$/g, "");
+    var tel_1 = $("#agent_telephone_number_1").val().replace(/^\s+|\s+$/g, "");
+    var last_name = $("#agent_last_name").val().replace(/^\s+|\s+$/g, "");
+    var address_1 = $("#agent_address_1").val().replace(/^\s+|\s+$/g, "");
     var family = "<%= @family -%>"
     var data = {"keys": {"tel_1": tel_1, "last_name": last_name, "address_1": address_1 }, "family": family, "user": "<%= @user.id -%>"};
     if ((tel_1 != "" && last_name != "" && address_1 !="") || "<%= @family -%>" != null) {
@@ -129,8 +129,8 @@
       url: "get_family_info",
       data: {"user_id": user_id},
       success: function(obj) {
-        var zip_code_1 = obj["patron"]["patron"]["zip_code_1"];
-        $('#patron_zip_code_1').val(zip_code_1);
+        var zip_code_1 = obj["agent"]["agent"]["zip_code_1"];
+        $('#agent_zip_code_1').val(zip_code_1);
       }
     });
   }
@@ -138,8 +138,8 @@
 
   <%- if current_user.has_role?('Librarian') -%>
     <div class="field">
-      <%= f.label t('activerecord.models.patron_type') -%>
-      <%= f.select(:patron_type_id, @patron_types.collect{|p| [p.display_name.localize, p.id]}) -%>
+      <%= f.label t('activerecord.models.agent_type') -%>
+      <%= f.select(:agent_type_id, @agent_types.collect{|p| [p.display_name.localize, p.id]}) -%>
     </div>
   <%- end -%>
 
@@ -151,17 +151,17 @@
   <div class="field">
     <span id="name_person">
       <%- if SystemConfiguration.get("family_name_first") == true -%>
-        <%= render 'patrons/form_family_name_first', :f => f -%>
+        <%= render 'agents/form_family_name_first', :f => f -%>
       <%- else -%>
-        <%= render 'patrons/form_family_name_last', :f => f -%>
+        <%= render 'agents/form_family_name_last', :f => f -%>
       <%- end -%>
     </span>
     <%= f.label :full_name -%><br />
-    <div id="annotation" class="patron_full_name_note"><%= t('activerecord.attributes.patron.full_name_note') -%><br /></div>
+    <div id="annotation" class="agent_full_name_note"><%= t('activerecord.attributes.agent.full_name_note') -%><br /></div>
     <%= f.text_field :full_name, :class => 'resource_title' -%><br />
     <%= f.label :full_name_transcription -%><br />
     <%= f.text_field :full_name_transcription, :class => 'resource_title' -%><br />
-    <%= link_to_function t('activerecord.attributes.patron.full_name_alternative'), "$('#full_name_alternative').toggle()" -%>
+    <%= link_to_function t('activerecord.attributes.agent.full_name_alternative'), "$('#full_name_alternative').toggle()" -%>
     <span id="full_name_alternative" style="display: none">
       <br />
       <%= f.text_area :full_name_alternative, :class => 'resource_textarea' -%>
@@ -180,7 +180,7 @@
         <%= f.text_field :death_date, :class => 'date_field' -%>
       </div>
     <%- else -%>
-      <%- if @patron_type_person != @user.patron.patron_type.id -%>
+      <%- if @agent_type_person != @user.agent.agent_type.id -%>
         <div class="field">
           <%= f.label :date_of_death -%><br />
           <%= f.text_field :death_date, :class => 'date_field' -%>
@@ -238,7 +238,7 @@
     <%= f.label :address_1_note -%><br />
     <%= f.text_area :address_1_note, :class => 'resource_textarea' -%>
   </div>
-  <div class="field"><%= link_to_function t('patron.other_address'), "$('#address_2').toggle()" -%></div>
+  <div class="field"><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
   </div>
 
   <div id="address_2" style="display: none">
@@ -282,13 +282,13 @@
     <hr />
     <div class="field">
       <%= f.label :note -%>
-      <%- if @patron.note_update_at -%>
-        &nbsp;<%= t('patron.last_update_at') -%>: <%= l(@patron.note_update_at) -%>
-        <%- if @patron.note_update_by -%>
-          &nbsp;<%= t('patron.last_update_by') -%>: <%= @patron.note_update_by -%>
+      <%- if @agent.note_update_at -%>
+        &nbsp;<%= t('agent.last_update_at') -%>: <%= l(@agent.note_update_at) -%>
+        <%- if @agent.note_update_by -%>
+          &nbsp;<%= t('agent.last_update_by') -%>: <%= @agent.note_update_by -%>
         <%- end -%>
-        <%- if @patron.note_update_library -%>
-          (<%= @patron.note_update_library-%>)
+        <%- if @agent.note_update_library -%>
+          (<%= @agent.note_update_library-%>)
         <%- end -%>
       <%- end -%>
       <br />

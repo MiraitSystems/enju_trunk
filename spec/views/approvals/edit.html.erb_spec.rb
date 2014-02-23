@@ -20,7 +20,7 @@ describe "approvals/edit" do
       :approval_result => 1,
       :reason => 1,
       :donate_request_result => 1,
-      :reception_patron_id => 1
+      :reception_agent_id => 1
     ))
   end
 
@@ -46,7 +46,7 @@ describe "approvals/edit" do
       assert_select "input#approval_approval_result[name=?]", "approval[approval_result]"
       assert_select "input#approval_reason[name=?]", "approval[reason]"
       assert_select "input#approval_donate_request_result[name=?]", "approval[donate_request_result]"
-      assert_select "input#approval_reception_patron_id[name=?]", "approval[reception_patron_id]"
+      assert_select "input#approval_reception_agent_id[name=?]", "approval[reception_agent_id]"
     end
   end
 end

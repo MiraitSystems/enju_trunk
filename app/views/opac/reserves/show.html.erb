@@ -69,23 +69,23 @@
       </td>
       <td><%= @reserve.reserved_library_name %></td>
     </tr>
-    <% if @reserve.user and @reserve.user.patron %>
+    <% if @reserve.user and @reserve.user.agent %>
       <tr>
         <td class="opac_reserve_table_column">
           <%= t('activerecord.attributes.reserve.contact') %>:
         </td>
         <td>
-          <%= @reserve.user.patron.full_name %><br />
-          <% unless @reserve.user.patron.address_1.blank? %>
-            <% unless @reserve.user.patron.zip_code_1.blank %>
+          <%= @reserve.user.agent.full_name %><br />
+          <% unless @reserve.user.agent.address_1.blank? %>
+            <% unless @reserve.user.agent.zip_code_1.blank %>
               <%= t('activerecord.attributes.reserve.zipcode') %>
-              <%= @reserve.user.patron.zip_code_1 %><br />
+              <%= @reserve.user.agent.zip_code_1 %><br />
             <% end %>
-            <%= @reserve.user.patron.address_1 %>
+            <%= @reserve.user.agent.address_1 %>
           <% end %>
-          <% unless @reserve.user.patron.telephone_number_1.blank? %>
-            <%= t('activerecord.attributes.patron.telephone_number') %>:
-            <%= @reserve.user.patron.telephone_number_1 %>
+          <% unless @reserve.user.agent.telephone_number_1.blank? %>
+            <%= t('activerecord.attributes.agent.telephone_number') %>:
+            <%= @reserve.user.agent.telephone_number_1 %>
           <% end %>
         </td>
       </tr>

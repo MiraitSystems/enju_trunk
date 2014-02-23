@@ -7,8 +7,8 @@ class ManifestationSweeper < ActionController::Caching::Sweeper
     record.items.each do |item|
       expire_editable_fragment(item)
     end
-    record.patrons.each do |patron|
-      expire_editable_fragment(patron)
+    record.agents.each do |agent|
+      expire_editable_fragment(agent)
     end
   end
 

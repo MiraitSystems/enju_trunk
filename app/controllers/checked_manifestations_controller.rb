@@ -44,7 +44,7 @@ class CheckedManifestationsController < ApplicationController
   end
 
   def prepare_options
-    @index_patron = get_index_patron
+    @index_agent = get_index_agent
     @is_list = params[:is_list] rescue nil
   end
 end

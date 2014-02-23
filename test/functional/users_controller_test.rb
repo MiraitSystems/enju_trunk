@@ -4,7 +4,7 @@ class UsersControllerTest < ActionController::TestCase
   # Be sure to include AuthenticatedTestHelper in test/test_helper.rb instead
   # Then, you can remove it from this and the units test.
 
-  fixtures :users, :roles, :patrons, :libraries, :checkouts, :checkins, :patron_types, :tags, :taggings,
+  fixtures :users, :roles, :agents, :libraries, :checkouts, :checkins, :agent_types, :tags, :taggings,
     :manifestations, :carrier_types, :creates, :realizes, :produces, :owns
 
   def test_librarian_should_get_index_with_query
@@ -115,7 +115,7 @@ class UsersControllerTest < ActionController::TestCase
     assigns(:user).remove_from_index!
   end
 
-  def test_librarian_should_get_new_without_patron_id
+  def test_librarian_should_get_new_without_agent_id
     sign_in users(:librarian1)
     get :new
     assert_response :success
@@ -279,15 +279,15 @@ class UsersControllerTest < ActionController::TestCase
   protected
   def create_user(options = {})
     post :create, :user => { :username => 'quire', :email => 'quire@example.com',
-      :email_confirmation => 'quire@example.com', :password => 'quirequire', :password_confirmation => 'quirequire', :patron_id => 6, :user_number => '00008' }.merge(options)
+      :email_confirmation => 'quire@example.com', :password => 'quirequire', :password_confirmation => 'quirequire', :agent_id => 6, :user_number => '00008' }.merge(options)
   end
 
-  def create_user_without_patron_id_and_name(options = {})
+  def create_user_without_agent_id_and_name(options = {})
     post :create, :user => { :username => 'quire', :email => 'quire@example.com',
       :email_confirmation => 'quire@example.com', :password => 'quirequire', :password_confirmation => 'quirequire', :user_number => '00008' }.merge(options)
   end
 
-  def create_user_without_patron_id(options = {})
+  def create_user_without_agent_id(options = {})
     post :create, :user => { :username => 'quire', :email => 'quire@example.com',
       :email_confirmation => 'quire@example.com', :password => 'quirequire', :password_confirmation => 'quirequire', :user_number => '00008', :first_name => 'quire', :last_name => 'quire' }.merge(options)
   end
