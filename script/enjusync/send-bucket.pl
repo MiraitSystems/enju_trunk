@@ -30,9 +30,9 @@ require "C:/Sites/enju_trunk/script/enjusync/logpkg.pl";
 my $cur_dir = Cwd::cwd();	# カレントディレクトリ
 my $snd_bucket = "";
 my $ctrl_file = "";
-my $snd_host = "NPALIBWEB";
+my $snd_host = "";
 my $ftp_user = "enju";
-my $ftp_pass = "Npaftp14";
+my $ftp_pass = "";
 my $exec_date = "";
 my $send_stat = "";
 my $rtry_cnt = 0;
