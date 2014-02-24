@@ -5,7 +5,7 @@ class ManifestationsControllerTest < ActionController::TestCase
     :form_of_works, :realizes,
     :content_types, :frequencies,
     :items, :library_groups, :libraries, :shelves, :languages,
-    :patrons, :user_groups, :users,
+    :agents, :user_groups, :users,
     :bookmarks, :roles,
     :subscriptions, :subscribes, :search_histories
 
@@ -75,10 +75,10 @@ class ManifestationsControllerTest < ActionController::TestCase
     assert assigns(:manifestations)
   end
 
-  def test_guest_should_get_index_with_patron_id
-    get :index, :patron_id => 1
+  def test_guest_should_get_index_with_agent_id
+    get :index, :agent_id => 1
     assert_response :success
-    assert assigns(:patron)
+    assert assigns(:agent)
     assert assigns(:manifestations)
   end
 
@@ -345,9 +345,9 @@ class ManifestationsControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-  def test_librarian_should_show_manifestation_with_patron_not_produced
+  def test_librarian_should_show_manifestation_with_agent_not_produced
     sign_in users(:librarian1)
-    get :show, :id => 3, :patron_id => 1
+    get :show, :id => 3, :agent_id => 1
     assert_response :success
   end
 

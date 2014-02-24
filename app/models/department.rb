@@ -1,5 +1,5 @@
 class Department < ActiveRecord::Base
-  attr_accessible :name, :display_name, :short_name, :note, :patron_import_file
+  attr_accessible :name, :display_name, :short_name, :note, :agent_import_file
 
   validates_uniqueness_of :name
   validates_presence_of :name, :display_name

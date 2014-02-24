@@ -96,7 +96,7 @@ class PictureFilesController < ApplicationController
       redirect_to picture_files_url
       return
     end
-    #raise unless @event or @manifestation or @shelf or @patron
+    #raise unless @event or @manifestation or @shelf or @agent
     @picture_file = PictureFile.new
     @picture_file.picture_attachable = @attachable
 
@@ -155,8 +155,8 @@ class PictureFilesController < ApplicationController
       type = 'Shelf'
     when @picture_file.picture_attachable.is_a?(Manifestation)
       type = 'Manifestation'
-    when @picture_file.picture_attachable.is_a?(Patron)
-      type = 'Patron'
+    when @picture_file.picture_attachable.is_a?(Agent)
+      type = 'Agent'
     when @picture_file.picture_attachable.is_a?(Event)
       type = 'Event'
     else
@@ -173,8 +173,8 @@ class PictureFilesController < ApplicationController
       when 'Manifestation'
         format.html { redirect_to manifestation_picture_files_url(obj) }
         format.json { head :no_content }
-      when 'Patron'
-        format.html { redirect_to patron_picture_files_url(obj) }
+      when 'Agent'
+        format.html { redirect_to agent_picture_files_url(obj) }
         format.json { head :no_content }
       when 'Event'
         format.html { redirect_to event_picture_files_url(obj) }
@@ -193,9 +193,9 @@ class PictureFilesController < ApplicationController
       @attachable = @manifestation
       return
     end
-    get_patron
-    if @patron
-      @attachable = @patron
+    get_agent
+    if @agent
+      @attachable = @agent
       return
     end
     get_event

@@ -48,9 +48,9 @@ class Item < ActiveRecord::Base
   }
   has_many :checkouts
   has_many :reserves
-  has_many :reserved_patrons, :through => :reserves, :class_name => 'Patron'
+  has_many :reserved_agents, :through => :reserves, :class_name => 'Agent'
   has_many :owns
-  has_many :patrons, :through => :owns
+  has_many :agents, :through => :owns
   belongs_to :shelf, :counter_cache => true, :validate => true
   delegate :display_name, :to => :shelf, :prefix => true
   has_many :checked_items, :dependent => :destroy
@@ -61,7 +61,7 @@ class Item < ActiveRecord::Base
   belongs_to :retention_period, :validate => true
   belongs_to :bookstore, :validate => true
   has_many :donates
-  has_many :donors, :through => :donates, :source => :patron
+  has_many :donors, :through => :donates, :source => :agent
   has_one :item_has_use_restriction, :dependent => :destroy
   has_one :use_restriction, :through => :item_has_use_restriction
   has_many :reserves
@@ -108,7 +108,7 @@ class Item < ActiveRecord::Base
     integer :retention_period_id
     integer :manifestation_id
     integer :shelf_id
-    integer :patron_ids, :multiple => true
+    integer :agent_ids, :multiple => true
     integer :rank
     integer :remove_reason_id
     boolean :non_searchable
@@ -186,8 +186,8 @@ class Item < ActiveRecord::Base
     lending_policies.where(:user_group_id => user.user_group.id).first
   end
 
-  def owned(patron)
-    owns.where(:patron_id => patron.id).first
+  def owned(agent)
+    owns.where(:agent_id => agent.id).first
   end
 
   def library_url
@@ -367,8 +367,8 @@ class Item < ActiveRecord::Base
           [:original_title,'activerecord.attributes.manifestation.original_title'],
           ['removed_at', 'activerecord.models.remove_reason'],
 #          ['price', 'activerecord.attributes.item.price'],
-          [:patron_publisher,'patron.publisher'], 
-          [:patron_creator, 'patron.creator'],
+          [:agent_publisher,'agent.publisher'], 
+          [:agent_creator, 'agent.creator'],
           [:date_of_publication, 'activerecord.attributes.manifestation.date_of_publication'],
           [:removed_reason, 'activerecord.models.remove_reason'],
           ['note', 'activerecord.attributes.item.note']
@@ -404,10 +404,10 @@ class Item < ActiveRecord::Base
                 else
                   row << item.manifestation.date_of_publication.strftime("%Y/%m/%d") rescue ""
                 end
-              when :patron_creator
-                row << patrons_list(item.manifestation.creators)
-              when :patron_publisher
-                row << patrons_list(item.manifestation.publishers)
+              when :agent_creator
+                row << agents_list(item.manifestation.creators)
+              when :agent_publisher
+                row << agents_list(item.manifestation.publishers)
               else
                 row << get_object_method(item, column[0].split('.')).to_s.gsub(/\r\n|\r|\n/," ").gsub(/\"/,"\"\"")
               end # end of case column[0]
@@ -445,8 +445,8 @@ class Item < ActiveRecord::Base
                 #row.item(:date_of_publication).value(item.manifestation.date_of_publication.strftime("%Y/%m/%d"))
               end
               # row.item(:price).value(to_format(item.price))
-              row.item(:patron_creator).value(patrons_list(item.manifestation.creators))
-              row.item(:patron_publisher).value(patrons_list(item.manifestation.publishers))
+              row.item(:agent_creator).value(agents_list(item.manifestation.creators))
+              row.item(:agent_publisher).value(agents_list(item.manifestation.publishers))
               row.item(:date_of_publication).value(item.manifestation.date_of_publication.strftime("%Y/%m")) rescue nil
              end
           end
@@ -492,8 +492,8 @@ class Item < ActiveRecord::Base
   end
 
   private
-  def self.patrons_list(patrons)
-    ApplicationController.helpers.patrons_list(patrons, {:nolink => true})
+  def self.agents_list(agents)
+    ApplicationController.helpers.agents_list(agents, {:nolink => true})
   end
 
   def self.make_item_register_tsv(tsvfile, items)
@@ -501,10 +501,10 @@ class Item < ActiveRecord::Base
       [:bookstore, 'activerecord.models.bookstore'],
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
       ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
-      [:creator, 'patron.creator'],
+      [:creator, 'agent.creator'],
       [:original_title, 'activerecord.attributes.manifestation.original_title'],
       [:pub_year, 'activerecord.attributes.manifestation.pub_year'],
-      [:publisher, 'patron.publisher'],
+      [:publisher, 'agent.publisher'],
       [:price, 'activerecord.attributes.manifestation.price'],
       [:call_number, 'activerecord.attributes.item.call_number'],
       [:marc_number, 'activerecord.attributes.manifestation.marc_number'],
@@ -567,9 +567,9 @@ class Item < ActiveRecord::Base
       ['item_identifier', 'activerecord.attributes.item.item_identifier'],
       ['acquired_at_string', 'activerecord.attributes.item.acquired_at_string'],
       [:original_title, 'activerecord.attributes.manifestation.original_title'],
-      [:creator, 'patron.creator'],
+      [:creator, 'agent.creator'],
       [:pub_year, 'activerecord.attributes.manifestation.pub_year'],
-      [:publisher, 'patron.publisher'],
+      [:publisher, 'agent.publisher'],
       [:call_number, 'activerecord.attributes.item.call_number'],
       ['note', 'activerecord.attributes.item.note']
     ]
@@ -642,7 +642,7 @@ class Item < ActiveRecord::Base
               page.list(:list).add_row do |row|
                 row.item(:item_identifier).value(item.item_identifier)
                 row.item(:acquired_at).value(item.acquired_at_string) if item.acquired_at_string
-                row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+                row.item(:agent).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
                 row.item(:title).value(item.manifestation.original_title) if item.manifestation
                 row.item(:pub_year).value(item.manifestation.date_of_publication.strftime("%Y")) if item.manifestation && item.manifestation.date_of_publication
                 row.item(:publisher).value(item.publisher.delete_if{|p|p.blank?}[0]) if item.publisher
@@ -1180,7 +1180,7 @@ FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
 if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
     elsif type == 'author' 
-      @manifestations = Manifestation.includes(:creates => :patron).order("patrons.full_name ASC")
+      @manifestations = Manifestation.includes(:creates => :agent).order("agents.full_name ASC")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")
     end
@@ -1211,7 +1211,7 @@ end
       manifestation.items.each do |item|
         report.page.list(:list).add_row do |row|
           row.item(:title).value(item.manifestation.original_title) if item.manifestation
-          row.item(:patron).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
+          row.item(:agent).value(item.manifestation.creators[0].full_name) if item.manifestation && item.manifestation.creators[0]
           row.item(:carrier_type).value(item.manifestation.carrier_type.display_name.localize) if item.manifestation && item.manifestation.carrier_type
 
           row.item(:library).value(item.shelf.library.display_name.localize) if item.shelf && item.shelf.library

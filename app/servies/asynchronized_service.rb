@@ -18,10 +18,10 @@ class Asynchronized_Service
         ResourceImportTextfile.delay.import(param) 
         import.sm_request!
       end
-    when :PatronImportFile_import
-      import = PatronImportFile.find(param)
+    when :AgentImportFile_import
+      import = AgentImportFile.find(param)
       if import.state == 'pending'
-        PatronImportFile.import(param)
+        AgentImportFile.import(param)
         #TODO import.sm_request!
       end
     when :EventImportFile_import

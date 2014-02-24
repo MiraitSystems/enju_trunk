@@ -12,7 +12,7 @@
     <%- end -%>
   </div>
 
-  <h2 class="resource_title">[U]<%= @patron.full_name %></h2>
+  <h2 class="resource_title">[U]<%= @agent.full_name %></h2>
 
   <%- if flash[:temporary_password] -%>
     <p><%= t('user.your_temporary_password_is') -%>: </p>
@@ -44,9 +44,9 @@
       <%- @family_users.each do |f_user| -%>
         <%- unless f_user == user -%>
           <%- if current_user.has_role?('Librarian') -%>
-            <%= link_to f_user.patron.full_name, f_user -%>
+            <%= link_to f_user.agent.full_name, f_user -%>
           <%- else -%>
-            <%= f_user.patron.full_name -%>
+            <%= f_user.agent.full_name -%>
           <%- end -%>
           &nbsp;
         <%- end -%>
@@ -56,7 +56,7 @@
 
   <div><%= link_to_function t('activerecord.attributes.user.disp_user_info'), "$('#user_info').toggle()" -%></div>
   <div id="user_info" style="display: none">
-    <%= render 'patrons/show_list' %>
+    <%= render 'agents/show_list' %>
   </div>
 
   <%- if defined?(EnjuTrunkCirculation) %> 
@@ -110,7 +110,7 @@
       <%- end -%>
       <%- if can? :create, user -%>
         <li><%= link_to t('page.new', :model => t('activerecord.models.user')), new_user_path -%></li>
-        <%- if user.patron.patron_type_id == 1 && SystemConfiguration.get('use_family') -%>
+        <%- if user.agent.agent_type_id == 1 && SystemConfiguration.get('use_family') -%>
           <li><%= link_to t('user.create_family_user'), new_user_path(:family_user_id => user.id) -%></li>        
         <%- end -%>
       <% end %>

@@ -28,7 +28,7 @@ class Order < ActiveRecord::Base
 
 
   belongs_to :contract
-  belongs_to :patron, :foreign_key => :order_organization_id
+  belongs_to :agent, :foreign_key => :order_organization_id
   belongs_to :currency
 
   has_many :payments
@@ -81,15 +81,15 @@ class Order < ActiveRecord::Base
   end
 
 
-  def self.struct_patron_selects
-    struct_patron = Struct.new(:id, :text)
-    @struct_patron_array = []
-    type_id = PatronType.find(:first, :conditions => ["name = ?", 'OrderOrganization'])
-    struct_select = Patron.find(:all, :conditions => ["patron_type_id = ?",type_id])
-    struct_select.each do |patron|
-      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+  def self.struct_agent_selects
+    struct_agent = Struct.new(:id, :text)
+    @struct_agent_array = []
+    type_id = AgentType.find(:first, :conditions => ["name = ?", 'OrderOrganization'])
+    struct_select = Agent.find(:all, :conditions => ["agent_type_id = ?",type_id])
+    struct_select.each do |agent|
+      @struct_agent_array << struct_agent.new(agent.id, agent.full_name)
     end
-    return @struct_patron_array
+    return @struct_agent_array
   end
 
   before_save :set_yen_imprest

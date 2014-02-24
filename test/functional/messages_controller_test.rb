@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class MessagesControllerTest < ActionController::TestCase
-    fixtures :users, :messages, :patrons, :patron_types
+    fixtures :users, :messages, :agents, :agent_types
 
   def test_guest_should_not_get_index
     get :index

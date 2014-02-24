@@ -5,11 +5,11 @@ describe "creates/index" do
     assign(:creates, [
       stub_model(Create,
         :work_id => 1,
-        :patron_id => 1
+        :agent_id => 1
       ),
       stub_model(Create,
         :work_id => 1,
-        :patron_id => 2
+        :agent_id => 2
       )
     ].paginate(:page => 1))
     @ability = Object.new

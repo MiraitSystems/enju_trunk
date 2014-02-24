@@ -5,10 +5,10 @@ namespace :enju do
       ResourceImportFile.import
     end
   end
-  namespace :patron_import do
-    desc 'Import patrons'
+  namespace :agent_import do
+    desc 'Import agents'
     task :start => :environment do
-      PatronImportFile.import
+      AgentImportFile.import
     end
   end
   namespace :event_import do

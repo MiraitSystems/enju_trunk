@@ -194,36 +194,36 @@ class ResourceImportFile < ActiveRecord::Base
     return num
   end
 
-  def self.import_work(title, patrons, options = {:edit_mode => 'create'})
+  def self.import_work(title, agents, options = {:edit_mode => 'create'})
     work = Manifestation.new(title)
     case options[:edit_mode]
     when 'create'
-      work.creators << patrons
+      work.creators << agents
     when 'update'
-      work.creators = patrons
+      work.creators = agents
     end
     work
   end
 
-  def self.import_expression(work, patrons, options = {:edit_mode => 'create'})
+  def self.import_expression(work, agents, options = {:edit_mode => 'create'})
     expression = work
     case options[:edit_mode]
     when 'create'
-      expression.contributors << patrons
+      expression.contributors << agents
     when 'update'
-      expression.contributors = patrons
+      expression.contributors = agents
     end
     expression
   end
 
-  def self.import_manifestation(expression, patrons, options = {}, edit_options = {:edit_mode => 'create'})
+  def self.import_manifestation(expression, agents, options = {}, edit_options = {:edit_mode => 'create'})
     manifestation = expression
     manifestation.update_attributes!(options.merge(:during_import => true))
     case edit_options[:edit_mode]
     when 'create'
-      manifestation.publishers << patrons
+      manifestation.publishers << agents
     when 'update'
-      manifestation.publishers = patrons
+      manifestation.publishers = agents
     end
     manifestation
   end
@@ -233,7 +233,7 @@ class ResourceImportFile < ActiveRecord::Base
     item = Item.new(options)
     item.manifestation = manifestation
     if item.save!
-      item.patrons << options[:shelf].library.patron
+      item.agents << options[:shelf].library.agent
     end
     item
   end
@@ -269,9 +269,9 @@ class ResourceImportFile < ActiveRecord::Base
       manifestation.save
 
       full_name = record['700']['a']
-      publisher = Patron.find_by_full_name(record['700']['a'])
+      publisher = Agent.find_by_full_name(record['700']['a'])
       if publisher.blank?
-        publisher = Patron.new(:full_name => full_name)
+        publisher = Agent.new(:full_name => full_name)
         publisher.save
       end
       manifestation.publishers << publisher
@@ -358,7 +358,7 @@ class ResourceImportFile < ActiveRecord::Base
 
   private
   def open_import_file
-    tempfile = Tempfile.new('patron_import_file')
+    tempfile = Tempfile.new('agent_import_file')
     if Setting.uploaded_file.storage == :s3
       uploaded_file_path = open(self.resource_import.expiring_url(10)).path
     else
@@ -485,28 +485,28 @@ class ResourceImportFile < ActiveRecord::Base
       publishers = row['publisher'].to_s.split(';')
       publisher_transcriptions = row['publisher_transcription'].to_s.split(';')
       publishers_list = publishers.zip(publisher_transcriptions).map{|f,t| {:full_name => f.to_s.strip, :full_name_transcription => t.to_s.strip}}
-      creator_patrons = Patron.import_patrons(creators_list)
-      contributor_patrons = Patron.import_patrons(contributors_list)
-      publisher_patrons = Patron.import_patrons(publishers_list)
+      creator_agents = Agent.import_agents(creators_list)
+      contributor_agents = Agent.import_agents(contributors_list)
+      publisher_agents = Agent.import_agents(publishers_list)
       #classification = Classification.where(:category => row['classification'].to_s.strip).first
       subjects = import_subject(row)
       series_statement = import_series_statement(row)
       case options[:edit_mode]
       when 'create'
-        work = self.class.import_work(title, creator_patrons, options)
+        work = self.class.import_work(title, creator_agents, options)
         work.series_statement = series_statement
         work.subjects << subjects
-        expression = self.class.import_expression(work, contributor_patrons)
+        expression = self.class.import_expression(work, contributor_agents)
       when 'update'
         expression = manifestation
         work = expression
         work.series_statement = series_statement
         work.subjects = subjects
-        work.creators = creator_patrons
-        expression.contributors = contributor_patrons
+        work.creators = creator_agents
+        expression.contributors = contributor_agents
       end
 
-      manifestation = self.class.import_manifestation(expression, publisher_patrons, {
+      manifestation = self.class.import_manifestation(expression, publisher_agents, {
         :original_title => title[:original_title],
         :title_transcription => title[:title_transcription],
         :title_alternative => title[:title_alternative],
@@ -573,8 +573,8 @@ class ResourceImportFile < ActiveRecord::Base
             creators = row['series_statement_creator'].to_s.split(';')
             creator_transcriptions = row['series_statement_creator_transcription'].to_s.split(';')
             creators_list = creators.zip(creator_transcriptions).map{|f,t| {:full_name => f.to_s.strip, :full_name_transcription => t.to_s.strip}}
-            creator_patrons = Patron.import_patrons(creators_list)
-            series_statement.initial_manifestation.creators << creator_patrons
+            creator_agents = Agent.import_agents(creators_list)
+            series_statement.initial_manifestation.creators << creator_agents
           end
         end
       end

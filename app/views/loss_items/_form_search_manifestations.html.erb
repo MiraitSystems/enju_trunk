@@ -18,7 +18,7 @@ function search_manifestations() {
        data: {"user_number": user_number},
        success: function(obj) {
          if (obj.success) {
-           if (obj["items"].length > 0 && obj["user"] != null && obj["patron"] != null) {
+           if (obj["items"].length > 0 && obj["user"] != null && obj["agent"] != null) {
              $('#loss_item_item_id').removeAttr('disabled');
              $("input[type=submit]").removeAttr('disabled');
            }
@@ -27,11 +27,11 @@ function search_manifestations() {
                $('#loss_item_item_id').append($('<option>').attr({ value: this[0] }).text(this[1]));
              });
            }
-           if (obj["user"] != null && obj["patron"] != null) {
+           if (obj["user"] != null && obj["agent"] != null) {
              s = "<div id='username'>"
                + "<p>"
                + "<strong><%= t('activerecord.models.user') -%>: </strong>"
-               + "<a href='<%= "#{root_path}" %>users/"+obj["user"]["user"]["username"]+"'>" + obj["patron"]["patron"]["full_name"] + "</a>"
+               + "<a href='<%= "#{root_path}" %>users/"+obj["user"]["user"]["username"]+"'>" + obj["agent"]["agent"]["full_name"] + "</a>"
                + "(" + "<a href='<%= "#{root_path}" %>users/"+obj["user"]["user"]["username"]+"'>" + obj["user"] ["user"]["username"]+ "</a>" + ")"
                + "</p>"
                + "<br />"

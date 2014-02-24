@@ -5,7 +5,7 @@
 <table class="index">
   <tr>
     <th id="position"></th>
-    <th><%= t('activerecord.models.patron') -%></th>
+    <th><%= t('activerecord.models.agent') -%></th>
     <th></th>
   </tr>
 
@@ -17,7 +17,7 @@
         <%= produce.last? ? image_tag('icons/cross.png', :size => '16x16') : link_to(image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc')), {:action => 'update', :position => (produce.position + 1), :id => produce.id, :manifestation_id => manifestation.id}, :method => :put) -%>
       <%- end -%>
     </td>
-    <td><%= link_to produce.patron.full_name, produce.patron -%></td>
+    <td><%= link_to produce.agent.full_name, produce.agent -%></td>
     <td>
       <%- if can? :destroy, produce -%>
         <%= link_to t('page.destroy'), manifestation_produce_path(produce.manifestation, produce), :confirm => t('page.are_you_sure'), :method => :delete -%>
@@ -33,7 +33,7 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.listing', :model => t('activerecord.models.patron')), manifestation_patrons_path(manifestation) -%></li>
+    <li><%= link_to t('page.listing', :model => t('activerecord.models.agent')), manifestation_agents_path(manifestation) -%></li>
     <li><%= link_to t('activerecord.models.manifestation'), manifestation -%></li>
     <%- if can? :create, Produce -%>
       <li><%= link_to t('page.new', :model => t('activerecord.models.produce')), new_manifestation_produce_path(manifestation) -%></li>

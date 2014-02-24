@@ -26,9 +26,9 @@ describe Version do
   # * Shelf
   #    * library
   #
-  # * Patron
+  # * Agent
   #    * language
-  #    * patron_type
+  #    * agent_type
   #    * country
   #    * required_role(role)
   #
@@ -42,15 +42,15 @@ describe Version do
   #
   # * Create
   #    * work(manifestation)
-  #    * patron
+  #    * agent
   #
   # * Produce
   #    * manifestation
-  #    * patron
+  #    * agent
   #
   # * Realize
   #    * expression(manifestation)
-  #    * patron
+  #    * agent
   #
   # * Exemplify
   #    * manifestation
@@ -66,7 +66,7 @@ describe Version do
   #
   # * Library
   #    * library_group
-  #    * patron
+  #    * agent
   #
   # * Role
   #
@@ -84,7 +84,7 @@ describe Version do
   #
   # * Extent
   #
-  # * PatronType
+  # * AgentType
   #
   # * LibraryGroup
 
@@ -142,51 +142,51 @@ describe Version do
       dump[:latest]['Role'][role.id].should be_nil
     end
 
-    it 'Userに関連付けられたPatronの個人情報はエクスポートしないこと' do
+    it 'Userに関連付けられたAgentの個人情報はエクスポートしないこと' do
       keep_attributes = %w(
         id
         created_at updated_at deleted_at
-        language_id country_id patron_type_id
+        language_id country_id agent_type_id
         required_role_id required_score
-        patron_identifier exclude_state
+        agent_identifier exclude_state
       )
       vid = latest_version_id
 
-      attributes = Patron.column_names.
+      attributes = Agent.column_names.
         reject {|name| /\Aid\z|_(id|at)\z|\Adate_of_|\Alock_version\z/ =~ name }.
         inject({}) {|hash, name| hash[name] = name; hash }.
         merge!({
           'language' => languages(:language_00001),
-          'patron_type' => patron_types(:patron_type_00001),
+          'agent_type' => agent_types(:agent_type_00001),
           'country' => countries(:country_00001),
           'birth_date' => Date.new(1900, 1, 1),
           'death_date' => Date.new(1950, 1, 1),
           'email' => 'foo@example.jp',
         })
 
-      patron1 = Patron.create! do |patron|
+      agent1 = Agent.create! do |agent|
         attributes.each_pair do |k, v|
-          patron.__send__("#{k}=", v)
-          patron.full_name = 'patron_a'
+          agent.__send__("#{k}=", v)
+          agent.full_name = 'agent_a'
         end
       end
-      patron1.reload
-      attributes1 = patron1.attributes
+      agent1.reload
+      attributes1 = agent1.attributes
 
-      patron2 = Patron.create! do |patron|
+      agent2 = Agent.create! do |agent|
         attributes.each_pair do |k, v|
-          patron.__send__("#{k}=", v)
-          patron.full_name = 'patron_b'
-          patron.user = users(:user5)
+          agent.__send__("#{k}=", v)
+          agent.full_name = 'agent_b'
+          agent.user = users(:user5)
         end
       end
-      patron2.reload
-      attributes2 = patron2.attributes
+      agent2.reload
+      attributes2 = agent2.attributes
 
       dump1 = Version.export_for_incremental_synchronization(vid)
 
-      patron1.destroy
-      patron2.destroy
+      agent1.destroy
+      agent2.destroy
       dump2 = Version.export_for_incremental_synchronization(vid)
 
       [dump1, dump2].inject([]) do |all, dump|
@@ -208,11 +208,11 @@ describe Version do
         end
 
         item_attributes.each_pair do |name, value|
-          if item_id == patron1.id
+          if item_id == agent1.id
             # 個人情報は保持される
             if name == 'full_name'
-              value.should match(/\Apatron_[aA]\z/),
-                "attribute #{name.inspect} should be /patron_[aA]/, but #{value.inspect}"
+              value.should match(/\Aagent_[aA]\z/),
+                "attribute #{name.inspect} should be /agent_[aA]/, but #{value.inspect}"
             else
               value.should be_eql(attributes1[name]),
                 "attribute #{name.inspect} should be #{attributes1[name].inspect}, but #{value.inspect}"
@@ -416,8 +416,8 @@ describe Version do
       include_examples '記録されていた状態に復元する'
     end
 
-    describe 'PatronTypeを' do
-      let(:model_class) { PatronType }
+    describe 'AgentTypeを' do
+      let(:model_class) { AgentType }
       include_examples '記録されていた状態に復元する'
     end
 
@@ -454,14 +454,14 @@ describe Version do
 
       let(:update_proc) do
         proc do |record, i|
-          patron = record.patron
+          agent = record.agent
 
           update_record(
-            record, patron: patrons(:"patron_0010#{i}"))
+            record, agent: agents(:"agent_0010#{i}"))
 
           # Library.create時に自動的に作成された
-          # Patronレコードをテストのために削除しておく
-          patron.destroy if i == 1
+          # Agentレコードをテストのために削除しておく
+          agent.destroy if i == 1
 
           record
         end
@@ -583,15 +583,15 @@ describe Version do
       include_examples '記録されていた状態に復元する'
     end
 
-    describe 'Patronを' do
-      let(:model_class) { Patron }
+    describe 'Agentを' do
+      let(:model_class) { Agent }
 
       let(:create_proc) do
         proc do
           create_record(
             full_name: 'test record',
             language: languages(:language_00001),
-            patron_type: patron_types(:patron_type_00001),
+            agent_type: agent_types(:agent_type_00001),
             country: countries(:country_00001))
         end
       end
@@ -608,21 +608,21 @@ describe Version do
       include_examples '記録されていた状態に復元する'
     end
 
-    describe 'Userに関連付けられたPatronを' do
-      let(:model_class) { Patron }
+    describe 'Userに関連付けられたAgentを' do
+      let(:model_class) { Agent }
 
       it '復元できること' do
         vid = latest_version_id
-        patron = patron_id = dump = nil
+        agent = agent_id = dump = nil
 
         ActiveRecord::Base.transaction do
-          patron = create_record(
+          agent = create_record(
             full_name: 'test record',
             language: languages(:language_00001),
-            patron_type: patron_types(:patron_type_00001),
+            agent_type: agent_types(:agent_type_00001),
             country: countries(:country_00001),
             user: users(:user5))
-          patron_id = patron.id
+          agent_id = agent.id
 
           dump = Version.export_for_incremental_synchronization(vid)
           raise ActiveRecord::Rollback
@@ -632,9 +632,9 @@ describe Version do
           Version.import_for_incremental_synchronization!(dump)
         }.should change(model_class, :count).by(1)
 
-        imported = model_class.find(patron_id)
-        %w(language patron_type country user).each do |name|
-          imported[name].should be_eql(patron[name])
+        imported = model_class.find(agent_id)
+        %w(language agent_type country user).each do |name|
+          imported[name].should be_eql(agent[name])
         end
       end
     end
@@ -662,7 +662,7 @@ describe Version do
       include_examples '記録されていた状態に復元する'
     end
 
-    shared_examples_for 'Manifestation-Patron関連を復元する' do
+    shared_examples_for 'Manifestation-Agent関連を復元する' do
       before do
         @manifestation_type = FactoryGirl.create(:manifestation_type)
         @manifestation = FactoryGirl.create(
@@ -673,14 +673,14 @@ describe Version do
 
       let(:create_proc) do
         proc do
-          @patron = FactoryGirl.create(
-            :patron,
+          @agent = FactoryGirl.create(
+            :agent,
             language: languages(:language_00001),
-            patron_type: patron_types(:patron_type_00001),
+            agent_type: agent_types(:agent_type_00001),
             country: countries(:country_00001))
 
-          @manifestation.__send__(relation1) << @patron
-          @manifestation.__send__(relation2).where(:patron_id => @patron).first
+          @manifestation.__send__(relation1) << @agent
+          @manifestation.__send__(relation2).where(:agent_id => @agent).first
         end
       end
 
@@ -690,7 +690,7 @@ describe Version do
 
       let(:destroy_proc) do
         proc do |record|
-          @patron.destroy
+          @agent.destroy
           record
         end
       end
@@ -702,7 +702,7 @@ describe Version do
       let(:relation1) { :creators }
       let(:relation2) { :creates }
 
-      include_examples 'Manifestation-Patron関連を復元する'
+      include_examples 'Manifestation-Agent関連を復元する'
       include_examples '記録されていた状態に復元する'
     end
 
@@ -712,7 +712,7 @@ describe Version do
       let(:relation1) { :publishers }
       let(:relation2) { :produces }
 
-      include_examples 'Manifestation-Patron関連を復元する'
+      include_examples 'Manifestation-Agent関連を復元する'
       include_examples '記録されていた状態に復元する'
     end
 
@@ -722,7 +722,7 @@ describe Version do
       let(:relation1) { :contributors }
       let(:relation2) { :realizes }
 
-      include_examples 'Manifestation-Patron関連を復元する'
+      include_examples 'Manifestation-Agent関連を復元する'
       include_examples '記録されていた状態に復元する'
     end
 

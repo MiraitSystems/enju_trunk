@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class EventsControllerTest < ActionController::TestCase
-    fixtures :events, :event_categories, :libraries, :patrons, :users
+    fixtures :events, :event_categories, :libraries, :agents, :users
 
   def test_guest_should_get_index_with_library_id
     get :index, :library_id => 'kamata'
