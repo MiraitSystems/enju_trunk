@@ -204,7 +204,7 @@ describe UserGroupsController do
           assigns(:user_group).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :user_group => @attrs
           response.should redirect_to(assigns(:user_group))
         end

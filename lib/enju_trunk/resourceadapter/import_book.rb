@@ -255,26 +255,26 @@ module EnjuTrunk
       creators        = creators_string.nil? ? nil : creators_string.to_s.gsub('；', ';').split(';')
       unless creators.nil?
         creators_list   = creators.inject([]){ |list, creator| list << {:full_name => creator.to_s.strip, :full_name_transcription => "" } }
-        creator_patrons = Patron.import_patrons(creators_list)
-        manifestation.creators = creator_patrons
+        creator_agents = Agent.import_agents(creators_list)
+        manifestation.creators = creator_agents
       end
       # publisher
       publishers_string = datas[field[I18n.t('resource_import_textfile.excel.book.publisher')]]
       publishers        = publishers_string.nil? ? nil : publishers_string.to_s.gsub('；', ';').split(';')
       unless publishers.nil?
         publishers_list   = publishers.inject([]){ |list, publisher| list << {:full_name => publisher.to_s.strip, :full_name_transcription => "" } }
-        publisher_patrons = Patron.import_patrons(publishers_list)
-        manifestation.publishers = publisher_patrons
+        publisher_agents = Agent.import_agents(publishers_list)
+        manifestation.publishers = publisher_agents
       end
       # contributor
       contributors_string = datas[field[I18n.t('resource_import_textfile.excel.book.contributor')]]
       contributors        = contributors_string.nil? ? nil : contributors_string.to_s.gsub('；', ';').split(';')
       unless contributors.nil?
         contributors_list   = contributors.inject([]){ |list, contributor| list << {:full_name => contributor.to_s.strip, :full_name_transcription => "" } }
-        contributor_patrons = Patron.import_patrons(contributors_list)
+        contributor_agents = Agent.import_agents(contributors_list)
         #TODO update contributor position withou destroy_all
         manifestation.contributors.destroy_all unless manifestation.contributors.empty?
-        manifestation.contributors = contributor_patrons
+        manifestation.contributors = contributor_agents
       end
       # subject
       subjects_list = datas[field[I18n.t('resource_import_textfile.excel.article.subject')]]
@@ -282,6 +282,7 @@ module EnjuTrunk
         subjects = Subject.import_subjects(subjects_list)
         manifestation.subjects = subjects
       end
+
       # language
       languages_list   = []
       languages_string = datas[field[I18n.t('resource_import_textfile.excel.book.language')]]
@@ -303,6 +304,22 @@ module EnjuTrunk
       end
       manifestation.languages = languages_list unless languages_list.blank?
 
+      # manifestation_extexts
+      extexts = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_extext').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_extext.#{key.to_s}")]] 
+        extexts[key] = data if data
+      end 
+      manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
+           
+      # manifestation_exinfos
+      exinfos = {}
+      I18n.t('resource_import_textfile.excel.book.manifestation_exinfo').keys.each do |key|
+        data = datas[field[I18n.t("resource_import_textfile.excel.book.manifestation_exinfo.#{key.to_s}")]] 
+        exinfos[key] = data if data
+      end 
+      manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
+       
       import_textresult.error_msg = error_msg if error_msg
       return manifestation, item, mode, import_textresult
     end
@@ -573,7 +590,7 @@ module EnjuTrunk
         p "editing item: #{item.item_identifier}"
       end
       item.save!
-      item.patrons << shelf.library.patron if mode == 'create'
+      item.agents << shelf.library.agent if mode == 'create'
       item.manifestation = manifestation
       unless item.remove_reason.nil?
         if item.reserve

@@ -28,14 +28,14 @@ class User < ActiveRecord::Base
   scope :administrators, where('roles.name = ?', 'Administrator').includes(:role)
   scope :librarians, where('roles.name = ? OR roles.name = ?', 'Administrator', 'Librarian').includes(:role)
   scope :suspended, where('locked_at IS NOT NULL')
-  scope :adults, joins(:patron).where(["patrons.date_of_birth <= ?", Date.today.years_ago(18).change(:month => 4, :day => 1)])
-  scope :students, joins(:patron).where(["patrons.date_of_birth < ? AND patrons.date_of_birth >= ?", Date.today.years_ago(15).change(:month => 4, :day => 1), Date.today.years_ago(18).change(:month => 4, :day => 1)])
-  scope :juniors, joins(:patron).where(["patrons.date_of_birth < ? AND patrons.date_of_birth >= ?", Date.today.years_ago(12).change(:month => 4, :day => 1), Date.today.years_ago(15).change(:month => 4, :day => 1)])
-  scope :elementaries, joins(:patron).where(["patrons.date_of_birth < ? AND patrons.date_of_birth >= ?", Date.today.years_ago(6).change(:month => 4, :day => 1), Date.today.years_ago(12).change(:month => 4, :day => 1)])
-  scope :children, joins(:patron).where(["patrons.date_of_birth >= ?", Date.today.years_ago(6).change(:month => 4, :day => 1)])
+  scope :adults, joins(:agent).where(["agents.date_of_birth <= ?", Date.today.years_ago(18).change(:month => 4, :day => 1)])
+  scope :students, joins(:agent).where(["agents.date_of_birth < ? AND agents.date_of_birth >= ?", Date.today.years_ago(15).change(:month => 4, :day => 1), Date.today.years_ago(18).change(:month => 4, :day => 1)])
+  scope :juniors, joins(:agent).where(["agents.date_of_birth < ? AND agents.date_of_birth >= ?", Date.today.years_ago(12).change(:month => 4, :day => 1), Date.today.years_ago(15).change(:month => 4, :day => 1)])
+  scope :elementaries, joins(:agent).where(["agents.date_of_birth < ? AND agents.date_of_birth >= ?", Date.today.years_ago(6).change(:month => 4, :day => 1), Date.today.years_ago(12).change(:month => 4, :day => 1)])
+  scope :children, joins(:agent).where(["agents.date_of_birth >= ?", Date.today.years_ago(6).change(:month => 4, :day => 1)])
   scope :provisional, where(:user_number => nil)
-  scope :corporate, joins(:patron => :patron_type).where(["patron_types.name = ? ", "CorporateBody"])
-  has_one :patron
+  scope :corporate, joins(:agent => :agent_type).where(["agent_types.name = ? ", "CorporateBody"])
+  has_one :agent
   has_many :checkouts
   has_many :import_requests
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
   belongs_to :library, :validate => true
   belongs_to :user_group
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id' #, :validate => true
-  has_one :patron_import_result
+  has_one :agent_import_result
   has_one :family, :through => :family_user
   has_one :family_user
   has_many :barcode_lists, :foreign_key => 'created_by'
@@ -88,12 +88,12 @@ class User < ActiveRecord::Base
   end
 
 #  validates_presence_of :email, :email_confirmation, :on => :create #, :if => proc{|user| !user.operator.try(:has_role?, 'Librarian')}
-  validates_associated :patron, :user_group, :library
+  validates_associated :agent, :user_group, :library
   validates_presence_of :user_group, :library, :locale #, :user_number
   validates :user_number, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/}, :allow_blank => true
   validates_confirmation_of :email, :on => :create#, :if => proc{|user| !user.operator.try(:has_role?, 'Librarian')}
   validates_confirmation_of :email, :on => :update, :if => Proc.new { |user| user.email != User.find(user.id).email }
-  before_validation :set_role_and_patron, :on => :create
+  before_validation :set_role_and_agent, :on => :create
   before_validation :set_lock_information
   before_validation :set_user_number, :on => :create
   before_destroy :check_item_before_destroy, :check_role_before_destroy
@@ -101,8 +101,8 @@ class User < ActiveRecord::Base
   before_create :set_expired_at
   after_destroy :remove_from_index
   after_create :set_confirmation
-  after_save :index_patron
-  after_destroy :index_patron
+  after_save :index_agent
+  after_destroy :index_agent
 
   extend FriendlyId
   friendly_id :username
@@ -113,51 +113,51 @@ class User < ActiveRecord::Base
   searchable do
     text :username, :email, :note, :user_number
     text :telephone_number_1_1 do
-      patron.telephone_number_1.gsub("-", "") if patron && patron.telephone_number_1
+      agent.telephone_number_1.gsub("-", "") if agent && agent.telephone_number_1
     end
     text :telephone_number_1_2 do
-      patron.telephone_number_1 if patron && patron.telephone_number_1
+      agent.telephone_number_1 if agent && agent.telephone_number_1
     end
     text :extelephone_number_1_1 do
-      patron.extelephone_number_1.gsub("-", "") if patron && patron.extelephone_number_1
+      agent.extelephone_number_1.gsub("-", "") if agent && agent.extelephone_number_1
     end
     text :extelephone_number_1_2_ do
-      patron.extelephone_number_1 if patron && patron.extelephone_number_1
+      agent.extelephone_number_1 if agent && agent.extelephone_number_1
     end
     text :fax_number_1_1 do
-      patron.fax_number_1.gsub("-", "") if patron && patron.fax_number_1
+      agent.fax_number_1.gsub("-", "") if agent && agent.fax_number_1
     end
     text :fax_number_1_2 do
-      patron.fax_number_1 if patron && patron.fax_number_1
+      agent.fax_number_1 if agent && agent.fax_number_1
     end
     text :telephone_number_2_1 do
-      patron.telephone_number_2.gsub("-", "") if patron && patron.telephone_number_2
+      agent.telephone_number_2.gsub("-", "") if agent && agent.telephone_number_2
     end
     text :telephone_number_2_2 do
-      patron.telephone_number_2 if patron && patron.telephone_number_2
+      agent.telephone_number_2 if agent && agent.telephone_number_2
     end
     text :extelephone_number_2_1 do
-      patron.extelephone_number_2.gsub("-", "") if patron && patron.extelephone_number_2
+      agent.extelephone_number_2.gsub("-", "") if agent && agent.extelephone_number_2
     end
     text :extelephone_number_2_2 do
-      patron.extelephone_number_2 if patron && patron.extelephone_number_2
+      agent.extelephone_number_2 if agent && agent.extelephone_number_2
     end
     text :fax_number_2_1 do
-      patron.fax_number_2.gsub("-", "") if patron && patron.fax_number_2
+      agent.fax_number_2.gsub("-", "") if agent && agent.fax_number_2
     end
     text :fax_number_2_2 do
-      patron.fax_number_2 if patron && patron.fax_number_2
+      agent.fax_number_2 if agent && agent.fax_number_2
     end
     text :address do
       addresses = []
-      addresses << patron.address_1 if patron
-      addresses << patron.address_2 if patron
+      addresses << agent.address_1 if agent
+      addresses << agent.address_2 if agent
     end
     text :address_1 do
-      patron.address_1 if patron
+      agent.address_1 if agent
     end
     text :name do
-      patron.name if patron
+      agent.name if agent
     end
     text :department do
       department.try(:display_name)
@@ -166,20 +166,20 @@ class User < ActiveRecord::Base
     string :email
     string :user_number
     string :telephone_number do
-      patron.telephone_number_1.gsub("-", "") if patron && patron.telephone_number_1
+      agent.telephone_number_1.gsub("-", "") if agent && agent.telephone_number_1
     end
     string :full_name do
-      patron.full_name_transcription if patron
+      agent.full_name_transcription if agent
     end
     string :telephone_number do
-      patron.telephone_number_1 if patron && patron.telephone_number_1
+      agent.telephone_number_1 if agent && agent.telephone_number_1
     end
     integer :required_role_id
     integer :id
     time :created_at
     time :updated_at
     time :date_of_birth do
-      patron.date_of_birth if patron
+      agent.date_of_birth if agent
     end
     boolean :active do
       active_for_authentication?
@@ -191,8 +191,8 @@ class User < ActiveRecord::Base
     string :role do
       role.display_name
     end
-    string :patron_type do
-      patron.patron_type.name if patron
+    string :agent_type do
+      agent.agent_type.name if agent
     end
     string :user_status do
       user_status.name
@@ -204,7 +204,7 @@ class User < ActiveRecord::Base
     :first_name_transcription, :middle_name_transcription,
     :last_name_transcription, :full_name_transcription,
     :zip_code, :address, :address_1, :telephone_number, :fax_number, :address_note,
-    :role_id, :patron_id, :operator, :password_not_verified,
+    :role_id, :agent_id, :operator, :password_not_verified,
     :update_own_account, :auto_generated_password,
     :locked, :current_password, :birth_date, :death_date #, :email
 
@@ -227,11 +227,11 @@ class User < ActiveRecord::Base
     end
   end
 
-  def set_role_and_patron
+  def set_role_and_agent
     #self.required_role = Role.find_by_name('Librarian')
 #    self.locale = I18n.default_locale.to_s
-    unless self.patron
-#      self.patron = Patron.create(:full_name => self.username) if self.username
+    unless self.agent
+#      self.agent = Agent.create(:full_name => self.username) if self.username
     end
   end
 
@@ -255,9 +255,9 @@ class User < ActiveRecord::Base
     self.user_number = self.username if SystemConfiguration.get('auto_user_number')
   end
 
-  def index_patron
-    if self.patron
-      self.patron.index
+  def index_agent
+    if self.agent
+      self.agent.index
     end
   end
 
@@ -466,8 +466,8 @@ class User < ActiveRecord::Base
 
     logger.debug "create_with_params create-10"
 
-    if user.patron_id
-      user.patron = Patron.find(user.patron_id) rescue nil
+    if user.agent_id
+      user.agent = Agent.find(user.agent_id) rescue nil
     end
     logger.debug "create_with_params end."
     user
@@ -546,7 +546,7 @@ class User < ActiveRecord::Base
   end
 
   def age
-    Date.today.year - patron.date_of_birth.year
+    Date.today.year - agent.date_of_birth.year
   end
 
   def set_color
@@ -660,12 +660,12 @@ class User < ActiveRecord::Base
       page.item(:date).value(Time.now)
       users.each do |user|
         page.list(:list).add_row do |row|
-          row.item(:full_name).value(user.try(:patron).try(:full_name))
+          row.item(:full_name).value(user.try(:agent).try(:full_name))
 #          row.item(:username).value(user.username)
           row.item(:department).value(user.try(:department).try(:display_name))
           row.item(:user_number).value(user.user_number)
-          row.item(:tel1).value(user.try(:patron).try(:telephone_number_1)) if user.try(:patron).try(:telephone_number_1)
-          row.item(:e_mail).value(user.try(:patron).try(:email)) if user.try(:patron).try(:email)
+          row.item(:tel1).value(user.try(:agent).try(:telephone_number_1)) if user.try(:agent).try(:telephone_number_1)
+          row.item(:e_mail).value(user.try(:agent).try(:email)) if user.try(:agent).try(:email)
           row.item(:created_at).value(user.created_at)
           if user.active_for_authentication?
             row.item(:user_status).value(user.try(:user_status).try(:display_name))
@@ -682,13 +682,13 @@ class User < ActiveRecord::Base
 
   def self.output_userlist_tsv(users)
     columns = [
-      [:full_name, 'activerecord.attributes.patron.full_name'],
-      [:full_name_transcription, 'activerecord.attributes.patron.full_name_transcription'],
-      [:full_name_alternative, 'activerecord.attributes.patron.full_name_alternative'],
-      [:first_name, 'activerecord.attributes.patron.first_name'],
-      [:first_name_transcription, 'activerecord.attributes.patron.first_name_transcription'],
-      [:last_name, 'activerecord.attributes.patron.last_name'],
-      [:last_name_transcription, 'activerecord.attributes.patron.last_name_transcription'],
+      [:full_name, 'activerecord.attributes.agent.full_name'],
+      [:full_name_transcription, 'activerecord.attributes.agent.full_name_transcription'],
+      [:full_name_alternative, 'activerecord.attributes.agent.full_name_alternative'],
+      [:first_name, 'activerecord.attributes.agent.first_name'],
+      [:first_name_transcription, 'activerecord.attributes.agent.first_name_transcription'],
+      [:last_name, 'activerecord.attributes.agent.last_name'],
+      [:last_name_transcription, 'activerecord.attributes.agent.last_name_transcription'],
       ['username', 'activerecord.attributes.user.username'],
       ['user_number', 'activerecord.attributes.user.user_number'],
       [:library, 'activerecord.attributes.user.library'],
@@ -697,38 +697,38 @@ class User < ActiveRecord::Base
       [:expired_at, 'activerecord.attributes.user.expired_at'],
       [:status, 'activerecord.attributes.user.user_status'],
       [:unable, 'activerecord.attributes.user.unable'],
-      [:patron_type, 'activerecord.models.patron_type'],
-      [:email, 'activerecord.attributes.patron.email'],
-      [:url, 'activerecord.attributes.patron.url'],
-      [:other_designation, 'activerecord.attributes.patron.other_designation'],
-      [:place, 'activerecord.attributes.patron.place'],
+      [:agent_type, 'activerecord.models.agent_type'],
+      [:email, 'activerecord.attributes.agent.email'],
+      [:url, 'activerecord.attributes.agent.url'],
+      [:other_designation, 'activerecord.attributes.agent.other_designation'],
+      [:place, 'activerecord.attributes.agent.place'],
       [:language, 'activerecord.models.language'],
       [:country, 'activerecord.models.country'],
-      [:zip_code_1, 'activerecord.attributes.patron.zip_code_1'],
-      [:address_1, 'activerecord.attributes.patron.address_1'],
-      [:telephone_number_1, 'activerecord.attributes.patron.telephone_number_1'],
-      [:telephone_number_1_type_id, 'activerecord.attributes.patron.telephone_number_1_type'],
-      [:extelephone_number_1, 'activerecord.attributes.patron.extelephone_number_1'],
-      [:extelephone_number_1_type_id, 'activerecord.attributes.patron.extelephone_number_1_type'],
-      [:fax_number_1, 'activerecord.attributes.patron.fax_number_1'],
-      [:fax_number_1_type_id, 'activerecord.attributes.patron.fax_number_1_type'],
-      [:address_1_note, 'activerecord.attributes.patron.address_1_note'],
-      [:zip_code_2, 'activerecord.attributes.patron.zip_code_2'],
-      [:address_2, 'activerecord.attributes.patron.address_2'],
-      [:telephone_number_2, 'activerecord.attributes.patron.telephone_number_2'],
-      [:telephone_number_2_type_id, 'activerecord.attributes.patron.telephone_number_2_type'],
-      [:extelephone_number_2, 'activerecord.attributes.patron.extelephone_number_2'],
-      [:extelephone_number_2_type_id, 'activerecord.attributes.patron.extelephone_number_2_type'],
-      [:fax_number_2, 'activerecord.attributes.patron.fax_number_2'],
-      [:fax_number_2_type_id, 'activerecord.attributes.patron.fax_number_2_type'],
-      [:address_2_note, 'activerecord.attributes.patron.address_2_note'],
-      [:birth_date, 'activerecord.attributes.patron.date_of_birth'],
-      [:death_date, 'activerecord.attributes.patron.date_of_death'],
-      [:note, 'activerecord.attributes.patron.note'],
-      [:note_update_at, 'activerecord.attributes.patron.note_update_at'],
-      [:note_update_by, 'activerecord.attributes.patron.note_update_by'],
-      [:note_update_library, 'activerecord.attributes.patron.note_update_library'],
-      [:patron_identifier, 'patron.patron_identifier'],
+      [:zip_code_1, 'activerecord.attributes.agent.zip_code_1'],
+      [:address_1, 'activerecord.attributes.agent.address_1'],
+      [:telephone_number_1, 'activerecord.attributes.agent.telephone_number_1'],
+      [:telephone_number_1_type_id, 'activerecord.attributes.agent.telephone_number_1_type'],
+      [:extelephone_number_1, 'activerecord.attributes.agent.extelephone_number_1'],
+      [:extelephone_number_1_type_id, 'activerecord.attributes.agent.extelephone_number_1_type'],
+      [:fax_number_1, 'activerecord.attributes.agent.fax_number_1'],
+      [:fax_number_1_type_id, 'activerecord.attributes.agent.fax_number_1_type'],
+      [:address_1_note, 'activerecord.attributes.agent.address_1_note'],
+      [:zip_code_2, 'activerecord.attributes.agent.zip_code_2'],
+      [:address_2, 'activerecord.attributes.agent.address_2'],
+      [:telephone_number_2, 'activerecord.attributes.agent.telephone_number_2'],
+      [:telephone_number_2_type_id, 'activerecord.attributes.agent.telephone_number_2_type'],
+      [:extelephone_number_2, 'activerecord.attributes.agent.extelephone_number_2'],
+      [:extelephone_number_2_type_id, 'activerecord.attributes.agent.extelephone_number_2_type'],
+      [:fax_number_2, 'activerecord.attributes.agent.fax_number_2'],
+      [:fax_number_2_type_id, 'activerecord.attributes.agent.fax_number_2_type'],
+      [:address_2_note, 'activerecord.attributes.agent.address_2_note'],
+      [:birth_date, 'activerecord.attributes.agent.date_of_birth'],
+      [:death_date, 'activerecord.attributes.agent.date_of_death'],
+      [:note, 'activerecord.attributes.agent.note'],
+      [:note_update_at, 'activerecord.attributes.agent.note_update_at'],
+      [:note_update_by, 'activerecord.attributes.agent.note_update_by'],
+      [:note_update_library, 'activerecord.attributes.agent.note_update_library'],
+      [:agent_identifier, 'agent.agent_identifier'],
       [:role, 'activerecord.models.role'],
       [:created_at, 'page.created_at'],
       [:updated_at, 'page.updated_at'],
@@ -753,19 +753,19 @@ class User < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :full_name
-          row << user.try(:patron).try(:full_name)
+          row << user.try(:agent).try(:full_name)
         when :full_name_transcription
-          row << user.try(:patron).try(:full_name_transcription)
+          row << user.try(:agent).try(:full_name_transcription)
         when :full_name_alternative
-          row << user.try(:patron).try(:full_name_alternative)
+          row << user.try(:agent).try(:full_name_alternative)
         when :first_name
-          row << user.try(:patron).try(:first_name)
+          row << user.try(:agent).try(:first_name)
         when :first_name_transcription
-          row << user.try(:patron).try(:first_name_transcription)
+          row << user.try(:agent).try(:first_name_transcription)
         when :last_name
-          row << user.try(:patron).try(:last_name)
+          row << user.try(:agent).try(:last_name)
         when :last_name_transcription
-          row << user.try(:patron).try(:last_name_transcription)
+          row << user.try(:agent).try(:last_name_transcription)
         when :library
           row << user.try(:library).try(:name)
         when :user_group
@@ -778,100 +778,100 @@ class User < ActiveRecord::Base
           row << user.try(:user_status).try(:display_name)
         when :unable
           row << user.try(:unable)
-        when :patron_type
-          row << user.try(:patron).try(:patron_type_id)
+        when :agent_type
+          row << user.try(:agent).try(:agent_type_id)
         when :email
-          row << user.try(:patron).try(:email)
+          row << user.try(:agent).try(:email)
         when :url
-          row << user.try(:patron).try(:url)
+          row << user.try(:agent).try(:url)
         #TODO 現在は表示されていない
         when :other_designation
-          row << user.try(:patron).try(:other_designation)
+          row << user.try(:agent).try(:other_designation)
         #TODO 現在は表示されていない
         when :place
-          row << user.try(:patron).try(:place)
+          row << user.try(:agent).try(:place)
         when :language
-          row << user.try(:patron).try(:language).try(:display_name).try(:localize)
+          row << user.try(:agent).try(:language).try(:display_name).try(:localize)
         when :country
-          row << user.try(:patron).try(:country).try(:display_name).try(:localize)
+          row << user.try(:agent).try(:country).try(:display_name).try(:localize)
         when :zip_code_1
-          row << user.try(:patron).try(:zip_code_1)
+          row << user.try(:agent).try(:zip_code_1)
         when :address_1
-          row << user.try(:patron).try(:address_1)
+          row << user.try(:agent).try(:address_1)
         when :telephone_number_1
-          row << user.try(:patron).try(:telephone_number_1)
+          row << user.try(:agent).try(:telephone_number_1)
         when :telephone_number_1_type_id
-          row << user.try(:patron).try(:telephone_number_1_type_id)
+          row << user.try(:agent).try(:telephone_number_1_type_id)
         when :extelephone_number_1
-          row << user.try(:patron).try(:extelephone_number_1)
+          row << user.try(:agent).try(:extelephone_number_1)
         when :extelephone_number_1_type_id
-          row << user.try(:patron).try(:extelephone_number_1_type_id)
+          row << user.try(:agent).try(:extelephone_number_1_type_id)
         when :fax_number_1
-          row << user.try(:patron).try(:fax_number_1)
+          row << user.try(:agent).try(:fax_number_1)
         when :fax_number_1_type_id
-          row << user.try(:patron).try(:fax_number_1_type_id)
+          row << user.try(:agent).try(:fax_number_1_type_id)
 =begin
         when :telephone_number_1
-          telephone_number_1 = user.try(:patron).try(:telephone_number_1)
-          telephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.try(:patron).try(:telephone_number_1_type_id)).try(:strip_tags)) +')' unless user.try(:patron).try(:telephone_number_1).blank?
+          telephone_number_1 = user.try(:agent).try(:telephone_number_1)
+          telephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.try(:agent).try(:telephone_number_1_type_id)).try(:strip_tags)) +')' unless user.try(:agent).try(:telephone_number_1).blank?
           row << telephone_number_1 
         when :extelephone_number_1
-          extelephone_number_1 = user.try(:patron).try(:extelephone_number_1)
-          extelephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.patron.extelephone_number_1_type_id).try(:strip_tags)) +')' unless user.try(:patron).try(:extelephone_number_1).blank?
+          extelephone_number_1 = user.try(:agent).try(:extelephone_number_1)
+          extelephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.agent.extelephone_number_1_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:extelephone_number_1).blank?
           row << extelephone_number_1 
         when :fax_number_1
-          fax_number_1 = user.try(:patron).try(:fax_number_1)
-          fax_number_1 += ' (' + I18n.t(i18n_telephone_type(user.patron.fax_number_1_type_id).try(:strip_tags)) +')' unless user.try(:patron).try(:fax_number_1).blank?
+          fax_number_1 = user.try(:agent).try(:fax_number_1)
+          fax_number_1 += ' (' + I18n.t(i18n_telephone_type(user.agent.fax_number_1_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:fax_number_1).blank?
           row << fax_number_1 
 =end
         when :address_1_note
-          row << user.try(:patron).try(:address_1_note )
+          row << user.try(:agent).try(:address_1_note )
         when :zip_code_2
-          row << user.try(:patron).try(:zip_code_2)
+          row << user.try(:agent).try(:zip_code_2)
         when :address_2
-          row << user.try(:patron).try(:address_2)
+          row << user.try(:agent).try(:address_2)
         when :telephone_number_2
-          row << user.try(:patron).try(:telephone_number_2)
+          row << user.try(:agent).try(:telephone_number_2)
         when :telephone_number_2_type_id
-          row << user.try(:patron).try(:telephone_number_2_type_id)
+          row << user.try(:agent).try(:telephone_number_2_type_id)
         when :extelephone_number_2
-          row << user.try(:patron).try(:extelephone_number_2)
+          row << user.try(:agent).try(:extelephone_number_2)
         when :extelephone_number_2_type_id
-          row << user.try(:patron).try(:extelephone_number_2_type_id)
+          row << user.try(:agent).try(:extelephone_number_2_type_id)
         when :fax_number_2
-          row << user.try(:patron).try(:fax_number_2)
+          row << user.try(:agent).try(:fax_number_2)
         when :fax_number_2_type_id
-          row << user.try(:patron).try(:fax_number_2_type_id)
+          row << user.try(:agent).try(:fax_number_2_type_id)
 =begin
         when :telephone_number_2
-          telephone_number_2 = user.try(:patron).try(:telephone_number_2)
-          telephone_number_2 += ' (' + I18n.t(i18n_telephone_type(user.patron.telephone_number_2_type_id).try(:strip_tags)) +')' unless user.try(:patron).try(:telephone_number_2).blank?
+          telephone_number_2 = user.try(:agent).try(:telephone_number_2)
+          telephone_number_2 += ' (' + I18n.t(i18n_telephone_type(user.agent.telephone_number_2_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:telephone_number_2).blank?
           row << telephone_number_2
         when :extelephone_number_2
-          extelephone_number_2 = user.try(:patron).try(:extelephone_number_2)
-          extelephone_number_2 += ' (' + I18n.t(i18n_telephone_type(user.patron.extelephone_number_2_type_id).try(:strip_tags)) +')' unless user.try(:patron).try(:extelephone_number_2).blank?
+          extelephone_number_2 = user.try(:agent).try(:extelephone_number_2)
+          extelephone_number_2 += ' (' + I18n.t(i18n_telephone_type(user.agent.extelephone_number_2_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:extelephone_number_2).blank?
           row << extelephone_number_2
         when :fax_number_2
-          fax_number_2 = user.try(:patron).try(:fax_number_2)
-          fax_number_2 += ' (' + I18n.t(i18n_telephone_type(user.patron.fax_number_2_type_id).try(:strip_tags)) +')' unless user.try(:patron).try(:fax_number_2).blank?
+          fax_number_2 = user.try(:agent).try(:fax_number_2)
+          fax_number_2 += ' (' + I18n.t(i18n_telephone_type(user.agent.fax_number_2_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:fax_number_2).blank?
           row << fax_number_2 
 =end
         when :address_2_note
-          row << user.try(:patron).try(:address_2_note)
+          row << user.try(:agent).try(:address_2_note)
         when :birth_date
-          row << user.try(:patron).try(:birth_date)
+          row << user.try(:agent).try(:birth_date)
         when :death_date
-          row << user.try(:patron).try(:death_date)
+          row << user.try(:agent).try(:death_date)
         when :note
-          row << user.try(:patron).try(:note)
+          row << user.try(:agent).try(:note)
         when :note_update_at
-          row << user.patron.note_update_at.strftime("%Y/%m/%d %H:%M:%S") if user.try(:patron).try(:note_update_at)
+          row << user.agent.note_update_at.strftime("%Y/%m/%d %H:%M:%S") if user.try(:agent).try(:note_update_at)
         when :note_update_by
-          row << user.try(:patron).try(:note_update_by) if user.try(:patron).try(:note_update_by)
+          row << user.try(:agent).try(:note_update_by) if user.try(:agent).try(:note_update_by)
         when :note_update_library
-          row << user.try(:patron).try(:note_update_library) if user.try(:patron).try(:note_update_library)
-        when :patron_identifier
-          row << user.try(:patron).try(:patron_identifier)
+          row << user.try(:agent).try(:note_update_library) if user.try(:agent).try(:note_update_library)
+        when :agent_identifier
+          row << user.try(:agent).try(:agent_identifier)
         when :role
           row << user.try(:user_has_role).try(:role_id)
         when :created_at

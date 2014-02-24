@@ -208,7 +208,7 @@ describe CarrierTypeHasCheckoutTypesController do
           assigns(:carrier_type_has_checkout_type).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :carrier_type_has_checkout_type => @attrs
           response.should redirect_to(assigns(:carrier_type_has_checkout_type))
         end

@@ -1,6 +1,6 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_unit_code, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :auto_calculation_flag, :taxable_amount, :tax_exempt_amount
+  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :auto_calculation_flag, :taxable_amount, :tax_exempt_amount
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
   belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
@@ -28,7 +28,9 @@ class Order < ActiveRecord::Base
 
 
   belongs_to :contract
-  belongs_to :patron, :foreign_key => :order_organization_id
+  belongs_to :agent, :foreign_key => :order_organization_id
+  belongs_to :currency
+
   has_many :payments
 
   validate :set_default
@@ -79,15 +81,15 @@ class Order < ActiveRecord::Base
   end
 
 
-  def self.struct_patron_selects
-    struct_patron = Struct.new(:id, :text)
-    @struct_patron_array = []
-    type_id = PatronType.find(:first, :conditions => ["name = ?", 'OrderOrganization'])
-    struct_select = Patron.find(:all, :conditions => ["patron_type_id = ?",type_id])
-    struct_select.each do |patron|
-      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+  def self.struct_agent_selects
+    struct_agent = Struct.new(:id, :text)
+    @struct_agent_array = []
+    type_id = AgentType.find(:first, :conditions => ["name = ?", 'OrderOrganization'])
+    struct_select = Agent.find(:all, :conditions => ["agent_type_id = ?",type_id])
+    struct_select.each do |agent|
+      @struct_agent_array << struct_agent.new(agent.id, agent.full_name)
     end
-    return @struct_patron_array
+    return @struct_agent_array
   end
 
   before_save :set_yen_imprest
@@ -96,7 +98,7 @@ class Order < ActiveRecord::Base
 
     if self.auto_calculation_flag != 1
 
-      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_unit_code, self.order_day])
+      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.order_day])
 
       if exchangerate
         self.currency_rate = exchangerate.rate
@@ -104,7 +106,7 @@ class Order < ActiveRecord::Base
         self.currency_rate = 0
       end
 
-      if self.currency_unit_code == 28
+      if self.currency_id == 28
         self.yen_imprest = (self.currency_rate * self.discount_commision * self.prepayment_principal).to_i
       else
         self.yen_imprest = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.prepayment_principal).to_i
@@ -139,7 +141,6 @@ class Order < ActiveRecord::Base
     self.order_identifier = year.to_s + number
 
   end
-
 
   def destroy?
     return false if Payment.where(:order_id => self.id).first

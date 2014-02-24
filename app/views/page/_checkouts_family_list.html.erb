@@ -31,7 +31,7 @@
           <% end %>
         </td>
         <%- if SystemConfiguration.get("checked_items.disp_user") -%>
-          <td><%= link_to f_user.patron.full_name, f_user -%><br />
+          <td><%= link_to f_user.agent.full_name, f_user -%><br />
               (<%= link_to f_user.username, f_user -%>)</td>
         <%- end -%>
       </tr>

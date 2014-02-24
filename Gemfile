@@ -14,7 +14,6 @@ gem 'enju_book_jacket', '0.1.0.pre2'
 gem 'enju_manifestation_viewer', '0.1.0.pre3'
 #gem 'enju_message', "0.1.14.pre"
 gem 'enju_message', :git => 'git://github.com/MiraitSystems/enju_trunk_message.git'
-#gem "enju_ndl", "0.1.0.pre8"
 gem 'enju_ndl', :git => 'git://github.com/MiraitSystems/enju_trunk_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
 gem 'enju_trunk_event', :git => 'git://github.com/MiraitSystems/enju_trunk_event.git', :require => 'enju_event'
@@ -174,4 +173,4 @@ group :operation do
   gem 'enju_trunk_ill', :git => 'git://github.com/MiraitSystems/enju_trunk_ill.git'
   gem 'enju_trunk_statistics', :git => 'git://github.com/MiraitSystems/enju_trunk_statistics.git'
 end
-gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'
+#gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'

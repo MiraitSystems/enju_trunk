@@ -18,7 +18,7 @@
     <td><%= link_to family.id, family -%></td>
     <td>
       <%- family.users.each do |user| -%> 
-        <%= link_to user.patron.full_name, user -%>(<%= link_to user.username, user -%>)&nbsp;
+        <%= link_to user.agent.full_name, user -%>(<%= link_to user.username, user -%>)&nbsp;
       <%- end -%>
     </td>
     <td><%= link_to t('page.edit'), edit_family_path(family) -%>

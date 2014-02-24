@@ -2,7 +2,7 @@ module UsersHelper
   def enumrate_user_name(family)
     v = ""
     family.users.each do |u|
-      v.concat("#{u.patron.full_name if u.patron} (#{u.username}) ")
+      v.concat("#{u.agent.full_name if u.agent} (#{u.username}) ")
     end
     return v
   end
@@ -24,27 +24,27 @@ module UsersHelper
   def i18n_telephone_type(type)
     case type
     when 1
-      t('activerecord.attributes.patron.home_phone')
+      t('activerecord.attributes.agent.home_phone')
     when 2
-      t('activerecord.attributes.patron.fax')
+      t('activerecord.attributes.agent.fax')
     when 3
-      t('activerecord.attributes.patron.mobile_phone')
+      t('activerecord.attributes.agent.mobile_phone')
     when 4
-      t('activerecord.attributes.patron.company_phone')
+      t('activerecord.attributes.agent.company_phone')
     when 5
-      t('activerecord.attributes.patron.extension')
+      t('activerecord.attributes.agent.extension')
     else
-      t('activerecord.attributes.patron.no_key') 
+      t('activerecord.attributes.agent.no_key') 
     end
   end
 
   def telephone_types
     types = {}
-    types.store(t('activerecord.attributes.patron.extension'), 5)
-    types.store(t('activerecord.attributes.patron.home_phone'), 1)
-    types.store(t('activerecord.attributes.patron.fax'),  2)
-    types.store(t('activerecord.attributes.patron.mobile_phone'), 3)
-    types.store(t('activerecord.attributes.patron.company_phone'), 4)
+    types.store(t('activerecord.attributes.agent.extension'), 5)
+    types.store(t('activerecord.attributes.agent.home_phone'), 1)
+    types.store(t('activerecord.attributes.agent.fax'),  2)
+    types.store(t('activerecord.attributes.agent.mobile_phone'), 3)
+    types.store(t('activerecord.attributes.agent.company_phone'), 4)
     types
   end
 

@@ -154,7 +154,7 @@ module FormInputUtils
   #
   # 使用例:
   #
-  #     generate_adhoc_one_char_query_text('あ い うえお AND "かき くけこ"', Patron, [:full_name, :note])
+  #     generate_adhoc_one_char_query_text('あ い うえお AND "かき くけこ"', Agent, [:full_name, :note])
   #     #=> %Q|_query_:"{!edismax qf='full_name_s note_s'}*あ* *い*" *うえお* "AND" "かき くけこ"|
   #
   # 注意:

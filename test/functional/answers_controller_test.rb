@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class AnswersControllerTest < ActionController::TestCase
-    fixtures :answers, :questions, :languages, :patrons, :patron_types,
+    fixtures :answers, :questions, :languages, :agents, :agent_types,
       :user_groups, :users, :roles, :library_groups, :libraries, :countries,
       :manifestations, :items
 

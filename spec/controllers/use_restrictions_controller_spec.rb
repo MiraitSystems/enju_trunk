@@ -208,7 +208,7 @@ describe UseRestrictionsController do
           assigns(:use_restriction).should_not be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :use_restriction => @attrs
           response.should be_forbidden
         end

@@ -161,8 +161,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.currency_unit_code') -%>:</strong>
-  <%= Currency.find(@order.currency_unit_code).display_name if @order.currency_unit_code -%>
+  <strong><%= t('activerecord.attributes.order.currency_id') -%>:</strong>
+  <%= @order.currency.display_name if @order.currency_id -%>
 </p>
 
 <p>
@@ -187,7 +187,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order.yen_imprest') -%>:</strong>
-  <%= @order.yen_imprest.to_i -%>
+  <%= @order.yen_imprest -%>
 </p>
 
 <p>
@@ -202,12 +202,12 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order.unit_price') %>:</strong>
-  <%= @order.unit_price.to_i %>  
+  <%= @order.unit_price %>  
 </p>
 
 <p>
   <strong><%= t('activerecord.attributes.order.order_organization_id') -%>:</strong>
-  <%= @order.patron.full_name if @order.patron %>
+  <%= @order.agent.full_name if @order.agent %>
 </p>
 
 <p>

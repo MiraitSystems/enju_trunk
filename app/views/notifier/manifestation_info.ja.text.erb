@@ -1,4 +1,4 @@
-<%=h @user.patron.full_name -%> さん
+<%=h @user.agent.full_name -%> さん
 
 資料名: <%=h @manifestation.original_title %>
 著者: <%=h @manifestation.creators.readable_by(@user).collect(&:full_name).join("/") %>

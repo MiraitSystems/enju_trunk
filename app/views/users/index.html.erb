@@ -27,7 +27,7 @@ $(function(){
     <%= t('activerecord.attributes.user.birth_date') -%>: <%= text_field_tag 'birth_date', @date_of_birth, :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2011-04-12" -%>
     <%= t('activerecord.attributes.user.adddress') -%>: <%= text_field_tag 'address', @address, :class => 'search_form' -%>
     <br />
-    <%= hidden_field_tag 'patron_id', @patron.id if @patron -%>
+    <%= hidden_field_tag 'agent_id', @agent.id if @agent -%>
     <%= hidden_field_tag 'library', params[:library] if params[:library] -%>
     <%= hidden_field_tag 'role', params[:role] if params[:role] -%>
     <%= submit_tag t('page.search'), :onclick => "push_submit(null);" -%>
@@ -47,7 +47,7 @@ $(function(){
       <%= t('activerecord.attributes.user.username') -%>
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'username', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'username', :order => 'desc')) -%><br />
-      <%= t('activerecord.attributes.patron.full_name') -%>
+      <%= t('activerecord.attributes.agent.full_name') -%>
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'full_name', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'full_name', :order => 'desc')) -%>
     </th>
@@ -57,7 +57,7 @@ $(function(){
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'user_number', :order => 'desc')) -%>
     </th>
     <th>
-      <%= t('activerecord.attributes.patron.telephone_number') -%>
+      <%= t('activerecord.attributes.agent.telephone_number') -%>
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'telephone_number_1', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'telephone_number_1', :order => 'desc')) -%>
     </th>
@@ -76,8 +76,8 @@ $(function(){
     <td>
       <%= link_to user.username, user -%>
       <br />
-      <%- if user.patron -%>
-        <%= link_to user.patron.full_name, user -%>
+      <%- if user.agent -%>
+        <%= link_to user.agent.full_name, user -%>
       <%- end -%>
       <%- if user.user_status.state_id == 3 or user.unable == true -%>
         <br/>
@@ -86,10 +86,10 @@ $(function(){
     </td>
     <td><%= user.user_number -%></td>
     <td>
-     <%- if user.patron -%>
-       <%= user.patron.telephone_number_1 -%>
+     <%- if user.agent -%>
+       <%= user.agent.telephone_number_1 -%>
        <br />
-       <%= user.patron.telephone_number_2 -%>
+       <%= user.agent.telephone_number_2 -%>
      <%- end -%>
     </td>
     <td><%= l(user.created_at) if user.created_at -%></td>
@@ -105,7 +105,7 @@ $(function(){
     <td>
       <%= link_to t('page.edit'), edit_user_path(user) -%><br />
       <% if SystemConfiguration.get("use_family") -%>
-        <% if user.patron and user.patron.patron_type_id == 1 %>
+        <% if user.agent and user.agent.agent_type_id == 1 %>
           <%= link_to t('user.create_family'), new_user_path(:family_user_id => user.id) -%>
         <% end %>
       <% end %>
@@ -121,7 +121,7 @@ $(function(){
 </div>
 
 <div id="submenu" class="ui-corner-all">
-  <h3><%= link_to h("#{t('page.total')}: #{@count[:query_result]}"), url_for(params.merge(:action => 'index', :library => nil, :role => nil, :patron_type => nil))  -%></h3>
+  <h3><%= link_to h("#{t('page.total')}: #{@count[:query_result]}"), url_for(params.merge(:action => 'index', :library => nil, :role => nil, :agent_type => nil))  -%></h3>
   <%- if @users && (@users.total_entries > 0) -%>
     <%= render 'users/all_facet' -%>
     <br />
@@ -132,7 +132,7 @@ $(function(){
       <li><%= link_to t('page.new', :model => t('activerecord.models.user')), new_user_path -%></li>
       <%- if SystemConfiguration.get('use_family') %><li><%= link_to t('user.manage_family'), families_path -%></li><%- end -%>
       <li><%= link_to t('page.listing', :model => t('activerecord.models.unablelist')), unablelist_path -%></li>
-      <li><%= link_to t('page.import_from_file'), new_patron_import_file_path -%></li>
+      <li><%= link_to t('page.import_from_file'), new_agent_import_file_path -%></li>
       <li><%= link_to t('activerecord.models.checkin'), checkins_path -%>
     <%- end -%>
   </ul>

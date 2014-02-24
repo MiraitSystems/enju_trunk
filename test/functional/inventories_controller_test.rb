@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class InventoriesControllerTest < ActionController::TestCase
-    fixtures :inventory_files, :inventories, :users, :patrons, :patron_types, :items
+    fixtures :inventory_files, :inventories, :users, :agents, :agent_types, :items
 
   def test_guest_should_not_get_index
     get :index

@@ -88,7 +88,7 @@ function make_special_keys_area(target) {
 <div id="opac_content">
   <div>
     <%= form_for(@user, :url => my_account_path(:opac => true)) do |f| %>
-      <%= form_for(@user.patron, :url => my_account_path(:opac => true)) do |p_f| %>
+      <%= form_for(@user.agent, :url => my_account_path(:opac => true)) do |p_f| %>
         <!-- <%= f.error_messages %> -->
         <div>
           <div class="opac_field opac_my_account_left_field">
@@ -98,34 +98,34 @@ function make_special_keys_area(target) {
               <%= error_message_on :user, :email, t('activerecord.attributes.user.email') %>
             </div>
             <div>
-              <%= t('activerecord.attributes.patron.telephone_number_1') %>: <br />
+              <%= t('activerecord.attributes.agent.telephone_number_1') %>: <br />
               <%= p_f.phone_field :telephone_number_1, :class => 'telephone-field' %>
               <%= p_f.select :telephone_number_1_type_id,
-                 { t('activerecord.attributes.patron.home_phone') => 1,
-                   t('activerecord.attributes.patron.fax') => 2,
-                   t('activerecord.attributes.patron.mobile_phone') => 3,
-                   t('activerecord.attributes.patron.company_phone') => 4 } %>
-              <%= error_message_on :patron, :telephone_number_1, t('activerecord.attributes.patron.telephone_number_1') %>
+                 { t('activerecord.attributes.agent.home_phone') => 1,
+                   t('activerecord.attributes.agent.fax') => 2,
+                   t('activerecord.attributes.agent.mobile_phone') => 3,
+                   t('activerecord.attributes.agent.company_phone') => 4 } %>
+              <%= error_message_on :agent, :telephone_number_1, t('activerecord.attributes.agent.telephone_number_1') %>
             </div>
             <div>
-              <%= t('activerecord.attributes.patron.extelephone_number_1') %>: <br />
+              <%= t('activerecord.attributes.agent.extelephone_number_1') %>: <br />
               <%= p_f.phone_field :extelephone_number_1, :class => 'telephone-field' %>
               <%= p_f.select :extelephone_number_1_type_id,
-                 { t('activerecord.attributes.patron.home_phone') => 1,
-                   t('activerecord.attributes.patron.fax') => 2,
-                   t('activerecord.attributes.patron.mobile_phone') => 3,
-                   t('activerecord.attributes.patron.company_phone') => 4 } %>
-              <%= error_message_on :patron, :extelephone_number_1, t('activerecord.attributes.patron.extelephone_number_1') %>
+                 { t('activerecord.attributes.agent.home_phone') => 1,
+                   t('activerecord.attributes.agent.fax') => 2,
+                   t('activerecord.attributes.agent.mobile_phone') => 3,
+                   t('activerecord.attributes.agent.company_phone') => 4 } %>
+              <%= error_message_on :agent, :extelephone_number_1, t('activerecord.attributes.agent.extelephone_number_1') %>
             </div>
             <div>
-              <%= t('activerecord.attributes.patron.fax_number_1') %>: <br />
+              <%= t('activerecord.attributes.agent.fax_number_1') %>: <br />
               <%= p_f.phone_field :fax_number_1, :class => 'telephone-field' %>
               <%= p_f.select :fax_number_1_type_id,
-                 { t('activerecord.attributes.patron.home_phone') => 1,
-                   t('activerecord.attributes.patron.fax') => 2,
-                   t('activerecord.attributes.patron.mobile_phone') => 3,
-                   t('activerecord.attributes.patron.company_phone') => 4 } %>
-              <%= error_message_on :patron, :fax_number_1, t('activerecord.attributes.patron.fax_number_1') %>
+                 { t('activerecord.attributes.agent.home_phone') => 1,
+                   t('activerecord.attributes.agent.fax') => 2,
+                   t('activerecord.attributes.agent.mobile_phone') => 3,
+                   t('activerecord.attributes.agent.company_phone') => 4 } %>
+              <%= error_message_on :agent, :fax_number_1, t('activerecord.attributes.agent.fax_number_1') %>
             </div>
           </div>
 

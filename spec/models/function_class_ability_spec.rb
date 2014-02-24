@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe FunctionClassAbility do
-  fixtures :user_groups, :patron_types, :libraries, :countries, :languages, :roles
+  fixtures :user_groups, :agent_types, :libraries, :countries, :languages, :roles
 
   describe '.newは' do
     subject { FunctionClassAbility }
@@ -170,21 +170,21 @@ delete:destroy
     let(:guest) do
       FactoryGirl.create(
         :user,
-        patron: FactoryGirl.create(:patron),
+        agent: FactoryGirl.create(:agent),
         function_class: nil)
     end
 
     let(:user) do
       FactoryGirl.create(
         :user,
-        patron: FactoryGirl.create(:patron),
+        agent: FactoryGirl.create(:agent),
         function_class: class1)
     end
 
     let(:admin) do
       FactoryGirl.create(
         :user,
-        patron: FactoryGirl.create(:patron),
+        agent: FactoryGirl.create(:agent),
         function_class: class2)
     end
 

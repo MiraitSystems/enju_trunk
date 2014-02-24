@@ -208,7 +208,7 @@ describe CheckoutTypesController do
           assigns(:checkout_type).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :checkout_type => @attrs
           response.should redirect_to(assigns(:checkout_type))
         end

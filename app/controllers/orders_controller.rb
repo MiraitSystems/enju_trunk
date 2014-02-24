@@ -8,10 +8,10 @@ class OrdersController < ApplicationController
   # GET /orders.json
   def index
       if params[:manifestation_id]
-        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year desc").page(params[:page])
+        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year DESC, order_identifier DESC").page(params[:page])
         @manifestation = Manifestation.find(params[:manifestation_id])
       else
-        @orders = Order.order("publication_year desc").page(params[:page])
+        @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
       end
 
     set_select_years
@@ -39,12 +39,11 @@ class OrdersController < ApplicationController
   # GET /orders/new.json
   def new
     @order = Order.new
-
     original_order = Order.where(:id => params[:order_id]).first
     if original_order
       @order = original_order.dup
       @order.set_probisional_identifier(Date.today.year.to_i + 1)
-      @order.order_day = original_order.order_day.year.to_i + 1
+      @order.order_day = Date.new((Date.today + 1.years).year, original_order.order_day.month, original_order.order_day.day)
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
     else
@@ -56,9 +55,13 @@ class OrdersController < ApplicationController
       end 
     end
 
-    @select_patron_tags = Order.struct_patron_selects
+    @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
 
+      if params[:manifestation_id]
+        @order.manifestation_id = params[:manifestation_id].to_i
+        @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
+      end 
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @order }
@@ -68,7 +71,7 @@ class OrdersController < ApplicationController
   # GET /orders/1/edit
   def edit
     @order = Order.find(params[:id])
-    @select_patron_tags = Order.struct_patron_selects
+    @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
   end
 
@@ -78,9 +81,12 @@ class OrdersController < ApplicationController
 
     @order = Order.new(params[:order])
     @manifestation_identifier = params[:manifestation_identifier]
+    manifestation = Manifestation.where(["manifestation_identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
+
+    @manifestation_identifier = params[:manifestation_identifier]
     manifestation = Manifestation.where(["identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
 
-    @order.manifestation_id = manifestation.id if manifestation
+    #@order.manifestation_id = manifestation.id if manifestation
  
     respond_to do |format|
       if @order.save
@@ -94,7 +100,7 @@ class OrdersController < ApplicationController
         end
       else
 
-        @select_patron_tags = Order.struct_patron_selects
+        @select_agent_tags = Order.struct_agent_selects
         @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "new" }
@@ -119,7 +125,7 @@ class OrdersController < ApplicationController
           format.json { head :no_content }
         end
       else
-          @select_patron_tags = Order.struct_patron_selects
+          @select_agent_tags = Order.struct_agent_selects
           @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "edit" }
@@ -160,44 +166,43 @@ class OrdersController < ApplicationController
 
   def search
 
+    unless params[:manifestation_identifier].blank?
+      manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identifier])
+
+      if manifestation_num.size == 0
+        flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.identifier'))
+      else
+        @search_manifestation = manifestation_num.first
+      end
+    end
+
+    unless params[:manifestation_original_title].blank?
+      manifestation_num = Manifestation.where("original_title ILIKE ?", "\%#{params[:manifestation_original_title]}\%")
+        flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.original_title')) if manifestation_num.size == 0
+    end
+
+
     unless params[:publication_year].blank?
-    @years_selected = params[:publication_year].to_i
 
       unless params[:manifestation_identifier].blank?
-        @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ?", params[:publication_year].to_i, params[:manifestation_identifier]]).page(params[:page])
-
-        @search_manifestation = Manifestation.where("identifier = ?", params[:manifestation_identifier])
-        if @search_manifestation.size == 0
-          flash.now[:message] = t('order.no_matches_found_manifestation')
-          @search_manifestation = nil
-        else
-          @search_manifestation = @search_manifestation.first
-        end
+        @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ? AND original_title ILIKE ?", params[:publication_year].to_i, params[:manifestation_identifier], "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
 
       else
-        @orders = Order.where(["publication_year = ?", params[:publication_year].to_i]).page(params[:page])
+        @orders = Order.joins(:manifestation).where(["publication_year = ?  AND original_title ILIKE ?", params[:publication_year].to_i, "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
       end
     else
 
       unless params[:manifestation_identifier].blank?
-
-        @orders = Order.joins(:manifestation).where(["identifier = ?",params[:manifestation_identifier]]).order("publication_year desc").page(params[:page])
-
-        @search_manifestation = Manifestation.where("identifier = ?", params[:manifestation_identifier])
-
-        if @search_manifestation.size == 0
-          flash.now[:message] = t('order.no_matches_found_manifestation')
-          @search_manifestation = nil
-        else
-          @search_manifestation = @search_manifestation.first
-        end
+        @orders = Order.joins(:manifestation).where(["identifier = ? AND original_title ILIKE ?",params[:manifestation_identifier], "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
 
       else
-        @orders = Order.order("publication_year desc").page(params[:page])
+        @orders = Order.joins(:manifestation).where(["original_title ILIKE ?", "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
       end
     end
 
-    @manifestation_selected = params[:manifestation_identifier]
+    @selected_title = params[:manifestation_original_title]
+    @selected_manifestation = params[:manifestation_identifier]
+    @selected_year = params[:publication_year].to_i
     set_select_years
 
     respond_to do |format|
@@ -229,9 +234,12 @@ class OrdersController < ApplicationController
       if order.order_form && order.order_form.v == '1'
         @new_order = order.dup
         @new_order.set_probisional_identifier(Date.today.year.to_i + 1)
-        @new_order.order_day = @new_order.order_day + 1.years
+        @new_order.order_day = Date.new((Date.today + 1.years).year, order.order_day.month, order.order_day.day)
         @new_order.publication_year = Date.today.year.to_i + 1
         @new_order.paid_flag = 0
+        @new_order.buying_payment_year = nil
+        @new_order.prepayment_settlements_of_account_year = nil
+        @new_order.auto_calculation_flag = 1
         @new_order.save
         create_count += 1
       end
@@ -242,8 +250,5 @@ class OrdersController < ApplicationController
     redirect_to :action => "search", :publication_year => params[:year], :test => "test", :manifestation_identifier => params[:manifestation_identifier]
 
   end
-
-
-
 
 end

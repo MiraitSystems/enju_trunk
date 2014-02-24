@@ -15,7 +15,7 @@
     <%= f.input :ncid, :as => :hidden -%>
     <%= f.input :user_id, :disabled => true -%>
     <%= f.input :user_id, :as => :hidden -%>
-    <%= @nacsis_user_request.user.patron.full_name %>
+    <%= @nacsis_user_request.user.agent.full_name %>
     <%= f.input :user_note %>
 <%- if current_user.has_role?('Librarian') -%>
     <%= f.input :librarian_note %>

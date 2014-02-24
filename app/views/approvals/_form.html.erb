@@ -39,11 +39,11 @@ $(function(){
   });
 
   $(document).ready(function() {
-    $("#approval_reception_patron_id").select2({
+    $("#approval_reception_agent_id").select2({
       multiple: false,
-      data: <%= raw @select_patron_tags.to_json -%>,
+      data: <%= raw @select_agent_tags.to_json -%>,
       formatNoMatches: function(user) {
-        return <%= raw t("page.approval.no_matches_found_patron").to_json %>;
+        return <%= raw t("page.approval.no_matches_found_agent").to_json %>;
       },
       width: "300px",
     });
@@ -59,7 +59,7 @@ $(function(){
 
   <div class="field">
     <%= f.label :created_by %><br />
-    <%= @approval.create_user.patron.full_name %>
+    <%= @approval.create_user.agent.full_name %>
     <%= f.hidden_field :created_by %>
   </div>
 
@@ -236,8 +236,8 @@ $(function(){
   </div>
 
   <div class="field">
-    <%= f.label :reception_patron_id %><br />
-    <%= f.text_field :reception_patron_id -%>
+    <%= f.label :reception_agent_id %><br />
+    <%= f.text_field :reception_agent_id -%>
   </div>
 
 <script>

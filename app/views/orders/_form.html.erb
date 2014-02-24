@@ -22,9 +22,9 @@ $(function(){
     $("#order_order_organization_id").select2({
       
 multiple: false,
-      data: <%= raw @select_patron_tags.to_json -%>,
+      data: <%= raw @select_agent_tags.to_json -%>,
       formatNoMatches: function(user) {
-        return <%= raw t("order.no_matches_found_patron").to_json %>;
+        return <%= raw t("order.no_matches_found_agent").to_json %>;
       },
       width: "300px",
     });
@@ -69,11 +69,7 @@ multiple: false,
   <div class="field">
     <%= f.label :order_day %><br />
     <% if @order.order_day %>
-      <% if @order.order_day.class == ActiveSupport::TimeWithZone %>
-        <%= f.text_field :order_day, :value => @order.order_day.to_date %>
-      <% else %>
-        <%= f.text_field :order_day, :value => @order.order_day %>
-      <% end %>
+      <%= f.text_field :order_day, :value => @order.order_day.to_date %>
     <% else %>
       <%= f.text_field :order_day %>
     <% end %>
@@ -249,8 +245,8 @@ multiple: false,
   <% end %>
 
   <div class="field">
-    <%= f.label :currency_unit_code %><br />
-    <%= f.collection_select :currency_unit_code, @currencies, :id, :display_name, :include_blank => true %>
+    <%= f.label :currency_id %><br />
+    <%= f.collection_select :currency_id, @currencies, :id, :display_name, :include_blank => true %>
   </div>
 
   <div class="field">
