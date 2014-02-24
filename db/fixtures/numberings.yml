@@ -69,3 +69,14 @@ numbering_00007:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+numbering_00008: 
+  name: 'order'
+  display_name: ''
+  prefix: ''
+  suffix: ''
+  padding: true
+  padding_number: 5
+  padding_character: '0'
+  last_number: 0
+  checkdigit: 0
+  numbering_type: 'order'

@@ -27,6 +27,8 @@ gem "jpp_customercode_transfer", "~> 0.0.2"
 
 # special gem here.
 # gem 'enju_xxx', :git => 'https://xxx@github.com/'
+#gem 'enju_jst', :git => 'https://youkeyhero@github.com/MiraitSystems/enju_jst.git'
+gem 'enju_jst', :path => '../enju_jst'
 
 #
 platforms :ruby do
@@ -96,7 +98,7 @@ gem 'chunky_png', '1.2.5'
 #gem 'rghost', :branch => 'patch-ruby20', :git => 'git://github.com/nakamura-akifumi/rghost.git'
 gem 'rghost'
 gem 'rghost_barcode'
-gem 'rqrcode'
+#gem 'rqrcode'
 gem 'event-calendar', :require => 'event_calendar'
 gem 'geocoder'
 #gem 'acts_as_list', :git => 'git://github.com/emiko/acts_as_list.git'
