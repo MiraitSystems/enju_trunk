@@ -165,7 +165,7 @@ module EnjuTrunk
         end
       end
       manifestation.save!
-      manifestation.creators = Patron.add_patrons(datas['creators'].to_s) unless datas['creators'].nil?
+      manifestation.creators = Agent.add_agents(datas['creators'].to_s) unless datas['creators'].nil?
       manifestation.subjects = Subject.import_subjects(datas['subjects'].to_s) unless datas['subjects'].nil?
       manifestation.languages = Language.where(:name => 'unknown')
       return manifestation, mode
@@ -193,7 +193,7 @@ module EnjuTrunk
         item.item_identifier   = item_identifier unless Item.where(:item_identifier => item_identifier).first
       end
       item.save!
-      item.patrons << textfile.user.library.patron if mode == 'create'
+      item.agents << textfile.user.library.agent if mode == 'create'
       return item, mode
     end
 

@@ -1,7 +1,7 @@
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'realize')
 class Realize < ActiveRecord::Base
-  belongs_to :patron
-  validates_associated :patron
+  belongs_to :agent
+  validates_associated :agent
   after_save :reindex
   after_destroy :reindex
   attr_accessible :realize_type_id
@@ -11,17 +11,17 @@ class Realize < ActiveRecord::Base
   has_paper_trail
 
   def reindex
-    patron.try(:index)
+    agent.try(:index)
     expression.try(:index)
   end
 
-  def self.add_realizes(manifestation_id, patron_id, type_id=[], delflg = [], newflg = false)
-    if manifestation_id.blank? or patron_id.blank?
+  def self.add_realizes(manifestation_id, agent_id, type_id=[], delflg = [], newflg = false)
+    if manifestation_id.blank? or agent_id.blank?
       return nil
     end
-    patron_id.each_with_index do |p_id, i|
+    agent_id.each_with_index do |p_id, i|
       next if delflg[i] and newflg
-      sel_clm = self.find(:first, :conditions => ["expression_id=? and patron_id=?", manifestation_id, p_id]) if p_id
+      sel_clm = self.find(:first, :conditions => ["expression_id=? and agent_id=?", manifestation_id, p_id]) if p_id
       if sel_clm
          if delflg[i]
             sel_clm.destroy
@@ -32,7 +32,7 @@ class Realize < ActiveRecord::Base
            end
          end
       else
-         self.create(:expression_id => manifestation_id, :patron_id => p_id, :realize_type_id => type_id[i])
+         self.create(:expression_id => manifestation_id, :agent_id => p_id, :realize_type_id => type_id[i])
       end
     end
   end
@@ -43,7 +43,7 @@ end
 # Table name: realizes
 #
 #  id            :integer         not null, primary key
-#  patron_id     :integer         not null
+#  agent_id     :integer         not null
 #  expression_id :integer         not null
 #  position      :integer
 #  type          :string(255)

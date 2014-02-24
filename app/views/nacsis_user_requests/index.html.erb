@@ -79,7 +79,7 @@ $(function(){
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= t('activerecord.attributes.nacsis_user_request.request_type_names')[nacsis_user_request.request_type] -%></td>
     <td><%= l(nacsis_user_request.created_at) if nacsis_user_request.created_at -%></td>
-    <td><%= nacsis_user_request.user.user_number %><br /><%= nacsis_user_request.user.patron.full_name -%></td>
+    <td><%= nacsis_user_request.user.user_number %><br /><%= nacsis_user_request.user.agent.full_name -%></td>
     <td><%= nacsis_user_request.subject_heading %><br /><%= nacsis_user_request.ncid -%></td>
     <td><%= t('activerecord.attributes.nacsis_user_request.state_names')[nacsis_user_request.state] -%></td>
     <td><%= link_to t('page.edit'), edit_nacsis_user_request_path(nacsis_user_request) -%></td>

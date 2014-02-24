@@ -1,0 +1,62 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.agent_import_result')) -%></h1>
+<div id="content_list">
+  <% if @agent_import_file %>
+    <h2 class="agent_title">
+      <%= link_to @agent_import_file.agent_import_file_name, @agent_import_file %>
+    </h2>
+  <% end %>
+
+<%= t('activerecord.attributes.agent_import_result.imported_row') -%>: <%= @results_num if @results_num -%>
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.models.agent') %></th>
+    <th><%= t('activerecord.attributes.user.username') %></th>
+    <th><%= t('activerecord.attributes.agent_import_result.error_msg') %></th>
+    <th></th>
+  </tr>
+
+<% @agent_import_results.each do |agent_import_result| %>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to agent_import_result.agent.full_name, agent_import_result.user if agent_import_result.user %></td>
+    <td><%= link_to agent_import_result.user.username, agent_import_result.user if agent_import_result.user %></td>
+    <td><%= agent_import_result.error_msg %></td>
+    <td>
+      <%= link_to t('page.show'), agent_import_result %>
+      <%- if false -%>
+      <%= link_to t('page.destroy'), agent_import_result, :confirm => t('page.are_you_sure'), :method => :delete %>
+      <%- end -%>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate(@agent_import_results) %>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.back'), @agent_import_file %></li>
+  </ul>
+    
+  <% if SystemConfiguration.get("set_output_format_type") == false %>
+    <% if @agent_import_file %>
+      <%= link_to (image_tag 'icons/page_white_excel.png', :size => '16x16', :alt => 'CSV', :title => 'CSV', :class => 'icon'), agent_import_file_agent_import_results_path(@agent_import_file, :locale => @locale.to_s, :format => 'csv') -%>
+      (<%= link_to 'CSV', agent_import_file_agent_import_results_path(:locale => @locale.to_s, :format => 'csv') -%>)
+    <% else %>
+      <%= link_to (image_tag 'icons/page_white_excel.png', :size => '16x16', :alt => 'CSV', :title => 'CSV', :class => 'icon'), agent_import_results_path(:locale => @locale.to_s, :format => 'csv') -%>
+      (<%= link_to 'CSV', agent_import_results_path(:locale => @locale.to_s, :format => 'csv') -%>)
+    <% end %>
+  <% else %>
+    <% if @agent_import_file %>
+      <%= link_to (image_tag 'icons/page_white_excel.png', :size => '16x16', :alt => 'TSV', :title => 'TSV', :class => 'icon'), agent_import_file_agent_import_results_path(@agent_import_file, :locale => @locale.to_s, :format => 'tsv') -%>
+      (<%= link_to 'TSV', agent_import_file_agent_import_results_path(:locale => @locale.to_s, :format => 'tsv') -%>)
+    <% else %>
+      <%= link_to (image_tag 'icons/page_white_excel.png', :size => '16x16', :alt => 'TSV', :title => 'TSV', :class => 'icon'), agent_import_results_path(:locale => @locale.to_s, :format => 'tsv') -%>
+      (<%= link_to 'TSV', agent_import_results_path(:locale => @locale.to_s, :format => 'tsv') -%>)
+    <% end %>
+  <% end %>
+  
+</div>

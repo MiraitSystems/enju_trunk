@@ -42,8 +42,8 @@ module ApplicationHelper
     image_tag('icons/help.png', :size => '16x16', :alt => ('unknown'), :title => 'unknown')
   end
 
-  def patron_type_icon(patron_type)
-    case patron_type
+  def agent_type_icon(agent_type)
+    case agent_type
     when 'Person'
       image_tag('icons/user.png', :size => '16x16', :alt => ('Person'), :title => ('Person'))
     when 'CorporateBody'
@@ -88,51 +88,51 @@ module ApplicationHelper
     html.html_safe
   end
 
-  def patrons_list(patrons = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
-    return nil if patrons.blank?
-    patrons_list = []
-    exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-    patrons.each do |patron|
+  def agents_list(agents = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
+    return nil if agents.blank?
+    agents_list = []
+    exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+    agents.each do |agent|
       type_name = ''
-      if manifestation_id.present? && SystemConfiguration.get("use_patron_type")
+      if manifestation_id.present? && SystemConfiguration.get("use_agent_type")
         case type
           when 'create'
-            create_type = CreateType.find(patron.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
+            create_type = CreateType.find(agent.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
             type_name = (create_type and create_type.display) ? create_type.display_name : ''
           when 'realize'
-            realize_type = RealizeType.find(patron.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
+            realize_type = RealizeType.find(agent.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
             type_name = (realize_type and realize_type.display) ? realize_type.display_name : ''
           when 'produce'
-            produce_type = ProduceType.find(patron.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
+            produce_type = ProduceType.find(agent.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
             type_name = (produce_type and produce_type.display) ? produce_type.display_name : ''
         end
         type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
       end
-      full_name = patron.full_name << type_name
-      if options[:nolink] or exclude_patrons.include?(patron.full_name)
-        patron = mode == 'html' ? highlight(full_name) : full_name
+      full_name = agent.full_name << type_name
+      if options[:nolink] or exclude_agents.include?(agent.full_name)
+        agent = mode == 'html' ? highlight(full_name) : full_name
       else
-        patron = mode == 'html' ? link_to(highlight(full_name), patron, options) : link_to(full_name, patron, options)
+        agent = mode == 'html' ? link_to(highlight(full_name), agent, options) : link_to(full_name, agent, options)
       end
-      patrons_list << patron
+      agents_list << agent
     end
-    patrons_list.join(" ").html_safe
+    agents_list.join(" ").html_safe
   end
 
-  def patrons_short_list(patrons = [], options = {})
-    return nil if patrons.blank?
-    patrons_list = []
-    patrons.each_with_index do |patron, i|
+  def agents_short_list(agents = [], options = {})
+    return nil if agents.blank?
+    agents_list = []
+    agents.each_with_index do |agent, i|
       if i < 3
         if options[:nolink]
-          patrons_list << patron.full_name
+          agents_list << agent.full_name
         else
-          patrons_list << link_to(patron.full_name, patron, options)
+          agents_list << link_to(agent.full_name, agent, options)
         end
       end
     end
-    patrons_list << '...' if patrons.size > 3 
-    patrons_list.join(" ").html_safe
+    agents_list << '...' if agents.size > 3 
+    agents_list.join(" ").html_safe
   end
 
   def book_jacket(manifestation)
@@ -298,9 +298,9 @@ module ApplicationHelper
   ADVANCED_SEARCH_LABEL_IDS = {
     tag: 'page.tag',
     title: 'page.title',
-    creator: 'patron.creator',
+    creator: 'agent.creator',
     subject: 'activerecord.models.subject',
-    publisher: 'patron.publisher',
+    publisher: 'agent.publisher',
     isbn: 'activerecord.attributes.manifestation.isbn',
     issn: 'activerecord.attributes.manifestation.issn',
     ndc: 'activerecord.attributes.manifestation.ndc',

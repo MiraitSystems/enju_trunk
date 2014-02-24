@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class OrdersControllerTest < ActionController::TestCase
-  fixtures :orders, :purchase_requests, :order_lists, :patrons, :users
+  fixtures :orders, :purchase_requests, :order_lists, :agents, :users
 
   def test_librarian_should_get_index_feed
     sign_in users(:librarian1)

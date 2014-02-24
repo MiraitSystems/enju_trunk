@@ -1,0 +1,48 @@
+<h4><%= t('activerecord.models.agent_relationship_type') -%></h4>
+<ul>
+  <%- current_type = params[:agent_relationship_type] -%>
+  <%- current_relation = params[:parent_child_relationship] -%>
+
+  <%- @agent_relationship_types.each do |prt| -%>
+    <%- if current_type.blank? || current_type == prt.id.to_s %>
+      <%- parent_count = 0 %>
+      <%- @search.facet(('relationship_type_parent_' + prt.id.to_s).to_sym).rows.each do |facet| -%>
+        <% parent_count = facet.count if facet.value == @agent.id %>
+      <%- end -%>
+      <%- child_count = 0 %>
+      <%- @search.facet(('relationship_type_child_' + prt.id.to_s).to_sym).rows.each do |facet| -%>
+        <%- child_count = facet.count if facet.value == @agent.id %>
+      <%- end -%>
+      <%- sum_count = parent_count + child_count -%>
+      <%- parent_name = get_detail_name(prt, 'p', 'c') -%>
+      <%- child_name = get_detail_name(prt, 'c', 'p') -%>
+      <%- if sum_count > 0 && parent_name == child_name -%>
+        <li>
+        <%= agent_relationship_type_facet(prt.id.to_s, nil, current_type, current_relation, parent_name, sum_count) -%>
+        </li>
+      <%- else -%>
+        <%- if parent_count > 0 && parent_name != child_name -%>
+          <%- if current_relation.blank? || current_relation == 'p' -%>
+            <li>
+            <%= agent_relationship_type_facet(prt.id.to_s, 'p', current_type, current_relation, child_name, parent_count) -%>
+            </li>
+          <%- end -%>
+        <%- end -%>
+        <%- if child_count > 0 && parent_name != child_name -%>
+          <%- if current_relation.blank? || current_relation == 'c' -%>
+            <li>
+            <%= agent_relationship_type_facet(prt.id.to_s, 'c', current_type, current_relation, parent_name, child_count) -%>
+            </li>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+
+  <%- if current_type.present? -%>
+    <li>
+    <%= link_to t('page.remove_this_facet'),
+        url_for(params.merge(:agent_relationship_type => nil, :parent_child_relationship => nil, :page => nil, :veiw => nil)) -%>
+    </li>
+  <%- end -%>
+</ul>

@@ -4,7 +4,7 @@ describe "creates/new" do
   before(:each) do
     assign(:create, stub_model(Create,
       :work_id => 1,
-      :patron_id => 1
+      :agent_id => 1
     ).as_new_record)
     @ability = Object.new
     @ability.extend(CanCan::Ability)

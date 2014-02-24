@@ -1,12 +1,12 @@
 class Approval < ActiveRecord::Base
-  attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_patron_id, :refuse_at, :sample_arrival_at, :sample_carrier_type, :sample_name, :sample_note, :sample_request_at, :status, :updated_at, :collection_sources,
+  attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_agent_id, :refuse_at, :sample_arrival_at, :sample_carrier_type, :sample_name, :sample_note, :sample_request_at, :status, :updated_at, :collection_sources,
 :approval_extexts_attributes
 
   has_many :approval_extexts, :dependent => :destroy, :order => "position"
   belongs_to :manifestation
   belongs_to :create_user, :class_name => "User", :foreign_key => :created_by
   belongs_to :group_user, :class_name => "User", :foreign_key => :group_user_id
-  belongs_to :reception_patron, :class_name => "Patron", :foreign_key => :reception_patron_id
+  belongs_to :reception_agent, :class_name => "Agent", :foreign_key => :reception_agent_id
 
   accepts_nested_attributes_for :approval_extexts
 
@@ -99,15 +99,15 @@ class Approval < ActiveRecord::Base
   end
 
 
-  def self.struct_patron_selects
-    struct_patron = Struct.new(:id, :text)
-    @struct_patron_array = []
-    type_id = PatronType.find(:first, :conditions => ["name = ?", 'Contact'])
-    struct_select = Patron.find(:all, :conditions => ["patron_type_id = ?",type_id])
-    struct_select.each do |patron|
-      @struct_patron_array << struct_patron.new(patron.id, patron.full_name)
+  def self.struct_agent_selects
+    struct_agent = Struct.new(:id, :text)
+    @struct_agent_array = []
+    type_id = AgentType.find(:first, :conditions => ["name = ?", 'Contact'])
+    struct_select = Agent.find(:all, :conditions => ["agent_type_id = ?",type_id])
+    struct_select.each do |agent|
+      @struct_agent_array << struct_agent.new(agent.id, agent.full_name)
     end
-    return @struct_patron_array
+    return @struct_agent_array
   end
 
 

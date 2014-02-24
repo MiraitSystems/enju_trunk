@@ -5,7 +5,7 @@ class Keycode < ActiveRecord::Base
   validate :validate_term
   default_scope :order => 'name ASC, started_at ASC'
 
-  has_many :patrons
+  has_many :agents
   has_many :orders
 
   paginates_per 10

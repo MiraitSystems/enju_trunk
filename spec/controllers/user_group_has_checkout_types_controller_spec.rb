@@ -204,7 +204,7 @@ describe UserGroupHasCheckoutTypesController do
           assigns(:user_group_has_checkout_type).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :user_group_has_checkout_type => @attrs
           response.should redirect_to(assigns(:user_group_has_checkout_type))
         end

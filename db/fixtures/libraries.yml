@@ -9,7 +9,7 @@ library_00001:
   id: 1
   region: 
   library_group_id: 1
-  patron_id: 1
+  agent_id: 1
   call_number_delimiter: "|"
   position: 1
 library_00002: 
@@ -22,7 +22,7 @@ library_00002:
   id: 2
   region: somewhere
   library_group_id: 1
-  patron_id: 2
+  agent_id: 2
   call_number_delimiter: "|"
   position: 2
 library_00003: 
@@ -35,7 +35,7 @@ library_00003:
   id: 3
   region: somewhere
   library_group_id: 1
-  patron_id: 3
+  agent_id: 3
   call_number_delimiter: "|"
   position: 3
 library_00004: 
@@ -48,7 +48,7 @@ library_00004:
   id: 4
   region: somewhere
   library_group_id: 1
-  patron_id: 4
+  agent_id: 4
   call_number_delimiter: "|"
   position: 4
 library_00005: 
@@ -61,6 +61,6 @@ library_00005:
   id: 5
   region: somewhere
   library_group_id: 1
-  patron_id: 5
+  agent_id: 5
   call_number_delimiter: "|"
   position: 5

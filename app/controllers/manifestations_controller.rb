@@ -11,7 +11,7 @@ class ManifestationsController < ApplicationController
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
-  before_filter :get_patron
+  before_filter :get_agent
   before_filter :get_series_statement, :only => [:index, :new, :edit, :output_excelx]
   before_filter :prepare_options, :only => [:new, :edit]
   before_filter :get_version, :only => [:show, :output_show, :output_pdf]
@@ -473,7 +473,7 @@ class ManifestationsController < ApplicationController
       get_manifestation
       get_subject
       set_in_process
-      @index_patron = get_index_patron
+      @index_agent = get_index_agent
       @per_page = search_opts[:per_page]
       @all_manifestations = params[:all_manifestations] if params[:all_manifestations]
 
@@ -797,7 +797,7 @@ class ManifestationsController < ApplicationController
   def new
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects
-    output_patron_parameter_for_new_edit
+    output_agent_parameter_for_new_edit
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation
       @manifestation = original_manifestation.dup
@@ -866,7 +866,7 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     @manifestation_languages = @manifestation.languages.reorder('work_has_languages.position').pluck(:id) if @manifestation_languages.blank?
-    output_patron_parameter_for_new_edit
+    output_agent_parameter_for_new_edit
     @subject = @manifestation.subjects.collect(&:term).join(';')
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
@@ -904,7 +904,7 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = series_statement if  series_statement
     end
 
-    input_patron_parameter
+    input_agent_parameter
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
@@ -922,20 +922,20 @@ class ManifestationsController < ApplicationController
             Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
           end
 
-          unless SystemConfiguration.get("add_only_exist_patron")
-            @new_creator = Patron.add_patrons(@new_creator_name, @new_creator_transcription).collect(&:id)
-            @new_contributor = Patron.add_patrons(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-            @new_publisher = Patron.add_patrons(@new_publisher_name, @new_publisher_transcription).collect(&:id)
+          unless SystemConfiguration.get("add_only_exist_agent")
+            @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
+            @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
+            @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
           end
-          #著作関係(creates)のpatron追加
+          #著作関係(creates)のagent追加
           Create.add_creates(@manifestation.id, @upd_creator, @upd_creator_type, @del_creator, true)
           Create.add_creates(@manifestation.id, @add_creator, @add_creator_type)
           Create.add_creates(@manifestation.id, @new_creator, @new_creator_type)
-          #表現関係(realizes)のpatron追加
+          #表現関係(realizes)のagent追加
           Realize.add_realizes(@manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor, true)
           Realize.add_realizes(@manifestation.id, @add_contributor, @add_contributor_type)
           Realize.add_realizes(@manifestation.id, @new_contributor, @new_contributor_type)
-          #出版関係(produces)のpatron追加
+          #出版関係(produces)のagent追加
           Produce.add_produces(@manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher, true)
           Produce.add_produces(@manifestation.id, @add_publisher, @add_publisher_type)
           Produce.add_produces(@manifestation.id, @new_publisher, @new_publisher_type)
@@ -952,7 +952,7 @@ class ManifestationsController < ApplicationController
       else
         @manifestation_languages = @language
         prepare_options
-        output_patron_parameter
+        output_agent_parameter
         new_work_has_title
 
       format.html { render :action => "new" }
@@ -966,7 +966,7 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
-    input_patron_parameter
+    input_agent_parameter
     create_titles 
 
     @subject = params[:manifestation][:subject]
@@ -983,23 +983,23 @@ class ManifestationsController < ApplicationController
         if @manifestation.series_statement and @manifestation.series_statement.periodical
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
-        #TODO update position to edit patrons without destroy
+        #TODO update position to edit agents without destroy
 
-        #patronsテーブルに無いpatronの追加
-        unless SystemConfiguration.get("add_only_exist_patron")
-          @new_creator = Patron.add_patrons(@new_creator_name, @new_creator_transcription).collect(&:id)
-          @new_contributor = Patron.add_patrons(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-          @new_publisher = Patron.add_patrons(@new_publisher_name, @new_publisher_transcription).collect(&:id)
+        #agentsテーブルに無いagentの追加
+        unless SystemConfiguration.get("add_only_exist_agent")
+          @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
+          @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
+          @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
         end
-        #著作関係(creates)のpatron追加
+        #著作関係(creates)のagent追加
         Create.add_creates(@manifestation.id, @upd_creator, @upd_creator_type, @del_creator)
         Create.add_creates(@manifestation.id, @add_creator, @add_creator_type)
         Create.add_creates(@manifestation.id, @new_creator, @new_creator_type)
-        #表現関係(realizes)のpatron追加
+        #表現関係(realizes)のagent追加
         Realize.add_realizes(@manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor)
         Realize.add_realizes(@manifestation.id, @add_contributor, @add_contributor_type)
         Realize.add_realizes(@manifestation.id, @new_contributor, @new_contributor_type)
-        #出版関係(produces)のpatron追加
+        #出版関係(produces)のagent追加
         Produce.add_produces(@manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher)
         Produce.add_produces(@manifestation.id, @add_publisher, @add_publisher_type)
         Produce.add_produces(@manifestation.id, @new_publisher, @new_publisher_type)
@@ -1018,7 +1018,7 @@ class ManifestationsController < ApplicationController
       else
         @manifestation_languages = @language
         prepare_options
-        output_patron_parameter
+        output_agent_parameter
         new_work_has_title
 
         format.html { render :action => "edit" }
@@ -1341,10 +1341,10 @@ class ManifestationsController < ApplicationController
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
 
     [
-      [:publisher_ids, @patron],
-      [:creator_ids, @index_patron[:creator]],
-      [:contributor_ids, @index_patron[:contributor]],
-      [:publisher_ids, @index_patron[:publisher]],
+      [:publisher_ids, @agent],
+      [:creator_ids, @index_agent[:creator]],
+      [:contributor_ids, @index_agent[:contributor]],
+      [:publisher_ids, @index_agent[:publisher]],
       [:original_manifestation_ids, @manifestation],
       [:subject_ids, @subject],
       [:bookbinder_id, @binder],
@@ -1458,8 +1458,8 @@ class ManifestationsController < ApplicationController
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
   end
 
-  def input_patron_parameter
-    if SystemConfiguration.get("add_only_exist_patron")
+  def input_agent_parameter
+    if SystemConfiguration.get("add_only_exist_agent")
       @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
       @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
       @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
@@ -1494,7 +1494,7 @@ class ManifestationsController < ApplicationController
     @del_publisher = Hash[[@upd_publisher, @del_publisher].transpose].merge(params[:del_publisher]).values rescue []
   end
 
-  def output_patron_parameter
+  def output_agent_parameter
     @creators = @manifestation.creators
     @creators_type = @upd_creator_type.collect{|r| r.to_i}
     @keep_creator = @add_creator.collect{|r| r.to_i}.join(",") rescue nil
@@ -1526,7 +1526,7 @@ class ManifestationsController < ApplicationController
     @new_publisher_number = @new_publisher.length
   end
 
-  def output_patron_parameter_for_new_edit
+  def output_agent_parameter_for_new_edit
     @creators = @manifestation.creators
     @creators_type = @manifestation.creates.order("position").pluck("create_type_id").collect{|c| c.to_i }
     @keep_creator = nil

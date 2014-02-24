@@ -3,13 +3,13 @@ require 'test_helper'
 class ItemsControllerTest < ActionController::TestCase
   fixtures :items, :circulation_statuses, :shelves, :orders, :manifestations,
       :carrier_types, :languages, :reserves,
-      :libraries, :patrons, :users, :inventories, :inventory_files,
+      :libraries, :agents, :users, :inventories, :inventory_files,
       :user_groups, :lending_policies, :exemplifies, :library_groups
 
-  def test_guest_should_get_index_with_patron_id
-    get :index, :patron_id => 1
+  def test_guest_should_get_index_with_agent_id
+    get :index, :agent_id => 1
     assert_response :success
-    assert assigns(:patron)
+    assert assigns(:agent)
     assert assigns(:items)
   end
 
