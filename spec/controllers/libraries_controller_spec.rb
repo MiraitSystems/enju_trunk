@@ -206,7 +206,7 @@ describe LibrariesController do
           assigns(:library).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :library => @attrs
           response.should redirect_to(assigns(:library))
         end

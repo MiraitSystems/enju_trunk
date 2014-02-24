@@ -52,10 +52,10 @@ class Ability
           series_statement.manifestations.empty?
         end
       end
-      can [:read, :create, :update], Patron
-      can :destroy, Patron do |patron|
-        if patron.user
-          patron.user.checkouts.not_returned.empty?
+      can [:read, :create, :update], Agent
+      can :destroy, Agent do |agent|
+        if agent.user
+          agent.user.checkouts.not_returned.empty?
         else
           true
         end
@@ -129,11 +129,11 @@ class Ability
         Order,
         OrderList,
         Own,
-        PatronImportFile,
-        PatronMerge,
-        PatronMergeList,
-        PatronRelationship,
-        PatronRelationshipType,
+        AgentImportFile,
+        AgentMerge,
+        AgentMergeList,
+        AgentRelationship,
+        AgentRelationshipType,
         Payment,
         PictureFile,
         Produce,
@@ -190,7 +190,7 @@ class Ability
         License,
         ManifestationType,
         MediumOfPerformance,
-        PatronType,
+        AgentType,
         RequestStatusType,
         RequestType,
         Role,
@@ -198,7 +198,7 @@ class Ability
         UseRestriction
       ]
       can :read, [
-        PatronImportResult,
+        AgentImportResult,
         ResourceImportResult,
         ResourceImportTextresult,
         UserRequestLog
@@ -238,12 +238,12 @@ class Ability
         end
       end
       can [:output], Shelf
-      can [:index, :create], Patron
-      can :show, Patron do |patron|
-        patron.required_role_id <= 3
+      can [:index, :create], Agent
+      can :show, Agent do |agent|
+        agent.required_role_id <= 3
       end
-      can [:update, :destroy], Patron do |patron|
-        !patron.user.try(:has_role?, 'Librarian') and patron.required_role_id <= 3
+      can [:update, :destroy], Agent do |agent|
+        !agent.user.try(:has_role?, 'Librarian') and agent.required_role_id <= 3
       end
       can [:index, :create], PurchaseRequest
       can [:index, :create], PurchaseRequest
@@ -309,10 +309,10 @@ class Ability
         Order,
         OrderList,
         Own,
-        PatronImportFile,
-        PatronMerge,
-        PatronMergeList,
-        PatronRelationship,
+        AgentImportFile,
+        AgentMerge,
+        AgentMergeList,
+        AgentRelationship,
         Payment,
         PictureFile,
         Produce,
@@ -369,9 +369,9 @@ class Ability
         ManifestationType,
         ManifestationRelationshipType,
         MediumOfPerformance,
-        PatronImportResult,
-        PatronRelationshipType,
-        PatronType,
+        AgentImportResult,
+        AgentRelationshipType,
+        AgentType,
         RequestStatusType,
         RequestType,
         ReserveStatHasManifestation,
@@ -420,15 +420,15 @@ class Ability
       can :show, Question do |question|
         question.user == user or question.shared
       end
-      can [:index, :create], Patron
-      can :update, Patron do |patron|
-        patron.user == user
+      can [:index, :create], Agent
+      can :update, Agent do |agent|
+        agent.user == user
       end
-      can :show, Patron do |patron|
-        if patron.user == user
+      can :show, Agent do |agent|
+        if agent.user == user
           true
-        elsif patron.user != user
-          true if patron.required_role_id <= 2 #name == 'Administrator'
+        elsif agent.user != user
+          true if agent.required_role_id <= 2 #name == 'Administrator'
         end
       end
       can :index, PictureFile
@@ -482,8 +482,8 @@ class Ability
         ManifestationReserveStat,
         MediumOfPerformance,
         Own,
-        PatronRelationship,
-        PatronRelationshipType,
+        AgentRelationship,
+        AgentRelationshipType,
         Produce,
         ProduceType,
         Realize,
@@ -506,9 +506,9 @@ class Ability
         WorkHasSubject
       ]
     else
-      can :index, Patron
-      can :show, Patron do |patron|
-        patron.required_role_id == 1 #name == 'Guest'
+      can :index, Agent
+      can :show, Agent do |agent|
+        agent.required_role_id == 1 #name == 'Guest'
       end
       can :read, Manifestation do |manifestation|
         manifestation.required_role_id <= 1
@@ -539,8 +539,8 @@ class Ability
         ManifestationReserveStat,
         MediumOfPerformance,
         Own,
-        PatronRelationship,
-        PatronRelationshipType,
+        AgentRelationship,
+        AgentRelationshipType,
         PictureFile,
         Produce,
         ProduceType,

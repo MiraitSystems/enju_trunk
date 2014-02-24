@@ -80,7 +80,7 @@ class SeriesStatementsController < ApplicationController
     @series_statement = SeriesStatement.new
     @manifestation = @series_statement.root_manifestation
     @series_statement.root_manifestation = Manifestation.new
-    output_patron_parameter_for_new_edit
+    output_agent_parameter_for_new_edit
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -92,7 +92,7 @@ class SeriesStatementsController < ApplicationController
     @series_statement.work = @work if @work
     @series_statement.root_manifestation = Manifestation.new unless @series_statement.root_manifestation
     @series_statement_languages = @series_statement.root_manifestation.languages.reorder('work_has_languages.position').pluck(:id)
-    output_patron_parameter_for_new_edit
+    output_agent_parameter_for_new_edit
     if @series_statement.root_manifestation
       manifestation = @series_statement.root_manifestation
       @subject = manifestation.subjects.collect(&:term).join(';')
@@ -119,23 +119,23 @@ class SeriesStatementsController < ApplicationController
       end
       @series_statement.save!
 
-      input_patron_parameter
+      input_agent_parameter
       if @series_statement.periodical
-        #patronsテーブルに無いpatronの追加
-        unless SystemConfiguration.get("add_only_exist_patron")
-          @new_creator = Patron.add_patrons(@new_creator_name, @new_creator_transcription).collect(&:id)
-          @new_contributor = Patron.add_patrons(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-          @new_publisher = Patron.add_patrons(@new_publisher_name, @new_publisher_transcription).collect(&:id)
+        #agentsテーブルに無いagentの追加
+        unless SystemConfiguration.get("add_only_exist_agent")
+          @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
+          @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
+          @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
         end
-        #著作関係(creates)のpatron追加
+        #著作関係(creates)のagent追加
         Create.add_creates(@series_statement.root_manifestation.id, @upd_creator, @upd_creator_type, @del_creator, true)
         Create.add_creates(@series_statement.root_manifestation.id, @add_creator, @add_creator_type)
         Create.add_creates(@series_statement.root_manifestation.id, @new_creator, @new_creator_type)
-        #表現関係(realizes)のpatron追加
+        #表現関係(realizes)のagent追加
         Realize.add_realizes(@series_statement.root_manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor, true)
         Realize.add_realizes(@series_statement.root_manifestation.id, @add_contributor, @add_contributor_type)
         Realize.add_realizes(@series_statement.root_manifestation.id, @new_contributor, @new_contributor_type)
-        #出版関係(produces)のpatron追加
+        #出版関係(produces)のagent追加
         Produce.add_produces(@series_statement.root_manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher, true)
         Produce.add_produces(@series_statement.root_manifestation.id, @add_publisher, @add_publisher_type)
         Produce.add_produces(@series_statement.root_manifestation.id, @new_publisher, @new_publisher_type)
@@ -151,7 +151,7 @@ class SeriesStatementsController < ApplicationController
       logger.error "Failed to create: #{e}"
       @series_statement_languages = @language
       prepare_options
-      output_patron_parameter
+      output_agent_parameter
       respond_to do |format|
         format.html { render :action => "new" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
@@ -167,7 +167,7 @@ class SeriesStatementsController < ApplicationController
     end
     @series_statement.assign_attributes(params[:series_statement])
     @series_statement.root_manifestation = @series_statement.root_manifestation if @series_statement.root_manifestation
-    input_patron_parameter
+    input_agent_parameter
 
     respond_to do |format|
       begin
@@ -184,7 +184,7 @@ class SeriesStatementsController < ApplicationController
               @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
               @series_statement.root_manifestation.periodical_master = true
             end
-            #TODO update position to edit patrons without destroy
+            #TODO update position to edit agents without destroy
             @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject)
             @series_statement.root_manifestation.languages = Language.add_language(@language)
             @series_statement.root_manifestation.save!
@@ -200,21 +200,21 @@ class SeriesStatementsController < ApplicationController
           @series_statement.manifestations.map { |manifestation| manifestation.index } if @series_statement.manifestations
 
           if @series_statement.periodical
-            #patronsテーブルに無いpatronの追加
-            unless SystemConfiguration.get("add_only_exist_patron")
-              @new_creator = Patron.add_patrons(@new_creator_name, @new_creator_transcription).collect(&:id)
-              @new_contributor = Patron.add_patrons(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-              @new_publisher = Patron.add_patrons(@new_publisher_name, @new_publisher_transcription).collect(&:id)
+            #agentsテーブルに無いagentの追加
+            unless SystemConfiguration.get("add_only_exist_agent")
+              @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
+              @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
+              @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
             end
-            #著作関係(creates)のpatron追加
+            #著作関係(creates)のagent追加
             Create.add_creates(@series_statement.root_manifestation.id, @upd_creator, @upd_creator_type, @del_creator)
             Create.add_creates(@series_statement.root_manifestation.id, @add_creator, @add_creator_type)
             Create.add_creates(@series_statement.root_manifestation.id, @new_creator, @new_creator_type)
-            #表現関係(realizes)のpatron追加
+            #表現関係(realizes)のagent追加
             Realize.add_realizes(@series_statement.root_manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor)
             Realize.add_realizes(@series_statement.root_manifestation.id, @add_contributor, @add_contributor_type)
             Realize.add_realizes(@series_statement.root_manifestation.id, @new_contributor, @new_contributor_type)
-            #出版関係(produces)のpatron追加
+            #出版関係(produces)のagent追加
             Produce.add_produces(@series_statement.root_manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher)
             Produce.add_produces(@series_statement.root_manifestation.id, @add_publisher, @add_publisher_type)
             Produce.add_produces(@series_statement.root_manifestation.id, @new_publisher, @new_publisher_type)
@@ -228,7 +228,7 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
         @series_statement_languages = @language
         prepare_options
-        output_patron_parameter
+        output_agent_parameter
         format.html { render :action => "edit" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
       end
@@ -275,8 +275,8 @@ class SeriesStatementsController < ApplicationController
     @default_language = Language.where(:iso_639_1 => @locale).first
   end
 
-  def input_patron_parameter
-    if SystemConfiguration.get("add_only_exist_patron")
+  def input_agent_parameter
+    if SystemConfiguration.get("add_only_exist_agent")
       @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
       @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
       @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
@@ -311,7 +311,7 @@ class SeriesStatementsController < ApplicationController
     @del_publisher = Hash[[@upd_publisher, @del_publisher].transpose].merge(params[:del_publisher]).values rescue []
   end
 
-  def output_patron_parameter
+  def output_agent_parameter
     @creators = @series_statement.root_manifestation.creators rescue []
     @creators_type = @upd_creator_type.collect{|r| r.to_i} rescue []
     @keep_creator = @add_creator.collect{|r| r.to_i}.join(",") rescue nil
@@ -343,7 +343,7 @@ class SeriesStatementsController < ApplicationController
     @new_publisher_number = @new_publisher.length
   end
 
-  def output_patron_parameter_for_new_edit
+  def output_agent_parameter_for_new_edit
     @creators = @series_statement.root_manifestation.creators rescue []
     @creators_type = @series_statement.root_manifestation.creates.order("position").pluck("create_type_id").collect{|c| c.to_i } rescue []
     @keep_creator = nil

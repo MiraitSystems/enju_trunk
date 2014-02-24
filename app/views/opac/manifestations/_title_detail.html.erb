@@ -4,23 +4,23 @@
     <%= manifestation.original_title %>
     <%= form_icon(manifestation.carrier_type) %>
   </h2>
-  <table id="opac_patrons_table">
+  <table id="opac_agents_table">
     <% unless manifestation.creators.readable_by(current_user).empty? %>
       <tr>
-        <td><%= t('patron.creator') %>: </td>
-        <td><%= patrons_list(manifestation.creators.readable_by(current_user), { :itemprop => 'author', :nolink => 'true' }) %></td>
+        <td><%= t('agent.creator') %>: </td>
+        <td><%= agents_list(manifestation.creators.readable_by(current_user), { :itemprop => 'author', :nolink => 'true' }) %></td>
       </tr>
     <% end %>
     <% unless manifestation.contributors.readable_by(current_user).empty? %>
       <tr>
-        <td><%= t('patron.contributor') %>: </td>
-        <td><%= patrons_list(manifestation.contributors.readable_by(current_user), { :itemprop => 'editor', :nolink => 'true' }) %></td>
+        <td><%= t('agent.contributor') %>: </td>
+        <td><%= agents_list(manifestation.contributors.readable_by(current_user), { :itemprop => 'editor', :nolink => 'true' }) %></td>
       </tr>
     <% end %>
     <% unless manifestation.publishers.readable_by(current_user).empty? %>
       <tr>
-        <td><%= t('patron.publisher') %>: </td>
-        <td><%= patrons_list(manifestation.publishers.readable_by(current_user), { :itemprop => 'publisher', :nolink => 'true' }) %></td>
+        <td><%= t('agent.publisher') %>: </td>
+        <td><%= agents_list(manifestation.publishers.readable_by(current_user), { :itemprop => 'publisher', :nolink => 'true' }) %></td>
       </tr>
     <% end %>
     <% if manifestation.pub_date.present? %>

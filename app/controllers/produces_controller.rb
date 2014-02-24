@@ -1,6 +1,6 @@
 class ProducesController < ApplicationController
   load_and_authorize_resource
-  before_filter :get_patron, :get_manifestation
+  before_filter :get_agent, :get_manifestation
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
 
@@ -8,8 +8,8 @@ class ProducesController < ApplicationController
   # GET /produces.json
   def index
     case
-    when @patron
-      @produces = @patron.produces.order('produces.position').page(params[:page])
+    when @agent
+      @produces = @agent.produces.order('produces.position').page(params[:page])
     when @manifestation
       @produces = @manifestation.produces.order('produces.position').page(params[:page])
     else
@@ -38,14 +38,14 @@ class ProducesController < ApplicationController
 
   # GET /produces/new
   def new
-    if @patron and @manifestation.blank?
-      redirect_to patron_manifestations_url(@patron)
+    if @agent and @manifestation.blank?
+      redirect_to agent_manifestations_url(@agent)
       return
-    elsif @manifestation and @patron.blank?
-      redirect_to manifestation_patrons_url(@manifestation)
+    elsif @manifestation and @agent.blank?
+      redirect_to manifestation_agents_url(@manifestation)
       return
     else
-      @produce = Produce.new(:manifestation => @manifestation, :patron => @patron)
+      @produce = Produce.new(:manifestation => @manifestation, :agent => @agent)
     end
   end
 
@@ -96,11 +96,11 @@ class ProducesController < ApplicationController
 
     respond_to do |format|
       case
-      when @patron
-        format.html { redirect_to patron_manifestations_url(@patron) }
+      when @agent
+        format.html { redirect_to agent_manifestations_url(@agent) }
         format.json { head :no_content }
       when @manifestation
-        format.html { redirect_to manifestation_patrons_url(@manifestation) }
+        format.html { redirect_to manifestation_agents_url(@manifestation) }
         format.json { head :no_content }
       else
         format.html { redirect_to produces_url }

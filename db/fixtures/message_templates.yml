@@ -1,6 +1,6 @@
 <%
 manifestations = <<"EOS"
-利用者: <%= @user.patron.full_name if @user %\>\n
+利用者: <%= @user.agent.full_name if @user %\>\n
 <% for m in @manifestations %\>\n
   資料の形態：<%= m.carrier_type.display_name.localize %\>\n
   タイトル: <%= m.original_title %\>\n
@@ -27,7 +27,7 @@ EOS
 
 purchase_request = <<"EOS"
 <% for p in @purchase_request %\>\n
-  利用者: <%= p.user.patron.full_name if p.user %\>\n
+  利用者: <%= p.user.agent.full_name if p.user %\>\n
   タイトル: <%= p.title %\>\n
   著者: <%=  p.author %\>\n
   出版者: <%= p.publisher %\>\n
@@ -42,7 +42,7 @@ EOS
 
 message_template_00001:
   id: 1
-  status: reservation_accepted_for_patron
+  status: reservation_accepted_for_agent
   title: "予約を受け付けました"
   body: "以下の資料の予約を受け付けました。\n\n<%= manifestations %>"
   position: 1
@@ -56,7 +56,7 @@ message_template_00002:
   locale: ja
 message_template_00003:
   id: 3
-  status: item_received_for_patron
+  status: item_received_for_agent
   title: "予約資料の準備が整いました"
   body: "以下の予約資料の準備が整いました。\n\n<%= manifestations %>"
   position: 3
@@ -70,7 +70,7 @@ message_template_00004:
   locale: ja
 message_template_00005:
   id: 5
-  status: reservation_expired_for_patron
+  status: reservation_expired_for_agent
   title: "予約の有効期限が過ぎました"
   body: "以下の予約資料の有効期限が過ぎました。\n\n<%= manifestations %>"
   position: 5
@@ -84,7 +84,7 @@ message_template_00006:
   locale: ja
 message_template_00007:
   id: 7
-  status: reservation_canceled_for_patron
+  status: reservation_canceled_for_agent
   title: "予約を取り消しました"
   body: "以下の資料の予約を取り消しました。\n\n<%= manifestations %>"
   position: 7
@@ -119,7 +119,7 @@ message_template_00011:
   locale: ja
 message_template_00012:
   id: 12
-  status: purchase_request_accepted_for_patron
+  status: purchase_request_accepted_for_agent
   title: "購入リクエストを受け付けました"
   body: "以下の資料の購入リクエストを受け付けました。\n\n<%= purchase_request %>"
   position: 12
@@ -140,7 +140,7 @@ message_template_00014:
   locale: ja
 message_template_00015:
   id: 15
-  status: reserve_reverted_for_patron
+  status: reserve_reverted_for_agent
   title: "予約資料の取置きはキャンセルされました"
   body: "以下の取置き済みの予約資料は貸出できない状態となりました。\n申し訳ありませんが貸出状態が整うまでしばしお待ちください。\n\n<%= manifestations %>"
   position: 15

@@ -19,7 +19,7 @@ playSound('<%= root_path -%><%= flash[:sound] -%>');
 </p>
 <p>
   <strong><%= t('activerecord.attributes.reminder_list.user_name') -%>:</strong>
-  <%= link_to @reminder_list.checkout.user.patron.full_name, @reminder_list.checkout.user -%>
+  <%= link_to @reminder_list.checkout.user.agent.full_name, @reminder_list.checkout.user -%>
   (<%= @reminder_list.checkout.user_username -%>)
 </p>
 <p>

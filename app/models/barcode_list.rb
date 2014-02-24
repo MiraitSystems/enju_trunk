@@ -25,7 +25,7 @@ class BarcodeList < ActiveRecord::Base
     @code_words = []
     @sup_words = []
 
-    user_numbers = User.order(:user_number).includes(:patron)
+    user_numbers = User.order(:user_number).includes(:agent)
     if start_number && start_number.strip.present?
       user_numbers = user_numbers.where("user_number >= ?", start_number)
     end
@@ -36,9 +36,9 @@ class BarcodeList < ActiveRecord::Base
     user_numbers.each do |u|
       @code_words << prefix + u.user_number unless u.user_number.blank?
       title = ""
-      if u.patron
-        if u.patron.full_name
-          title = u.patron.full_name  
+      if u.agent
+        if u.agent.full_name
+          title = u.agent.full_name  
         end
       end
       @sup_words << title

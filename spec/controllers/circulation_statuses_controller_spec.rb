@@ -206,7 +206,7 @@ describe CirculationStatusesController do
           assigns(:circulation_status).should_not be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :circulation_status => @attrs
           response.should be_forbidden
         end

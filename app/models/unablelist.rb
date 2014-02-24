@@ -32,12 +32,12 @@ class Unablelist < ActiveRecord::Base
               row.item(:library_line).hide
               row.item(:library).hide
             end
-            row.item(:full_name).value(user.try(:patron).try(:full_name))
+            row.item(:full_name).value(user.try(:agent).try(:full_name))
 #            row.item(:username).value(user.username)
             row.item(:department).value(user.try(:department).try(:display_name))
             row.item(:user_number).value(user.user_number)
-            row.item(:tel1).value(user.try(:patron).try(:telephone_number_1)) if user.try(:patron).try(:telephone_number_1)
-            row.item(:e_mail).value(user.try(:patron).try(:email)) if user.try(:patron).try(:email)
+            row.item(:tel1).value(user.try(:agent).try(:telephone_number_1)) if user.try(:agent).try(:telephone_number_1)
+            row.item(:e_mail).value(user.try(:agent).try(:email)) if user.try(:agent).try(:email)
             row.item(:created_at).value(user.created_at)
             if user.active_for_authentication?
               row.item(:user_status).value(user.try(:user_status).try(:display_name))
@@ -72,13 +72,13 @@ class Unablelist < ActiveRecord::Base
     columns = [
 #      [:library, 'activerecord.attributes.user.library'],
       ['user_number', 'activerecord.attributes.user.user_number'],
-      [:full_name, 'activerecord.attributes.patron.full_name'],
+      [:full_name, 'activerecord.attributes.agent.full_name'],
       [:department, 'activerecord.attributes.user.department'],
-      [:telephone_number_1, 'activerecord.attributes.patron.telephone_number_1'],
-#      [:extelephone_number_1, 'activerecord.attributes.patron.extelephone_number_1'],
-      [:email, 'activerecord.attributes.patron.email'],
-#      [:fax_number_1, 'activerecord.attributes.patron.fax_number_1'],
-#      [:birth, 'activerecord.attributes.patron.date_of_birth'],
+      [:telephone_number_1, 'activerecord.attributes.agent.telephone_number_1'],
+#      [:extelephone_number_1, 'activerecord.attributes.agent.extelephone_number_1'],
+      [:email, 'activerecord.attributes.agent.email'],
+#      [:fax_number_1, 'activerecord.attributes.agent.fax_number_1'],
+#      [:birth, 'activerecord.attributes.agent.date_of_birth'],
     ]
 
     # title column
@@ -92,17 +92,17 @@ class Unablelist < ActiveRecord::Base
         when :library
           row << user.try(:library).try(:display_name)
         when :full_name
-          row << user.try(:patron).try(:full_name)
+          row << user.try(:agent).try(:full_name)
         when :telephone_number_1
-          row << user.try(:patron).try(:telephone_number_1)
+          row << user.try(:agent).try(:telephone_number_1)
         when :extelephone_number_1
-          row << user.try(:patron).try(:extelephone_number_1)
+          row << user.try(:agent).try(:extelephone_number_1)
         when :fax_number_1
-          row << user.try(:patron).try(:fax_number_1)
+          row << user.try(:agent).try(:fax_number_1)
         when :birth
-          row << user.patron.date_of_birth.strftime("%Y/%m/%d") if user.try(:patron).try(:date_of_birth)
+          row << user.agent.date_of_birth.strftime("%Y/%m/%d") if user.try(:agent).try(:date_of_birth)
         when :email
-          row << user.try(:patron).try(:email)
+          row << user.try(:agent).try(:email)
         when :department
           row << user.try(:department).try(:display_name)
         else

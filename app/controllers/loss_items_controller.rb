@@ -2,7 +2,7 @@ class LossItemsController < ApplicationController
   include NotificationSound
   before_filter :check_librarian
   before_filter :get_user
-  before_filter :get_patron, :get_manifestation
+  before_filter :get_agent, :get_manifestation
   helper_method :get_shelf
   helper_method :get_library
   helper_method :get_item
@@ -43,11 +43,11 @@ class LossItemsController < ApplicationController
       end.results
 
       # search item
-      patron = @patron
+      agent = @agent
       manifestation = @manifestation
       shelf = get_shelf
       @items = Item.search do
-        with(:patron_ids).equal_to patron.id if patron
+        with(:agent_ids).equal_to agent.id if agent
         with(:manifestation_id).equal_to manifestation.id if manifestation
         with(:shelf_id).equal_to shelf.id if shelf
         fulltext query

@@ -7,7 +7,7 @@ describe "FunctionClassAbilities" do
   let(:user) do
     FactoryGirl.create(
       :admin,
-      patron: FactoryGirl.create(:patron),
+      agent: FactoryGirl.create(:agent),
       function_class: nil)
   end
 

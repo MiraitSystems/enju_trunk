@@ -7,7 +7,7 @@ class ItemsController < ApplicationController
   include NotificationSound
   load_and_authorize_resource :except => :numbering
   before_filter :get_user
-  before_filter :get_patron, :get_manifestation
+  before_filter :get_agent, :get_manifestation
   helper_method :get_shelf
   helper_method :get_library
   before_filter :prepare_options, :only => [:new, :edit]
@@ -44,12 +44,12 @@ class ItemsController < ApplicationController
       end
     end
 
-    patron = @patron
+    agent = @agent
     manifestation = @manifestation
     shelf = get_shelf
     unless params[:mode] == 'add'
       search.build do
-        with(:patron_ids).equal_to patron.id if patron
+        with(:agent_ids).equal_to agent.id if agent
         with(:manifestation_id).equal_to manifestation.id if manifestation
         with(:shelf_id).equal_to shelf.id if shelf
       end
@@ -153,7 +153,7 @@ class ItemsController < ApplicationController
         @item.save!
         Item.transaction do
           if @item.shelf
-            @item.shelf.library.patron.items << @item
+            @item.shelf.library.agent.items << @item
           end
           if @item.manifestation.next_reserve
             #ReservationNotifier.deliver_reserved(@item.manifestation.next_reservation.user)
@@ -166,8 +166,8 @@ class ItemsController < ApplicationController
         end
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.item'))
         @item.post_to_union_catalog if LibraryGroup.site_config.post_to_union_catalog
-        if @patron
-          format.html { redirect_to patron_item_url(@patron, @item) }
+        if @agent
+          format.html { redirect_to agent_item_url(@agent, @item) }
           format.json { render :json => @item, :status => :created, :location => @item }
         else
           format.html { redirect_to(@item) }

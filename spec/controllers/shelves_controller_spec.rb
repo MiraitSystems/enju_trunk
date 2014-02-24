@@ -185,7 +185,7 @@ describe ShelvesController do
           assigns(:shelf).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :shelf => @attrs
           response.should redirect_to(assigns(:shelf))
         end

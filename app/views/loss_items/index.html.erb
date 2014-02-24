@@ -39,7 +39,7 @@ $(function(){
     <td><%= link_to loss_item.id, loss_item -%></td>
     <td><%= link_to loss_item.item.manifestation.original_title, loss_item -%></td>
     <td>
-      <%= link_to loss_item.user.patron.full_name, loss_item.user -%>
+      <%= link_to loss_item.user.agent.full_name, loss_item.user -%>
       (<%= link_to loss_item.user.username, loss_item.user -%>)
     </td>
     <td><%= i18n_status(loss_item.status) -%></td>

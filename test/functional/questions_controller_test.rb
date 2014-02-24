@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class QuestionsControllerTest < ActionController::TestCase
-  fixtures :questions, :users, :user_groups, :roles, :patrons, :libraries
+  fixtures :questions, :users, :user_groups, :roles, :agents, :libraries
 
   def test_guest_should_get_index_with_query
     get :index, :query => 'Yahoo'

@@ -1,0 +1,34 @@
+<div id="related">
+  <ul>
+    <%- if @agent.agent_aliases.exists? -%>
+      <%= t('page.see') -%>
+    <%- end -%>
+    <%- @agent.agent_aliases.each do |agent_alias| -%>
+      <li>
+        <%= agent_alias.full_name -%>
+        <%= '||' if agent_alias.full_name_transcription.present? && agent_alias.full_name.present? -%>
+        <%= agent_alias.full_name_transcription -%>
+        <%= '||' if ( agent_alias.full_name.present? || agent_alias.full_name_transcription.present? ) && agent_alias.full_name_alternative.present? -%>
+        <%= agent_alias.full_name_alternative -%>
+      </li>
+    <%- end -%>
+    <%- @agent_relationship_types.each do |agent_relationship_type| -%>
+      <%- parent_name = '' %>
+      <%- parents = @agent.parents.select_type_id(agent_relationship_type.id) -%>
+      <%- if parents.present? -%>
+        <%= parent_name = get_detail_name(agent_relationship_type, 'p') -%>
+        <%- parents.each do |agent_relationship| -%>
+          <li><%= link_to agent_relationship.parent.full_name, agent_relationship.parent -%></li>
+        <%- end -%>
+      <%- end -%>
+      <%- children = @agent.children.select_type_id(agent_relationship_type.id) -%>
+      <%- if children.present? -%>
+        <%- child_name = get_detail_name(agent_relationship_type, 'c') -%>
+        <%= child_name unless parent_name == child_name -%>
+        <%- children.each do |agent_relationship| -%>
+          <li><%= link_to agent_relationship.child.full_name, agent_relationship.child -%></li>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+  </ul>
+</div>

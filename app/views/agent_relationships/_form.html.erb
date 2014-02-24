@@ -1,0 +1,37 @@
+<%= form_for(@agent_relationship) do |f| %>
+  <%= f.error_messages -%>
+  <%= hidden_field_tag 'agent_id', params[:agent_id] %>
+  <%= hidden_field_tag 'agent_relationship_type', params[:agent_relationship_type] if params[:agent_relationship_type] %>
+  <%= hidden_field_tag 'parent_child_relationship', params[:parent_child_relationship] if params[:parent_child_relationship] %>
+  <%= hidden_field_tag 'agent_type', params[:agent_type] if params[:agent_type] %>
+  <%= hidden_field_tag 'page', params[:page] if params[:page] %>
+  <div class="field">
+    <% if @agent_relationship.try(:parent) %>
+      <%= f.label :parent %><br />
+      <%= link_to @agent_relationship.parent.full_name, @agent_relationship.parent %>
+      <%= f.hidden_field :parent_id %>
+    <% else %>
+      <%= f.label :parent %><br />
+      <%= f.text_field :parent_id %>
+    <% end %>
+  </div>
+  <div class="field">
+    <% if @agent_relationship.child.try(:full_name) %>
+      <%= f.label :child %><br />
+      <%= link_to @agent_relationship.child.full_name, @agent_relationship.child %>
+      <%= f.hidden_field :child_id %>
+    <% else %>
+      <%= f.label :child %><br />
+      <%= f.text_field :child_id %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= f.label :agent_relationship_type_id %><br />
+    <%- primary = params[:agent_id] == @agent_relationship.parent_id.to_s ? 'c' : 'p' %>
+    <%- secondary = primary == 'p' ? 'c' : 'p'-%>
+    <%= f.select(:agent_relationship_type_id, @agent_relationship_types.collect{|r| [get_detail_name(r, primary, secondary), r.id]}) -%>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
