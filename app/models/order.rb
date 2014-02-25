@@ -1,6 +1,6 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :auto_calculation_flag, :taxable_amount, :tax_exempt_amount
+  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :auto_calculation_flag, :taxable_amount, :tax_exempt_amount, :total_payment
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
   belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
@@ -71,13 +71,22 @@ class Order < ActiveRecord::Base
 
     self.number_of_acceptance_schedule = 0 if self.number_of_acceptance_schedule.blank?
     self.number_of_missing = 0 if self.number_of_missing.blank?
-    self.discount_commision = 1.0 if self.discount_commision.blank?
     self.prepayment_principal = 0.0 if self.prepayment_principal.blank?
 
-    self.currency_rate = 0.0 if self.currency_rate.blank? && auto_calculation_flag != 1
+    if self.currency_rate.blank? && self.auto_calculation_flag != 1
+      self.currency_rate = 0.0
+    else
+      self.currency_rate = BigDecimal("#{self.currency_rate}").floor(2)
+    end
 
-    self.taxable_amount = 0.0 if self.taxable_amount.blank?
-    self.tax_exempt_amount = 0.0 if self.tax_exempt_amount.blank?
+    if self.discount_commision.blank?
+      self.discount_commision = 1.0
+    else
+      self.discount_commision = BigDecimal("#{self.discount_commision}").floor(3)
+    end
+
+    self.taxable_amount = 0 if self.taxable_amount.blank?
+    self.tax_exempt_amount = 0 if self.tax_exempt_amount.blank?
   end
 
 
@@ -141,6 +150,35 @@ class Order < ActiveRecord::Base
     self.order_identifier = year.to_s + number
 
   end
+
+  after_create :create_payment_to_advance_payment
+  def create_payment_to_advance_payment
+
+    if self.payment_form
+      if self.payment_form.v == "1" || self.payment_form.v == "3"
+        Payment.create_advance_payment(self.id)
+      end
+    end
+  end
+
+  before_create :create_total_payment
+  def create_total_payment
+    self.total_payment  =0
+  end
+
+  def calculation_total_payment
+    payments = Payment.where("payment_type != 3 AND order_id = ?", self.id)
+
+    self.total_payment = 0
+    number_of_acceptance = 0
+    payments.each do |payment|
+      self.total_payment += payment.amount_of_payment
+      number_of_acceptance += payment.number_of_payment
+    end
+    self.number_of_acceptance = number_of_acceptance
+    self.save
+  end
+
 
   def destroy?
     return false if Payment.where(:order_id => self.id).first

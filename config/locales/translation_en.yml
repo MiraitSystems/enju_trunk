@@ -3128,6 +3128,7 @@ en:
     cannot_delete: The order cannot be deleted.
     no_matches_found_agent: "No matches found agent"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+    no_matches_found_order: "No matches found order to %{attribute}"
     switch_manual_entry: "Manual entry currency rate and yen imprest"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
@@ -3135,7 +3136,9 @@ en:
     subsequent_year_orders: Subsequent year orders
     create_subsequent_year_orders: Create subsequent year orders
     create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
+    no_create_subsequent_year_orders: "No create subsequent year orders."
     copy: Copy and create new order
+    
   payment:
     system_menu_title: Payment search
     switch_manual_entry: "Manual entry currency rate and amount of payment"

@@ -9,6 +9,10 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.back'), orders_path -%></li>
+    <% if @return_index %>
+      <li><%= link_to t('page.back'), manifestation_orders_path(@order.manifestation) -%></li>
+    <% else %>
+      <li><%= link_to t('page.back'), orders_path -%></li>
+    <% end %>
   </ul>
 </div>

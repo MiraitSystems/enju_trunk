@@ -3100,6 +3100,7 @@ ja:
     cannot_delete: "この発注は削除できません"
     no_matches_found_agent: "発注機関が見つかりません"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     switch_manual_entry: "通貨レート、発注金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
@@ -3107,6 +3108,7 @@ ja:
     subsequent_year_orders: 次年度発注
     create_subsequent_year_orders: 次年度発注生成
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
     copy: コピーして新規作成
   payment:
     system_menu_title: 支払検索

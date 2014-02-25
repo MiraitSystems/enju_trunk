@@ -128,6 +128,8 @@ $(function(){
     <% end %>
   </div>
 
+  <%= hidden_field_tag :return_index, @return_index if @return_index %>
+
   <div class="actions">
     <%= f.submit %>
   </div>
