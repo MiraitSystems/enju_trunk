@@ -208,7 +208,7 @@ describe CheckoutStatHasUsersController do
           assigns(:checkout_stat_has_user).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :checkout_stat_has_user => @attrs
           response.should redirect_to(assigns(:checkout_stat_has_user))
         end

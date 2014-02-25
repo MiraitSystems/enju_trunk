@@ -35,7 +35,7 @@ EnjuLeaf::Application.routes.draw do
     post :select_manifestation, :on => :member
   end
 
-  resources :patron_aliases
+  resources :agent_aliases
   resources :numberings
   resources :departments
   resources :classmarks
@@ -70,10 +70,10 @@ EnjuLeaf::Application.routes.draw do
   end
 
   resources :manifestations do
-    resources :patrons
-    resources :creators, :controller => 'patrons'
-    resources :contributors, :controller => 'patrons'
-    resources :publishers, :controller => 'patrons'
+    resources :agents
+    resources :creators, :controller => 'agents'
+    resources :contributors, :controller => 'agents'
+    resources :publishers, :controller => 'agents'
     resources :creates
     resources :realizes
     resources :produces
@@ -97,43 +97,43 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/delete' => 'checked_manifestations#destroy'
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
 
-  match 'patrons/search_name' => 'patrons#search_name'
+  match 'agents/search_name' => 'agents#search_name'
 
-  resources :patrons do
+  resources :agents do
     resources :works, :controller => 'manifestations'
     resources :expressions, :controller => 'manifestations'
     resources :manifestations
     resources :items
     resources :picture_files
-    resources :patrons
-    resources :patron_merges
-    resources :patron_merge_lists
-    resources :patron_relationships
+    resources :agents
+    resources :agent_merges
+    resources :agent_merge_lists
+    resources :agent_relationships
     resources :creates
     resources :realizes
     resources :produces
   end
 
-  resources :creators, :controller => 'patrons' do
+  resources :creators, :controller => 'agents' do
     resources :manifestations do
       post :output_excelx, :on => :collection
     end
   end
 
-  resources :contributors, :controller => 'patrons' do
+  resources :contributors, :controller => 'agents' do
     resources :manifestations do
       post :output_excelx, :on => :collection
     end
   end
 
-  resources :publishers, :controller => 'patrons' do
+  resources :publishers, :controller => 'agents' do
     resources :manifestations do
       post :output_excelx, :on => :collection
     end
   end
 
   resources :works, :controller => 'manifestations' do
-    resources :patrons
+    resources :agents
     resources :creates
     resources :subjects
     resources :work_has_subjects
@@ -143,7 +143,7 @@ EnjuLeaf::Application.routes.draw do
   end
 
   resources :expressions, :controller => 'manifestations' do
-    resources :patrons
+    resources :agents
     resources :realizes
     resources :manifestations
     resources :manifestation_relationships
@@ -151,7 +151,7 @@ EnjuLeaf::Application.routes.draw do
 
   resources :manifestations do
     resources :produces
-    resources :patrons
+    resources :agents
     resources :items
     resources :picture_files
     resources :expressions, :controller => 'manifestations'
@@ -186,7 +186,7 @@ EnjuLeaf::Application.routes.draw do
     resources :reserves
     resources :purchase_requests
     resources :questions
-    resource :patron
+    resource :agent
     resource :family
     resource :family_user
     get :edit_user_number, :on => :member
@@ -206,7 +206,7 @@ EnjuLeaf::Application.routes.draw do
   match '/manifestation_exstats/bestreader' => 'manifestation_exstats#bestreader'
   match '/manifestation_exstats/bestrequest' => 'manifestation_exstats#bestrequest'
 
-  resources :patron_relationship_types
+  resources :agent_relationship_types
   resources :licenses
   resources :medium_of_performances
   resources :extents
@@ -216,7 +216,7 @@ EnjuLeaf::Application.routes.draw do
   resources :use_restrictions
   resources :item_has_use_restrictions
   resources :lending_policies
-  resources :patron_types
+  resources :agent_types
   resources :circulation_statuses
   resources :form_of_works
   resources :subject_has_classifications
@@ -224,11 +224,11 @@ EnjuLeaf::Application.routes.draw do
     resources :subjects
   end
   resources :subject_heading_type_has_subjects
-  resources :patron_merge_lists do
-    resources :patrons
-    resources :patron_merges
+  resources :agent_merge_lists do
+    resources :agents
+    resources :agent_merges
   end
-  resources :patron_merges
+  resources :agent_merges
   resources :donates
   resources :subscriptions do
     resources :manifestations
@@ -305,12 +305,12 @@ EnjuLeaf::Application.routes.draw do
 
   resources :resource_import_nacsisfiles, :only => [:new, :create]
 
-  resources :patron_import_files do
+  resources :agent_import_files do
     get :import_request, :on => :collection
-    resources :patron_import_results, :only => [:index, :show, :destroy]
+    resources :agent_import_results, :only => [:index, :show, :destroy]
   end
 
-  resources :patron_import_results, :only => [:index, :show, :destroy]
+  resources :agent_import_results, :only => [:index, :show, :destroy]
   resources :resource_import_results, :only => [:index, :show, :destroy]
 
   resources :questions do
@@ -324,7 +324,7 @@ EnjuLeaf::Application.routes.draw do
     get :do_order, :on => :member
   end
 
-  resources :patron_relationships
+  resources :agent_relationships
 
   resources :bookstores do
     get :search_bookstores, :on => :collection
@@ -424,7 +424,7 @@ EnjuLeaf::Application.routes.draw do
     resources :inter_library_loans
     resources :item_has_use_restrictions
     resources :lending_policies
-    resources :patrons
+    resources :agents
     resources :owns
     resource :exemplify
     get :remove, :on => :member

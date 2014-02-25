@@ -12,7 +12,7 @@
 <p>
   <strong><%= t('family.members') -%>:</strong><br />
   <%- @family.users.each do |user| -%>
-    <%= user.patron.full_name if user.patron -%>(<%= user.username -%>)<br />
+    <%= user.agent.full_name if user.agent -%>(<%= user.username -%>)<br />
   <%- end -%>
 </p>
 <%- end -%>

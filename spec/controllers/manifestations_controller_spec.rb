@@ -95,7 +95,7 @@ describe ManifestationsController do
     shared_examples_for 'index should load records' do
       [
         # param name, expected record, ivar name, [search condition spec]
-        [:patron_id, Patron, :patron,
+        [:agent_id, Agent, :agent,
           [:with, :publisher_ids, :equal_to, :id]],
         [:series_statement_id, SeriesStatement, :series_statement,
           [:with, :series_statement_id, :equal_to, :id]],
@@ -103,12 +103,12 @@ describe ManifestationsController do
           [:with, :original_manifestation_ids, :equal_to, :id]],
         [:subject_id, Subject, :subject,
           [:with, :subject_ids, :equal_to, :id]],
-        [:patron_id, Patron, :index_patron, :patron],
-        [:creator_id, Patron, :index_patron, :creator,
+        [:agent_id, Agent, :index_agent, :agent],
+        [:creator_id, Agent, :index_agent, :creator,
           [:with, :creator_ids, :equal_to, :id]],
-        [:contributor_id, Patron, :index_patron, :contributor,
+        [:contributor_id, Agent, :index_agent, :contributor,
           [:with, :contributor_ids, :equal_to, :id]],
-        [:publisher_id, Patron, :index_patron, :publisher,
+        [:publisher_id, Agent, :index_agent, :publisher,
           [:with, :publisher_ids, :equal_to, :id]],
       ].each do |psym, cls, *dst|
         expected_call_base = dst.pop if dst.last.is_a?(Array)

@@ -43,7 +43,7 @@ class OrdersController < ApplicationController
     @order.order_identifier = Numbering.do_numbering('order')
     @order.order_day = Date.today
 
-    @select_patron_tags = Order.struct_patron_selects
+    @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
 
       if params[:manifestation_id]
@@ -59,7 +59,7 @@ class OrdersController < ApplicationController
   # GET /orders/1/edit
   def edit
     @order = Order.find(params[:id])
-    @select_patron_tags = Order.struct_patron_selects
+    @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
   end
 
@@ -85,7 +85,7 @@ class OrdersController < ApplicationController
         end
       else
 
-        @select_patron_tags = Order.struct_patron_selects
+        @select_agent_tags = Order.struct_agent_selects
         @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "new" }
@@ -110,7 +110,7 @@ class OrdersController < ApplicationController
           format.json { head :no_content }
         end
       else
-          @select_patron_tags = Order.struct_patron_selects
+          @select_agent_tags = Order.struct_agent_selects
           @currencies = Currency.all
         @order_lists = OrderList.not_ordered
         format.html { render :action => "edit" }

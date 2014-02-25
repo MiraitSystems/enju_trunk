@@ -17,7 +17,7 @@ class ApprovalsController < ApplicationController
     @manifestation = Manifestation.find(params[:manifestation_id]) if params[:manifestation_id]
 
     @select_user_tags = Approval.struct_user_selects
-    @select_patron_tags = Approval.struct_patron_selects
+    @select_agent_tags = Approval.struct_agent_selects
 
     @maxposition = 0
     @approval.approval_extexts << ApprovalExtext.new(:position => 1, :comment_at => Date.today)
@@ -35,7 +35,7 @@ class ApprovalsController < ApplicationController
       else
         @manifestation = Manifestation.find(@approval.manifestation_id)
         @select_user_tags = Approval.struct_user_selects
-        @select_patron_tags = Approval.struct_patron_selects
+        @select_agent_tags = Approval.struct_agent_selects
 
         format.html { render :action => "new" }
       end
@@ -47,7 +47,7 @@ class ApprovalsController < ApplicationController
 
     @manifestation = Manifestation.find(@approval.manifestation_id)
     @select_user_tags = Approval.struct_user_selects
-    @select_patron_tags = Approval.struct_patron_selects
+    @select_agent_tags = Approval.struct_agent_selects
 
     @maxposition = ApprovalExtext.maximum('position', :conditions => ["approval_id = ?", params[:id]])
     @countextexts = ApprovalExtext.count(:conditions => ["approval_id = ?", params[:id]])
@@ -72,7 +72,7 @@ class ApprovalsController < ApplicationController
 
         @manifestation = Manifestation.find(@approval.manifestation_id)
         @select_user_tags = Approval.struct_user_selects
-        @select_patron_tags = Approval.struct_patron_selects
+        @select_agent_tags = Approval.struct_agent_selects
 
         format.html { render :action => "edit" }
      end

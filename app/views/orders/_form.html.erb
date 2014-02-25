@@ -22,9 +22,9 @@ $(function(){
     $("#order_order_organization_id").select2({
       
 multiple: false,
-      data: <%= raw @select_patron_tags.to_json -%>,
+      data: <%= raw @select_agent_tags.to_json -%>,
       formatNoMatches: function(user) {
-        return <%= raw t("order.no_matches_found_patron").to_json %>;
+        return <%= raw t("order.no_matches_found_agent").to_json %>;
       },
       width: "300px",
     });

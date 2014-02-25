@@ -208,7 +208,7 @@ describe ReserveStatHasManifestationsController do
           assigns(:reserve_stat_has_manifestation).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :reserve_stat_has_manifestation => @attrs
           response.should redirect_to(assigns(:reserve_stat_has_manifestation))
         end

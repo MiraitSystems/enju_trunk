@@ -1,7 +1,7 @@
 class Country < ActiveRecord::Base
   include MasterModel
   default_scope :order => "position"
-  has_many :patrons
+  has_many :agents
   #has_many :people
   #has_many :corporate_bodies
   #has_many :families

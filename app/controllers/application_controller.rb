@@ -166,9 +166,9 @@ class ApplicationController < ActionController::Base
     raise CanCan::AccessDenied
   end
 
-  def get_patron
-    @patron = Patron.find(params[:patron_id]) if params[:patron_id]
-    authorize! :show, @patron if @patron
+  def get_agent
+    @agent = Agent.find(params[:agent_id]) if params[:agent_id]
+    authorize! :show, @agent if @agent
   end
 
   def get_work
@@ -203,8 +203,8 @@ class ApplicationController < ActionController::Base
     @basket = Basket.find(params[:basket_id]) if params[:basket_id]
   end
 
-  def get_patron_merge_list
-    @patron_merge_list = PatronMergeList.find(params[:patron_merge_list_id]) if params[:patron_merge_list_id]
+  def get_agent_merge_list
+    @agent_merge_list = AgentMergeList.find(params[:agent_merge_list_id]) if params[:agent_merge_list_id]
   end
 
   def get_user
@@ -435,19 +435,19 @@ class ApplicationController < ActionController::Base
     @carrier_types = CarrierType.all
   end
 
-  def get_index_patron
-    patron = {} 
+  def get_index_agent
+    agent = {} 
     case 
-    when params[:patron_id]
-      patron[:patron] = Patron.find(params[:patron_id])
+    when params[:agent_id]
+      agent[:agent] = Agent.find(params[:agent_id])
     when params[:creator_id]
-      patron[:creator] = Patron.find(params[:creator_id])
+      agent[:creator] = Agent.find(params[:creator_id])
     when params[:contributor_id]
-      patron[:contributor] = Patron.find(params[:contributor_id])
+      agent[:contributor] = Agent.find(params[:contributor_id])
     when params[:publisher_id]
-      patron[:publisher] = Patron.find(params[:publisher_id])
+      agent[:publisher] = Agent.find(params[:publisher_id])
     end  
-    patron
+    agent
   end  
 
   def self.authorize_function

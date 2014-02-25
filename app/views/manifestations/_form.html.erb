@@ -60,7 +60,7 @@ $(document).keydown(function(e) {
 
 <script>
   var ItemField_language = {
-    currentNumber : <%= raw @manifestation_languages_count.to_json %>,
+    currentNumber : <%= raw (@manifestation_languages.blank? ? 1 : @manifestation_languages.size).to_json %>,
     itemTemplate : ''
       + '<select id="language_id___count__" name="language_id[__count__]">'
       + <%= raw @languages.collect{ |language| ["<option value='" + language.id.to_s + "'>" + language.display_name.localize + "</option>"] }.join().to_json %>
@@ -198,7 +198,7 @@ $(document).keydown(function(e) {
     </div>
   <% end %>
 
-  <%= render 'form_patron_field' %>
+  <%= render 'form_agent_field' %>
   <div class="field">
     <%= f.label t('page.file') -%><br />
     <%= f.file_field :attachment -%>
@@ -439,7 +439,7 @@ $(document).keydown(function(e) {
 -->
 
   <div class="actions">
-    <%= hidden_field_tag :patron_id, @patron.id if @patron -%>
+    <%= hidden_field_tag :agent_id, @agent.id if @agent -%>
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>
     <%= hidden_field_tag :creators, @creators if @creators -%>
     <%= hidden_field_tag :contributors, @contributors if @contributors -%>

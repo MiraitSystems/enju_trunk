@@ -208,7 +208,7 @@ describe BookstoresController do
           assigns(:bookstore).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :bookstore => @attrs
           response.should redirect_to(assigns(:bookstore))
         end

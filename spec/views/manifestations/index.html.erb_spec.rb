@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe "manifestations/index" do
   before do
-    assign(:index_patron, {})
+    assign(:index_agent, {})
     assign(:manifestation, nil)
     assign(:series_statement, nil)
     assign(:binder, nil)

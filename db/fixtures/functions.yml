@@ -32,7 +32,7 @@ function_00004:
   controller_name: ManifestationsController
   action_names: |
                 read:index,show
-                update:new,create,edit,update
+                update:new,create,edit,update,output_excelx
                 delete:destroy
   position: 4
 function_00005:

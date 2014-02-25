@@ -5,12 +5,12 @@ class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
   include Manifestation::OutputColumns
-  has_many :creators, :through => :creates, :source => :patron, :order => :position
-  has_many :creators_order_type, :through => :creates, :source => :patron, :order => 'create_type_id, position'
-  has_many :contributors, :through => :realizes, :source => :patron, :order => :position
-  has_many :contributors_order_type, :through => :realizes, :source => :patron, :order => 'realize_type_id, position'
-  has_many :publishers, :through => :produces, :source => :patron, :order => :position
-  has_many :publishers_order_type, :through => :produces, :source => :patron, :order => 'produce_type_id, position'
+  has_many :creators, :through => :creates, :source => :agent, :order => :position
+  has_many :creators_order_type, :through => :creates, :source => :agent, :order => 'create_type_id, position'
+  has_many :contributors, :through => :realizes, :source => :agent, :order => :position
+  has_many :contributors_order_type, :through => :realizes, :source => :agent, :order => 'realize_type_id, position'
+  has_many :publishers, :through => :produces, :source => :agent, :order => :position
+  has_many :publishers_order_type, :through => :produces, :source => :agent, :order => 'produce_type_id, position'
   has_many :work_has_subjects, :foreign_key => 'work_id', :dependent => :destroy
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
@@ -95,7 +95,7 @@ class Manifestation < ActiveRecord::Base
     text :creator do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の著者のリストを取得する
-        Patron.joins(:works).joins(:works => :series_statement).
+        Agent.joins(:works).joins(:works => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           collect(&:name).compact
       else
@@ -105,7 +105,7 @@ class Manifestation < ActiveRecord::Base
     text :publisher do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の出版社のリストを取得する
-        Patron.joins(:manifestations => :series_statement).
+        Agent.joins(:manifestations => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id]).
           collect(&:name).compact
       else
@@ -639,7 +639,7 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
-  def patrons
+  def agents
     (creators + contributors + publishers).flatten
   end
 
@@ -710,16 +710,16 @@ class Manifestation < ActiveRecord::Base
     save(:validate => false)
   end
 
-  def created(patron)
-    creates.where(:patron_id => patron.id).first
+  def created(agent)
+    creates.where(:agent_id => agent.id).first
   end
 
-  def realized(patron)
-    realizes.where(:patron_id => patron.id).first
+  def realized(agent)
+    realizes.where(:agent_id => agent.id).first
   end
 
-  def produced(patron)
-    produces.where(:patron_id => patron.id).first
+  def produced(agent)
+    produces.where(:agent_id => agent.id).first
   end
 
   def sort_title
@@ -1330,9 +1330,9 @@ class Manifestation < ActiveRecord::Base
           page.list(:list).add_row do |row|
             # modified data format
             item_identifiers = manifestation.items.map{ |item| item.item_identifier }
-            creator = manifestation.creators.readable_by(current_user).map{ |patron| patron.full_name }
-            contributor = manifestation.contributors.readable_by(current_user).map{ |patron| patron.full_name }
-            publisher = manifestation.publishers.readable_by(current_user).map{ |patron| patron.full_name }
+            creator = manifestation.creators.readable_by(current_user).map{ |agent| agent.full_name }
+            contributor = manifestation.contributors.readable_by(current_user).map{ |agent| agent.full_name }
+            publisher = manifestation.publishers.readable_by(current_user).map{ |agent| agent.full_name }
             reserves = Reserve.waiting.where(:manifestation_id => manifestation.id, :checked_out_at => nil)
             # set list
             row.item(:title).value(manifestation.original_title)
@@ -1371,12 +1371,12 @@ class Manifestation < ActiveRecord::Base
             label = I18n.t('activerecord.attributes.manifestation.original_title')
             data  = manifestation.original_title
           when 1
-            label = I18n.t('patron.creator')
-            data  = manifestation.creators.readable_by(current_user).map{|patron| patron.full_name}
+            label = I18n.t('agent.creator')
+            data  = manifestation.creators.readable_by(current_user).map{|agent| agent.full_name}
             data  = data.join(",")
           when 2
-            label = I18n.t('patron.publisher')
-            data  = manifestation.publishers.readable_by(current_user).map{|patron| patron.full_name}
+            label = I18n.t('agent.publisher')
+            data  = manifestation.publishers.readable_by(current_user).map{|agent| agent.full_name}
             data  = data.join(",")
           when 3
             label = I18n.t('activerecord.attributes.manifestation.price')

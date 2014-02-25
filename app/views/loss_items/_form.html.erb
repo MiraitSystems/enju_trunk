@@ -8,7 +8,7 @@
 
   <p>
     <strong><%= t('activerecord.models.user') -%>:</strong>
-    <%= link_to @loss_item.user.patron.full_name, @loss_item.user -%>
+    <%= link_to @loss_item.user.agent.full_name, @loss_item.user -%>
     (<%= link_to @loss_item.user.username, @loss_item.user -%>)
   </p>
   <%= f.hidden_field :user_id, :value => @loss_item.user.id -%>
