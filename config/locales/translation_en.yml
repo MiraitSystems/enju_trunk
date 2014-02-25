@@ -1374,6 +1374,8 @@ en:
       nacsis_user_request:
         subject_heading: Subject heading
         subject_heading_reading: Subject heading (reading)
+        title_alternative: Title alternative
+        title_alternative_transcription: Title alternative (reading)
         publisher: Publisher
         pub_date: Publish date
         publish_year: Publish year
@@ -1992,6 +1994,7 @@ en:
     del_line: "-"
     user_notice: User notice
     select_use_titles: Use titles table
+    imported: Imported
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2986,6 +2989,7 @@ en:
     exinfo: Other
   external_catalog:
     ndl: NDL
+    nacsis: NACSIS
   copy_request:
     message: You can request to copy article.<br />
              Following information is required. 1.title, 2.author name, 3.series title(date of publication, volume&issue number, pages), 4.call number(if you know)<br />

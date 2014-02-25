@@ -22,9 +22,9 @@
       <div id="detail">
         <table>
         <%# 表示をしない項目の設定 %>
-        <%#- omit_display = ['size','publication_place','subjects','creators','publishers']-%>
+        <%- omit_display = ['marc','size','publication_place','subjects','creators','publishers','cls_info','vol_info','ptb_info']-%>
         <%- @nacsis_cat.detail.each_key do |key| -%>
-          <%#- next if omit_display.include?(key.to_s) -%>
+          <%- next if omit_display.include?(key.to_s) -%>
           <tr>
             <td style="width: 200px"><%= t('activerecord.attributes.nacsis_user_request.'+key.to_s) -%></td>
           <%- case key -%>
@@ -88,7 +88,7 @@
            :manifestation_type => params[:manifestation_type],
            :request_type => "2" } -%>
       </li>
-      <% if @nacsis_cat.book? %>
+      <% if @nacsis_cat.book? && !ncid_exist?(@nacsis_cat.ncid) %>
         <li>
           <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
             <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>

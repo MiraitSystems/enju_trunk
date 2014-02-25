@@ -358,9 +358,9 @@ class NacsisCat
     {
       :subject_heading => @record['TR'].try(:[], 'TRD'),
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
-      :subject_heading_reading_alternative => @record['TR'].try(:[], 'TRVR'),
-      :title_alternative_transcription => map_attrs(@record['VT'], 'VTVR').compact.uniq,
-      :publisher_info => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
+      :title_alternative => map_attrs(@record['VT'], 'VTD').compact.uniq,
+      :title_alternative_transcription => map_attrs(@record['VT'], 'VTR').compact.uniq,
+      :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
       :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
       :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),

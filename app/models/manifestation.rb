@@ -1489,9 +1489,10 @@ class Manifestation < ActiveRecord::Base
         }
         if nacsis_cat.present?
           nacsis_info = nacsis_cat.detail
+          attrs[:external_catalog] = 2
           attrs[:original_title] = nacsis_info[:subject_heading]
           attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-          attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
+          attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
           attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
           attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
           attrs[:note] = nacsis_info[:note]
@@ -1528,27 +1529,26 @@ class Manifestation < ActiveRecord::Base
           attrs[:creators] = []
           nacsis_info[:creators].each do |creator|
             if creator[:id].blank?
-              patron =
-                Patron.where(:full_name => creator[:name].to_s).first_or_create do |p|
+              agent =
+                Agent.where(:full_name => creator[:name].to_s).first_or_create do |p|
                   if p.new_record?
                     p.full_name_transcription = creator[:reading].to_s
                   end
                 end
             else
               # 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
-              patron = Patron.where(:full_name => creator[:name].to_s).first
-              if patron.blank?
-                # ここで取得する
-                patron = Patron.create(:full_name => creator[:name].to_s)
+              agent = Agent.where(:full_name => creator[:name].to_s).first
+              if agent.blank?
+                agent = Agent.create(:full_name => creator[:name].to_s).first
               end
             end
-          attrs[:creators] << patron
+            attrs[:creators] << agent
           end
 
           # 関連テーブル：出版者の設定
           attrs[:publishers] = []
-          nacsis_info[:publishers].each do |publisher|
-            attrs[:publishers] << Patron.where(:full_name => publisher.to_s).first_or_create
+          nacsis_info[:publishers].each do |pub|
+            attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
           end
 
           # 関連テーブル：件名の設定

@@ -1523,7 +1523,9 @@ ja:
         created_at: 登録日
       nacsis_user_request:
         subject_heading: 本表題/責任表示
-        subject_heading_reading: 本表題等のよみ
+        subject_heading_reading: 本表題等の読み
+        title_alternative: その他の表題
+        title_alternative_transcription: その他の表題の読み
         publisher: 出版者
         pub_date: 出版年
         publish_year: 出版年
@@ -1960,6 +1962,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    imported: インポート済み
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2955,6 +2958,7 @@ ja:
     exinfo: "その他"
   external_catalog:
     ndl: NDL
+    nacsis: NACSIS
   copy_request:
     message: "地方官署に勤務する職員のための郵送による文献複写サービスです。<br />
               以下に名前・所属・送付先住所と複写を希望する文献（入力項目：①表題，②著者名，③誌名（刊行年、巻号、ページ），④請求記号[分かる場合]）を入力し、登録するボタンを押してください。<br />
