@@ -108,18 +108,18 @@ class ApprovalsController < ApplicationController
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         file_name = 'sample_request' if params[:output] == 'request'
         file_name = 'refusal_letter' if params[:output] == 'refuse'
-        file = ReportExport.get_approval_donation_pdf(@approval, file_name)
-        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+        file = ReportExport.get_approval_donation_txt(@approval, file_name)
+        send_data file, :filename => file_name + '.txt'
       when 'usually', 'sample', 'collection'
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         file_name = 'donation_request_' + params[:output] 
-        file = ReportExport.get_approval_donation_pdf(@approval, file_name)
-        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+        file = ReportExport.get_approval_donation_txt(@approval, file_name)
+        send_data file, :filename => file_name + '.txt'
       when /\_cover$/
         #TODO ファイル名の変更箇所　:filename => ここにファイル名
         file_name = params[:output]
-        file = ReportExport.get_approval_cover_pdf(@approval, file_name)
-        send_data file.generate, :filename => file_name, :type => 'application/pdf', :disposition => 'attachment'
+        file = ReportExport.get_approval_cover_txt(@approval, file_name)
+        send_data file, :filename => file_name + '.txt'
       else
         flash[:error] = I18n.t('page.error_file')
         redirect_to :back
