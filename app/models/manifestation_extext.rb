@@ -6,6 +6,8 @@ class ManifestationExtext < ActiveRecord::Base
   acts_as_list
   default_scope :order => "position"
 
+  has_paper_trail
+
   def self.add_extexts(extexts, manifestation_id)
     return [] if extexts.blank?
     list = []
