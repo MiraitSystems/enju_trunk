@@ -3137,6 +3137,7 @@ en:
     create_subsequent_year_orders: Create subsequent year orders
     create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
     no_create_subsequent_year_orders: "No create subsequent year orders."
+    create_payment_to_advance_payment: "<br />Create payment to advance payment"
     copy: Copy and create new order
     
   payment:
@@ -3148,3 +3149,5 @@ en:
     want_to_paid: "Want to paid?"
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+    no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+

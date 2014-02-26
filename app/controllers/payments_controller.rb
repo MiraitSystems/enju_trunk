@@ -5,10 +5,10 @@ class PaymentsController < ApplicationController
 
   def index
     if params[:order_id]
-      @payments = Payment.where(["order_id = ?",params[:order_id]]).page(params[:page])
+      @payments = Payment.where(["order_id = ?",params[:order_id]]).order("id DESC").page(params[:page])
       @order = Order.find(params[:order_id])
     else
-      @payments = Payment.page(params[:page])
+      @payments = Payment.order("id DESC").page(params[:page])
     end
       set_select_years
   end
@@ -107,7 +107,7 @@ class PaymentsController < ApplicationController
     if where_str.empty?
       @payments = Payment.page(params[:page])
     else
-      @payments = Payment.joins(:order,:manifestation).where([where_str]).page(params[:page])
+      @payments = Payment.joins(:order,:manifestation).where([where_str]).order("id DESC").page(params[:page])
     end
 
 

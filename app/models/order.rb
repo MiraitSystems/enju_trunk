@@ -33,17 +33,14 @@ class Order < ActiveRecord::Base
 
   has_many :payments
 
-  validate :set_default
-
-
   validates :order_day, :presence => true
   validates :publication_year, :numericality => true
   validates :buying_payment_year, :numericality => true, :allow_blank => true
   validates :prepayment_settlements_of_account_year, :numericality => true, :allow_blank => true
-  validates :number_of_acceptance_schedule, :numericality => true, :allow_blank => true
-  validates :meeting_holding_month_1, :numericality => true, :allow_blank => true 
+  validates :number_of_acceptance_schedule, :numericality => true
+  validates :meeting_holding_month_1, :numericality => true, :allow_blank => true
   validates :meeting_holding_month_2, :numericality => true, :allow_blank => true
-  validates :number_of_missing, :numericality => true, :allow_blank => true
+  validates :number_of_missing, :numericality => true
   validates :currency_rate, :numericality => true, :if => "auto_calculation_flag == 1"
   validates_numericality_of :discount_commision, :greater_than => 0
   validates :prepayment_principal, :numericality => true, :allow_blank => true
@@ -52,21 +49,10 @@ class Order < ActiveRecord::Base
   validates :collection_form_code, :presence => true
   validates :collection_status_code, :presence => true
 
-  validates :taxable_amount, :numericality => true, :allow_blank => true
-  validates :tax_exempt_amount, :numericality => true, :allow_blank => true
+  validates :taxable_amount, :numericality => true
+  validates :tax_exempt_amount, :numericality => true
 
-  validate :validate_manifestation
-
-  def validate_manifestation
-    unless self.manifestation_id
-      errors.add(:base, I18n.t('order.no_matches_found_manifestation'))
-    else
-      unless Manifestation.find([self.manifestation_id])
-      errors.add(:base, I18n.t('order.no_matches_found_manifestation'))
-      end
-    end
-  end
-
+  before_validation :set_default
   def set_default
 
     self.number_of_acceptance_schedule = 0 if self.number_of_acceptance_schedule.blank?
@@ -80,7 +66,7 @@ class Order < ActiveRecord::Base
     end
 
     if self.discount_commision.blank?
-      self.discount_commision = 1.0
+      self.discount_commision = 1.00
     else
       self.discount_commision = BigDecimal("#{self.discount_commision}").floor(3)
     end
@@ -102,7 +88,6 @@ class Order < ActiveRecord::Base
   end
 
   before_save :set_yen_imprest
-
   def set_yen_imprest
 
     if self.auto_calculation_flag != 1
@@ -151,12 +136,12 @@ class Order < ActiveRecord::Base
 
   end
 
-  after_create :create_payment_to_advance_payment
   def create_payment_to_advance_payment
 
     if self.payment_form
       if self.payment_form.v == "1" || self.payment_form.v == "3"
         Payment.create_advance_payment(self.id)
+        return true
       end
     end
   end

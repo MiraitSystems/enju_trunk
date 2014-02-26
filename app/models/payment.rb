@@ -5,21 +5,25 @@ class Payment < ActiveRecord::Base
   belongs_to :manifestation
   belongs_to :currency
 
-  validate :set_default
-
-  validates :discount_commision, :numericality => true, :allow_blank => true
-  validates :before_conv_amount_of_payment, :numericality => true, :allow_blank => true
-  validates :number_of_payment, :numericality => true, :allow_blank => true
-
+  validates :discount_commision, :numericality => true
+  validates :before_conv_amount_of_payment, :numericality => true
+  validates :number_of_payment, :numericality => true
   validates :currency_rate, :numericality => true, :if => "auto_calculation_flag == 1"
   validates :amount_of_payment, :numericality => true, :if => "auto_calculation_flag == 1"
 
   validates :payment_type, :numericality => true
+  validates :taxable_amount, :numericality => true
+  validates :tax_exempt_amount, :numericality => true
 
-  validates :taxable_amount, :numericality => true, :allow_blank => true
-  validates :tax_exempt_amount, :numericality => true, :allow_blank => true
+  validate :validate_deferred_payment
+  def validate_deferred_payment
+    if self.payment_type == 2 && self.auto_calculation_flag == 0
+      errors.add(:base, I18n.t('payment.no_create_deferred_payment')) if Payment.where(["order_id = ? AND payment_type = 3", self.order_id]).empty?
+    end
+  end
 
 
+  before_validation :set_default
   def set_default
     if self.currency_rate.blank? && self.auto_calculation_flag != 1
       self.currency_rate = 0.0 
@@ -33,12 +37,12 @@ class Payment < ActiveRecord::Base
       self.discount_commision = BigDecimal("#{self.discount_commision}").floor(3)
     end
 
-    self.before_conv_amount_of_payment = 0.0 if self.before_conv_amount_of_payment.blank?
-    self.amount_of_payment = 0.0 if self.amount_of_payment.blank? && self.auto_calculation_flag != 1
-    self.number_of_payment = 0.0 if self.number_of_payment.blank?
+    self.before_conv_amount_of_payment = 0 if self.before_conv_amount_of_payment.blank?
+    self.amount_of_payment = 0 if self.amount_of_payment.blank? && self.auto_calculation_flag != 1
+    self.number_of_payment = 0 if self.number_of_payment.blank?
  
-    self.taxable_amount = 0.0 if self.taxable_amount.blank?
-    self.tax_exempt_amount = 0.0 if self.tax_exempt_amount.blank?
+    self.taxable_amount = 0 if self.taxable_amount.blank?
+    self.tax_exempt_amount = 0 if self.tax_exempt_amount.blank?
 
   end
 
@@ -79,7 +83,7 @@ class Payment < ActiveRecord::Base
 
 
   def calculation_deferred_payment
-    paid = Payment.where("payment_type = 3").order("billing_date DESC, id DESC").first
+    paid = Payment.where(["payment_type = 3 AND order_id = ?",self.order_id]).order("billing_date DESC, id DESC").first
     if paid
       self.taxable_amount = (paid.taxable_amount / paid.number_of_payment) * self.number_of_payment if paid.number_of_payment != 0
       self.tax_exempt_amount = (paid.tax_exempt_amount / paid.number_of_payment) * self.number_of_payment if paid.number_of_payment != 0

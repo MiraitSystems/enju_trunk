@@ -13,7 +13,7 @@
   <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
 <% end %>
 
-<p id="notice"><%= notice %></p>
+<p id="notice"><%= raw notice %></p>
 
 <p>
   <strong><%= t('activerecord.attributes.order.order_identifier') -%>:</strong>

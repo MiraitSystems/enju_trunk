@@ -89,6 +89,8 @@ class OrdersController < ApplicationController
     respond_to do |format|
       if @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
+        flash[:notice] += t('order.create_payment_to_advance_payment') if @order.create_payment_to_advance_payment
+
         if @purchase_request
           format.html { redirect_to purchase_request_order_url(@order.purchase_request, @order) }
           format.json { render :json => @order, :status => :created, :location => @order }
