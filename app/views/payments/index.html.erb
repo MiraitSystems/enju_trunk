@@ -22,10 +22,12 @@
 <% else %>
   <%= form_tag({:action => 'search'}, {:method => 'get'}) do %>
 
+    <p>
     <% if @manifestation_original_title %>
       <%= t('activerecord.attributes.manifestation.original_title') -%>:
       <%= @manifestation_original_title %>
     <% end %>
+    </p>
 
     <p>
     <%= t('activerecord.attributes.payment.order_id') %>:
