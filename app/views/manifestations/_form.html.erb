@@ -56,17 +56,6 @@ $(document).keydown(function(e) {
     }); 
   });
 </script>
-<!-- TODO -->
-<script>
-  $(document).ready(function() { 
-    $("#change_select2").select2({
-      matcher: function(term, text, opt) {
-        return text.toUpperCase().indexOf(term.toUpperCase())==0
-            || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-      }
-    });
-  });
-</script>
 <script>
   var ItemField_language = {
     currentNumber : <%= raw (@manifestation_languages.blank? ? 1 : @manifestation_languages.size).to_json %>,
@@ -232,36 +221,27 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
-    <%= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <select id="change_select2" name="manifestation[carrier_type_id]" style="width:200px">
+    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <%= select2_script "carrier_type_id" %>
+    <%#= doing_select2("manifestation", :carrier_type_id, @carrier_types, @manifestation, 250) %>
+    <%#= make_select2 %>
+    <select id="carrier_type_id" name="manifestation[carrier_type_id]" style="width:200px">
       <% @carrier_types.each do |carrier_types| %>
-        <option alt="<%= carrier_types.name %>", value="<%= carrier_types.id %>"><%= carrier_types.display_name.localize %></option>
+        <option alt="<%= carrier_types.name %>", value="<%= carrier_types.id %>"
+          <% if @manifestation.carrier_type_id == carrier_types.id %>
+              , selected="selected"
+          <% end %>
+        ><%= carrier_types.display_name.localize %></option>
       <% end %>
     </select>
-
-    <!--br>
-    Custom Matcher selector
-    <select id="e17_2" style="width:200px">
-      <option alt="print", value="1">印刷物</option>
-      <option alt="test", value="2">CD</option>
-      <option alt="DVD", value="3">DVD</option>
-      <option alt="file", value="6">コンピュータファイル</option>
-      <option alt="AV", value="4">視聴覚資料</option>
-      <option alt="sheaf", value="5">加除式</option>
-      <option alt="micro", value="7">マイクロ資料</option>
-    </select>
-    <br-->
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
-    <%= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <!--select id="change_select2" name="manifestation[manifestation_type_id]" style="width:200px">
-      <% @manifestation_types.each do |manifestation_types| %>
-        <option alt="<%= manifestation_types.name %>", value="<%= manifestation_types.id %>"><%= manifestation_types.display_name.localize %></option>
-      <% end %>
-    </select-->
+    <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <%= select2_script "manifestation_type_id"%>
+    <%= doing_select2("manifestation", :manifestation_type_id, @manifestation_types, @manifestation, 300) %>
   </div>
 
   <div class="field">
@@ -281,7 +261,17 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
-    <%= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
+    <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
+    <%= select2_script "country_of_publication_id"%>
+    <select id="country_of_publication_id" name="manifestation[country_of_publication_id]" style="width:400px">
+      <% @countries.each do |country| %>
+        <option alt="<%= country.name %>", value="<%= country.id %>", 
+            <% if @manifestation.country_of_publication_id == country.id %>
+              selected="selected"
+            <% end %>
+            ><%= country.display_name.localize %></option>
+      <% end %>
+    </select>
   </div>
 
   <div class="field">
@@ -376,7 +366,17 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('role.required_role') -%>
-    <%= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%= select2_script "required_role_id"%>
+    <select id="required_role_id" name="manifestation[required_role_id]" style="width:200px">
+      <% @roles.each do |roles| %>
+        <option alt="<%= roles.name %>", value="<%= roles.id %>", 
+            <% if @manifestation.required_role_id == roles.id %>
+              selected="selected"
+            <% end %>
+            ><%= roles.display_name.localize %></option>
+      <% end %>
+    </select>
   </div>
 
   <div class="field">

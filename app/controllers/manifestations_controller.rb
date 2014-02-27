@@ -972,7 +972,6 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @carrier_type_id = params[:manifestation][:carrier_type_id]
     @language = params[:language_id].try(:values)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -1024,7 +1023,6 @@ class ManifestationsController < ApplicationController
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
-        # @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
         @keep_themes = @theme
       end
     end
@@ -1930,22 +1928,4 @@ class ManifestationsController < ApplicationController
       end
     end
   end
-
-=begin
-  # TODO
-  def make_select_form(:article, @inputs, width)
-    require 'cgi'　# CGIライブラリを読み込み
-    cgi = CGI.new　# 初期化
-    print cgi.header("type"=>"text/html")
-    print <<EOF
-      <html lang="ja">
-        <select id="change_select2" name="#{:article}" style=width:#{width}px>
-          @inputs.each do |input|
-            <option alt=#{input.alt}, value=#{input.id}>#{input.text}</option>
-          end
-        </select>
-      </html>
-EOF
-  end
-=end
 end
