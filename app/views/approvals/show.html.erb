@@ -197,7 +197,7 @@
     <ul>
   </div>
 
-  <% if ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
+  <% if Object.const_defined?('ReportExport') && ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
 
   <div id ="submenu_2" class="ui-corner-all">
     <ul>

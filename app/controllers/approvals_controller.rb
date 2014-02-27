@@ -139,6 +139,7 @@ class ApprovalsController < ApplicationController
       end
     rescue Exception => e
       flash[:error] = I18n.t('page.error_file')
+      logger.error e
       redirect_to :back
     end
   end

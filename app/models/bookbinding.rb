@@ -13,6 +13,7 @@ class Bookbinding < ActiveRecord::Base
          new_manifestation = Manifestation.new()
          new_manifestation.original_title = binding_items[0].item.manifestation.original_title
          new_manifestation.bookbinder = true
+         new_manifestation.manifestation_type = binding_items[0].item.manifestation.manifestation_type
          new_manifestation.save!
          binder.manifestation = new_manifestation
          binder.circulation_status = CirculationStatus.where(:name => 'In Factory').first

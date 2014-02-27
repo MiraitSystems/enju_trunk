@@ -1061,22 +1061,148 @@ system_configuration_00150:
   category: 'manifestation'
 system_configuration_00151:
   id: 151
+  keyname: f1.display_name
+  v: ""
+  typename: String
+  description: "F1の機能名"
+  category: 'function'
+system_configuration_00152:
+  id: 152
+  keyname: f1.path
+  v: ""
+  typename: String
+  description: "F1のリンク先"
+  category: 'function'
+system_configuration_00153:
+  id: 153
+  keyname: f2.display_name
+  v: "貸出"
+  typename: String
+  description: "F2の機能名"
+  category: 'function'
+system_configuration_00154:
+  id: 154
+  keyname: f2.path
+  v: "/baskets/new"
+  typename: String
+  description: "F2のリンク先"
+  category: 'function'
+system_configuration_00155:
+  id: 155
+  keyname: f3.display_name
+  v: "返却"
+  typename: String
+  description: "F3の機能名"
+  category: 'function'
+system_configuration_00156:
+  id: 156
+  keyname: f3.path
+  v: "/checkins"
+  typename: String
+  description: "F3のリンク先"
+  category: 'function'
+system_configuration_00157:
+  id: 157
+  keyname: f4.display_name
+  v: "再貸出"
+  typename: String
+  description: "F4の機能名"
+  category: 'function'
+system_configuration_00158:
+  id: 158
+  keyname: f4.path
+  v: "/checkouts/extend"
+  typename: String
+  description: "F4のリンク先"
+  category: 'function'
+system_configuration_00159:
+  id: 159
+  keyname: f5.display_name
+  v: ""
+  typename: String
+  description: "F5の機能名"
+  category: 'function'
+system_configuration_00160:
+  id: 160
+  keyname: f5.path
+  v: ""
+  typename: String
+  description: "F5のリンク先"
+  category: 'function'
+system_configuration_00161:
+  id: 161
+  keyname: f6.display_name
+  v: "資料の検索"
+  typename: String
+  description: "F6の機能名"
+  category: 'function'
+system_configuration_00162:
+  id: 162
+  keyname: f6.path
+  v: "/"
+  typename: String
+  description: "F6のリンク先"
+  category: 'function'
+system_configuration_00163:
+  id: 163
+  keyname: f7.display_name
+  v: "発注リスト"
+  typename: String
+  description: "F7の機能名"
+  category: 'function'
+system_configuration_00164:
+  id: 164
+  keyname: f7.path
+  v: "/order_lists"
+  typename: String
+  description: "F7のリンク先"
+  category: 'function'
+system_configuration_00165:
+  id: 165
+  keyname: f8.display_name
+  v: ""
+  typename: String
+  description: "F8の機能名"
+  category: 'function'
+system_configuration_00166:
+  id: 166
+  keyname: f.path
+  v: ""
+  typename: String
+  description: "F8のリンク先"
+  category: 'function'
+system_configuration_00167:
+  id: 167
+  keyname: f9.display_name
+  v: ""
+  typename: String
+  description: "F9の機能名"
+  category: 'function'
+system_configuration_00168:
+  id: 168
+  keyname: f.path
+  v: ""
+  typename: String
+  description: "F9のリンク先"
+  category: 'function'
+system_configuration_00169:
+  id: 169
   keyname: not_use_footer
   v: "false"
   typename: Boolean
   description: "フッターを表示しないか"
   category: 'general'
-system_configuration_0152:
-  id: 152
-  keyname: manifestation.use_titles
-  v: "false"
-  typename: Boolean
-  description: "書名テーブルを利用する"
-  category: 'manifestation'
-system_configuration_0153:
-  id: 153
+system_configuration_00170:
+  id: 170
   keyname: focus_start_position 
   v: "false"
   typename: Boolean
   description: "検索結果のフォーカス開始位置"
   category: 'view'
+system_configuration_00171:
+  id: 171
+  keyname: manifestation.use_titles
+  v: "false"
+  typename: Boolean
+  description: "書名テーブルを利用する"
+  category: 'manifestation'

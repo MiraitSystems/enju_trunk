@@ -263,7 +263,7 @@ class SeriesStatementsController < ApplicationController
   private
   def prepare_options
     @carrier_types = CarrierType.all
-    @manifestation_types = ManifestationType.where(:name => ['japanese_magazine', 'foreign_magazine', 'japanese_serial_book', 'foreign_serial_book'])
+    @manifestation_types = ManifestationType.series
     @frequencies = Frequency.all
     @countries = Country.all
     @languages = Language.all_cache
