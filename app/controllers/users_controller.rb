@@ -34,7 +34,7 @@ class UsersController < ApplicationController
       with(:library).equal_to params[:library] if params[:library]
       with(:role).equal_to params[:role] if params[:role]
       with(:agent_type).equal_to params[:agent_type] if params[:agent_type]
-      with(:required_role_id).less_than role.id
+      with(:required_role_id).less_than_or_equal_to role.id
       with(:user_status).equal_to params[:user_status] if params[:user_status]
       order_by sort[:sort_by], sort[:order]
       if params[:format] == 'html' or params[:format].nil?
