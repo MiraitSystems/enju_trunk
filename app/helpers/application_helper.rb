@@ -438,7 +438,7 @@ module ApplicationHelper
         end
 
       when :manifestation_types
-        ks = ManifestationType.where(["id in (?)", params[key].keys]).map(&:display_name)
+        ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
         summary_ary << [key, ks.join(', ')] if params[key].present?
 
       else

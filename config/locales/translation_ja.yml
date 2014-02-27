@@ -1007,6 +1007,7 @@ ja:
         hold_cln: 請求記号
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
+        manifestation_identifier: 資料番号
       user_group:
         name: 名前
         display_name: 表示名
@@ -2175,6 +2176,7 @@ ja:
     contributor_transcription: 協力者・編者(ヨミ)
     publisher_transcription: 出版者(ヨミ)
     subject_transcription: 件名(ヨミ)
+    same_manifestation_already_exist: 同じ%{attribute}の資料が既に存在しています。
   missing_issue:
     no_request: 未請求
     requested: 請求済
@@ -2858,6 +2860,7 @@ ja:
     copy_request: 文献複写依頼
     reminder: 督促
     statistics: 統計
+    function: ファンクション
     sound: 音
     view: 表示
     nacsis: 'NACSIS-CAT/ILL'

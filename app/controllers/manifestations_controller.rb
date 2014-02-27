@@ -7,7 +7,7 @@ class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -352,7 +352,7 @@ class ManifestationsController < ApplicationController
           :volume_number_string, :issue_number_string, :serial_number_string,
           :date_of_publication, :pub_date, :periodical_master,
           :carrier_type_id, :created_at, :note, :missing_issue, :article_title,
-          :start_page, :end_page, :exinfo_1, :exinfo_6
+          :start_page, :end_page, :exinfo_1, :exinfo_6, :identifier
         ]
       end
 
@@ -1081,6 +1081,20 @@ class ManifestationsController < ApplicationController
     respond_to do |format|
       format.html
     end
+  end
+
+  def search_manifestation
+    return nil unless request.xhr? or params[:original_title].blank?
+    manifestations = Manifestation.where(original_title: params[:original_title]).order(:id)
+    manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
+    return nil unless manifestations.present?
+    manifestation_urls = []
+    manifestations.each do |m|
+      str = "#{t('activerecord.attributes.manifestation.manifestation_identifier')}:"
+      str += m.manifestation_identifier.to_s
+      manifestation_urls << ApplicationController.helpers.link_to(str, manifestation_path(m))
+    end
+    render :json => { success: 1, manifestation_urls: manifestation_urls }
   end
 
   # POST /manifestations/create_from_nacsis?ncid=<NCID>&manifestation_type=book

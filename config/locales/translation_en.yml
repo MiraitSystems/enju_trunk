@@ -934,6 +934,7 @@ en:
         printout_in_progress: started to export checkout confirmation card
         external_catalog: Cataloging Authority
         jpn_or_foreign: Japan or foreign
+        manifestation_identifier: manifestation_identifier
       user_group:
         name: Name
         display_name: Display name
@@ -2190,6 +2191,7 @@ en:
     contributor_transcription: Contributor transcription
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
+    same_manifestation_already_exist: Same %{attribute} already exist
   item:
     current_checkout: Current checkout
     donor: Donors
@@ -2768,6 +2770,7 @@ en:
     order_list: Order list
     reminder: Reminder
     statistics: Statistics
+    function: Function
     sound: Sound
     disp_date:
       not_display: Not display
