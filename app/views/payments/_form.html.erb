@@ -55,8 +55,8 @@ $(function(){
     <%= f.hidden_field :manifestation_id %>
 
   <div class="field">
-    <%= f.label :currency_unit_code %><br />
-    <%= f.select :currency_unit_code, Currency.all.collect{|p| [p.display_name,p.id]}, :include_blank => true %>
+    <%= f.label :currency_id %><br />
+    <%= f.select :currency_id, Currency.all.collect{|p| [p.display_name,p.id]}, :include_blank => true %>
   </div>
 
   <div class="field">
@@ -127,6 +127,8 @@ $(function(){
       <%= f.text_field :payment_type %>
     <% end %>
   </div>
+
+  <%= hidden_field_tag :return_index, @return_index if @return_index %>
 
   <div class="actions">
     <%= f.submit %>

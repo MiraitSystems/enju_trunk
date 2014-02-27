@@ -28,8 +28,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.payment.currency_unit_code') -%>:</strong>
-  <%= Currency.find(@payment.currency_unit_code).display_name if @payment.currency_unit_code %>
+  <strong><%= t('activerecord.attributes.payment.currency_id') -%>:</strong>
+  <%= @payment.currency.display_name if @payment.currency_id %>
 </p>
 
 <p>
@@ -93,7 +93,12 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.edit'), edit_payment_path(@payment) -%></li>
-    <li><%= link_to t('page.back'), payments_path -%></li>
+    <% if @return_index %>
+      <li><%= link_to t('page.edit'), edit_payment_path(@payment, :return_index => true) -%></li>
+      <li><%= link_to t('page.back'), order_payments_path(@payment.order) -%></li>
+    <% else %>
+      <li><%= link_to t('page.edit'), edit_payment_path(@payment) -%></li>
+      <li><%= link_to t('page.back'), payments_path -%></li>
+    <% end %>
   </ul>
 </div>

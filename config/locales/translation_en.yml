@@ -769,7 +769,7 @@ en:
         budget_subject_code: Budget subject code
         transportation_route_code: Transportation route code
         bookstore_code: Bookstore code
-        currency_unit_code: Currency unit code
+        currency_id: Currency
         currency_rate: Currency rate
         discount_commision: Discount commision
         reason_for_settlements_of_account_code: Reason for settlements of account code
@@ -1657,7 +1657,7 @@ en:
         order_id: Order id
         billing_date: Billing date
         manifestation_id: Manifestation id
-        currency_unit_code: Currency unit id
+        currency_id: Currency
         currency_rate: Currency rate
         discount_commision: Discount commision
         before_conv_amount_of_payment: Before conv amount of payment
@@ -3127,16 +3127,30 @@ en:
   title_type:
     cannot_delete: The title type cannnot be deleted.
   order:
+    system_menu_title: Order search
     cannot_delete: The order cannot be deleted.
     no_matches_found_agent: "No matches found agent"
-    no_matches_found_manifestation: "No matches found manifestation"
+    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+    no_matches_found_order: "No matches found order to %{attribute}"
     switch_manual_entry: "Manual entry currency rate and yen imprest"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     payments: Payments
+    subsequent_year_orders: Subsequent year orders
+    create_subsequent_year_orders: Create subsequent year orders
+    create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
+    no_create_subsequent_year_orders: "No create subsequent year orders."
+    create_payment_to_advance_payment: "<br />Create payment to advance payment"
+    copy: Copy and create new order
+    
   payment:
+    system_menu_title: Payment search
     switch_manual_entry: "Manual entry currency rate and amount of payment"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     paid: Paid
     want_to_paid: "Want to paid?"
+    no_matches_found_order: "No matches found order to %{attribute}"
+    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+    no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+

@@ -828,29 +828,29 @@ ja:
         number_of_acceptance_schedule: 受入予定冊数 
         meeting_holding_month_1: 開催月1
         meeting_holding_month_2: 開催月2
-        adption_code: 採択コード
-        deliver_place_code_1: 回付先コード1
-        deliver_place_code_2: 回付先コード2
-        deliver_place_code_3: 回付先コード3
-        deliver_place_code_4: 回付先コード4
-        deliver_place_code_5: 回付先コード5
-        application_form_code_1: 申込書指定コード1
-        application_form_code_2: 申込書指定コード2
+        adption_code: 採択
+        deliver_place_code_1: 回付先1
+        deliver_place_code_2: 回付先2
+        deliver_place_code_3: 回付先3
+        deliver_place_code_4: 回付先4
+        deliver_place_code_5: 回付先5
+        application_form_code_1: 申込書指定1
+        application_form_code_2: 申込書指定2
         number_of_acceptance: 受入冊数
         number_of_missing: 欠号数
-        collection_status_code: 収集ステータスコード
-        reason_for_collection_stop_code: 収集中止理由コード
+        collection_status_code: 収集ステータス
+        reason_for_collection_stop_code: 収集中止理由
         collection_stop_day: 収集中止年月日
-        order_form_code: 発注形式コード
-        collection_form_code: 収集形式コード
-        payment_form_code: 支払形式コード
-        budget_subject_code: 予算科目コード
-        transportation_route_code: 輸送経路コード
-        bookstore_code: 書店コード
-        currency_unit_code: 通貨単位コード
+        order_form_code: 発注形式
+        collection_form_code: 収集形式
+        payment_form_code: 支払形式
+        budget_subject_code: 予算科目
+        transportation_route_code: 輸送経路
+        bookstore_code: 書店
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
-        reason_for_settlements_of_account_code: 精算理由コード
+        reason_for_settlements_of_account_code: 精算理由
         prepayment_principal: 換算前発注金額
         yen_imprest: 発注金額
         unit_price: 単価
@@ -1645,7 +1645,7 @@ ja:
         order_id: 発注番号
         billing_date: 請求年月日
         manifestation_id: 資料番号
-        currency_unit_code: 通貨単位コード
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
         before_conv_amount_of_payment: 換算前支払金額
@@ -3099,16 +3099,29 @@ ja:
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
+    system_menu_title: 発注検索
     cannot_delete: "この発注は削除できません"
     no_matches_found_agent: "発注機関が見つかりません"
-    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     switch_manual_entry: "通貨レート、発注金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    subsequent_year_orders: 次年度発注
+    create_subsequent_year_orders: 次年度発注生成
+    create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
+    create_payment_to_advance_payment: "<br />発注に対応する支払を作成しました。"
+    copy: コピーして新規作成
   payment:
+    system_menu_title: 支払検索
     switch_manual_entry: "通貨レート、支払金額を手入力する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     paid: 精算
     want_to_paid: "精算しますか?"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
+

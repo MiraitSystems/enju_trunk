@@ -13,7 +13,7 @@
   <%= render 'manifestations/title', :manifestation => @order.manifestation -%>
 <% end %>
 
-<p id="notice"><%= notice %></p>
+<p id="notice"><%= raw notice %></p>
 
 <p>
   <strong><%= t('activerecord.attributes.order.order_identifier') -%>:</strong>
@@ -161,8 +161,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.currency_unit_code') -%>:</strong>
-  <%= Currency.find(@order.currency_unit_code).display_name if @order.currency_unit_code -%>
+  <strong><%= t('activerecord.attributes.order.currency_id') -%>:</strong>
+  <%= @order.currency.display_name if @order.currency_id -%>
 </p>
 
 <p>
@@ -187,7 +187,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order.yen_imprest') -%>:</strong>
-  <%= @order.yen_imprest.to_i -%>
+  <%= @order.yen_imprest -%>
 </p>
 
 <p>
@@ -202,12 +202,12 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order.unit_price') %>:</strong>
-  <%= @order.unit_price.to_i %>  
+  <%= @order.unit_price %>  
 </p>
 
 <p>
   <strong><%= t('activerecord.attributes.order.order_organization_id') -%>:</strong>
-  <%= Agent.find(@order.order_organization_id).full_name  if @order.order_organization_id %>
+  <%= @order.agent.full_name if @order.agent %>
 </p>
 
 <p>
@@ -236,10 +236,24 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li><%= link_to t('page.edit'), edit_order_path(@order) -%></li>
-    <li><%= link_to t('page.back'), orders_path -%></li>
+    <% if @return_index %>
+      <li><%= link_to t('page.edit'), edit_order_path(@order, :return_index => true) -%></li>
+      <li><%= link_to t('page.back'), manifestation_orders_path(@order.manifestation) -%></li>
+    <% else %>
+      <li><%= link_to t('page.edit'), edit_order_path(@order) -%></li>
+      <li><%= link_to t('page.back'), orders_path -%></li>
+    <% end %>
+
     <li><%= link_to t('page.listing', :model => t('order.payments')), order_payments_path(@order) %></li>
-    <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_order_payment_path(@order) -%></li>
-    <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order}, :confirm => t('payment.want_to_paid') -%></li>
+
+    <% if @return_index %>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_order_payment_path(@order, :return_index => @return_index) -%></li>
+      <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order, :return_index => @return_index}, :confirm => t('payment.want_to_paid') -%></li>
+      <li><%= link_to t('order.copy'), new_order_path(:order_id => @order, :return_index => @return_index) %></li>
+    <% else %>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_order_payment_path(@order) -%></li>
+      <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order}, :confirm => t('payment.want_to_paid') -%></li>
+      <li><%= link_to t('order.copy'), new_order_path(:order_id => @order) %></li>
+    <% end %>
   </ul>
 </div>
