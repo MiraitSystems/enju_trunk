@@ -22,18 +22,34 @@
       <div id="detail">
         <table>
         <%# 表示をしない項目の設定 %>
-        <%- omit_display = ['marc','size','publication_place','subjects','creators','publishers','cls_info','vol_info','ptb_info']-%>
+        <%- omit_display = ['size','publication_place','subjects','creators','publishers']-%>
         <%- @nacsis_cat.detail.each_key do |key| -%>
           <%- next if omit_display.include?(key.to_s) -%>
           <tr>
             <td style="width: 200px"><%= t('activerecord.attributes.nacsis_user_request.'+key.to_s) -%></td>
           <%- case key -%>
-          <%- when :publisher_info, :subject -%>
+          <%- when :publisher, :subject -%>
             <td style="width: 490px"><%= @nacsis_cat.detail[key].join(", ") -%></td>
           <%- when :title_language, :text_language, :pub_country -%>
             <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
-          <%- when :author_heading, :title_alternative_transcription, :publication_place -%>
+          <%- when :author_heading, :title_alternative, :title_alternative_transcription -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
+          <%- when :cls_info -%>
+            <td>
+              <%- @nacsis_cat.detail[key].each do |cls_key, cls_value| -%>
+                <%= cls_key.to_s + "[" + cls_value.to_s + "]" -%>&nbsp;
+              <%- end -%>
+            </td>
+          <%- when :vol_info, :ptb_info -%>
+            <td>
+              <%- @nacsis_cat.detail[key].each do |info| -%>
+                <%- info.each do |info_key, info_value| %>
+                  <%= t('activerecord.attributes.nacsis_user_request.' + info_key.to_s) -%>
+                  <%= ":" + info_value.to_s -%>&nbsp;
+                <%- end -%>
+                <br />
+              <%- end -%>
+            </td>
           <%- else -%>
             <td><%= @nacsis_cat.detail[key] -%></td>
           <%- end -%>

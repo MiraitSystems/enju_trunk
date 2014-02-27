@@ -1084,12 +1084,12 @@ class ManifestationsController < ApplicationController
     ncid = params['ncid']
     type = params['manifestation_type'] || 'book'
 
-    manifestation = Manifestation.create_from_ncid(ncid)
+    manifestations = Manifestation.create_from_ncid(ncid)
 
     respond_to do |format|
       format.html do
-        if manifestation.persisted?
-          redirect_to manifestation,
+        if manifestations.first.persisted?
+          redirect_to manifestations.first,
             notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
         elsif record = Manifestation.where(nacsis_identifier: ncid).first
           redirect_to record

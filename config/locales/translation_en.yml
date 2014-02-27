@@ -1387,10 +1387,23 @@ en:
         pub_country: Publish country
         title_language: Title language
         text_language: Text language
-        classmark: Classmark
         author_heading: Author heading
         subject: subject
         ncid: NCID
+        marc: MARC ID
+        cls_info: Classification info
+        vol_info: Volume info
+        VOL: Volume
+        ISBN: ISBN
+        PRICE: Price
+        XISBN: Invalid ISBN
+        ptb_info: Parent manifestation info
+        PTBID: ID
+        PTBK: Type
+        PTBTR: Title
+        PTBTRR: Title (reading)
+        PTBTRVR: Title alternative (reading)
+        PTBNO: Number etc.
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime

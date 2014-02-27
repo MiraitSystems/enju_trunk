@@ -1456,8 +1456,47 @@ class Manifestation < ActiveRecord::Base
     # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
     def create_from_ncid(ncid, book_types = ManifestationType.book.all)
       raise ArgumentError if ncid.blank?
+      created_manifestations = []
+
+      #子書誌情報の登録
       result = NacsisCat.search(dbs: [:book], id: ncid)
-      new_from_nacsis_cat(ncid, result[:book].first, book_types).tap {|record| record.save }
+      attrs_result = new_from_nacsis_cat(ncid, result[:book].first, book_types)
+      created_manifestations << create(attrs_result[:attributes])
+
+      #親書誌情報の登録
+      attrs_result[:parents].each do |ptbl_record|
+        parent_manifestation = where(:nacsis_identifier => ptbl_record['PTBID']).first
+        if parent_manifestation
+          created_manifestations << parent_manifestation
+        else
+          parent_result = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
+          if parent_result[:book].blank?
+            unless ptbl_record['PTBTR'].nil?
+              created_manifestations << where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
+                if m.new_record?
+                  m.nacsis_identifier = ptbl_record['PTBID']
+                  m.title_transcription = ptbl_record['PTBTRR']
+                  m.title_alternative_transcription = ptbl_record['PTBTRVR']
+                  m.note = ptbl_record['PTBNO']
+                end
+              end
+            end
+          else
+            parent_attrs_result = new_from_nacsis_cat(ptbl_record['PTBID'], parent_result[:book].first, book_types)
+            created_manifestations << create(parent_attrs_result[:attributes])
+          end
+        end
+      end
+
+      #親書誌関係の登録
+      created_manifestations.reverse.each do |parent|
+        created_manifestations.each do |child|
+          break if parent == child
+          parent.derived_manifestations << child
+        end
+      end
+
+      created_manifestations
     end
 
     # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
@@ -1528,21 +1567,15 @@ class Manifestation < ActiveRecord::Base
           # 関連テーブル：著者の設定
           attrs[:creators] = []
           nacsis_info[:creators].each do |creator|
-            if creator[:id].blank?
-              agent =
-                Agent.where(:full_name => creator[:name].to_s).first_or_create do |p|
-                  if p.new_record?
-                    p.full_name_transcription = creator[:reading].to_s
-                  end
+            #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
+            attrs[:creators] <<
+              Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
+                if p.new_record?
+                  p.agent_identifier = creator['AID']
+                  p.full_name_transcription = creator['AHDNGR']
+                  p.full_name_alternative_transcription = creator['AHDNGVR']
                 end
-            else
-              # 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
-              agent = Agent.where(:full_name => creator[:name].to_s).first
-              if agent.blank?
-                agent = Agent.create(:full_name => creator[:name].to_s).first
               end
-            end
-            attrs[:creators] << agent
           end
 
           # 関連テーブル：出版者の設定
@@ -1554,14 +1587,16 @@ class Manifestation < ActiveRecord::Base
           # 関連テーブル：件名の設定
           attrs[:subjects] = []
           nacsis_info[:subjects].each do |subject|
-            subject_type = SubjectType.where(:name => subject[:type]).first
+            subject_type = SubjectType.where(:name => subject['SHK']).first
             subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
-            if subject[:name].present? && subject_type
-              sub = Subject.where(["term = ? and subject_type_id = ?", subject[:name].to_s, subject_type.id]).first
+            if subject['SHD'].present? && subject_type
+              sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
               if sub
                 attrs[:subjects] << sub
               else
-                attrs[:subjects] << Subject.create(:term => subject[:name], :subject_type_id => subject_type.id)
+                attrs[:subjects] << Subject.create(:term => subject['SHD'],
+                                                   :term_transcription => subject['SHR'],
+                                                   :subject_type_id => subject_type.id)
               end
             end
           end
@@ -1571,12 +1606,16 @@ class Manifestation < ActiveRecord::Base
           if identifier_type
             attrs[:identifiers] = []
             nacsis_info[:vol_info].each do |vol_info|
-              attrs[:identifiers] << Identifier.create(:body => vol_info[:isbn], :identifier_type_id => identifier_type.id) if vol_info[:isbn]
+              attrs[:identifiers] << Identifier.create(:body => vol_info['ISBN'], :identifier_type_id => identifier_type.id) if vol_info['ISBN']
             end
           end
+
+          # 親書誌の設定
+          parents = nacsis_info[:ptb_info]
+
         end
 
-        new(attrs)
+        {:attributes => attrs, :parents => parents}
       end
 
       def search_clasification(cls_hash, key)
