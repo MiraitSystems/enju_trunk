@@ -309,6 +309,32 @@ defaults: &defaults
   # ブックマーク統計の出力(TSV)
   bookmark_stat_stats_print_tsv:
     filename: "bookmark_stat_stats.tsv"
+  # 見計らい伝票の出力
+  approval:
+    report_pdf:
+      filename: "見計らい伝票.pdf"
+    postcard_pdf:
+      filename: "寄贈はがき.pdf"
+    request_txt:
+      filename: "サンプル誌依頼状.txt"
+    usually_txt:
+      filename: "寄贈依頼状（通常）.txt"
+    sample_txt:
+      filename: "寄贈依頼状（サンプル）.txt"
+    collection_txt:
+      filename: "寄贈依頼状（収集）.txt"
+    refuse_txt:
+      filename: "断り状.txt"
+    request_cover_txt:
+      filename: "サンプル誌依頼状送付状.txt"
+    usually_cover_txt:
+      filename: "寄贈依頼状（通常）送付状.txt"
+    sample_cover_txt:
+      filename: "寄贈依頼状（サンプル）送付状.txt"
+    collection_cover_txt:
+      filename: "寄贈依頼状（収集）送付状.txt"
+    refuse_cover_txt:
+      filename: "断り状送付状.txt"
 
   # 資料の詳細画面に過去の貸出回数を表示
   manifestation:
