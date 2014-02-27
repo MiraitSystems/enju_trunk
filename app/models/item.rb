@@ -306,6 +306,14 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def binded_manifestations(sort = :id)
+    self.binding_items.map(&:manifestation).sort_by(&sort)
+  end
+
+  def binded_missing_manifestations(sort = :id)
+    self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation).sort_by(&sort)
+  end
+
   def exchangeable?
     case self.circulation_status.name
     when "In Process", "Available On Shelf" 
