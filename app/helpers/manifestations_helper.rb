@@ -347,4 +347,40 @@ module ManifestationsHelper
       return 'http://www.junkudo.co.jp/'
     end
   end
+
+  def carrier_types
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", carrier_type_key, Time.zone.now) rescue nil
+  end
+
+  def manifestation_types
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", manifestation_type_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_1s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_1_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_2s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_2_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_3s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_3_key, Time.zone.now) rescue nil
+  end
+  
+  def exinfo_4s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_4_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_5s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_5_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_6s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_6_key, Time.zone.now) rescue nil
+  end
+
+  def exinfo_7s
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_7_key, Time.zone.now) rescue nil
+  end
 end
