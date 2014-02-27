@@ -50,7 +50,6 @@ class OrdersController < ApplicationController
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
     else
-      @order.auto_calculation_flag = 1
       @order.order_day = Date.today
       @order.set_probisional_identifier
       if params[:manifestation_id]
@@ -84,8 +83,11 @@ class OrdersController < ApplicationController
   # POST /orders.json
   def create
     @order = Order.new(params[:order])
+
+    @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+    @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
- 
+    
     respond_to do |format|
       if @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
@@ -113,10 +115,14 @@ class OrdersController < ApplicationController
   # PUT /orders/1.json
   def update
     @order = Order.find(params[:id])
+    @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
 
     respond_to do |format|
       if @order.update_attributes(params[:order])
+        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.save
         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.order'))
+
         if @purchase_request
           format.html { redirect_to purchase_request_order_url(@order.purchase_request, @order) }
           format.json { head :no_content }
@@ -241,7 +247,6 @@ class OrdersController < ApplicationController
         @new_order.paid_flag = 0
         @new_order.buying_payment_year = nil
         @new_order.prepayment_settlements_of_account_year = nil
-        @new_order.auto_calculation_flag = 1
         @new_order.save
         create_count += 1
       end

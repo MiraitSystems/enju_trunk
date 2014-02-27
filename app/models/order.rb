@@ -1,6 +1,6 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :auto_calculation_flag, :taxable_amount, :tax_exempt_amount, :total_payment
+  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
   belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
@@ -41,10 +41,10 @@ class Order < ActiveRecord::Base
   validates :meeting_holding_month_1, :numericality => true, :allow_blank => true
   validates :meeting_holding_month_2, :numericality => true, :allow_blank => true
   validates :number_of_missing, :numericality => true
-  validates :currency_rate, :numericality => true, :if => "auto_calculation_flag == 1"
+  validates :currency_rate, :numericality => true
   validates_numericality_of :discount_commision, :greater_than => 0
   validates :prepayment_principal, :numericality => true, :allow_blank => true
-  validates :yen_imprest, :numericality => true, :if => "auto_calculation_flag == 1"
+  validates :yen_imprest, :numericality => true
 
   validates :collection_form_code, :presence => true
   validates :collection_status_code, :presence => true
@@ -59,7 +59,7 @@ class Order < ActiveRecord::Base
     self.number_of_missing = 0 if self.number_of_missing.blank?
     self.prepayment_principal = 0.0 if self.prepayment_principal.blank?
 
-    if self.currency_rate.blank? && self.auto_calculation_flag != 1
+    if self.currency_rate.blank?
       self.currency_rate = 0.0
     else
       self.currency_rate = BigDecimal("#{self.currency_rate}").floor(2)
@@ -71,6 +71,7 @@ class Order < ActiveRecord::Base
       self.discount_commision = BigDecimal("#{self.discount_commision}").floor(3)
     end
 
+    self.yen_imprest = 0 if self.yen_imprest.blank?
     self.taxable_amount = 0 if self.taxable_amount.blank?
     self.tax_exempt_amount = 0 if self.tax_exempt_amount.blank?
   end
@@ -87,10 +88,7 @@ class Order < ActiveRecord::Base
     return @struct_agent_array
   end
 
-  before_save :set_yen_imprest
   def set_yen_imprest
-
-    if self.auto_calculation_flag != 1
 
       exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.order_day])
 
@@ -105,7 +103,6 @@ class Order < ActiveRecord::Base
       else
         self.yen_imprest = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.prepayment_principal).to_i
       end
-    end
  
     if self.number_of_acceptance_schedule == 0
       self.unit_price = 0
