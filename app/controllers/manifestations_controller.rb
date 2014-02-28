@@ -880,7 +880,6 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
-    # @select_carrier_type_tags = Manifestation.struct_selects(CarrierType, 'display_name')
 
     new_work_has_title
   end
@@ -978,7 +977,6 @@ class ManifestationsController < ApplicationController
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
-        logger.error "############ update_attributes ############"
         if @manifestation.series_statement and @manifestation.series_statement.periodical
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
