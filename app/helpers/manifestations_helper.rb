@@ -383,4 +383,35 @@ module ManifestationsHelper
   def exinfo_7s
     return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", exinfo_7_key, Time.zone.now) rescue nil
   end
+
+  def get_keyname_carrier_type(v)
+    if respond_to? :carrier_type_key
+      keycode = Keycode.find(:first, :conditions => ["name = ? and v = ?", carrier_type_key, v])
+    end
+    if keycode
+      return keycode.keyname
+    else
+      return ''
+    end
+  end
+
+  def get_keyname_manifestation_type(v)
+    if respond_to? :manifestation_type_key
+      keycode = Keycode.find(:first, :conditions => ["name = ? and v = ?", manifestation_type_key, v])
+    end
+    if keycode
+      return keycode.keyname
+    else
+      return ''
+    end
+  end
+
+  def get_keyname_exinfo(exinfo_key, v)
+    keycode = Keycode.find(:first, :conditions => ["name = ? and v = ?", exinfo_key, v])
+    if keycode
+      return keycode.keyname
+    else
+      return ''
+    end
+  end
 end
