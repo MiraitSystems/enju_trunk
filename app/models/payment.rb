@@ -68,6 +68,7 @@ class Payment < ActiveRecord::Base
       end
 
       if self.currency_id == 28
+        self.currency_rate = 1 if self.currency_rate == 0
         self.amount_of_payment = (self.currency_rate * self.discount_commision * self.before_conv_amount_of_payment).to_i
       else
         self.amount_of_payment = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.before_conv_amount_of_payment).to_i

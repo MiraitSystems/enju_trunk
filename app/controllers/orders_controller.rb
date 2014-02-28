@@ -49,6 +49,8 @@ class OrdersController < ApplicationController
       @order.order_day = Date.new((Date.today + 1.years).year, original_order.order_day.month, original_order.order_day.day)
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
+      @order.buying_payment_year = nil
+      @order.prepayment_settlements_of_account_year = nil
     else
       @order.order_day = Date.today
       @order.set_probisional_identifier
@@ -83,13 +85,13 @@ class OrdersController < ApplicationController
   # POST /orders.json
   def create
     @order = Order.new(params[:order])
-
-    @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
     @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
     
     respond_to do |format|
       if @order.save
+        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
         flash[:notice] += t('order.create_payment_to_advance_payment') if @order.create_payment_to_advance_payment
 

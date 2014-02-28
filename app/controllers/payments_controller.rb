@@ -27,12 +27,13 @@ class PaymentsController < ApplicationController
 
   def create
     @payment = Payment.new(params[:payment])
-    @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
     @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
 
     respond_to do |format|
       if @payment.save
+        @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
+        @payment.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.payment'))
         format.html { redirect_to (payment_path(@payment, :return_index => @return_index)) }
       else

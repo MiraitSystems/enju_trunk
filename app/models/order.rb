@@ -99,14 +99,19 @@ class Order < ActiveRecord::Base
       end
 
       if self.currency_id == 28
+        self.currency_rate = 1 if self.currency_rate == 0
         self.yen_imprest = (self.currency_rate * self.discount_commision * self.prepayment_principal).to_i
       else
         self.yen_imprest = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.prepayment_principal).to_i
       end
- 
+  end
+
+
+  before_save :set_unit_price
+  def set_unit_price
     if self.number_of_acceptance_schedule == 0
       self.unit_price = 0
-    else   
+    else
       begin
         self.unit_price = (self.yen_imprest / self.number_of_acceptance_schedule).to_i
       rescue
@@ -114,6 +119,7 @@ class Order < ActiveRecord::Base
       end
     end
   end
+
 
   before_create :set_order_identifier
   def set_order_identifier
@@ -152,12 +158,9 @@ class Order < ActiveRecord::Base
     payments = Payment.where("payment_type != 3 AND order_id = ?", self.id)
 
     self.total_payment = 0
-    number_of_acceptance = 0
     payments.each do |payment|
       self.total_payment += payment.amount_of_payment
-      number_of_acceptance += payment.number_of_payment
     end
-    self.number_of_acceptance = number_of_acceptance
     self.save
   end
 
