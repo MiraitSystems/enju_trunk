@@ -1970,6 +1970,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    copy: コピーして新規作成
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
