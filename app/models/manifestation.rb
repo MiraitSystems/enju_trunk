@@ -43,6 +43,7 @@ class Manifestation < ActiveRecord::Base
   before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
+  has_many :payments
 
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
