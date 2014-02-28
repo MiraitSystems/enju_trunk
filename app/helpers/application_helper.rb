@@ -594,6 +594,23 @@ module ApplicationHelper
     ")
   end
 
+  def make_select2(obj, selector_id, data, obj_data, width, alt_display=true)
+    html = raw ("<select id=\"#{selector_id}\" name=\"#{obj}[#{selector_id}]\" style=\"width:#{width}px\">\n")
+    data.each do |data|
+      html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
+      if obj_data == data.id
+        html.concat( raw (", selected=\"selected\"") )
+      end
+      html.concat( raw (">#{ data.display_name.localize }") )
+      if alt_display
+        html.concat( raw (" (#{ data.name })") )
+      end
+      html.concat( raw ("</option>\n") )
+    end
+    html.concat( raw ("    </select>\n") )
+  end
+
+=begin
   def make_select2
     html = raw ("<select id=\"carrier_type_id\" name=\"manifestation[carrier_type_id]\" style=\"width:250px\">\n")
     @carrier_types.each do |carrier_types|
@@ -607,18 +624,5 @@ module ApplicationHelper
     end
     html.concat( raw ("    </select>\n") )
   end
-
-  def doing_select2(obj, selector_id, data, obj_data, width)
-    html = raw ("<select id=\"#{selector_id}\" name=\"#{obj}[#{selector_id}]\" style=\"width:#{width}px\">\n")
-    data.each do |data|
-      html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-      if obj_data.carrier_type_id == data.id
-        html.concat( raw (", selected=\"selected\"" ) )
-      end
-      html.concat( raw (">\n") )
-      html.concat( raw ("        #{ data.display_name.localize } (#{ data.name })\n") )
-      html.concat( raw ("      </option>\n") )
-    end
-    html.concat( raw ("    </select>\n") )
-  end
+=end
 end

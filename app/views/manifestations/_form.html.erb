@@ -223,9 +223,12 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "carrier_type_id" %>
-    <%#= doing_select2("manifestation", :carrier_type_id, @carrier_types, @manifestation, 250) %>
+    <%= make_select2("manifestation", :carrier_type_id, @carrier_types, @manifestation.carrier_type_id, 250) %>
     <%#= make_select2 %>
-    <select id="carrier_type_id" name="manifestation[carrier_type_id]" style="width:200px">
+<!--
+    完成形
+    <%= select2_script "finish" %>
+    <select id="finish" name="manifestation[carrier_type_id]" style="width:200px">
       <% @carrier_types.each do |carrier_types| %>
         <option alt="<%= carrier_types.name %>", value="<%= carrier_types.id %>"
           <% if @manifestation.carrier_type_id == carrier_types.id %>
@@ -234,6 +237,7 @@ $(document).keydown(function(e) {
         ><%= carrier_types.display_name.localize %></option>
       <% end %>
     </select>
+-->
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
@@ -241,7 +245,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "manifestation_type_id"%>
-    <%= doing_select2("manifestation", :manifestation_type_id, @manifestation_types, @manifestation, 300) %>
+    <%= make_select2("manifestation", :manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, 300) %>
   </div>
 
   <div class="field">
@@ -263,15 +267,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
     <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
     <%= select2_script "country_of_publication_id"%>
-    <select id="country_of_publication_id" name="manifestation[country_of_publication_id]" style="width:400px">
-      <% @countries.each do |country| %>
-        <option alt="<%= country.name %>", value="<%= country.id %>", 
-            <% if @manifestation.country_of_publication_id == country.id %>
-              selected="selected"
-            <% end %>
-            ><%= country.display_name.localize %></option>
-      <% end %>
-    </select>
+    <%= make_select2("manifestation", :country_of_publication_id, @countries, @manifestation.country_of_publication_id, 400, false) %>
   </div>
 
   <div class="field">
