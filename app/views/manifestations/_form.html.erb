@@ -214,7 +214,7 @@ $(document).keydown(function(e) {
       if ($('#manifestation_delete_attachment').attr('checked')){
         $('#manifestation_attachment').attr("disabled", true);
       } else {
-        $('#manifest"tion_attachment').removeAttr("disabled");
+        $('#manifestation_attachment').removeAttr("disabled");
       }
     }
   </script>
@@ -223,29 +223,15 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "carrier_type_id" %>
-    <%= make_select2("manifestation", :carrier_type_id, @carrier_types, @manifestation.carrier_type_id, 250) %>
-    <%#= make_select2 %>
-<!--
-    完成形
-    <%= select2_script "finish" %>
-    <select id="finish" name="manifestation[carrier_type_id]" style="width:200px">
-      <% @carrier_types.each do |carrier_types| %>
-        <option alt="<%= carrier_types.name %>", value="<%= carrier_types.id %>"
-          <% if @manifestation.carrier_type_id == carrier_types.id %>
-              , selected="selected"
-          <% end %>
-        ><%= carrier_types.display_name.localize %></option>
-      <% end %>
-    </select>
--->
+    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250) %>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <%= select2_script "manifestation_type_id"%>
-    <%= make_select2("manifestation", :manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, 300) %>
+    <%= select2_script "manifestation_type_id" %>
+    <%= make_select2(:manifestation_type_id, "manifestation_type_id", @manifestation_types, @manifestation.manifestation_type_id, 300) %>
   </div>
 
   <div class="field">
@@ -266,8 +252,8 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
     <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
-    <%= select2_script "country_of_publication_id"%>
-    <%= make_select2("manifestation", :country_of_publication_id, @countries, @manifestation.country_of_publication_id, 400, false) %>
+    <%= select2_script "country_of_publication_id" %>
+    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false) %>
   </div>
 
   <div class="field">
@@ -279,6 +265,8 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.language') -%>
     <% if @manifestation_languages.blank? %>
       <div id="LANG0">
+        <%#= select2_script "language_id_0" %>
+        <%#= make_select2("manifestation", 'language_id[0]', @languages, @default_language.id, 200) %>
         <%= select_tag 'language_id[0]',
             options_for_select(@languages.collect{ |language| [language.display_name.localize, language.id] },
             :selected => @default_language.id ) %>
@@ -287,6 +275,8 @@ $(document).keydown(function(e) {
     <% else %>
       <% @manifestation_languages.each_with_index do |language, i| %>
         <div id="LANG<%= i.to_s %>">
+          <%#= select2_script "language_id_" + i.to_s %>
+          <%#= make_select2(:language_id_0, "language_id[" + i.to_s + "]", @languages, @default_language.id, 200) %>
           <%= select_tag 'language_id[' + i.to_s + ']',
               options_for_select(@languages.collect{|language| [language.display_name.localize, language.id] },
               :selected => language ) %>
@@ -364,15 +354,7 @@ $(document).keydown(function(e) {
     <%= f.label t('role.required_role') -%>
     <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
     <%= select2_script "required_role_id"%>
-    <select id="required_role_id" name="manifestation[required_role_id]" style="width:200px">
-      <% @roles.each do |roles| %>
-        <option alt="<%= roles.name %>", value="<%= roles.id %>", 
-            <% if @manifestation.required_role_id == roles.id %>
-              selected="selected"
-            <% end %>
-            ><%= roles.display_name.localize %></option>
-      <% end %>
-    </select>
+    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false) %>
   </div>
 
   <div class="field">
