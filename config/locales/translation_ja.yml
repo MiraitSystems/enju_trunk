@@ -1631,6 +1631,13 @@ ja:
           donate_requested: 寄付依頼送付済
           replied_donate_request: 寄付依頼返信済
           all_process_end: 全工程完了
+        donation_postcard: 寄贈はがき
+        approval_report: 見計らい伝票
+        sample_request: サンプル誌依頼
+        donation_request_usually: 寄贈依頼状（通常）
+        donation_request_sample: 寄贈依頼状（サンプル）
+        donation_request_collection: 寄贈依頼状（収集）
+        refusal_latter: 断り状
       approval_extext:
         value: メモ
         created_by: 記入者
@@ -1834,6 +1841,7 @@ ja:
     editing: "%{model}の編集"
     showing: "%{model}の表示"
     output: "%{model}の出力"
+    output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
     output_csv: "%{model}の出力(CSV)"
     output_tsv: "%{model}の出力(TSV)"
@@ -1891,6 +1899,7 @@ ja:
     asc: "昇順"
     desc: "降順"
     error_occured: "エラーが発生しました。"
+    error_file: "ファイル出力できませんでした。"
     did_you_mean: "もしかして"
     calendar: "カレンダー"
     related: "関連"

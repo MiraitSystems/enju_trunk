@@ -2,7 +2,9 @@ EnjuLeaf::Application.routes.draw do
 
 
   resources :title_types
-  resources :approvals
+  resources :approvals do
+    get :get_approval_report, :on => :collection
+  end
   resources :keycodes
   resources :use_licenses
   resources :function_classes do

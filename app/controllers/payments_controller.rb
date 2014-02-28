@@ -49,6 +49,7 @@ class PaymentsController < ApplicationController
 
   def update
     @payment = Payment.find(params[:id])
+    @return_index = params[:return_index]
 
     @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
@@ -83,6 +84,15 @@ class PaymentsController < ApplicationController
           end
         }
     end
+  end
+
+  def set_select_years
+    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @select_years = []
+    @years.each do |p|
+      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+    end
+
   end
 
   def search
@@ -136,7 +146,6 @@ class PaymentsController < ApplicationController
     end
 
   end
-
 
 private
   def get_order

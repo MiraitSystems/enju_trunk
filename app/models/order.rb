@@ -89,7 +89,6 @@ class Order < ActiveRecord::Base
   end
 
   def set_yen_imprest
-
       exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.order_day])
 
       if exchangerate
@@ -119,7 +118,6 @@ class Order < ActiveRecord::Base
       end
     end
   end
-
 
   before_create :set_order_identifier
   def set_order_identifier
