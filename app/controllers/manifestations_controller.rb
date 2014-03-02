@@ -1926,5 +1926,4 @@ class ManifestationsController < ApplicationController
       end
     end
   end
-
 end

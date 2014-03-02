@@ -21,22 +21,30 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.checkout_type') -%><br />
-    <%= f.select(:checkout_type_id, @checkout_types.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%#= f.select(:checkout_type_id, @checkout_types.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%= select2_script "checkout_type_id" %>
+    <%= make_select2(:checkout_type_id, "item[checkout_type_id]", @checkout_types, @item.checkout_type_id, 200) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.accept_type') -%><br />
-    <%= f.select(:accept_type_id, @accept_types.collect{|a| [a.display_name.localize, a.id]}, :include_blank => true) -%>
+    <%#= f.select(:accept_type_id, @accept_types.collect{|a| [a.display_name.localize, a.id]}, :include_blank => true) -%>
+    <%= select2_script "accept_type_id" %>
+    <%= make_select2(:accept_type_id, "item[accept_type_id]", @accept_types, @item.accept_type_id, 200) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.circulation_status') -%><br />
-    <%= f.select(:circulation_status_id, @circulation_statuses.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%#= f.select(:circulation_status_id, @circulation_statuses.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%= select2_script "circulation_status_id" %>
+    <%= make_select2(:circulation_status_id, "item[circulation_status_id]", @circulation_statuses, @item.circulation_status_id, 500) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.retention_period') -%><br />
-    <%= f.select(:retention_period_id, @retention_periods.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%#= f.select(:retention_period_id, @retention_periods.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%= select2_script "retention_period_id" %>
+    <%= make_select2(:retention_period_id, "item[retention_period_id]", @retention_periods, @item.retention_period_id, 200) %>
   </div>
 
   <div class="field">
@@ -52,6 +60,9 @@
     <div style="font-size: 90%; padding-bottom: 10px;"><%= t('item.search_bookstore_description') %></div>
     <%= f.label t('activerecord.models.bookstore') -%>
     <%= f.select(:bookstore_id, @bookstores.collect{|b| [b.name, b.id]}, :include_blank => true) -%>
+    <!-- TODO bookstores に display_name が無い為保留 -->
+    <%#= select2_script "bookstore_id" %>
+    <%#= make_select2(:bookstore_id, "item[bookstore_id]", @bookstores, @item.bookstore_id, 200) %>
   </div>
 
   <div class="field">
@@ -72,11 +83,16 @@
   <div class="field">
     <%= f.label t('activerecord.models.use_restriction') -%>
     <%= f.select(:use_restriction_id, @use_restrictions.collect{|u| [u.display_name.localize, u.id]}) -%>
+    <!-- TODO selected が適用出来ていない為保留 -->
+    <%#= select2_script "use_restriction_id" %>
+    <%#= make_select2(:use_restriction_id, "item[use_restriction_id]", @use_restrictions, @item, 400) %>
   </div>
 
   <div class="field">
     <%= f.label t('role.required_role') -%>
-    <%= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%= select2_script "required_role_id" %>
+    <%= make_select2(:required_role_id, "item[required_role_id]", @roles, @item.required_role_id, 150, false) %>
   </div>
 
   <div class="field">
