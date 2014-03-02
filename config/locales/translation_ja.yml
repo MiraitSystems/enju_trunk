@@ -3114,7 +3114,7 @@ ja:
     no_matches_found_agent: "発注機関が見つかりません"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
     no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
-    switch_manual_entry: "通貨レート、発注金額を手入力する"
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
@@ -3126,7 +3126,7 @@ ja:
     copy: コピーして新規作成
   payment:
     system_menu_title: 支払検索
-    switch_manual_entry: "通貨レート、支払金額を手入力する"
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     paid: 精算

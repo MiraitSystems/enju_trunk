@@ -3142,7 +3142,7 @@ en:
     no_matches_found_agent: "No matches found agent"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_matches_found_order: "No matches found order to %{attribute}"
-    switch_manual_entry: "Manual entry currency rate and yen imprest"
+    switch_manual_entry: "Use auto calculate the amount" 
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     payments: Payments
@@ -3155,7 +3155,7 @@ en:
     
   payment:
     system_menu_title: Payment search
-    switch_manual_entry: "Manual entry currency rate and amount of payment"
+    switch_manual_entry: "Use auto calculate the amount"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     paid: Paid
