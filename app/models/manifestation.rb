@@ -1623,13 +1623,18 @@ class Manifestation < ActiveRecord::Base
 
       def search_clasification(cls_hash, key)
         return nil if cls_hash.blank? or key.blank?
+        return_value = nil
         if key == "NDC"
           ["NDC9","NDC8","NDC7","NDC6","NDC"].each do |ndc|
-            return cls_hash[ndc] if cls_hash[ndc].present?
+            if cls_hash[ndc].present?
+              return_value = cls_hash[ndc]
+              break
+            end
           end
         else
-          return cls_hash[key]
+          return_value = cls_hash[key]
         end
+        return_value
       end
   end
 
