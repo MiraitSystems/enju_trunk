@@ -10,6 +10,6 @@ class CreateItemExinfos < ActiveRecord::Migration
   end
 
   def down
-    drop_tables :item_exinfos
+    drop_table :item_exinfos
   end
 end
