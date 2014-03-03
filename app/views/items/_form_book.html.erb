@@ -10,6 +10,9 @@
   <div class="field">
     <%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong><br />
     <%= f.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]} %>
+    <!--TODO shelf の項目との関連が取れていない為、保留 -->
+    <%#= select2_script "library_id" %>
+    <%#= make_select2(:library_id, "item[library_id]", @libraries, @item.library_id, 200) %>
     <%- if @shelf_categories %>
       <%= select_tag :shelf_category, options_for_select(@shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
       <%= f.select :shelf_id, @shelves.map{|s| [s.display_name.localize, s.id]}, :selected => @item.shelf_id %>
@@ -82,10 +85,9 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.use_restriction') -%>
-    <%= f.select(:use_restriction_id, @use_restrictions.collect{|u| [u.display_name.localize, u.id]}) -%>
-    <!-- TODO selected が適用出来ていない為保留 -->
-    <%#= select2_script "use_restriction_id" %>
-    <%#= make_select2(:use_restriction_id, "item[use_restriction_id]", @use_restrictions, @item, 400) %>
+    <%#= f.select(:use_restriction_id, @use_restrictions.collect{|u| [u.display_name.localize, u.id]}) -%>
+    <%= select2_script "use_restriction_id" %>
+    <%= make_select2(:use_restriction_id, "item[use_restriction_id]", @use_restrictions, @item.use_restriction_id, 400) %>
   </div>
 
   <div class="field">
@@ -119,12 +121,14 @@ $(function(){
   <div class="field">
     <%= f.label t('activerecord.attributes.item.rank') %><br />
     <%= f.select(:rank, item_ranks.collect{|r| [i18n_rank(r), r]}) %>
+    <!-- TODO 値の取得法が異なる為、select2 は保留 -->
   </div>
 	<% end %>
 
   <div class="field">
     <%= f.label :item_identifier -%><br />
     <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]}, :include_blank => true %>
+    <!-- TODO 記述法が異なる為、select2 は保留 -->
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
     <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
   </div>
