@@ -1397,6 +1397,8 @@ en:
         ISBN: ISBN
         PRICE: Price
         XISBN: Invalid ISBN
+        nbn: NBN
+        lccn: LCCN
         ptb_info: Parent manifestation info
         PTBID: ID
         PTBK: Type
@@ -1404,6 +1406,13 @@ en:
         PTBTRR: Title (reading)
         PTBTRVR: Title alternative (reading)
         PTBNO: Number etc.
+        utl_info: Unification title info
+        UTID: ID
+        UTFLG: Main flag
+        UTHDNG: Title
+        UTHDNGR: Title (reading)
+        UTHDNGVR: Title alternative (reading)
+        UTINFO: Other info
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime

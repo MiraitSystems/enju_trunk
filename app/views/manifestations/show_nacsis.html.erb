@@ -40,12 +40,12 @@
                 <%= cls_key.to_s + "[" + cls_value.to_s + "]" -%>&nbsp;
               <%- end -%>
             </td>
-          <%- when :vol_info, :ptb_info -%>
+          <%- when :vol_info, :ptb_info, :utl_info -%>
             <td>
               <%- @nacsis_cat.detail[key].each do |info| -%>
                 <%- info.each do |info_key, info_value| %>
                   <%= t('activerecord.attributes.nacsis_user_request.' + info_key.to_s) -%>
-                  <%= ":" + info_value.to_s -%>&nbsp;
+                  <%= ": " + info_value.to_s -%>&nbsp;
                 <%- end -%>
                 <br />
               <%- end -%>

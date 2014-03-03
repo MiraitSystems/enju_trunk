@@ -358,11 +358,7 @@ class NacsisCat
         end
       end.compact,
       :subject => map_attrs(@record['SH'], 'SHD').compact.uniq,
-      :note => if @record['NOTE'].is_a?(Array)
-          @record['NOTE'].compact.join(" ")
-        else
-          @record['NOTE']
-        end,
+      :note => arraying(@record['NOTE']).compact.join(" "),
 
       :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
       :size => @record['PHYS'].try(:[],'PHYSS'),
@@ -370,11 +366,14 @@ class NacsisCat
       :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
       :subjects => arraying(@record['SH']),
       :marc => @record['MARCID'],
+      :nbn => arraying(@record['NBN']).compact.join(","),
+      :lccn => @record['LCCN'],
     }.tap do |hash|
       if book?
         hash[:cls_info] = classification_info
         hash[:vol_info] = arraying(@record['VOLG'])
         hash[:ptb_info] = arraying(@record['PTBL'])
+        hash[:utl_info] = arraying(@record['UTL'])
       else
         hash[:issn] = issn
       end

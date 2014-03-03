@@ -1538,6 +1538,8 @@ class Manifestation < ActiveRecord::Base
           attrs[:marc_number] = nacsis_info[:marc]
           attrs[:pub_date] = nacsis_info[:publish_year]
           attrs[:size] = nacsis_info[:size]
+          attrs[:nbn] = nacsis_info[:nbn]
+          attrs[:lccn] = nacsis_info[:lccn]
 
           # NDCは最新のバージョンのものを検索して設定する。
           attrs[:ndc] = search_clasification(nacsis_info[:cls_info], "NDC")
