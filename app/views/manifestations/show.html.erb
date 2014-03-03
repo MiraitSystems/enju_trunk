@@ -15,6 +15,10 @@
   <div id="content_list">
   <p id="notice"><%= notice %></p>
 
+    <% if flash[:error] %>
+      <div style="color: red;"><b><%= flash[:error] %></b></div>
+    <% end %>
+
     <%= form_for :manifestations, form_opts do -%>
       <div>
         <%= paginate_id_link(@manifestation) -%>
@@ -182,6 +186,9 @@ $(function(){
             <%- end -%>
             <%- if @manifestation.bookbinder -%>
               <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :manifestation_id => @manifestation.id}, :confirm => t('page.are_you_sure')) -%></li>
+              <% if Object.const_defined?('ReportExport') && ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
+                <li><%= link_to t('page.output', :model => t('bookbinding.card')), :controller => :bookbindings, :action => :get_bookbinding_card, :param => @manifestation %></li>
+              <% end %>
             <%- end -%>
             <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@manifestation) %></li>
           </ul>
