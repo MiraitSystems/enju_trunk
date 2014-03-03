@@ -1,0 +1,13 @@
+<h4><%= t('activerecord.models.agent_type') %></h4>
+<ul>
+  <% current_agent_type = params[:agent_type] %>
+  <% @search.facet(:agent_type).rows.each do |facet| %>
+    <% agent_type = AgentType.where(:name => facet.value).select(['name', 'display_name']).first %>
+    <% if agent_type %>
+      <li><%= agent_type_facet(agent_type, current_agent_type, facet) %></li>
+    <% end %>
+  <% end %>
+  <% if params[:agent_type] %>
+    <li><%= link_to t('page.remove_this_facet'), url_for(params.merge(:agent_type => nil, :page => nil, :view => nil)) %></li>
+  <% end %>
+</ul>

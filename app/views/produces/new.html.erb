@@ -6,12 +6,12 @@
   <%= f.error_messages -%>
 
   <div class="field">
-    <%= f.label t('activerecord.models.patron') -%><br />
-    <%- if @produce.patron -%>
-      <%= link_to @produce.patron.full_name, @produce.patron -%>
-      <%= f.hidden_field :patron_id -%>
+    <%= f.label t('activerecord.models.agent') -%><br />
+    <%- if @produce.agent -%>
+      <%= link_to @produce.agent.full_name, @produce.agent -%>
+      <%= f.hidden_field :agent_id -%>
     <%- else -%>
-      <%= f.text_field :patron_id -%>
+      <%= f.text_field :agent_id -%>
     <%- end -%>
   </div>
 
@@ -34,11 +34,11 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <%- if @produce.patron -%>
-      <li><%= link_to t('page.listing', :model => t('activerecord.models.patron')), publisher_manifestations_path(@produce.patron) -%></li>
+    <%- if @produce.agent -%>
+      <li><%= link_to t('page.listing', :model => t('activerecord.models.agent')), publisher_manifestations_path(@produce.agent) -%></li>
     <%- end -%>
     <%- if @produce.manifestation -%>
-      <li><%= link_to t('page.listing', :model => t('activerecord.models.manifestation')), manifestation_patrons_path(@produce.manifestation) -%></li>
+      <li><%= link_to t('page.listing', :model => t('activerecord.models.manifestation')), manifestation_agents_path(@produce.manifestation) -%></li>
     <%- end -%>
   </ul>
 </div>

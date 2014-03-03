@@ -146,8 +146,8 @@ describe ApplicationHelper do
       html.should_not include('tag')
       [
         [t('page.title'), "title[#{t('page.exact_title')}]"],
-        [t('patron.creator'), "creator"],
-        [t('patron.publisher'), 'publisher'],
+        [t('agent.creator'), "creator"],
+        [t('agent.publisher'), 'publisher'],
         [t('activerecord.attributes.manifestation.isbn'), 'isbn'],
         [t('activerecord.attributes.manifestation.issn'), 'issn'],
         [t('activerecord.attributes.item.item_identifier'), 'item_identifier'],
@@ -157,7 +157,7 @@ describe ApplicationHelper do
         [t('page.number_of_pages'), 'number_of_pages_at_least-number_of_pages_at_most'],
         ["#{t('page.except_search_term')}#{t('page.search_term')}", "except_query"],
         ["#{t('page.except_title')}#{t('page.title')}", "except_title"],
-        ["#{t('page.except_creator')}#{t('patron.creator')}", "except_creator"],
+        ["#{t('page.except_creator')}#{t('agent.creator')}", "except_creator"],
       ].each do |label, value|
         html.should include("#{label}: #{value}")
       end

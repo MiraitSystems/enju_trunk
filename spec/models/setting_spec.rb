@@ -66,7 +66,7 @@ describe Setting do
     Setting.resource_import_results_print_tsv.filename.should == "resource_import_results.tsv"
     Setting.resource_import_textresults_print_tsv.filename.should == "resource_import_textresults.tsv"
     Setting.event_import_results_print_tsv.filename.should == "event_import_results.tsv"
-    Setting.patron_import_results_print_tsv.filename.should == "patron_import_results.tsv"
+    Setting.agent_import_results_print_tsv.filename.should == "agent_import_results.tsv"
     Setting.user_checkout_stats_print_tsv.filename.should == "user_checkout_stats.tsv"
     Setting.user_reserve_stats_print_tsv.filename.should == "user_reserve_stats.tsv"
     Setting.manifestation_checkout_stats_print_tsv.filename.should == "manifestation_checkout_stats.tsv"
@@ -116,7 +116,7 @@ describe Setting do
 
     Setting.reserve.not_reserve_on_loan.should be_false
     Setting.library_checks.auto_checkin.should be_true
-    Setting.patron.check_duplicate_user.should be_false
+    Setting.agent.check_duplicate_user.should be_false
     Setting.standaloneclient.clientkey.should == "Next-L/Enju:Next-L/Enju:Next-L/E"
     Setting.standaloneclient.encoding.should be_false
     Setting.manifestations.users_show_output_button.should be_false
@@ -129,20 +129,20 @@ describe Setting do
     Setting.use_order_lists.nil?.should be_false
 
     Setting.manifestation_book_jacket.unknown_resource.should == "(NO IMAGE)"
-    Setting.send_message.reservation_accepted_for_patron.should be_true
+    Setting.send_message.reservation_accepted_for_agent.should be_true
     Setting.send_message.reservation_accepted_for_library.should  be_true
-    Setting.send_message.reservation_canceled_for_patron.should be_true
+    Setting.send_message.reservation_canceled_for_agent.should be_true
     Setting.send_message.reservation_canceled_for_library.should be_true
-    Setting.send_message.item_received_for_patron.should be_true
+    Setting.send_message.item_received_for_agent.should be_true
     Setting.send_message.item_received_for_library.should be_true
-    Setting.send_message.reservation_expired_for_patron.should be_true
+    Setting.send_message.reservation_expired_for_agent.should be_true
     Setting.send_message.reservation_expired_for_library.should be_true
     Setting.send_message.recall_item.should be_true
     Setting.send_message.recall_overdue_item.should be_true
     Setting.send_message.purchase_request_accepted.should be_true
     Setting.send_message.purchase_request_rejected.should be_true
     
-    Setting.send_message.reserve_reverted_for_patron.should be_true
+    Setting.send_message.reserve_reverted_for_agent.should be_true
     Setting.send_message.reserve_reverted_for_library.should be_true
     Setting.items.call_number.delete_first_delimiter.should be_true
     Setting.search.use_and.should be_true

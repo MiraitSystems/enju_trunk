@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.user'))", 'edit_user_path(params[:id])', :only => [:edit, :update]
   #before_filter :reset_params_session
   load_and_authorize_resource :except => [:search_family, :get_family_info, :get_user_info, :get_user_rent, :output_password, :edit_user_number, :update_user_number, :output_user_notice, :create]
-  helper_method :get_patron 
+  helper_method :get_agent 
   before_filter :store_location, :only => [:index]
   before_filter :clear_search_sessions, :only => [:show]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
@@ -33,14 +33,14 @@ class UsersController < ApplicationController
       fulltext query unless query.blank?
       with(:library).equal_to params[:library] if params[:library]
       with(:role).equal_to params[:role] if params[:role]
-      with(:patron_type).equal_to params[:patron_type] if params[:patron_type]
-      with(:required_role_id).less_than role.id
+      with(:agent_type).equal_to params[:agent_type] if params[:agent_type]
+      with(:required_role_id).less_than_or_equal_to role.id
       with(:user_status).equal_to params[:user_status] if params[:user_status]
       order_by sort[:sort_by], sort[:order]
       if params[:format] == 'html' or params[:format].nil?
         facet :library
         facet :role
-        facet :patron_type
+        facet :agent_type
         facet :user_status
         paginate :page => page.to_i, :per_page => User.default_per_page
       else
@@ -67,11 +67,11 @@ class UsersController < ApplicationController
       access_denied; return
     end 
     session[:user_return_to] = nil
-    unless @user.patron
-      redirect_to new_user_patron_url(@user); return
+    unless @user.agent
+      redirect_to new_user_agent_url(@user); return
     end
 
-    @patron = @user.patron
+    @agent = @user.agent
     family_id = FamilyUser.find(:first, :conditions => ['user_id=?', @user.id]).family_id rescue nil
     @family_users = Family.find(family_id).users.select{ |user| user != @user } if family_id
 
@@ -98,13 +98,13 @@ class UsersController < ApplicationController
       @user.username = nil
       @user.user_number = nil
       @user.role_id = @family_with.role.id
-      @patron = @family_with.patron.dup rescue Patron.new
-      @patron.full_name = nil
-      @patron.full_name_transcription = nil
+      @agent = @family_with.agent.dup rescue Agent.new
+      @agent.full_name = nil
+      @agent.full_name_transcription = nil
       @family_id = FamilyUser.find(:first, :conditions => ['user_id=?',  params[:user]]).family_id rescue nil
-      @patron.note_update_at = nil
-      @patron.note_update_by = nil
-      @patron.note_update_library = nil
+      @agent.note_update_at = nil
+      @agent.note_update_by = nil
+      @agent.note_update_library = nil
       @family = @family_with.id
     else 
       @user = User.new
@@ -112,47 +112,47 @@ class UsersController < ApplicationController
       @user.locale = current_user.locale
       @user.role_id = Role.where(:name => 'User').first.id
       @user.required_role_id = Role.where(:name => 'Librarian').first.id
-      @patron = Patron.new
-      @patron.required_role = Role.find_by_name('Librarian')
-      @patron.language = Language.where(:iso_639_1 => I18n.default_locale.to_s).first || Language.first 
-      @patron.country = current_user.library.country if current_user.library
-      @patron.country_id = LibraryGroup.site_config.country_id
-      @patron.telephone_number_1_type_id = 0
-      @patron.telephone_number_2_type_id = 1
-      @patron.extelephone_number_1_type_id = 2
-      @patron.extelephone_number_2_type_id = 2
-      @patron.fax_number_1_type_id = 3
-      @patron.fax_number_2_type_id = 3
+      @agent = Agent.new
+      @agent.required_role = Role.find_by_name('Librarian')
+      @agent.language = Language.where(:iso_639_1 => I18n.default_locale.to_s).first || Language.first 
+      @agent.country = current_user.library.country if current_user.library
+      @agent.country_id = LibraryGroup.site_config.country_id
+      @agent.telephone_number_1_type_id = 0
+      @agent.telephone_number_2_type_id = 1
+      @agent.extelephone_number_1_type_id = 2
+      @agent.extelephone_number_2_type_id = 2
+      @agent.fax_number_1_type_id = 3
+      @agent.fax_number_2_type_id = 3
       @family = 0
     end
     #@user.openid_identifier = flash[:openid_identifier]
     prepare_options
     @user_groups = UserGroup.all
-#    get_patron
-#    if @patron.try(:user)
+#    get_agent
+#    if @agent.try(:user)
 #      flash[:notice] = t('page.already_activated')
-#      redirect_to @patron
+#      redirect_to @agent
 #      return
 #    end
-    @user.patron_id = @patron.id if @patron
-    logger.error "2: #{@patron.id}"
+    @user.agent_id = @agent.id if @agent
+    logger.error "2: #{@agent.id}"
   end
 
   def edit
     unless @user == current_user or current_user.has_role?('Librarian')
       access_denied; return
     end 
-    unless @user.patron
-      redirect_to new_user_patron_url(@user); return
+    unless @user.agent
+      redirect_to new_user_agent_url(@user); return
     end
 
     @user.role_id = @user.role.id
-    @patron = @user.patron
+    @agent = @user.agent
     family_id = FamilyUser.find(:first, :conditions => ['user_id=?', @user.id]).family_id rescue nil
     if family_id
       @family_users = Family.find(family_id).users
     end
-    #@note_last_updateed_user = User.find(@patron.note_update_by) rescue nil
+    #@note_last_updateed_user = User.find(@agent.note_update_by) rescue nil
     if params[:mode] == 'feed_token'
       if params[:disable] == 'true'
         @user.delete_checkout_icalendar_token
@@ -168,28 +168,28 @@ class UsersController < ApplicationController
   def create
     respond_to do |format|
       begin
-        Patron.transaction do
+        Agent.transaction do
           @family = params[:family]
           @user = User.create_with_params(params[:user], params[:has_role_id])
           authorize! :create, @user
           @user.set_auto_generated_password
-          @patron = Patron.create_with_user(params[:patron], @user)
+          @agent = Agent.create_with_user(params[:agent], @user)
  
-          logger.info @patron
+          logger.info @agent
           logger.info @user
 
           @user.set_family(@family) unless @family.blank?
           @user.save!
-          @patron.user = @user
-          @patron.save!
+          @agent.user = @user
+          @agent.save!
           flash[:temporary_password] = @user.password
           format.html { redirect_to @user, :notice => t('controller.successfully_created.', :model => t('activerecord.models.user')) }
-          #format.html { redirect_to new_user_patron_url(@user) }
+          #format.html { redirect_to new_user_agent_url(@user) }
           format.json { render :json => @user, :status => :created, :location => @user }
         end
       rescue ActiveRecord::RecordInvalid
         prepare_options
-        @patron.errors.each do |attr, msg|
+        @agent.errors.each do |attr, msg|
           @user.errors.add(attr, msg)
         end 
         # flash[:error] = t('user.could_not_setup_account')
@@ -206,8 +206,8 @@ class UsersController < ApplicationController
     unless @user == current_user or current_user.has_role?('Librarian')
       access_denied; return
     end 
-    unless @user.patron
-      redirect_to new_user_patron_url(@user); return
+    unless @user.agent
+      redirect_to new_user_agent_url(@user); return
     end
 
     @user = User.where(:username => params[:id]).first
@@ -232,13 +232,13 @@ class UsersController < ApplicationController
         @user.role = Role.find(@user.role_id) if @user.role_id
       end
 
-      # set patrons_info
-      @user.patron.update_attributes!(params[:patron])
-      @user.patron.email = @user.email
-      @user.patron.language = Language.find(:first, :conditions => ['iso_639_1=?', params[:user][:locale]]) rescue nil
-      @user.patron.save!
+      # set agents_info
+      @user.agent.update_attributes!(params[:agent])
+      @user.agent.email = @user.email
+      @user.agent.language = Language.find(:first, :conditions => ['iso_639_1=?', params[:user][:locale]]) rescue nil
+      @user.agent.save!
 
-      @user.out_of_family if params[:out_of_family] == "1" or @user.patron.patron_type_id != PatronType.find_by_name('Person').id
+      @user.out_of_family if params[:out_of_family] == "1" or @user.agent.agent_type_id != AgentType.find_by_name('Person').id
       @user.set_family(params[:family]) unless params[:family].blank?
       @user.save!
 
@@ -253,8 +253,8 @@ class UsersController < ApplicationController
         format.json { head :no_content }
       end
     rescue # ActiveRecord::RecordInvalid
-      @patron = @user.patron  
-      @patron.errors.each do |attr, msg|
+      @agent = @user.agent  
+      @agent.errors.each do |attr, msg|
         @user.errors.add(attr, msg)
       end  
       family_id = FamilyUser.find(:first, :conditions => ['user_id=?', @user.id]).family_id rescue nil
@@ -272,7 +272,7 @@ class UsersController < ApplicationController
       User.transaction do
         if @user.deletable_by(current_user)
           @user.delete_reserves if @user.reserves.not_waiting
-          @user.patron.destroy
+          @user.agent.destroy
           @user.destroy
         else
           flash[:notice] = @user.errors[:base].join(' ')
@@ -349,7 +349,7 @@ class UsersController < ApplicationController
     report.start_new_page do |page|
       page.item(:library).value(LibraryGroup.system_name(@locale))
       page.item(:user).value(user.user_number)
-      page.item(:full_name).value(user.patron.full_name)
+      page.item(:full_name).value(user.agent.full_name)
     end
     send_data report.generate, :filename => "user_notice.pdf", :type => 'application/pdf', :disposition => 'attachment'
   end
@@ -362,29 +362,29 @@ class UsersController < ApplicationController
       @user = User.find(params[:user]) rescue nil
       @family = params[:family]
       @family_id = FamilyUser.find(:first, :conditions => ['user_id=?', @user.id]).family_id rescue nil
-      patron_type_person = PatronType.find_by_name('Person').id
+      agent_type_person = AgentType.find_by_name('Person').id
       query = <<-SQL
         SELECT users.id, users.username
-        FROM users left join patrons 
-        ON patrons.user_id = users.id 
-        WHERE translate(patrons.telephone_number_1, '-', '') = :tel_1
-        AND patrons.last_name = :last_name
-        AND patrons.address_1 = :address_1
-        AND patrons.patron_type_id = :patron_type_person
+        FROM users left join agents 
+        ON agents.user_id = users.id 
+        WHERE translate(agents.telephone_number_1, '-', '') = :tel_1
+        AND agents.last_name = :last_name
+        AND agents.address_1 = :address_1
+        AND agents.agent_type_id = :agent_type_person
       SQL
       if @family.present? and @family.to_i != 0
         query += " AND users.id = :user_id"
-        query_params = {:tel_1=>tel_1, :last_name=>params[:keys][:last_name], :address_1=>params[:keys][:address_1], :patron_type_person=>patron_type_person, :user_id=>@family} if @family
+        query_params = {:tel_1=>tel_1, :last_name=>params[:keys][:last_name], :address_1=>params[:keys][:address_1], :agent_type_person=>agent_type_person, :user_id=>@family} if @family
       else
         query += <<-SQL
-          AND patrons.telephone_number_1 IS NOT NULL
-          AND NOT patrons.telephone_number_1 = ''
-          AND patrons.last_name IS NOT NULL
-          AND NOT patrons.last_name = ''
-          AND patrons.address_1 IS NOT NULL
-          AND NOT patrons.address_1 = ''
+          AND agents.telephone_number_1 IS NOT NULL
+          AND NOT agents.telephone_number_1 = ''
+          AND agents.last_name IS NOT NULL
+          AND NOT agents.last_name = ''
+          AND agents.address_1 IS NOT NULL
+          AND NOT agents.address_1 = ''
         SQL
-        query_params = {:tel_1=>tel_1, :last_name=>params[:keys][:last_name], :address_1=>params[:keys][:address_1], :patron_type_person=>patron_type_person}
+        query_params = {:tel_1=>tel_1, :last_name=>params[:keys][:last_name], :address_1=>params[:keys][:address_1], :agent_type_person=>agent_type_person}
       end
      
       @users = User.find_by_sql([query, query_params]) rescue nil
@@ -446,8 +446,8 @@ class UsersController < ApplicationController
       if @user.nil?
         @user = User.find(params[:user_id]) rescue nil
       end
-      @patron = @user.patron
-      render :json => {:success => 1, :user => @user, :patron => @patron }
+      @agent = @user.agent
+      render :json => {:success => 1, :user => @user, :agent => @agent }
     end
   end
 
@@ -456,12 +456,12 @@ class UsersController < ApplicationController
     unless params[:user_number].blank?
       @user = User.where(:user_number => params[:user_number]).first
       if @user
-        @patron = @user.patron unless @user.blank?      
+        @agent = @user.agent unless @user.blank?      
         manifestation = Manifestation.find(params[:manifestation_id])
         expired_at = manifestation.reservation_expired_period(@user).days.from_now.end_of_day
         expired_at = expired_at.try(:strftime, "%Y-%m-%d") if expired_at
       end
-      render :json => {:success => 1, :user => @user, :patron => @patron, :expired_at => expired_at}
+      render :json => {:success => 1, :user => @user, :agent => @agent, :expired_at => expired_at}
     end
   end
 
@@ -469,9 +469,9 @@ class UsersController < ApplicationController
     return nil unless request.xhr?
     unless params[:user_number].blank?
       user = User.where(:user_number => params[:user_number]).first
-      patron = user.patron unless user.blank?
+      agent = user.agent unless user.blank?
       items = user.checkouts.not_returned.inject([]){ |list, c| list << [c.item.id, c.item.manifestation.original_title ]} unless user.blank?
-      render :json => { :success => 1, :items => items, :user => user, :patron => patron }
+      render :json => { :success => 1, :items => items, :user => user, :agent => agent }
     end
   end
 
@@ -497,8 +497,8 @@ class UsersController < ApplicationController
     else
       @user.locked = '1'
     end
-    @patron_types = PatronType.all
-    @patron_type_person = PatronType.find_by_name('Person').id
+    @agent_types = AgentType.all
+    @agent_type_person = AgentType.find_by_name('Person').id
     @user_statuses = UserStatus.all
     @departments = Department.all
     @function_classes = FunctionClass.all

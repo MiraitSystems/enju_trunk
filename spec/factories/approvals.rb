@@ -30,6 +30,6 @@ FactoryGirl.define do
     refuse_at "2014-01-16 11:36:02"
     donate_request_result 1
     all_process_end_at "2014-01-16 11:36:02"
-    reception_patron_id 1
+    reception_agent_id 1
   end
 end

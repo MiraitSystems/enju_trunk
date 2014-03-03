@@ -208,7 +208,7 @@ describe ItemHasUseRestrictionsController do
           assigns(:item_has_use_restriction).should be_valid
         end
 
-        it "redirects to the created patron" do
+        it "redirects to the created agent" do
           post :create, :item_has_use_restriction => @attrs
           response.should redirect_to(assigns(:item_has_use_restriction))
         end

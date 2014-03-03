@@ -247,7 +247,7 @@ system_configuration_00035:
   category: 'checkin'
 system_configuration_00036:
   id: 36
-  keyname: patron.check_duplicate_user
+  keyname: agent.check_duplicate_user
   v: "false"
   typename: Boolean
   description: "ユーザ情報の重複チェックを行うか"
@@ -317,7 +317,7 @@ system_configuration_00045:
   category: 'order_list'
 system_configuration_00046:
   id: 46
-  keyname: send_message.reservation_accepted_for_patron
+  keyname: send_message.reservation_accepted_for_agent
   v: "true"
   typename: Boolean
   description: "予約受付時に予約者に受付完了メッセージを送信するか"
@@ -331,7 +331,7 @@ system_configuration_00047:
   category: 'reserve'
 system_configuration_00048:
   id: 48
-  keyname: send_message.reservation_canceled_for_patron
+  keyname: send_message.reservation_canceled_for_agent
   v: "true"
   typename: Boolean
   description: "予約キャンセル時に予約者にキャンセル完了メッセージを送信するか"
@@ -345,7 +345,7 @@ system_configuration_00049:
   category: 'reserve'
 system_configuration_00050:
   id: 50
-  keyname: send_message.item_received_for_patron
+  keyname: send_message.item_received_for_agent
   v: "true"
   typename: Boolean
   description: "予約資料確保時に予約者に資料確保完了メッセージを送信するか"
@@ -359,7 +359,7 @@ system_configuration_00051:
   category: 'reserve'
 system_configuration_00052:
   id: 52
-  keyname: send_message.reservation_expired_for_patron
+  keyname: send_message.reservation_expired_for_agent
   v: "true"
   typename: Boolean
   description: "予約資料の有効期限が過ぎた時に利用者に有効期限切れメッセージを送信するか"
@@ -387,7 +387,7 @@ system_configuration_00055:
   category: 'reminder'
 system_configuration_00056:
   id: 56
-  keyname: send_message.purchase_request_accepted_for_patron
+  keyname: send_message.purchase_request_accepted_for_agent
   v: "true"
   typename: Boolean
   description: "購入リクエスト受付時に利用者に受付完了メッセージを送信するか"
@@ -408,7 +408,7 @@ system_configuration_00058:
   category: 'purchase_request'
 system_configuration_00059:
   id: 59
-  keyname: send_message.reserve_reverted_for_patron
+  keyname: send_message.reserve_reverted_for_agent
   v: "true"
   typename: Boolean
   description: "取置き済資料が貸出不可になったとき利用者に取置き取消メッセージを送信するか"
@@ -707,7 +707,7 @@ system_configuration_00100:
   category: 'copy_request'
 system_configuration_00101:
   id: 101
-  keyname: exclude_patrons
+  keyname: exclude_agents
   v: "他,ほか,et-al."
   typename: String
   description: "著者、協力者・編者、協力者・編者で指定時に人物・団体として扱わないワード"
@@ -756,7 +756,7 @@ system_configuration_00107:
   category: 'general'
 system_configuration_00108:
   id: 108
-  keyname: add_only_exist_patron
+  keyname: add_only_exist_agent
   v: "true"
   typename: Boolean
   description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
@@ -1047,36 +1047,162 @@ system_configuration_00148:
   category: 'user'
 system_configuration_00149:
   id: 149
-  keyname: add_only_exist_patron
+  keyname: add_only_exist_agent
   v: "true"
   typename: Boolean
   description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
   category: 'manifestation'
 system_configuration_00150:
   id: 150
-  keyname: use_patron_type
+  keyname: use_agent_type
   v: "true"
   typename: Boolean
   description: "著者・出版者・協力者に役割をつけるか"
   category: 'manifestation'
 system_configuration_00151:
   id: 151
+  keyname: f1.display_name
+  v: ""
+  typename: String
+  description: "F1の機能名"
+  category: 'function'
+system_configuration_00152:
+  id: 152
+  keyname: f1.path
+  v: ""
+  typename: String
+  description: "F1のリンク先"
+  category: 'function'
+system_configuration_00153:
+  id: 153
+  keyname: f2.display_name
+  v: "貸出"
+  typename: String
+  description: "F2の機能名"
+  category: 'function'
+system_configuration_00154:
+  id: 154
+  keyname: f2.path
+  v: "/baskets/new"
+  typename: String
+  description: "F2のリンク先"
+  category: 'function'
+system_configuration_00155:
+  id: 155
+  keyname: f3.display_name
+  v: "返却"
+  typename: String
+  description: "F3の機能名"
+  category: 'function'
+system_configuration_00156:
+  id: 156
+  keyname: f3.path
+  v: "/checkins"
+  typename: String
+  description: "F3のリンク先"
+  category: 'function'
+system_configuration_00157:
+  id: 157
+  keyname: f4.display_name
+  v: "再貸出"
+  typename: String
+  description: "F4の機能名"
+  category: 'function'
+system_configuration_00158:
+  id: 158
+  keyname: f4.path
+  v: "/checkouts/extend"
+  typename: String
+  description: "F4のリンク先"
+  category: 'function'
+system_configuration_00159:
+  id: 159
+  keyname: f5.display_name
+  v: ""
+  typename: String
+  description: "F5の機能名"
+  category: 'function'
+system_configuration_00160:
+  id: 160
+  keyname: f5.path
+  v: ""
+  typename: String
+  description: "F5のリンク先"
+  category: 'function'
+system_configuration_00161:
+  id: 161
+  keyname: f6.display_name
+  v: "資料の検索"
+  typename: String
+  description: "F6の機能名"
+  category: 'function'
+system_configuration_00162:
+  id: 162
+  keyname: f6.path
+  v: "/"
+  typename: String
+  description: "F6のリンク先"
+  category: 'function'
+system_configuration_00163:
+  id: 163
+  keyname: f7.display_name
+  v: "発注リスト"
+  typename: String
+  description: "F7の機能名"
+  category: 'function'
+system_configuration_00164:
+  id: 164
+  keyname: f7.path
+  v: "/order_lists"
+  typename: String
+  description: "F7のリンク先"
+  category: 'function'
+system_configuration_00165:
+  id: 165
+  keyname: f8.display_name
+  v: ""
+  typename: String
+  description: "F8の機能名"
+  category: 'function'
+system_configuration_00166:
+  id: 166
+  keyname: f.path
+  v: ""
+  typename: String
+  description: "F8のリンク先"
+  category: 'function'
+system_configuration_00167:
+  id: 167
+  keyname: f9.display_name
+  v: ""
+  typename: String
+  description: "F9の機能名"
+  category: 'function'
+system_configuration_00168:
+  id: 168
+  keyname: f.path
+  v: ""
+  typename: String
+  description: "F9のリンク先"
+  category: 'function'
+system_configuration_00169:
+  id: 169
   keyname: not_use_footer
   v: "false"
   typename: Boolean
   description: "フッターを表示しないか"
   category: 'general'
-system_configuration_0152:
-  id: 152
-  keyname: manifestation.use_titles
-  v: "false"
-  typename: Boolean
-  description: "書名テーブルを利用する"
-  category: 'manifestation'
-system_configuration_0153:
-  id: 153
+system_configuration_00170:
+  id: 170
   keyname: focus_start_position 
   v: "false"
   typename: Boolean
   description: "検索結果のフォーカス開始位置"
   category: 'view'
+system_configuration_00171:
+  id: 171
+  keyname: manifestation.use_titles
+  v: "false"
+  typename: Boolean
+  description: "書名テーブルを利用する"
+  category: 'manifestation'

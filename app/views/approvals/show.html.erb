@@ -2,6 +2,9 @@
 <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.approval')) -%></h1>
 <div id="content_list">
 
+<% if flash[:error] %>
+<div style="color: red;"><b><%= flash[:error] %></b></div>
+<% end %>
 <%= render 'manifestations/title', :manifestation => @manifestation -%>
 
 <p id="notice"><%= notice %></p>
@@ -134,8 +137,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.approval.reception_patron_id') -%>:</strong>
-  <%= @approval.reception_patron.full_name  if @approval.reception_patron %>
+  <strong><%= t('activerecord.attributes.approval.reception_agent_id') -%>:</strong>
+  <%= @approval.reception_agent.full_name  if @approval.reception_agent %>
 </p>
 
 
@@ -186,9 +189,33 @@
 </div>
 </div>
 
-<div id="submenu" class="ui-corner-all">
-  <ul>
-    <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
-    <li><%= link_to t('page.back'), approvals_path %></li>
-  <ul>
+<div id="submenu_block">
+  <div id="submenu" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
+      <li><%= link_to t('page.back'), approvals_path %></li>
+    <ul>
+  </div>
+
+  <% if Object.const_defined?('ReportExport') && ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
+
+  <div id ="submenu_2" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.approval_report')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'report' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_postcard')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'postcard' %>
+      
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.sample_request')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'request' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_usually')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'usually' %>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_sample')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'sample' %></li>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_request_collection')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'collection' %>
+      <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.refusal_latter')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'refuse' %></li>
+
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.sample_request')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'request_cover' %></li>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_usually')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'usually_cover' %>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_sample')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'sample_cover' %></li>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.donation_request_collection')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'collection_cover' %>
+      <li><%= link_to t('page.output_cover', :model => t('activerecord.attributes.approval.refusal_latter')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'refuse_cover' %></li>
+    <ul>
+  </div>
+  <% end %>
 </div>

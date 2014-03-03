@@ -6,6 +6,8 @@ class ManifestationExinfo < ActiveRecord::Base
 
   belongs_to :manifestation
 
+  has_paper_trail
+
   def self.add_exinfos(exinfos, manifestation_id)
     return [] if exinfos.blank?
     list = []

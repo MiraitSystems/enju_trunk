@@ -5,10 +5,10 @@ describe FactoryGirl do
   fixtures :all
 
   black_list = {
-    :invalid_patron => 'generates an invalid record',
+    :invalid_agent => 'generates an invalid record',
     :invalid_library => 'generates an invalid record',
-#    :libraryA => 'fails because Library.create builds an invalid patron record internally [BUG?]',
-#    :libraryB => 'fails because Library.create builds an invalid patron record internally [BUG?]',
+#    :libraryA => 'fails because Library.create builds an invalid agent record internally [BUG?]',
+#    :libraryB => 'fails because Library.create builds an invalid agent record internally [BUG?]',
     :order => 'calls undefined method MessageRequest.send_notice_to_libraries [BUG?]',
   }
 

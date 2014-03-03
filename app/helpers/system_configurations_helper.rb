@@ -12,7 +12,8 @@ module SystemConfigurationsHelper
       'order_list',
       'copy_request',
       'reminder', 
-      'statistics', 
+      'statistics',
+      'function', 
       'sound', 
       'view',
       'nacsis',
@@ -45,6 +46,8 @@ module SystemConfigurationsHelper
       t('system_configuration.reminder')
     when 'statistics'
       t('system_configuration.statistics')
+    when 'function'
+      t('system_configuration.function')
     when 'sound'
       t('system_configuration.sound')
     when 'view'
@@ -178,7 +181,7 @@ module SystemConfigurationsHelper
        string << t('system_configuration.boolean_display') if state == 'true'
        string << t('system_configuration.boolean_not_display') if state == 'false'
      # => do
-     when 'patron.check_duplicate_user',
+     when 'agent.check_duplicate_user',
           'library_checks.auto_checkin',
           'no_operation_logout'
        string << t('system_configuration.boolean_do') if state == 'true'
@@ -187,24 +190,24 @@ module SystemConfigurationsHelper
      when 'auto_user_number', 'manifestations.split_by_type', 'manifestations.google_book_search_preview', 
           'checkout.auto_checkin', 'manifestation.manage_item_rank', 'use_inter_library_loan', 'use_family', 'use_birth_day',
           'manifestation.has_one_item', 'manifestation.isbn_unique', 'user_change_department',
-          'checkout.set_extending_due_date_before_closing_day', 'manifestation.social_bookmark', 'add_only_exist_patron'
+          'checkout.set_extending_due_date_before_closing_day', 'manifestation.social_bookmark', 'add_only_exist_agent'
        string << t('system_configuration.boolean_yes') if state == 'true'
        string << t('system_configuration.boolean_no') if state == 'false'
      # => send
      when 'send_message.recall_item',
           'send_message.recall_overdue_item',
-          'send_message.purchase_request_accepted_for_patron',
+          'send_message.purchase_request_accepted_for_agent',
           'send_message.purchase_request_accepted_for_library',
           'send_message.purchase_request_rejected',
-          'send_message.reservation_accepted_for_patron',
+          'send_message.reservation_accepted_for_agent',
           'send_message.reservation_accepted_for_library',
-          'send_message.reservation_canceled_for_patron',
+          'send_message.reservation_canceled_for_agent',
           'send_message.reservation_canceled_for_library',
-          'send_message.item_received_for_patron',
+          'send_message.item_received_for_agent',
           'send_message.item_received_for_library',
-          'send_message.reservation_expired_for_patron',
+          'send_message.reservation_expired_for_agent',
           'send_message.reservation_expired_for_library',
-          'send_message.reserve_reverted_for_patron',
+          'send_message.reserve_reverted_for_agent',
           'send_message.reserve_reverted_for_library'
        string << t('system_configuration.boolean_send') if state == 'true'
        string << t('system_configuration.boolean_not_send') if state == 'false'
