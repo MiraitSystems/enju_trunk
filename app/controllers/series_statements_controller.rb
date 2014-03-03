@@ -78,9 +78,22 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/new.json
   def new
     @series_statement = SeriesStatement.new
-    @manifestation = @series_statement.root_manifestation
-    @series_statement.root_manifestation = Manifestation.new
-    output_agent_parameter_for_new_edit
+    original_series_statement = SeriesStatement.where(:id => params[:series_statement_id]).first if params[:series_statement_id]
+    if original_series_statement
+      @series_statement = original_series_statement.dup
+      if @series_statement.root_manifestation 
+        @manifestation = @series_statement.root_manifestation
+        @series_statement.root_manifestation = @manifestation
+      else
+        @manifestation = @series_statement.root_manifestation
+        @series_statement.root_manifestation = Manifestation.new
+      end
+      output_agent_parameter_for_new_edit
+    else
+      @manifestation = @series_statement.root_manifestation
+      @series_statement.root_manifestation = Manifestation.new
+      output_agent_parameter_for_new_edit
+    end
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -263,7 +276,7 @@ class SeriesStatementsController < ApplicationController
   private
   def prepare_options
     @carrier_types = CarrierType.all
-    @manifestation_types = ManifestationType.where(:name => ['japanese_magazine', 'foreign_magazine', 'japanese_serial_book', 'foreign_serial_book'])
+    @manifestation_types = ManifestationType.series
     @frequencies = Frequency.all
     @countries = Country.all
     @languages = Language.all_cache

@@ -35,12 +35,13 @@ multiple: false,
     switch_field : function () {
 
       var checkbox = document.getElementById('order_auto_calculation_flag');
+
       var field = document.getElementById('order_manual_field');
 
       if(checkbox.checked){
-        field.style.display="block";
-      }else{
         field.style.display="none";
+      }else{
+        field.style.display="block";
       }
     }  
   };
@@ -192,7 +193,11 @@ multiple: false,
 
   <div class="field">
     <%= f.label :collection_stop_day %><br />
-    <%= f.text_field :collection_stop_day %>
+    <% if @order.collection_stop_day %>
+      <%= f.text_field :collection_stop_day, :value => @order.collection_stop_day.to_date %>
+    <% else %>
+      <%= f.text_field :collection_stop_day %>
+    <% end %>
   </div>
 
   <% if order_form_codes %>
@@ -241,8 +246,8 @@ multiple: false,
   <% end %>
 
   <div class="field">
-    <%= f.label :currency_unit_code %><br />
-    <%= f.collection_select :currency_unit_code, @currencies, :id, :display_name, :include_blank => true %>
+    <%= f.label :currency_id %><br />
+    <%= f.collection_select :currency_id, @currencies, :id, :display_name, :include_blank => true %>
   </div>
 
   <div class="field">
@@ -264,13 +269,13 @@ multiple: false,
 
   <div class="filed">
     <%= f.label t('order.switch_manual_entry') %><br />
-    <%= f.check_box :auto_calculation_flag, {:onchange => 'ItemField.switch_field()', :checked_value => "1", :unchecked_value => "0"} %>
+    <%= check_box :order_auto_calculation, :flag, {:checked => @auto_calculation_flag, :onchange => 'ItemField.switch_field()', :checked_value => "1", :unchecked_value => "0"} %>
   </div>
 
-  <% if @order.auto_calculation_flag == 1  %>
-    <div id="order_manual_field">
-  <% else %>
+  <% if @auto_calculation_flag %>
     <div id="order_manual_field" style="display:none">
+  <% else %>
+    <div id="order_manual_field">
   <% end %>
     <div class="field">
       <%= f.label :currency_rate %><br />
@@ -317,6 +322,8 @@ multiple: false,
     <%= f.label :contract_id %><br />
     <%= f.text_field :contract_id %>
   </div>
+
+  <%= hidden_field_tag :return_index, @return_index  if @return_index %>
 
   <div class="actions">
     <%= f.submit %>

@@ -43,6 +43,7 @@ class Manifestation < ActiveRecord::Base
   before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
+  has_many :payments
 
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
@@ -979,7 +980,7 @@ class Manifestation < ActiveRecord::Base
     end
     return @struct_theme_array
   end
- 
+
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
     excel_filepath, excel_fileinfo = user_file.create(:manifestation_list, Setting.manifestation_list_print_excelx.filename)

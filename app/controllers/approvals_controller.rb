@@ -92,4 +92,56 @@ class ApprovalsController < ApplicationController
     end
   end
 
+  def get_approval_report
+    begin
+      @approval = Approval.find(params[:param])
+      case params[:output]
+      when 'report'
+        file = ReportExport.get_approval_report_pdf(@approval)
+        send_data file.generate, :filename => Setting.approval.report_pdf.filename, :type => 'application/pdf', :disposition => 'attachment'
+      when 'postcard'
+        file = ReportExport.get_approval_postcard_pdf(@approval)
+        send_data file.generate, :filename => Setting.approval.postcard_pdf.filename, :type => 'application/pdf', :disposition => 'attachment'
+      when 'request', 'refuse'
+        if params[:output] == 'request'
+          file_type = 'sample_request'
+          file_name = Setting.approval.request_txt.filename
+        end
+        if params[:output] == 'refuse'
+          file_type = 'refusal_letter' 
+          file_name = Setting.approval.refuse_txt.filename
+        end
+        file = ReportExport.get_approval_donation_txt(@approval, file_type)
+        send_data file, :filename => file_name
+      when 'usually', 'sample', 'collection'
+        file_type = 'donation_request_' + params[:output] 
+        logger.info(file_name)
+        file_name = Setting.approval.usually_txt.filename if params[:output] == 'usually'
+        logger.info(file_name)
+        file_name = Setting.approval.sample_txt.filename if params[:output] == 'sample'
+        logger.info(file_name)
+        file_name = Setting.approval.collection_txt.filename if params[:output] == 'collection'
+        logger.info(file_name)
+        file = ReportExport.get_approval_donation_txt(@approval, file_type)
+        send_data file, :filename => file_name
+      when /\_cover$/
+        file_type = params[:output]
+        file_name = Setting.approval.request_cover_txt.filename if params[:output] == 'request_cover'
+        file_name = Setting.approval.usually_cover_txt.filename if params[:output] == 'usually_cover'
+        file_name = Setting.approval.sample_cover_txt.filename if params[:output] == 'sample_cover'
+        file_name = Setting.approval.collection_cover_txt.filename if params[:output] == 'collection_cover'
+        file_name = Setting.approval.refuse_cover_txt.filename if params[:output] == 'refuse_cover'
+        file = ReportExport.get_approval_cover_txt(@approval, file_type)
+        send_data file, :filename => file_name
+      else
+        flash[:error] = I18n.t('page.error_file')
+        redirect_to :back
+      end
+    rescue Exception => e
+      flash[:error] = I18n.t('page.error_file')
+      logger.error e
+      redirect_to :back
+    end
+  end
+
 end

@@ -438,7 +438,7 @@ module ApplicationHelper
         end
 
       when :manifestation_types
-        ks = ManifestationType.where(["id in (?)", params[key].keys]).map(&:display_name)
+        ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
         summary_ary << [key, ks.join(', ')] if params[key].present?
 
       else
@@ -577,5 +577,36 @@ module ApplicationHelper
         t('activerecord.attributes.reserve.telephone')
       end 
     end 
+  end
+
+  def select2_script(selector_id)
+    raw ("
+      <script>
+        $(document).ready(function() {
+          $(\"##{selector_id}\").select2({
+            matcher: function(term, text, opt) {
+              return text.toUpperCase().indexOf(term.toUpperCase())==0
+                  || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
+            }
+          });
+        });
+      </script>
+    ")
+  end
+
+  def make_select2(selector_id, selector_name, data, obj_data, width, alt_display=true)
+    html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+    data.each do |data|
+      html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
+      if obj_data == data.id
+        html.concat( raw (", selected=\"selected\"") )
+      end
+      html.concat( raw (">#{ data.display_name.localize }") )
+      if alt_display
+        html.concat( raw (" (#{ data.name })") )
+      end
+      html.concat( raw ("</option>\n") )
+    end
+    html.concat( raw ("    </select>\n") )
   end
 end
