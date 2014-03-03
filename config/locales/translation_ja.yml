@@ -1976,6 +1976,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    copy: コピーして新規作成
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -3072,7 +3073,7 @@ ja:
       <br />
       ・単語の先頭文字が大文字であること<br /><br />
       ・単語の先頭文字以外に大文字がないこと<br /><br />
-      ・半角英数字であること<br /><br />
+      ・半角であること<br /><br />
       ・空白が含まれないこと<br /><br />
       ・既に登録されているキーワードは登録不可
       "

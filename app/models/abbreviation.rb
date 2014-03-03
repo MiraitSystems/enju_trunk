@@ -31,8 +31,7 @@ class Abbreviation < ActiveRecord::Base
     (check_first_big?(keyword) or
      check_first_numeric?(keyword)) and
     not check_middle_big?(keyword) and
-    not check_middle_mark?(keyword) and
-    check_hankaku_string?(keyword[string_location..keyword.length]) and
+    check_hankaku?(keyword[string_location..keyword.length]) and
     not exists_space?(keyword)
   end
 
@@ -59,9 +58,8 @@ class Abbreviation < ActiveRecord::Base
      check_first_numeric?(v)) and
     ((v.length == 1) or
      (string_location == 0) or
-      (not check_middle_big?(v) and
-       not check_middle_mark?(v) and
-      check_hankaku_string?(v[string_location..v.length]) and
+     (not check_middle_big?(v) and
+      check_hankaku?(v[string_location..v.length]) and
       not exists_space?(v)))
   end
 
@@ -81,8 +79,8 @@ class Abbreviation < ActiveRecord::Base
         else
           merge_before_v = key
         end
-      # 先頭が小文字で、先頭以外に大文字または記号がある場合
-      elsif abbreviation_res.check_hankaku_string?(key[0]) and
+      # 先頭が半角小文字で、先頭以外に大文字または記号がある場合
+      elsif abbreviation_res.check_hankaku_small_string?(key[0]) and
         (abbreviation_res.check_middle_big?(key) or 
          abbreviation_res.check_middle_mark?(key)) then
         merge_before_v = key
@@ -129,15 +127,15 @@ class Abbreviation < ActiveRecord::Base
 
   # 先頭以外に記号があるかどうか
   def check_middle_mark?(str)
-    if /.[!-.\/:-@\[-`{-~]+/ =~ str then
+    if /.[!-\/:-@\[-`{-~]+/ =~ str then
       return true
     else
       return false
     end
   end
 
-  # 半角文字列かどうか
-  def check_hankaku_string?(str)
+  # 半角小文字の文字列かどうか
+  def check_hankaku_small_string?(str)
     if /[abcdefghijklmnopqrstuvwxyz]/ =~ str then
       return true
     else
@@ -152,6 +150,27 @@ class Abbreviation < ActiveRecord::Base
     else
       return false
     end
+  end
+
+  # 半角文字かどうか
+  def check_hankaku?(str)
+    str.split("").each do |spelling|
+      # 半角小文字か
+      if check_hankaku_small_string?(spelling) then
+        next
+      # 半角数字か
+      elsif check_first_numeric?(spelling) then
+        next
+      # 半角記号か
+      elsif check_middle_mark?(" #{spelling}") then
+        next
+      # 上記に該当しない場合、半角文字でないとみなす
+      else
+        return false
+      end
+    end
+    # 全文字が else とならずに通過した場合、半角文字であるとみなす
+    return true
   end
 end
 

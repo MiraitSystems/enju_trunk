@@ -2008,6 +2008,7 @@ en:
     del_line: "-"
     user_notice: User notice
     select_use_titles: Use titles table
+    copy: Copy new create
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
