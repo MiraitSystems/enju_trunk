@@ -9,8 +9,8 @@ class Item < ActiveRecord::Base
                   :use_restriction, :manifestation_id, :manifestation,
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
-                  :non_searchable
-
+                  :non_searchable,
+                  :item_has_operators_attributes
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL')
@@ -76,6 +76,11 @@ class Item < ActiveRecord::Base
   has_many :expenses
   has_many :binding_items, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
+  has_many :item_has_operators, :dependent => :destroy
+  has_many :operators, :through => :item_has_operators, :source => :user
+
+
+ accepts_nested_attributes_for :item_has_operators
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank

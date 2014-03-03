@@ -205,6 +205,7 @@ en:
       function_class_ability: Function class ability
       title_type: Title type
       title: Title
+      item_has_operator: ItemHasOperator
 
     attributes:
       use_license:
@@ -1691,6 +1692,11 @@ en:
       title_type:
         name: Name
         display_name: Display name
+        note: Note
+      item_has_operator:
+        user_id: User
+        operated_at: Operated at
+        library_id: Library
         note: Note
 
   page:

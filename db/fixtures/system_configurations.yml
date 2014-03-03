@@ -1206,3 +1206,10 @@ system_configuration_00171:
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
+system_configuration_00172:
+  id: 172
+  keyname: manifestation.use_item_has_operator
+  v: "false"
+  typename: Boolean
+  description: "受入作業者テーブルテーブルを利用する"
+  category: 'manifestation'

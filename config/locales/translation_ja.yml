@@ -208,6 +208,7 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      item_has_operator: 受入作業者
 
     attributes:
       use_license:
@@ -1679,7 +1680,12 @@ ja:
       title_type:
         name: 名前
         display_name: 表示名
-        note: 注記        
+        note: 注記
+      item_has_operator:
+        user_id: 作業者
+        operated_at: 作業日
+        library_id: 作業館
+        note: メモ
 
   page:
     user_title: "ようこそ %{login_name} さん"

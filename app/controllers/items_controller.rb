@@ -130,6 +130,9 @@ class ItemsController < ApplicationController
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
 
+    @countoperators = 0
+    @item.item_has_operators << ItemHasOperator.new(:user_id => current_user.id, :operated_at => Date.today.to_date, :library_id => @item.library_id)
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @item }
@@ -140,6 +143,12 @@ class ItemsController < ApplicationController
   def edit
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
+
+    @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", params[:id]])
+    if @countoperators == 0
+      @item.item_has_operators << ItemHasOperator.new(:user_id => current_user.id, :operated_at => Date.today.to_date, :library_id => @item.library_id)
+    end
+
   end
 
   # POST /items
@@ -306,4 +315,5 @@ class ItemsController < ApplicationController
     end
     return true
   end
+
 end

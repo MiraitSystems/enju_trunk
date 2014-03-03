@@ -111,6 +111,9 @@
     <% end %>
   <% end %>
 <% end %>
+
+<%= render(:partial => 'show_item_has_operator', :locals => {:item => @item}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
+
 </div>
 </div>
 </div>
