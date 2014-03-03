@@ -17,7 +17,7 @@ gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git'
 gem "enju_ndl", "0.1.0.pre8"
 #gem 'enju_ndl', :git => 'git://github.com/nabeta/enju_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
-gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :require => 'enju_event'
+gem 'enju_trunk_event', :git => 'git://github.com/shinozuka/enju_trunk_event.git', :tag => 'version0.2', :require => 'enju_event'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
 gem 'enju_subject', '0.1.0.pre5'
@@ -154,7 +154,7 @@ gem 'jquery-ui-rails', "~> 4.0.4"
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
 # Use unicorn as the web server
-# gem 'unicorn'
+gem 'unicorn'
 
 # Deploy with Capistrano
 # gem 'capistrano'
@@ -167,8 +167,8 @@ gem 'jquery-ui-rails', "~> 4.0.4"
 gem 'enju_trunk_frbr', :git => 'git://github.com/MiraitSystems/enju_trunk_frbr_meri.git'
 
 group :operation do
-  gem 'enju_trunk_circulation', :git => 'git://github.com/emiko/enju_trunk_circulation.git'
+  gem 'enju_trunk_circulation', :git => 'git://github.com/emiko/enju_trunk_circulation.git', :branch => 'meri_20140213'
   gem 'enju_trunk_ill', :git => 'git://github.com/emiko/enju_trunk_ill.git'
-  gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git'
+  gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git', :tag => 'version0.0.1'
 end
 #gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'
