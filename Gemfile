@@ -13,7 +13,7 @@ gem 'enju_oai', '0.1.0.pre5'
 gem 'enju_book_jacket', '0.1.0.pre2'
 gem 'enju_manifestation_viewer', '0.1.0.pre3'
 #gem 'enju_message', "0.1.14.pre"
-gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git'
+gem 'enju_message', :git => 'git://github.com/shinozuka/enju_trunk_message.git', :tag => 'v0.1.15'
 gem "enju_ndl", "0.1.0.pre8"
 #gem 'enju_ndl', :git => 'git://github.com/nabeta/enju_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
