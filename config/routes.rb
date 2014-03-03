@@ -268,12 +268,11 @@ EnjuLeaf::Application.routes.draw do
     resources :purchase_requests
   end
 
-  match 'orders/create_subsequent_year_orders', :to => 'orders#create_subsequent_year_orders'
-  match 'orders/paid', :to => 'orders#paid'
-  match 'orders/search', :to => 'orders#search'
   resources :orders do
     resources :payments
     get :paid, :on => :member
+    get :search, :on => :collection
+    get :create_subsequent_year_orders, :on => :collection 
   end
   match 'payments/search', :to => 'payments#search'
   resources :payments

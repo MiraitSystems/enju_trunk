@@ -15,7 +15,6 @@ class PaymentsController < ApplicationController
 
   def new
     @payment = Payment.new
-    @payment.auto_calculation_flag = 1
     @payment.billing_date = Date.today
     @return_index = params[:return_index]
 
@@ -28,10 +27,13 @@ class PaymentsController < ApplicationController
 
   def create
     @payment = Payment.new(params[:payment])
+    @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
 
     respond_to do |format|
       if @payment.save
+        @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
+        @payment.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.payment'))
         format.html { redirect_to (payment_path(@payment, :return_index => @return_index)) }
       else
@@ -49,9 +51,14 @@ class PaymentsController < ApplicationController
     @payment = Payment.find(params[:id])
     @return_index = params[:return_index]
 
+    @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
+    @return_index = params[:return_index]
+
     respond_to do |format|
       if @payment.update_attributes(params[:payment])
-         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.payment'))
+        @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
+        @payment.save
+        flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.payment'))
         format.html { redirect_to(payment_path(@payment, :return_index => @return_index)) }
       else
         format.html { render :action => "edit" }
@@ -77,6 +84,15 @@ class PaymentsController < ApplicationController
           end
         }
     end
+  end
+
+  def set_select_years
+    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @select_years = []
+    @years.each do |p|
+      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+    end
+
   end
 
   def search
@@ -130,7 +146,6 @@ class PaymentsController < ApplicationController
     end
 
   end
-
 
 private
   def get_order
