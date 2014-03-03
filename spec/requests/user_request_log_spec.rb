@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "UserRequestLog" do
-  fixtures :library_groups, :patron_types, :languages, :countries, :user_groups, :roles
+  fixtures :library_groups, :agent_types, :languages, :countries, :user_groups, :roles
 
   describe "GET /" do
     let(:admin_user) { FactoryGirl.create(:admin) }

@@ -42,7 +42,7 @@ picture_file_00004:
   id: 4
   height: 36
   picture_file_name: overlay_spinner_geometry.gif
-  picture_attachable_type: Patron
+  picture_attachable_type: Agent
   picture_attachable_id: 1
   width: 36
   created_at: 2007-12-22 15:06:30.464930 +09:00

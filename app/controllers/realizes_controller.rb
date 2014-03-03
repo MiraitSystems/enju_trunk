@@ -1,6 +1,6 @@
 class RealizesController < ApplicationController
   load_and_authorize_resource
-  before_filter :get_patron, :get_expression
+  before_filter :get_agent, :get_expression
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
 
@@ -8,8 +8,8 @@ class RealizesController < ApplicationController
   # GET /realizes.json
   def index
     case
-    when @patron
-      @realizes = @patron.realizes.order('realizes.position').page(params[:page])
+    when @agent
+      @realizes = @agent.realizes.order('realizes.position').page(params[:page])
     when @expression
       @realizes = @expression.realizes.order('realizes.position').page(params[:page])
     else
@@ -33,14 +33,14 @@ class RealizesController < ApplicationController
 
   # GET /realizes/new
   def new
-    if @expression and @patron.blank?
-      redirect_to expression_patrons_url(@expression)
+    if @expression and @agent.blank?
+      redirect_to expression_agents_url(@expression)
       return
-    elsif @patron and @expression.blank?
-      redirect_to patron_expressions_url(@patron)
+    elsif @agent and @expression.blank?
+      redirect_to agent_expressions_url(@agent)
       return
     else
-      @realize = Realize.new(:expression => @expression, :patron => @patron)
+      @realize = Realize.new(:expression => @expression, :agent => @agent)
     end
   end
 
@@ -93,10 +93,10 @@ class RealizesController < ApplicationController
     respond_to do |format|
       case
       when @expression
-        format.html { redirect_to expression_patrons_url(@expression) }
+        format.html { redirect_to expression_agents_url(@expression) }
         format.json { head :no_content }
-      when @patron
-        format.html { redirect_to patron_expressions_url(@patron) }
+      when @agent
+        format.html { redirect_to agent_expressions_url(@agent) }
         format.json { head :no_content }
       else
         format.html { redirect_to realizes_url }

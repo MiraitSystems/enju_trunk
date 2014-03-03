@@ -5,11 +5,11 @@ describe "realizes/index" do
     assign(:realizes, [
       stub_model(Realize,
         :expression_id => 1,
-        :patron_id => 2
+        :agent_id => 2
       ),
       stub_model(Realize,
         :expression_id => 1,
-        :patron_id => 2
+        :agent_id => 2
       )
     ].paginate(:page => 1))
     @ability = Object.new

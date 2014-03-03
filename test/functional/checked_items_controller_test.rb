@@ -6,7 +6,7 @@ class CheckedItemsControllerTest < ActionController::TestCase
     :item_has_use_restrictions, :use_restrictions,
     :checkout_types, :user_group_has_checkout_types,
     :checkouts, :reserves, :circulation_statuses, :carrier_type_has_checkout_types,
-    :users, :roles, :patrons, :patron_types, :user_groups, :lending_policies
+    :users, :roles, :agents, :agent_types, :user_groups, :lending_policies
 
   def test_guest_should_not_get_index
     get :index, :basket_id => 1, :item_id => 1

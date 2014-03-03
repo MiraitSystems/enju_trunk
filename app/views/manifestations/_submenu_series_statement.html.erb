@@ -2,6 +2,7 @@
     <li><%= link_to t('activerecord.models.approval'), @series_statement.try(:root_manifestation).try(:approval) ? @series_statement.root_manifestation.approval : new_approval_path(:manifestation_id => @series_statement.root_manifestation) %> </li>
     <% if can? :create, Manifestation %>
       <li><%= link_to t('page.new', :model => t('activerecord.models.manifestation')), new_series_statement_manifestation_path(@series_statement) %></li>
+      <li><%= link_to t('page.copy'), new_series_statement_path(:series_statement_id => @series_statement) -%></li>
     <% end %>
     <% if can? :update, @series_statement %>
       <li><%= link_to t('page.edit'), edit_series_statement_path(@series_statement) %></li>
@@ -16,5 +17,7 @@
     <% if can? :destroy, @series_statement %>
        <li><%= link_to t('page.destroy'), @series_statement, :confirm => t('page.are_you_sure'), :method => :delete %></li>
     <% end %>
-    <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
+    <% if @series_statement.root_manifestation %>
+      <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
+    <% end %>
   </ul>

@@ -26,7 +26,7 @@ FactoryGirl.define do
     f.required_role {Role.find_by_name('User')}
     f.locale 'ja'
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
-    after(:build) {|x| x.patron = FactoryGirl.create(:patron) }
+    after(:build) {|x| x.agent = FactoryGirl.create(:agent) }
 
 
   factory :librarian, :class => 'User' do |f|
@@ -60,7 +60,7 @@ FactoryGirl.define do
     f.required_role {Role.find_by_name('Guest')}
     f.locale 'ja'
     f.sequence(:user_number){|n| "user_number_#{n}"}
-    f.patron {FactoryGirl.create(:patron)}
+    f.agent {FactoryGirl.create(:agent)}
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
   end
 
@@ -116,7 +116,7 @@ FactoryGirl.define do
     f.password_confirmation 'adultpassword'
     f.sequence(:user_number){|n| "adult_user_#{n}"}
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
-    after(:build) {|x| x.patron = FactoryGirl.create(:adult_patron) }
+    after(:build) {|x| x.agent = FactoryGirl.create(:adult_agent) }
   end
 
   factory :student_user, :class => 'User' do |f|
@@ -128,7 +128,7 @@ FactoryGirl.define do
     f.password 'studentpassword'
     f.password_confirmation 'studentpassword'
     f.sequence(:user_number){|n| "student_user_#{n}"}
-    after(:build) {|x| x.patron = FactoryGirl.create(:student_patron) }
+    after(:build) {|x| x.agent = FactoryGirl.create(:student_agent) }
   end
 
   factory :juniors_user, :class => 'User' do |f|
@@ -141,7 +141,7 @@ FactoryGirl.define do
     f.password_confirmation 'juniorspassword'
     f.sequence(:user_number){|n| "juniors_user_#{n}"}
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
-    after(:build) {|x| x.patron = FactoryGirl.create(:juniors_patron) }
+    after(:build) {|x| x.agent = FactoryGirl.create(:juniors_agent) }
   end
 
   factory :elements_user, :class => 'User' do |f|
@@ -152,7 +152,7 @@ FactoryGirl.define do
     f.role {Role.find_by_name('User')}
     f.password 'elementspassword'
     f.password_confirmation 'elementspassword'
-    f.patron {FactoryGirl.create(:elements_patron)}
+    f.agent {FactoryGirl.create(:elements_agent)}
     f.sequence(:user_number){|n| "elements_user_#{n}"}
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
   end
@@ -165,7 +165,7 @@ FactoryGirl.define do
     f.role {Role.find_by_name('User')}
     f.password 'childrenpassword'
     f.password_confirmation 'childrenpassword'
-    f.patron {FactoryGirl.create(:children_patron)}
+    f.agent {FactoryGirl.create(:children_agent)}
     f.sequence(:user_number){|n| "children_user_#{n}"}
     f.user_status {UserStatus.first || FactoryGirl.create(:user_status)}
   end

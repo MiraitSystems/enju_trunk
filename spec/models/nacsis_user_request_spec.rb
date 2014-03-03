@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe NacsisUserRequest do
-  fixtures :countries, :languages, :patron_types, :roles, :user_groups, :library_groups, :libraries, :patrons
+  fixtures :countries, :languages, :agent_types, :roles, :user_groups, :library_groups, :libraries, :agents
 
   describe '.createは' do
     it '新しいレコードを作成して返すこと' do

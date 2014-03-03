@@ -156,16 +156,16 @@ class BasketsControllerTest < ActionController::TestCase
     assert_redirected_to user_checkouts_url(assigns(:basket).user)
   end
 
-  #def test_system_should_show_notice_when_patron_reserved_checkout_items
+  #def test_system_should_show_notice_when_agent_reserved_checkout_items
   #  sign_in users(:librarian1)
   #  put :update, :id => 8, :user_id => users(:user1).username
-  #  assert_equal 'This item is reserved by this patron. Reservation completed.', flash[:reserved]
+  #  assert_equal 'This item is reserved by this agent. Reservation completed.', flash[:reserved]
   #  assert_nil flash[:notice]
     
   #  assert_redirected_to user_basket_checked_items_url(assigns(:user).username, assigns(:basket))
   #end
 
-  #def test_system_should_show_notice_when_other_patron_reserved
+  #def test_system_should_show_notice_when_other_agent_reserved
   #  sign_in users(:librarian1)
   #  assert_no_difference('Basket.count') do
   #   put :update, :id => 2, :user_id => users(:librarian1).username

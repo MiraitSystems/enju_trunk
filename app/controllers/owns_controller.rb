@@ -1,14 +1,14 @@
 class OwnsController < ApplicationController
   load_and_authorize_resource
-  before_filter :get_patron, :get_item
+  before_filter :get_agent, :get_item
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
 
   # GET /owns
   # GET /owns.json
   def index
-    if @patron
-      @owns = @patron.owns.order('owns.position').page(params[:page])
+    if @agent
+      @owns = @agent.owns.order('owns.position').page(params[:page])
     elsif @item
       @owns = @item.owns.order('owns.position').page(params[:page])
     else
@@ -32,16 +32,16 @@ class OwnsController < ApplicationController
 
   # GET /owns/new
   def new
-    if @item and @patron.blank?
-      redirect_to item_patrons_url(@item)
+    if @item and @agent.blank?
+      redirect_to item_agents_url(@item)
       return
-    elsif @patron and @item.blank?
-      redirect_to patron_items_url(@patron)
+    elsif @agent and @item.blank?
+      redirect_to agent_items_url(@agent)
       return
     else
       @own = Own.new
       @own.item = @item
-      @own.patron = @patron
+      @own.agent = @agent
     end
   end
 
@@ -92,8 +92,8 @@ class OwnsController < ApplicationController
 
     respond_to do |format|
       case
-      when @patron
-        format.html { redirect_to patron_owns_url(@patron) }
+      when @agent
+        format.html { redirect_to agent_owns_url(@agent) }
         format.json { head :no_content }
       when @item
         format.html { redirect_to item_owns_url(@item) }

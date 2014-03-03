@@ -253,7 +253,7 @@ describe Manifestation, :solr => true do
     it '' # TODO: immediately　EnjuTrunkCirculation使用時のみ利用可能とすべきでは？
   end
 
-  describe '#patrons' do
+  describe '#agents' do
     it '' # TODO
   end
 
@@ -434,7 +434,7 @@ describe Manifestation, :solr => true do
     results.size.should eq 1
   end
 
-  it "should search patron in openurl" do
+  it "should search agent in openurl" do
     openurl = Openurl.new({:aulast => "Administrator"})
     results = openurl.search
     openurl.query_text.should eq "au_text:Administrator"
@@ -907,20 +907,20 @@ describe Manifestation, :solr => true do
 
       def search_key_record_inspect(obj)
         case obj
-        when Patron; "patron '#{obj.full_name}'"
+        when Agent; "agent '#{obj.full_name}'"
         else; obj
         end
       end
 
-      def it_should_search_items_by_patron(reader)
+      def it_should_search_items_by_agent(reader)
         setter = :"#{reader}="
 
-        patrons = [
-          @patron1 = FactoryGirl.create(:patron, :full_name => 'あいうえお'),
-          @patron2 = FactoryGirl.create(:patron, :full_name => 'かきくけこ'),
-          @patron3 = FactoryGirl.create(:patron, :full_name => 'さしすせそ'),
-          @patron4 = FactoryGirl.create(:patron, :full_name => 'たちつてと'),
-          @patron5 = FactoryGirl.create(:patron, :full_name => 'なにぬねの'),
+        agents = [
+          @agent1 = FactoryGirl.create(:agent, :full_name => 'あいうえお'),
+          @agent2 = FactoryGirl.create(:agent, :full_name => 'かきくけこ'),
+          @agent3 = FactoryGirl.create(:agent, :full_name => 'さしすせそ'),
+          @agent4 = FactoryGirl.create(:agent, :full_name => 'たちつてと'),
+          @agent5 = FactoryGirl.create(:agent, :full_name => 'なにぬねの'),
         ]
 
         emulate_static = proc do |m|
@@ -951,24 +951,24 @@ describe Manifestation, :solr => true do
           end
         end
 
-        @manifestation1.__send__(setter, [@patron1])
+        @manifestation1.__send__(setter, [@agent1])
         @manifestation1.tap(&emulate_static)
-        @manifestation2.__send__(setter, [@patron2, @patron3])
+        @manifestation2.__send__(setter, [@agent2, @agent3])
         @manifestation2.tap(&emulate_static)
-        @manifestation3.__send__(setter, [@patron4])
+        @manifestation3.__send__(setter, [@agent4])
         @manifestation3.tap(&emulate_static)
 
-        it_should_search_items_by_attr(reader, :fulltext, patrons, false) do |obj|
+        it_should_search_items_by_attr(reader, :fulltext, agents, false) do |obj|
           obj.full_name
         end
       end
 
       it '著者をインデックスに登録すること' do
-        it_should_search_items_by_patron(:creators)
+        it_should_search_items_by_agent(:creators)
       end
 
       it '出版社をインデックスに登録すること' do
-        it_should_search_items_by_patron(:publishers)
+        it_should_search_items_by_agent(:publishers)
       end
 
       it 'ISBNをインデックスに登録すること' do
@@ -1122,7 +1122,7 @@ describe Manifestation, :solr => true do
               item.removed_at = s[:removed_at]
               item.save!
             end
-            manifestation.reload if ENV['ENABLE_ITEM_ATTR_CACHE'] # NOTE: it_should_search_items_by_patronのNOTEを参照
+            manifestation.reload if ENV['ENABLE_ITEM_ATTR_CACHE'] # NOTE: it_should_search_items_by_agentのNOTEを参照
             manifestation.index # itemsが変化しているのをsolrに伝える
           end
           after_setup_items_hook.call if defined?(after_setup_items_hook)

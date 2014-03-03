@@ -20,18 +20,18 @@ class SystemConfigurationsController < ApplicationController
       begin
         system_configuration = SystemConfiguration.find(id.to_i)
 
-        # for exclude_patrons
-        old_exclude_patrons, new_exclude_patrons = nil, nil
-        if system_configuration.keyname == 'exclude_patrons'
-          old_exclude_patrons = system_configuration.v.split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-          new_exclude_patrons = value.split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+        # for exclude_agents
+        old_exclude_agents, new_exclude_agents = nil, nil
+        if system_configuration.keyname == 'exclude_agents'
+          old_exclude_agents = system_configuration.v.split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+          new_exclude_agents = value.split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
         end
 
         system_configuration.v = value
         system_configuration.save!
 
-        # for exclude_patrons
-        set_exclude_patrons(old_exclude_patrons, new_exclude_patrons) if system_configuration.keyname == 'exclude_patrons'
+        # for exclude_agents
+        set_exclude_agents(old_exclude_agents, new_exclude_agents) if system_configuration.keyname == 'exclude_agents'
       rescue Exception => e
         @errors << error.new(id, e, value)
         logger.error "system_configurations update error: #{e}"
@@ -53,27 +53,27 @@ class SystemConfigurationsController < ApplicationController
   end
 
   private
-  def set_exclude_patrons(old_exclude_patrons, new_exclude_patrons)
-    old_exclude_patrons.each do |p|
-      next if new_exclude_patrons.include?(p)
-      patron = Patron.where(:full_name => p).first
-      if patron
-        if patron.manifestations.size == 0 && patron.works.size == 0 && patron.expressions.size == 0
-          patron.destroy
+  def set_exclude_agents(old_exclude_agents, new_exclude_agents)
+    old_exclude_agents.each do |p|
+      next if new_exclude_agents.include?(p)
+      agent = Agent.where(:full_name => p).first
+      if agent
+        if agent.manifestations.size == 0 && agent.works.size == 0 && agent.expressions.size == 0
+          agent.destroy
         else
-          patron.exclude_state = 0
-          patron.save!
+          agent.exclude_state = 0
+          agent.save!
         end
       end
     end
-    new_exclude_patrons.each do |p|
-      patron = Patron.where(:full_name => p).first
-      unless patron
-        patron = Patron.new
-        patron.full_name = p
+    new_exclude_agents.each do |p|
+      agent = Agent.where(:full_name => p).first
+      unless agent
+        agent = Agent.new
+        agent.full_name = p
       end
-      patron.exclude_state = 1
-      patron.save!
+      agent.exclude_state = 1
+      agent.save!
     end
   end
 end

@@ -154,7 +154,7 @@ describe Item do
     it '' # TODO
   end
 
-  describe '.patrons_list' do
+  describe '.agents_list' do
     it '' # TODO
   end
 

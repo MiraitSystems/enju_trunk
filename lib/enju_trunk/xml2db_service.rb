@@ -2,30 +2,30 @@
 require "rexml/document"
 
 =begin
-class Patron < ActiveRecord::Base
-  def self.import_patrons(patron_lists)
-    patrons = []
-    patron_lists.each do |patron_list|
-      name_and_role = patron_list[:full_name].split('||')
-      if patron_list[:patron_identifier].present?
-        patron = Patron.where(:patron_identifier => patron_list[:patron_identifier]).first
+class Agent < ActiveRecord::Base
+  def self.import_agents(agent_lists)
+    agents = []
+    agent_lists.each do |agent_list|
+      name_and_role = agent_list[:full_name].split('||')
+      if agent_list[:agent_identifier].present?
+        agent = Agent.where(:agent_identifier => agent_list[:agent_identifier]).first
       else
-        patron = Patron.where(:full_name => name_and_role[0]).first
+        agent = Agent.where(:full_name => name_and_role[0]).first
       end
       role_type = name_and_role[1].to_s.strip
-      unless patron
-        patron = Patron.new(
+      unless agent
+        agent = Agent.new(
           :full_name => name_and_role[0],
-          :full_name_transcription => patron_list[:full_name_transcription],
-          :patron_identifier => patron_list[:patron_identifier],
+          :full_name_transcription => agent_list[:full_name_transcription],
+          :agent_identifier => agent_list[:agent_identifier],
           :language_id => 1
         )
-        #patron.required_role = Role.where(:name => 'Guest').first
-        patron.save
+        #agent.required_role = Role.where(:name => 'Guest').first
+        agent.save
       end
-      patrons << patron
+      agents << agent
     end
-    patrons
+    agents
   end
 end
 =end
@@ -115,7 +115,7 @@ class Xml2DbService
     m.carrier_type_id = 1
     m.required_role = Role.find('Guest')
 
-    publisher_patrons = Patron.import_patrons(publishers)
+    publisher_agents = Agent.import_agents(publishers)
 
     unless m.save
       puts "error"
@@ -124,7 +124,7 @@ class Xml2DbService
       return
     end
     
-    #m.publishers << publisher_patrons
+    #m.publishers << publisher_agents
     create_series_statement(h, m)
     create_item(h, m)
   end
@@ -142,7 +142,7 @@ class Xml2DbService
   end
 
   def clearManifestations
-    Patron.destroy_all(["user_id is null and exclude_state = 0"])
+    Agent.destroy_all(["user_id is null and exclude_state = 0"])
     Item.destroy_all
     Manifestation.destroy_all
   end

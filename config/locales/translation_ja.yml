@@ -7,11 +7,11 @@ ja:
       user_request_log: 利用者操作履歴
       library: 図書館
       question: 質問（レファレンス）
-      patron_import_file: 人物・団体のインポート用ファイル
+      agent_import_file: 人物・団体のインポート用ファイル
       circulation_status: 貸出状態
       remove_reason: 除籍理由
       inventory: 蔵書点検
-      patron: 人物・団体
+      agent: 人物・団体
       user_note: 利用者の注記
       feeds/app: フィード/アプリ
       feeds/persistence: フィード/永続
@@ -24,7 +24,7 @@ ja:
       subject_has_classification: 件名と分類の関係
       expression: 協力した資料
       language: 言語
-      patron_merge_list: 人物・団体の統合リスト
+      agent_merge_list: 人物・団体の統合リスト
       user: 利用者
       work_has_subject: 資料と件名の関係
       picture_file: 画像ファイル
@@ -66,7 +66,7 @@ ja:
       content_type: 協力した資料の形態
       work_merge: 書いた資料の統合
       aaws_response: Aawsの応答
-      patron_type: 人物・団体の種類
+      agent_type: 人物・団体の種類
       work_merge_list: 書いた資料の統合リスト
       order: 発注
       order_list: 発注リスト
@@ -90,7 +90,7 @@ ja:
       checkout: 貸出
       checkout_family: 家族の貸出
       subscription: 購読
-      patron_merge: 人物・団体の統合
+      agent_merge: 人物・団体の統合
       subject_related_term: 件名の関連語
       library_group: 図書館全体の設定
       attachment_file: 添付ファイル
@@ -133,12 +133,12 @@ ja:
       unablelist: 連絡不能者
       subject_heading_type_has_subject: 件名標目と件名の関係
       user_has_shelf: 利用者と書棚の関係
-      patron_has_patron: 人物・団体間の関係
+      agent_has_agent: 人物・団体間の関係
       shelf_has_manifestation: 書棚と資料の関係
       extent: 大きさ
       medium_of_performance: 演奏手段
       content_type: 内容の種類
-      patron_relationship_type: 人物・団体の関係の種類
+      agent_relationship_type: 人物・団体の関係の種類
       manifestation_relationship_type: 資料の関係の種類
       lending_policy: 貸出規則
       nii_type: NIIメタデータタイプ
@@ -154,11 +154,11 @@ ja:
       import_request: ISBNインポートのリクエスト
       resource: 資料
       user_has_role: 利用者と権限
-      patron_relationship: 著者・編者・出版者の関係
+      agent_relationship: 著者・編者・出版者の関係
       manifestation_relationship: 資料の関係
       resource_import_result: 資料インポートの結果
       resource_import_textresult: 資料インポートの結果
-      patron_import_result: 人物・団体インポートの結果
+      agent_import_result: 人物・団体インポートの結果
       series_statement_merge: シリーズ情報の統合
       series_statement_merge_list: シリーズ情報統合リスト
       series_has_manifestation: シリーズ情報と資料の関係
@@ -350,14 +350,14 @@ ja:
         shared: 質問を公開する
         solved: 解決済み
         answers_count: 回答件数
-      patron_import_file:
-        patron_import_file_name: ファイル名
-        patron_import_content_type: Content-Type
-        patron_import_file_size: ファイルサイズ
+      agent_import_file:
+        agent_import_file_name: ファイル名
+        agent_import_content_type: Content-Type
+        agent_import_file_size: ファイルサイズ
         file_hash: ファイルのハッシュ
         note: 注記
         imported_at: インポート時刻
-        patron_import_updated_at: 更新時刻
+        agent_import_updated_at: 更新時刻
         state: 状態
         edit_mode: 編集モード
         import_request: すぐにインポート
@@ -374,7 +374,7 @@ ja:
         position: 位置
       inventory:
         note: 注記
-      patron:
+      agent:
         last_name: 姓
         middle_name: ミドルネーム
         first_name: 名
@@ -387,8 +387,8 @@ ja:
         full_name_transcription: フルネーム（ヨミ）
         full_name_alternative: フルネーム代替
         full_name_note: 未入力の場合、保存時に自動的に 姓＋" "＋名 が設定されます。
-        patron_alias: 別名(を見よ参照)
-        patron_aliases_attributes: フルネーム, フルネーム（ヨミ）, フルネーム代替
+        agent_alias: 別名(を見よ参照)
+        agent_aliases_attributes: フルネーム, フルネーム（ヨミ）, フルネーム代替
         deleted_at: 削除時刻
         zip_code_1: 郵便番号1
         zip_code_2: 郵便番号2
@@ -427,7 +427,7 @@ ja:
         lock_version: ロックバージョン
         note: 注記
         country: 国籍
-        patron_type: 人物・団体の種類
+        agent_type: 人物・団体の種類
         language: 言語
         email: メールアドレス1
         email_2: メールアドレス2
@@ -436,7 +436,7 @@ ja:
         note_update_by: 注記更新者
         note_update_library: 注記更新図書館        
         old: 歳
-        patron_identifier: 人物団体の識別番号
+        agent_identifier: 人物団体の識別番号
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
@@ -502,7 +502,7 @@ ja:
         iso_639_3: ISO 639-3
         note: 注記
         position: 位置
-      patron_merge_list:
+      agent_merge_list:
         title: タイトル
       user:
         login: ユーザ名
@@ -535,7 +535,7 @@ ja:
         present_user_number: 古い利用者番号
         new_user_number: 新しい利用者番号
         state: 状態
-        patron: 人物・団体
+        agent: 人物・団体
         library: 所属館
         reserved_library: 予約館
         user_group: ユーザグループ
@@ -649,7 +649,7 @@ ja:
       porta_response:
         body: 本文
       donate:
-        patron: 人物・団体
+        agent: 人物・団体
         item: 所蔵情報
       basket:
         user: 利用者
@@ -771,7 +771,7 @@ ja:
         reason: 理由
       realize:
         position: 位置
-        patron: 人物・団体
+        agent: 人物・団体
         expression: 協力した資料
       reify:
         position: 位置
@@ -805,7 +805,7 @@ ja:
       work_merge:
       aaws_response:
         body: 本文
-      patron_type:
+      agent_type:
         name: 名前
         display_name: 表示名
         note: 注記
@@ -828,29 +828,29 @@ ja:
         number_of_acceptance_schedule: 受入予定冊数 
         meeting_holding_month_1: 開催月1
         meeting_holding_month_2: 開催月2
-        adption_code: 採択コード
-        deliver_place_code_1: 回付先コード1
-        deliver_place_code_2: 回付先コード2
-        deliver_place_code_3: 回付先コード3
-        deliver_place_code_4: 回付先コード4
-        deliver_place_code_5: 回付先コード5
-        application_form_code_1: 申込書指定コード1
-        application_form_code_2: 申込書指定コード2
+        adption_code: 採択
+        deliver_place_code_1: 回付先1
+        deliver_place_code_2: 回付先2
+        deliver_place_code_3: 回付先3
+        deliver_place_code_4: 回付先4
+        deliver_place_code_5: 回付先5
+        application_form_code_1: 申込書指定1
+        application_form_code_2: 申込書指定2
         number_of_acceptance: 受入冊数
         number_of_missing: 欠号数
-        collection_status_code: 収集ステータスコード
-        reason_for_collection_stop_code: 収集中止理由コード
+        collection_status_code: 収集ステータス
+        reason_for_collection_stop_code: 収集中止理由
         collection_stop_day: 収集中止年月日
-        order_form_code: 発注形式コード
-        collection_form_code: 収集形式コード
-        payment_form_code: 支払形式コード
-        budget_subject_code: 予算科目コード
-        transportation_route_code: 輸送経路コード
-        bookstore_code: 書店コード
-        currency_unit_code: 通貨単位コード
+        order_form_code: 発注形式
+        collection_form_code: 収集形式
+        payment_form_code: 支払形式
+        budget_subject_code: 予算科目
+        transportation_route_code: 輸送経路
+        bookstore_code: 書店
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
-        reason_for_settlements_of_account_code: 精算理由コード
+        reason_for_settlements_of_account_code: 精算理由
         prepayment_principal: 換算前発注金額
         yen_imprest: 発注金額
         unit_price: 単価
@@ -1054,8 +1054,8 @@ ja:
         note: 注記
         deleted_at: 削除時刻
         subscribes_count: 購読数
-      patron_merge:
-        patrons_count: 登録件数
+      agent_merge:
+        agents_count: 登録件数
       subject_related_term:
       library_group:
         name: 名前
@@ -1296,9 +1296,9 @@ ja:
       item_has_item:
         from_item: 始点
         to_item: 終点
-      patron_has_patron:
-        from_patron: 始点
-        to_patron: 終点
+      agent_has_agent:
+        from_agent: 始点
+        to_agent: 終点
       shelf_has_manifestation:
         shelf: 書棚
         manifestation: 資料
@@ -1323,12 +1323,12 @@ ja:
         display_name: 表示名
         note: 注記
         position: 位置
-      patron_type:
+      agent_type:
         name: 名前
         display_name: 表示名
         note: 注記
         position: 位置
-      patron_relationship_type:
+      agent_relationship_type:
         name: 名前
         display_name: 表示名
         note: 注記
@@ -1411,10 +1411,10 @@ ja:
         publish: 公開承認
         state: 状態
         deleted_at: 削除時刻
-      patron_relationship:
+      agent_relationship:
         parent: 派生元の人物・団体
         child: 派生先の人物・団体
-        patron_relationship_type_id: 人物・団体の関係の種類
+        agent_relationship_type_id: 人物・団体の関係の種類
       manifestation_relationship:
         parent: 派生元の資料
         child: 派生先の資料
@@ -1433,7 +1433,7 @@ ja:
         body: 処理内容
         error_msg: メッセージ
         imported_row: 処理済み件数
-      patron_import_result:
+      agent_import_result:
         body: 本文
         error_msg: メッセージ
         index: 項番
@@ -1619,7 +1619,7 @@ ja:
         refuse_at: 断り状送付日 
         donate_request_result: 寄付依頼結果 
         all_process_end_at: 全工程完了日 
-        reception_patron_id: 担当窓口コード 
+        reception_agent_id: 担当窓口コード 
         approval_extexts: 見計らいメモ
         approval_status:
           pending: 見計らい開始前
@@ -1631,6 +1631,13 @@ ja:
           donate_requested: 寄付依頼送付済
           replied_donate_request: 寄付依頼返信済
           all_process_end: 全工程完了
+        donation_postcard: 寄贈はがき
+        approval_report: 見計らい伝票
+        sample_request: サンプル誌依頼
+        donation_request_usually: 寄贈依頼状（通常）
+        donation_request_sample: 寄贈依頼状（サンプル）
+        donation_request_collection: 寄贈依頼状（収集）
+        refusal_latter: 断り状
       approval_extext:
         value: メモ
         created_by: 記入者
@@ -1645,7 +1652,7 @@ ja:
         order_id: 発注番号
         billing_date: 請求年月日
         manifestation_id: 資料番号
-        currency_unit_code: 通貨単位コード
+        currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
         before_conv_amount_of_payment: 換算前支払金額
@@ -1796,7 +1803,7 @@ ja:
     remove_facet: "解除"
     no_subject: "件名はついていません。"
     no_tag: "タグはついていません。"
-    add_patron: "人物・団体を追加"
+    add_agent: "人物・団体を追加"
     total: "合計"
     sort_by: "次の項目で並べ替える"
     bookmarklet: "ブックマークレット"
@@ -1834,6 +1841,7 @@ ja:
     editing: "%{model}の編集"
     showing: "%{model}の表示"
     output: "%{model}の出力"
+    output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
     output_csv: "%{model}の出力(CSV)"
     output_tsv: "%{model}の出力(TSV)"
@@ -1859,7 +1867,7 @@ ja:
     batch_change_series_statement: "シリーズ情報を設定" 
     batch_change_series_statement_updated: "シリーズ情報を %{title} に設定しました。"
     batch_change_series_statement_failed: "シリーズ情報の設定に失敗しました。"
-    patron_management: "人物・団体の管理"
+    agent_management: "人物・団体の管理"
     user_management: "利用者の管理"
     back_to: "%{model}の一覧に戻る"
     picture: "画像"
@@ -1891,6 +1899,7 @@ ja:
     asc: "昇順"
     desc: "降順"
     error_occured: "エラーが発生しました。"
+    error_file: "ファイル出力できませんでした。"
     did_you_mean: "もしかして"
     calendar: "カレンダー"
     related: "関連"
@@ -1961,6 +1970,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    copy: コピーして新規作成
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2109,11 +2119,11 @@ ja:
     advanced: "詳細検索"
     solr_search: "solr検索式による詳細検索"
   worki:
-    patron_work: "%{patron_name} の書いた資料"
+    agent_work: "%{agent_name} の書いた資料"
     library_group_work: "%{library_group_name} にある書いた資料"
     add: "書いた資料を追加"
   expression:
-    patron_expression: "%{patron_name} の協力した資料"
+    agent_expression: "%{agent_name} の協力した資料"
     manifestations_expression: "%{manifestation_title} に含まれる協力した資料"
     library_group_expression: "%{library_group_name} にある協力した資料"
     add: "協力した資料を追加"
@@ -2129,7 +2139,7 @@ ja:
     edit_publisher: "出版者を編集"
     edit_expression: "協力した資料を編集"
     edit_item: "所蔵を編集"
-    patron_manifestation: "%{patron_name} の資料"
+    agent_manifestation: "%{agent_name} の資料"
     expressions_manifestation: "%{expression_title} の出版した資料"
     library_group_manifestation: "%{library_group_name} にある資料"
     reserve_this: "この資料を予約"
@@ -2216,11 +2226,11 @@ ja:
     not_found: "資料が見つかりません"
     search_bookstore: "寄贈・購入先検索フォーム"
     search_bookstore_description: "絞り込みを行いたい寄贈・購入先を入力してください"
-  patron:
-    library_group_patron: "%{library_group_name} の人物・団体"
-    work_patron: "%{work_title} の著作者"
-    expression_patron: "%{expression_title} の編者"
-    manifestation_patron: "%{manifestation_title} の出版者"
+  agent:
+    library_group_agent: "%{library_group_name} の人物・団体"
+    work_agent: "%{work_title} の著作者"
+    expression_agent: "%{expression_title} の編者"
+    manifestation_agent: "%{manifestation_title} の出版者"
     activate_as_user: "利用者として登録"
     create_family_user: "家族を新規作成"
     deactivate: "利用者登録を解除"
@@ -2237,12 +2247,12 @@ ja:
     last_update_at: 最終更新日時
     last_update_by: 更新者 
     duplicate_user: "同じフルネーム(ヨミ)、電話番号１ー１、生年月日の人が既に登録されています。"
-    patron_identifier: 機関を識別するための番号
+    agent_identifier: 機関を識別するための番号
     place: 所在地
     contact:
       full_name: 発行担当機関名称
       full_name_transcription: 発行担当機関名称(ヨミ)
-      patron_identifier: 担当窓口コード
+      agent_identifier: 担当窓口コード
     search_placeholder: "検索名を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
@@ -2335,7 +2345,7 @@ ja:
     edit_profile: "プロフィールの編集"
     edit_account: "アカウント情報の編集"
     already_activated: "すでに利用者として登録されています。"
-    specify_patron: "人物・団体を指定してください。"
+    specify_agent: "人物・団体を指定してください。"
     wrong_password: "パスワードが間違っています。"
     password_mismatch: "パスワードが一致しません。"
     cannot_destroy_myself: "自分自身を削除することはできません。"
@@ -2343,7 +2353,7 @@ ja:
     last_librarian: "この利用者はシステム上の最後の図書館員です。"
     only_administrator_can_destroy: "この利用者は管理者でなければ削除できません。"
     this_user_has_checked_out_item: "この利用者は貸出中の資料があります。"
-    patron_profile: "人物・団体のプロフィール"
+    agent_profile: "人物・団体のプロフィール"
     set_auto_generated_password: "自動生成したパスワードを設定する"
     history: "履歴"
     account_management: "アカウント管理"
@@ -2376,7 +2386,7 @@ ja:
     all_reservation: "全ての予約"
     this_manifestation_is_already_reserved: "この資料はすでに予約されています。"
     excessed_reservation_limit: "予約できる資料数の上限を超えています。"
-    this_patron_cannot_reserve: "この利用者はこの資料を予約できません。"
+    this_agent_cannot_reserve: "この利用者はこの資料を予約できません。"
     reservation_was_canceled: "予約は取り消されました。"
     reservation_was_destroyed: "予約を削除しました。"
     this_item_is_not_reserved: "この資料は予約されていません。"
@@ -2562,7 +2572,7 @@ ja:
     please_search_users: "追加する利用者を検索してください。"
     no_select_users: "家族情報が空です。"
     will_change_family : "※家族情報を変更したいときは、一度家族登録を解除してから再登録を行ってください。"
-    will_change_patron_type : "※人物・団体の種類を団体に変更した場合、自動的に所属していた家族から登録削除されます。"
+    will_change_agent_type : "※人物・団体の種類を団体に変更した場合、自動的に所属していた家族から登録削除されます。"
     user_will_change_family : "※家族情報を変更したいときは、図書館員までお申し付けください。"
   bookstore:
     not_found: "一致する寄贈・購入先が存在しませんでした。"
@@ -2733,7 +2743,7 @@ ja:
       wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
     successfully_uploaded: "正常に送信されました。"
     upload_failed: "送信に失敗しました。"
-  patron_import_file:
+  agent_import_file:
     template_download: "テンプレートをダウンロード"
     import_request: "すぐにインポート"
     start_importing: "インポートを開始しました。"
@@ -3057,7 +3067,7 @@ ja:
       <br />
       ・単語の先頭文字が大文字であること<br /><br />
       ・単語の先頭文字以外に大文字がないこと<br /><br />
-      ・半角英数字であること<br /><br />
+      ・半角であること<br /><br />
       ・空白が含まれないこと<br /><br />
       ・既に登録されているキーワードは登録不可
       "
@@ -3071,7 +3081,7 @@ ja:
     invalid_started_at: "が不正な値です。例: 2011-04-12"
   barcode_registration:
     more_than_last_number: "が終了番号より大きいです。"
-  patron_merge_list:
+  agent_merge_list:
     description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
                  ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
   manifestations:
@@ -3099,16 +3109,29 @@ ja:
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
+    system_menu_title: 発注検索
     cannot_delete: "この発注は削除できません"
-    no_matches_found_patron: "発注機関が見つかりません"
-    no_matches_found_manifestation: "資料番号に該当する資料が見つかりません。"
-    switch_manual_entry: "通貨レート、発注金額を手入力する"
+    no_matches_found_agent: "発注機関が見つかりません"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    subsequent_year_orders: 次年度発注
+    create_subsequent_year_orders: 次年度発注生成
+    create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
+    create_payment_to_advance_payment: "<br />発注に対応する支払を作成しました。"
+    copy: コピーして新規作成
   payment:
-    switch_manual_entry: "通貨レート、支払金額を手入力する"
+    system_menu_title: 支払検索
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     paid: 精算
     want_to_paid: "精算しますか?"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
+
