@@ -7,6 +7,29 @@
 <% end %>
 <br />
 
+<!-- TODO -->
+
+
+<%= form_for :exchange_rates, :url => exchange_rates_path, :html => {:method => 'get'} do %>
+  <p>
+    <%= t('page.search_term') %>:
+    <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} %>
+    <%= submit_tag t('page.search') %>
+  </p>
+<% end %>
+
+<!--
+<div id="content_list">
+  <%#= form_for :exchange_rates, :url => exchange_rates_path, :html => {:method => 'get'} do -%>
+    <p>
+      <%#= t('page.search_term') -%>: <%#= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
+      <%#= submit_tag t('page.search') -%>
+    </p>
+  <%#- end -%>
+
+  <%#= render 'list' -%>
+</div>
+-->
 <table class="index">
   <tr>
     <th><%= t('activerecord.attributes.exchange_rate.currency') -%></th>

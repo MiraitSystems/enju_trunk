@@ -1,9 +1,35 @@
+# -*- encoding: utf-8 -*-
 class ExchangeRatesController < ApplicationController
   before_filter :check_client_ip_address
   load_and_authorize_resource
 
   def index
+=begin
+    @count = {}
+    case params[:sort_by]
+    when 'updated_at'
+      sort_by = 'updated_at'
+    when 'created_at'
+      sort_by = 'created_at'
+    when 'answers_count'
+      sort_by = 'answers_count'
+    else
+      sort_by = 'updated_at'
+    end
 
+    search = Sunspot.new_search(ExchangeRate)
+    query = params[:query].to_s.strip
+    unless query.blank?
+      @query = query.dup
+      query = query.gsub('　', ' ')
+      search.build do
+        fulltext query
+      end
+    end
+    search.build do
+      order_by sort_by, :desc
+    end
+=end
     if params[:currency] != nil && params[:currency][:display_name] != ''
       @exchange_rates = ExchangeRate.where(["currency_id = ?",params[:currency][:display_name]]).order("started_at desc").page(params[:page])
       @currencies_selected = params[:currency][:display_name]
