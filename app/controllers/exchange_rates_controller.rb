@@ -2,43 +2,27 @@
 class ExchangeRatesController < ApplicationController
   before_filter :check_client_ip_address
   load_and_authorize_resource
+  after_filter :solr_commit, :only => [:create, :update, :destroy]
 
   def index
-=begin
+    # TODO
+
     @count = {}
-    case params[:sort_by]
-    when 'updated_at'
-      sort_by = 'updated_at'
-    when 'created_at'
-      sort_by = 'created_at'
-    when 'answers_count'
-      sort_by = 'answers_count'
-    else
-      sort_by = 'updated_at'
-    end
-
-    search = Sunspot.new_search(ExchangeRate)
+    page = params[:page] || 1
+    per_page = params[:format] == 'tsv' ? 65534 : ExchangeRate.default_per_page
     query = params[:query].to_s.strip
-    unless query.blank?
-      @query = query.dup
-      query = query.gsub('　', ' ')
-      search.build do
-        fulltext query
-      end
-    end
-    search.build do
-      order_by sort_by, :desc
-    end
-=end
-    if params[:currency] != nil && params[:currency][:display_name] != ''
-      @exchange_rates = ExchangeRate.where(["currency_id = ?",params[:currency][:display_name]]).order("started_at desc").page(params[:page])
-      @currencies_selected = params[:currency][:display_name]
-    else
-      @exchange_rates = ExchangeRate.order("started_at desc").page(params[:page])
-    end	
 
-    @currencies = Currency.find(:all, :order => "display_name")
+    order_list = @order_list
+    search = ExchangeRate.search.build do
+      fulltext query if query
+      order_by(:started_at, :desc)
+      # facet :state
+      paginate :page => page.to_i, :per_page => per_page
+    end.execute
+    @exchange_rates = search.results
 
+    # TODO
+    @currencies = Currency.find(:all, :order => "display_name DESC")
   end
 
   def new

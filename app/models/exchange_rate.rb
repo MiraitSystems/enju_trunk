@@ -9,4 +9,11 @@ class ExchangeRate < ActiveRecord::Base
 
   validates_numericality_of :rate, :less_than => 100000000
 
+  searchable do
+    text :currency_display_name do
+      currency.try(:display_name)
+    end 
+    time :started_at
+  end
+
 end
