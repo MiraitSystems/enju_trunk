@@ -186,7 +186,7 @@ $(function(){
             <%- end -%>
             <%- if @manifestation.bookbinder -%>
               <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :manifestation_id => @manifestation.id}, :confirm => t('page.are_you_sure')) -%></li>
-              <% if Object.const_defined?('ReportExport') && ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
+              <% if Object.const_defined?('ReportExport') && ReportExport.try(:respond_to?, 'get_bookbinding_card_pdf') == true %>
                 <li><%= link_to t('page.output', :model => t('bookbinding.card')), :controller => :bookbindings, :action => :get_bookbinding_card, :param => @manifestation %></li>
               <% end %>
             <%- end -%>
