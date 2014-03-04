@@ -28,4 +28,23 @@ module ItemsHelper
     end
   end
 
+  def circulation_statuses
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", circulation_status_key, Time.zone.now) rescue nil
+  end
+
+  def shelfs
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", shelf_key, Time.zone.now) rescue nil
+  end
+
+  def get_circulation_status(v)
+    if respond_to? :circulation_status_key
+      keycode = Keycode.find(:first, :conditions => ["name = ? and v = ?", circulation_status_key, v])
+    end
+    if keycode
+      return keycode.keyname
+    else
+      return ''
+    end
+  end
+
 end
