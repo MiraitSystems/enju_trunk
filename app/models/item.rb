@@ -9,7 +9,7 @@ class Item < ActiveRecord::Base
                   :use_restriction, :manifestation_id, :manifestation,
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
-                  :non_searchable
+                  :non_searchable, :item_exinfo
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -76,6 +76,7 @@ class Item < ActiveRecord::Base
   has_many :expenses
   has_many :binding_items, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
+  has_many :item_exinfos, :dependent => :destroy
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
