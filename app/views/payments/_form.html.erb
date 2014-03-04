@@ -24,9 +24,9 @@ $(function(){
       var field = document.getElementById('payment_manual_field');
 
       if(checkbox.checked){
-        field.style.display="block";
-      }else{
         field.style.display="none";
+      }else{
+        field.style.display="block";
       }
     }
   };
@@ -76,16 +76,14 @@ $(function(){
 
   <div class="field">
     <%= f.label t('payment.switch_manual_entry') %><br />
-    <%= f.check_box :auto_calculation_flag, {:onchange => 'ItemField.switch_field()', :checked_value => "1", :unchecked_value => "0"} %>
+    <%= check_box :payment_auto_calculation, :flag, {:checked => @auto_calculation_flag, :onchange => 'ItemField.switch_field()', :checked_value => "1", :unchecked_value => "0"} %>
   </div>
 
-  <% if @payment.auto_calculation_flag == 1 %>
-    <div id="payment_manual_field">
-  <% else %>
+  <% if @auto_calulation_flag %>
     <div id="payment_manual_field" style="display:none">
+  <% else %>
+    <div id="payment_manual_field">
   <% end %>
-
-
     <div class="field">
       <%= f.label :currency_rate %><br />
       <%= f.text_field :currency_rate %>

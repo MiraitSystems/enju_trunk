@@ -12,7 +12,7 @@
 
   <p>
     <%= t('activerecord.attributes.payment.order_id') %>:
-    <%= link_to @order.order_identifier, order_path(@order) %>
+    <%= link_to @order.order_identifier, order_path(@order, :return_index => true) %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
     <%= @order.publication_year %>
