@@ -1457,47 +1457,15 @@ class Manifestation < ActiveRecord::Base
     # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
     def create_from_ncid(ncid, book_types = ManifestationType.book.all)
       raise ArgumentError if ncid.blank?
-      created_manifestations = []
 
-      #子書誌情報の登録
       result = NacsisCat.search(dbs: [:book], id: ncid)
+      #子書誌情報の登録
       attrs_result = new_from_nacsis_cat(ncid, result[:book].first, book_types)
-      created_manifestations << create(attrs_result[:attributes])
-
+      child_manifestation = create(attrs_result[:attributes])
       #親書誌情報の登録
-      attrs_result[:parents].each do |ptbl_record|
-        parent_manifestation = where(:nacsis_identifier => ptbl_record['PTBID']).first
-        if parent_manifestation
-          created_manifestations << parent_manifestation
-        else
-          parent_result = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
-          if parent_result[:book].blank?
-            unless ptbl_record['PTBTR'].nil?
-              created_manifestations << where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
-                if m.new_record?
-                  m.nacsis_identifier = ptbl_record['PTBID']
-                  m.title_transcription = ptbl_record['PTBTRR']
-                  m.title_alternative_transcription = ptbl_record['PTBTRVR']
-                  m.note = ptbl_record['PTBNO']
-                end
-              end
-            end
-          else
-            parent_attrs_result = new_from_nacsis_cat(ptbl_record['PTBID'], parent_result[:book].first, book_types)
-            created_manifestations << create(parent_attrs_result[:attributes])
-          end
-        end
-      end
+      create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
 
-      #親書誌関係の登録
-      created_manifestations.reverse.each do |parent|
-        created_manifestations.each do |child|
-          break if parent == child
-          parent.derived_manifestations << child
-        end
-      end
-
-      created_manifestations
+      child_manifestation
     end
 
     # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
@@ -1514,9 +1482,13 @@ class Manifestation < ActiveRecord::Base
       ncids.each_slice(nacsis_batch_size) do |ids|
         result = NacsisCat.search(dbs: [:book], id: ids)
         result[:book].each do |nacsis_cat|
-          record = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
-          record.save
-          block.call(record) if block
+          #子書誌情報の登録
+          attrs_result = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
+          child_manifestation = create(attrs_result[:attributes])
+          #親書誌情報の登録
+          create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
+
+          block.call(child_manifestation) if block
         end
       end
     end
@@ -1635,6 +1607,46 @@ class Manifestation < ActiveRecord::Base
           return_value = cls_hash[key]
         end
         return_value
+      end
+
+      def create_parent_manifestations(child_manifestation, parent_attrs, book_types)
+        return nil if child_manifestation.nil? || parent_attrs.blank?
+        created_manifestations = []
+        created_manifestations << child_manifestation
+        parent_attrs.each do |ptbl_record|
+          parent_manifestation = where(:nacsis_identifier => ptbl_record['PTBID']).first
+          if parent_manifestation
+            created_manifestations << parent_manifestation
+          else
+            parent_result = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
+            if parent_result[:book].blank?
+              unless ptbl_record['PTBTR'].nil?
+                created_manifestations << where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
+                  if m.new_record?
+                    m.nacsis_identifier = ptbl_record['PTBID']
+                    m.title_transcription = ptbl_record['PTBTRR']
+                    m.title_alternative_transcription = ptbl_record['PTBTRVR']
+                    m.note = ptbl_record['PTBNO']
+                  end
+                end
+              end
+            else
+              parent_attrs_result = new_from_nacsis_cat(ptbl_record['PTBID'], parent_result[:book].first, book_types)
+              created_manifestations << create(parent_attrs_result[:attributes])
+            end
+          end
+        end
+        #親書誌関係の登録
+        created_manifestations.reverse.each do |parent|
+          created_manifestations.each do |child|
+            break if parent == child
+            parent.derived_manifestations << child
+          end
+        end
+        logger.info "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        logger.info created_manifestations
+        logger.info "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        created_manifestations
       end
   end
 

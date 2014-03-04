@@ -366,10 +366,10 @@ class NacsisCat
       :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
       :subjects => arraying(@record['SH']),
       :marc => @record['MARCID'],
-      :nbn => arraying(@record['NBN']).compact.join(","),
       :lccn => @record['LCCN'],
     }.tap do |hash|
       if book?
+        hash[:nbn] = arraying(@record['NBN']).compact.join(",")
         hash[:cls_info] = classification_info
         hash[:vol_info] = arraying(@record['VOLG'])
         hash[:ptb_info] = arraying(@record['PTBL'])
