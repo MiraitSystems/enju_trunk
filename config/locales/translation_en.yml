@@ -934,6 +934,7 @@ en:
         printout_in_progress: started to export checkout confirmation card
         external_catalog: Cataloging Authority
         jpn_or_foreign: Japan or foreign
+        manifestation_identifier: manifestation_identifier
       user_group:
         name: Name
         display_name: Display name
@@ -1642,6 +1643,13 @@ en:
           donate_requested: Donate requested
           replied_donate_request: Replied donate request
           all_process_end: All process end
+        donation_postcard: Donation postcard
+        approval_report: Approval report
+        sample_request: Sample request
+        donation_request_usually: Donation request usually
+        donation_request_sample: Donation request sample
+        donation_request_collection: Donation request collection
+        refusal_latter: Refusal_latter
       approval_extext:
         value: Value
         created_by: Created by
@@ -1843,6 +1851,7 @@ en:
     editing: Editing %{model}
     showing: Showing %{model}
     output: Output %{model}
+    output_cover: Output %{model} cover
     output_pdf: Output %{model}(PDF)
     output_csv: Output %{model}(CSV)
     output_tsv: Output %{model}(TSV)
@@ -1903,6 +1912,7 @@ en:
     asc: ascendent
     desc: descendent
     error_occured: An error occured.
+    error_file: Not able to output file.
     did_you_mean: Did you mean
     calendar: Calendar
     related: Related
@@ -1992,6 +2002,7 @@ en:
     del_line: "-"
     user_notice: User notice
     select_use_titles: Use titles table
+    copy: Copy new create
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -2190,6 +2201,7 @@ en:
     contributor_transcription: Contributor transcription
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
+    same_manifestation_already_exist: Same %{attribute} already exist
   item:
     current_checkout: Current checkout
     donor: Donors
@@ -2768,6 +2780,7 @@ en:
     order_list: Order list
     reminder: Reminder
     statistics: Statistics
+    function: Function
     sound: Sound
     disp_date:
       not_display: Not display
@@ -3128,20 +3141,40 @@ en:
     cannot_delete: The order cannot be deleted.
     no_matches_found_agent: "No matches found agent"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+<<<<<<< HEAD
     switch_manual_entry: "Manual entry currency rate and yen imprest"
+=======
+    no_matches_found_order: "No matches found order to %{attribute}"
+    switch_manual_entry: "Use auto calculate the amount" 
+>>>>>>> 76bd5ad57f64eb1dc493c1c66769a5177d12fce5
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     payments: Payments
     subsequent_year_orders: Subsequent year orders
     create_subsequent_year_orders: Create subsequent year orders
     create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
+<<<<<<< HEAD
     copy: Copy and create new order
   payment:
     system_menu_title: Payment search
     switch_manual_entry: "Manual entry currency rate and amount of payment"
+=======
+    no_create_subsequent_year_orders: "No create subsequent year orders."
+    create_payment_to_advance_payment: "<br />Create payment to advance payment"
+    copy: Copy and create new order
+    
+  payment:
+    system_menu_title: Payment search
+    switch_manual_entry: "Use auto calculate the amount"
+>>>>>>> 76bd5ad57f64eb1dc493c1c66769a5177d12fce5
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
     paid: Paid
     want_to_paid: "Want to paid?"
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
+<<<<<<< HEAD
+=======
+    no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+
+>>>>>>> 76bd5ad57f64eb1dc493c1c66769a5177d12fce5

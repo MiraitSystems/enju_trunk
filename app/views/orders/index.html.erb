@@ -3,14 +3,15 @@
 <div id="content_list">
 
 <% if @manifestation %>
+
   <p>
     <%= t('activerecord.attributes.manifestation.original_title') -%>:
-    <%= text_field :manifestation, :original_title, {:value =>  @manifestation.original_title, :class => 'resource_title', :disabled => true} %>
+    <%= @manifestation.original_title %>
   </p>
 
   <p>
-    <%= t('activerecord.attributes.manifestation.identifier') -%>:
-    <%= text_field :manifestation, :identifier, {:value => @manifestation.identifier, :disabled => true} %>
+    <%= t('activerecord.attributes.order.order_identifier') %>
+    <%= text_field :order, :order_identifier, {:disabled => true} %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
     <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}, :disabled => "") %><br />
@@ -18,14 +19,16 @@
 
 <% else %>
   <%= form_tag({:action => "search"},  {:method => "get"}) do %>
-    <p>
-    <%= t('activerecord.attributes.manifestation.original_title') -%>:
-    <%= text_field_tag :manifestation_original_title , @selected_title, :class => 'resource_title'%>
-    </p>
+    <% if @selected_title %>
+      <p>
+      <%= t('activerecord.attributes.manifestation.original_title') -%>:
+      <%= @selected_title %>
+      </p>
+    <% end %>
 
     <p>
-    <%= t('activerecord.attributes.manifestation.identifier') -%>:
-    <%= text_field_tag :manifestation_identifier, @selected_manifestation %>
+    <%= t('activerecord.attributes.order.order_identifier') -%>:
+    <%= text_field_tag :order_identifier, @selected_order %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
     <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
@@ -36,7 +39,7 @@
   <% end %>
 <% end %>
 
-<div style="color: red"><%= flash[:message].to_s -%></div>
+<div style="color: red"><%= raw flash[:message].to_s -%></div>
 <p id="notice"><%= notice %></p>
 
 <table class="index">
@@ -58,11 +61,15 @@
 <%- @orders.each do |order| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= order.publication_year %></td>
-    <td><%= link_to order.order_identifier, order_path(order) %></br>
+    <% if @manifestation %>
+      <td><%= link_to order.order_identifier, order_path(order, :return_index => true) %></br>
+    <% else %>
+      <td><%= link_to order.order_identifier, order_path(order) %></br>
+    <% end %>
     <%= link_to order.manifestation.identifier, order.manifestation, {:href =>manifestation_path(order.manifestation, :all_manifestations => true)} %></td>
 
     <td><%= order.yen_imprest %></td>
-    <td></td> 
+    <td><%= order.total_payment %></td> 
     <td><%= order.adption.keyname if order.adption -%></br>
     <%= order.bookstore.keyname if order.bookstore -%></td>
     <td><%= order.payment_form.keyname if order.payment_form -%></br>
@@ -71,9 +78,16 @@
     <%= order.deliver_place_5.keyname if order.deliver_place_5 -%></td>
 
     <td>
-        <%= link_to t('page.edit'), edit_order_path(order) -%><br />
-        <% if order.destroy? %>
-          <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <% if @manifestation %>
+          <%= link_to t('page.edit'), edit_order_path(order, :return_index => true) -%><br />
+          <% if order.destroy? %>
+            <%= link_to t('page.destroy'), order_path(order, :return_index => true), :confirm => t('page.are_you_sure'), :method => :delete -%>
+          <% end %>
+        <% else %>
+          <%= link_to t('page.edit'), edit_order_path(order) -%><br />
+          <% if order.destroy? %>
+            <%= link_to t('page.destroy'), order_path(order), :confirm => t('page.are_you_sure'), :method => :delete -%>
+          <% end %>
         <% end %>
     </td>
   </tr>
@@ -88,20 +102,16 @@
 <% if @manifestation %>
   <div id="submenu" class="ui-corner-all">
     <ul>
-      <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @manifestation) %></li>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @manifestation, :return_index => true) %></li>
     </ul>
   </div>
 <% else %>
-  <% if (@search_manifestation && @orders.size == 0) || (@selected_year && @orders.size != 0) %>
+  <% if(@selected_year.present? && @orders.size != 0) %>
     <div id="submenu" class="ui-corner-all">
       <ul>
-        <% if (@search_manifestation && @orders.size == 0) %>
-          <li><%= link_to t('page.new', :model => t('activerecord.models.order')), new_order_path(:manifestation_id => @search_manifestation) -%></li>
-        <% end %>
-        <% if (@orders.size != 0 && @selected_year) %>
-          <li><%= link_to t('order.create_subsequent_year_orders'), {:controller => 'orders', :action =>'create_subsequent_year_orders', :year => @selected_year, :manifestation_identifier => @manifestation_selected}, :confirm => t('order.create_year_orders_confirm', :year => (Date.today.year.to_i+1)) %></li>
-        <% end %>
+        <li><%= link_to t('order.create_subsequent_year_orders'), {:controller => 'orders', :action =>'create_subsequent_year_orders', :year => @selected_year, :order_identifier => @selected_order}, :confirm => t('order.create_year_orders_confirm', :year => (Date.today.year.to_i+1)) %></li>
       </ul>
     </div>
   <% end %>
 <% end %>
+

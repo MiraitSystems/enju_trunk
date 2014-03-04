@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Version do
-  fixtures :all
+  fixtures :languages, :library_groups, :circulation_statuses, :carrier_types, :patron_types, :checkout_types, :countries, :patrons, :users, :subject_types
 
   # NOTE: 差分同期機能について
   #
@@ -89,13 +89,15 @@ describe Version do
   # * LibraryGroup
 
   # レコード比較の一部として属性を比較する際に
-  # 同値をとれれない属性について無視または
+  # 同値をれれない属性について無視または
   # 一定程度の整調をする
   def round(attributes)
     attributes.dup.tap do |h|
       h.delete('lock_version')
       h.each_key do |k|
-        h[k] = h[k].strftime('%Y-%m-%d %H:%M:%S') if h[k].is_a?(Time) # 秒まで同じことを検査
+        if h[k].is_a?(Time) || h[k].is_a?(DateTime) # 秒まで同じことを検査
+          h[k] = h[k].utc.strftime('%Y-%m-%d %H:%M:%S')
+        end
       end
     end
   end
@@ -140,6 +142,10 @@ describe Version do
       dump[:versions].map(&:event).should == %w(create update destroy)
       dump[:latest]['Role'].should be_a(Hash)
       dump[:latest]['Role'][role.id].should be_nil
+
+      expect {
+        Marshal.dump(dump)
+      }.not_to raise_error
     end
 
     it 'Userに関連付けられたAgentの個人情報はエクスポートしないこと' do
@@ -153,7 +159,7 @@ describe Version do
       vid = latest_version_id
 
       attributes = Agent.column_names.
-        reject {|name| /\Aid\z|_(id|at)\z|\Adate_of_|\Alock_version\z/ =~ name }.
+        reject {|name| /\Aid\z|_(id|at)\z|\Aplace\z|\Adate_of_|\Alock_version\z/ =~ name }.
         inject({}) {|hash, name| hash[name] = name; hash }.
         merge!({
           'language' => languages(:language_00001),
@@ -162,6 +168,7 @@ describe Version do
           'birth_date' => Date.new(1900, 1, 1),
           'death_date' => Date.new(1950, 1, 1),
           'email' => 'foo@example.jp',
+          'email_2' => 'foo@example.com',
         })
 
       agent1 = Agent.create! do |agent|
@@ -207,15 +214,17 @@ describe Version do
           item_type, item_id, item_attributes = *object
         end
 
-        item_attributes.each_pair do |name, value|
+        attr1 = round(attributes1)
+        attr2 = round(attributes2)
+        round(item_attributes).each_pair do |name, value|
           if item_id == agent1.id
             # 個人情報は保持される
             if name == 'full_name'
               value.should match(/\Aagent_[aA]\z/),
                 "attribute #{name.inspect} should be /agent_[aA]/, but #{value.inspect}"
             else
-              value.should be_eql(attributes1[name]),
-                "attribute #{name.inspect} should be #{attributes1[name].inspect}, but #{value.inspect}"
+              value.should be_eql(attr1[name]),
+                "attribute #{name.inspect} should be #{attr1[name].inspect}, but #{value.inspect}"
             end
 
           else
@@ -225,8 +234,8 @@ describe Version do
               value.should be_eql(expect),
                 "attribute #{name.inspect} should be #{expect.inspect}, but #{value.inspect}"
             elsif keep_attributes.include?(name)
-              value.should be_eql(attributes2[name])
-                "attribute #{name.inspect} should be #{attributes2[name].inspect}, but #{value.inspect}"
+              value.should be_eql(attr2[name])
+                "attribute #{name.inspect} should be #{attr2[name].inspect}, but #{value.inspect}"
             else
               value.should be_nil,
                 "attribute #{name.inspect} should be nil, but #{value.inspect}"
@@ -234,6 +243,33 @@ describe Version do
           end
         end
       end
+    end
+
+    it '1900年以前および67435年以後のレコードをMarshal可能な形でエクスポートできること' do
+      date1 = '1000-01-01T12:34:56+0900'
+      date2 = '90000-01-01T12:34:56+0900'
+
+      vid = latest_version_id
+      m1 = FactoryGirl.create(:manifestation,date_of_publication: date1)
+      m2 = FactoryGirl.create(:manifestation,date_of_publication: date2)
+
+      dump = Version.export_for_incremental_synchronization(vid)
+      expect {
+        Marshal.dump(dump)
+      }.not_to raise_error
+
+      # インポートできることの確認
+      m1.destroy
+      m2.destroy
+      Version.import_for_incremental_synchronization!(dump)
+
+      x1 = Manifestation.find(m1.id)
+      x1.should eq(m1)
+      x1.date_of_publication.should eq(date1.to_datetime)
+
+      x2 = Manifestation.find(m2.id)
+      x2.should eq(m2)
+      x2.date_of_publication.should eq(date2.to_datetime)
     end
   end
 
@@ -894,7 +930,7 @@ describe Version do
         @status = Version.import_for_incremental_synchronization!(@dump)
       end
 
-      def break_event!(idx)
+      def break_event!(idx, &block)
         version = @dump[:versions][idx + 1] # idx番目のイベント処理で例外を発生させるためには、その次のVersionのobjectに手を入れる必要がある
 
         # PaperTrailの記録を直接いじる。
@@ -902,13 +938,52 @@ describe Version do
         # to_yamlしたものを格納しており、
         # YAML.loadにより復元している。
         item_attributes = YAML.load(version.object)
-        item_attributes['name'] = '' # roles.nameは空にできないため例外が発生する
+        if block
+          block.call(item_attributes)
+        else
+          item_attributes['name'] = InvalidAttributeValue.new # ActiveRecordで扱えないため例外が発生する
+        end
         version.object = item_attributes.to_yaml
+      end
+
+      def invalidate_event!(idx)
+        break_event!(idx) do |attrs|
+          attrs['name'] = '' # roles.nameは空にできないため例外が発生する
+        end
+      end
+
+      class InvalidAttributeValue
+        def is_a?(obj)
+          raise
+        end
       end
 
       context 'すべて正常に実行できとき' do
         before do
           sync_import!
+        end
+
+        it '最後に処理したイベントの時刻とidを返すこと' do
+          @status[:last_event_time].should be_present
+          @status[:last_event_time].should satisfy {|t| (@time[-2]...@time[-1]).cover?(t) }
+          @status[:last_event_id].should be_present
+          @status[:last_event_id].should == @vid[-1]
+        end
+
+        it 'trueを返すこと' do
+          @status[:success].should be_true
+        end
+      end
+
+      context 'validationエラーになるレコードがあったとき' do
+        before do
+          invalidate_event!(1)
+          sync_import!
+        end
+
+        it 'そのレコードを無視すること' do
+          role = Role.find(@role_id)
+          role.display_name.should eq('test4')
         end
 
         it '最後に処理したイベントの時刻とidを返すこと' do
@@ -961,7 +1036,7 @@ describe Version do
 
         it '発生した例外を返すこと' do
           @status[:exception].should be_present
-          @status[:exception][:class].should == ActiveRecord::RecordInvalid
+          @status[:exception][:class].should == RuntimeError
         end
 
         it 'falseを返すこと' do
@@ -989,7 +1064,7 @@ describe Version do
 
         it '発生した例外を返すこと' do
           @status[:exception].should be_present
-          @status[:exception][:class].should == ActiveRecord::RecordInvalid
+          @status[:exception][:class].should == RuntimeError
         end
 
         it 'falseを返すこと' do

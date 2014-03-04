@@ -45,6 +45,7 @@ class Agent < ActiveRecord::Base
   has_one :agent_import_result
 
   has_many :orders
+
   accepts_nested_attributes_for :agent_aliases
   attr_accessible :agent_aliases_attributes
 

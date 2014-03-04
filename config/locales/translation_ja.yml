@@ -1007,6 +1007,7 @@ ja:
         hold_cln: 請求記号
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
+        manifestation_identifier: 資料番号
       user_group:
         name: 名前
         display_name: 表示名
@@ -1630,6 +1631,13 @@ ja:
           donate_requested: 寄付依頼送付済
           replied_donate_request: 寄付依頼返信済
           all_process_end: 全工程完了
+        donation_postcard: 寄贈はがき
+        approval_report: 見計らい伝票
+        sample_request: サンプル誌依頼
+        donation_request_usually: 寄贈依頼状（通常）
+        donation_request_sample: 寄贈依頼状（サンプル）
+        donation_request_collection: 寄贈依頼状（収集）
+        refusal_latter: 断り状
       approval_extext:
         value: メモ
         created_by: 記入者
@@ -1833,6 +1841,7 @@ ja:
     editing: "%{model}の編集"
     showing: "%{model}の表示"
     output: "%{model}の出力"
+    output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
     output_csv: "%{model}の出力(CSV)"
     output_tsv: "%{model}の出力(TSV)"
@@ -1890,6 +1899,7 @@ ja:
     asc: "昇順"
     desc: "降順"
     error_occured: "エラーが発生しました。"
+    error_file: "ファイル出力できませんでした。"
     did_you_mean: "もしかして"
     calendar: "カレンダー"
     related: "関連"
@@ -1960,6 +1970,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    copy: コピーして新規作成
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2175,6 +2186,7 @@ ja:
     contributor_transcription: 協力者・編者(ヨミ)
     publisher_transcription: 出版者(ヨミ)
     subject_transcription: 件名(ヨミ)
+    same_manifestation_already_exist: 同じ%{attribute}の資料が既に存在しています。
   missing_issue:
     no_request: 未請求
     requested: 請求済
@@ -2858,6 +2870,7 @@ ja:
     copy_request: 文献複写依頼
     reminder: 督促
     statistics: 統計
+    function: ファンクション
     sound: 音
     view: 表示
     nacsis: 'NACSIS-CAT/ILL'
@@ -3054,7 +3067,7 @@ ja:
       <br />
       ・単語の先頭文字が大文字であること<br /><br />
       ・単語の先頭文字以外に大文字がないこと<br /><br />
-      ・半角英数字であること<br /><br />
+      ・半角であること<br /><br />
       ・空白が含まれないこと<br /><br />
       ・既に登録されているキーワードは登録不可
       "
@@ -3100,20 +3113,25 @@ ja:
     cannot_delete: "この発注は削除できません"
     no_matches_found_agent: "発注機関が見つかりません"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
-    switch_manual_entry: "通貨レート、発注金額を手入力する"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
     subsequent_year_orders: 次年度発注
     create_subsequent_year_orders: 次年度発注生成
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
+    create_payment_to_advance_payment: "<br />発注に対応する支払を作成しました。"
     copy: コピーして新規作成
   payment:
     system_menu_title: 支払検索
-    switch_manual_entry: "通貨レート、支払金額を手入力する"
+    switch_manual_entry: "金額を自動計算する"
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     paid: 精算
     want_to_paid: "精算しますか?"
     no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
+

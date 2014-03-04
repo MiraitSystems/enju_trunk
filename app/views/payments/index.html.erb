@@ -5,49 +5,34 @@
 <% if @order %>
   <p>
     <%= t('activerecord.attributes.manifestation.original_title') -%>:
-    <%= text_field :manifestation, :original_title , {:value => @order.try(:manifestation).try(:original_title), :class => 'resource_title', :disabled => true} %>
-  </p>
 
-  <p>
+    <%= link_to @order.try(:manifestation).try(:original_title), manifestation_path(@order.manifestation, :all_manifestations => true) %>
+
     <%= t('activerecord.attributes.order.manifestation_identifier') %>:
-    <%= text_field :manifestation ,:identifier, {:value => @order.try(:manifestation).try(:identifier), :disabled => true} %>
+    <%= link_to @order.try(:manifestation).try(:identifier),  manifestation_path(@order.manifestation, :all_manifestations => true)  if @order.try(:manifestation).try(:identifier)%>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @order.publication_year}, :disabled => @order.publication_year) %>
-  </p> 
   <p>
     <%= t('activerecord.attributes.payment.order_id') %>:
-    <%= text_field :order, :identifier, {:value => @order.order_identifier, :disabled => true} %>
-  </p><br />
-
-////////////////////////////////////////
-
-  <p>
-    <%= t('activerecord.attributes.manifestation.original_title') -%>:
-    <%= link_to @order.try(:manifestation).try(:original_title), manifestation_path(@order.manifestation, :all_manifestations => true) %>
-  </p>
-
-  <p>
-    <%= t('activerecord.attributes.order.manifestation_identifier') %>:
-    <%= text_field :manifestation ,:identifier, {:value => @order.try(:manifestation).try(:identifier), :disabled => true} %>
+    <%= link_to @order.order_identifier, order_path(@order, :return_index => true) %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @order.publication_year}, :disabled => @order.publication_year) %>
-  </p> 
+    <%= @order.publication_year %>
+  </p><br />
 
 
 <% else %>
   <%= form_tag({:action => 'search'}, {:method => 'get'}) do %>
 
     <p>
-    <%= t('activerecord.attributes.payment.order_id') %>:
-    <%= text_field_tag :order_identifier, @selected_order_identifier %>
-
     <% if @manifestation_original_title %>
       <%= t('activerecord.attributes.manifestation.original_title') -%>:
       <%= @manifestation_original_title %>
     <% end %>
     </p>
+
+    <p>
+    <%= t('activerecord.attributes.payment.order_id') %>:
+    <%= text_field_tag :order_identifier, @selected_order_identifier %>
 
     <%= t('activerecord.attributes.order.publication_year') %>:
     <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
@@ -63,27 +48,34 @@
 <table class="index">
   <tr>
     <th><%= t('activerecord.attributes.payment.id') %></th>
-    <th><%= t('activerecord.attributes.order.publication_year') %></th>
-    <th><%= t('activerecord.attributes.payment.order_id') %></th>
-    <th><%= t('activerecord.attributes.manifestation.identifier') -%></th>
-    <th><%= t('activerecord.attributes.payment.billing_date') %></th>
     <th><%= t('activerecord.attributes.payment.payment_type') %></th>
+    <th><%= t('activerecord.attributes.payment.volume_number') %></th>
+    <th><%= t('activerecord.attributes.payment.number_of_payment') %></th>
+    <th><%= t('activerecord.attributes.payment.billing_date') %></th>
     <th><%= t('activerecord.attributes.payment.amount_of_payment') %></th>
     <th></th>
   </tr>
 
 <% @payments.each do |payment| %>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= link_to payment.id, payment %></td>
-    <td><%= payment.order.publication_year %></td>
-    <td><%= link_to payment.order.order_identifier, order_path(payment.order) %></td>
-    <td><%= link_to payment.manifestation.identifier, payment.manifestation, {:href =>manifestation_path(payment.manifestation, :all_manifestations => true)} %></td>
-    <td><%= l(payment.billing_date, :format => :only_date)  if payment.billing_date %></td>
+    <% if @order %>
+      <td><%= link_to payment.id, payment_path(payment, :return_index => true) %></td>
+    <% else %>
+      <td><%= link_to payment.id, payment %></td>
+    <% end %>
     <td><%= get_keyname_payment_types(payment.payment_type.to_s) if payment.payment_type %></td>
+    <td><%= payment.volume_number %></td>
+    <td><%= payment.number_of_payment %></td>
+    <td><%= l(payment.billing_date, :format => :only_date)  if payment.billing_date %></td>
     <td><%= payment.amount_of_payment %></td>
     <td>
-      <%= link_to t('page.edit'), edit_payment_path(payment) %>
-      <%= link_to t('page.destroy'), payment, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <% if @order %>
+        <%= link_to t('page.edit'), edit_payment_path(payment, :return_index => true) %>
+        <%= link_to t('page.destroy'), payment_path(payment, :return_index => true), :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <% else %>
+        <%= link_to t('page.edit'), edit_payment_path(payment) %>
+        <%= link_to t('page.destroy'), payment, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <% end %>
     </td>
   </tr>
 <% end %>

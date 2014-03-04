@@ -28,6 +28,9 @@ class OrdersController < ApplicationController
   # GET /orders/1
   # GET /orders/1.json
   def show
+
+    @return_index = params[:return_index]
+
     @order = Order.find(params[:id])
     respond_to do |format|
       format.html # show.html.erb
@@ -46,8 +49,9 @@ class OrdersController < ApplicationController
       @order.order_day = Date.new((Date.today + 1.years).year, original_order.order_day.month, original_order.order_day.day)
       @order.publication_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
+      @order.buying_payment_year = nil
+      @order.prepayment_settlements_of_account_year = nil
     else
-      @order.auto_calculation_flag = 1
       @order.order_day = Date.today
       @order.set_probisional_identifier
       if params[:manifestation_id]
@@ -57,6 +61,7 @@ class OrdersController < ApplicationController
 
     @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
+    @return_index = params[:return_index]
 
       if params[:manifestation_id]
         @order.manifestation_id = params[:manifestation_id].to_i
@@ -73,29 +78,28 @@ class OrdersController < ApplicationController
     @order = Order.find(params[:id])
     @select_agent_tags = Order.struct_agent_selects
     @currencies = Currency.all
+    @return_index = params[:return_index]
   end
 
   # POST /orders
   # POST /orders.json
   def create
-
     @order = Order.new(params[:order])
-    @manifestation_identifier = params[:manifestation_identifier]
-    manifestation = Manifestation.where(["manifestation_identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
-
-    @manifestation_identifier = params[:manifestation_identifier]
-    manifestation = Manifestation.where(["identifier = ?", @manifestation_identifier]) unless @manifestation_identifier.blank?
-
-    #@order.manifestation_id = manifestation.id if manifestation
- 
+    @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
+    @return_index = params[:return_index]
+    
     respond_to do |format|
       if @order.save
+        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
+        flash[:notice] += t('order.create_payment_to_advance_payment') if @order.create_payment_to_advance_payment
+
         if @purchase_request
           format.html { redirect_to purchase_request_order_url(@order.purchase_request, @order) }
           format.json { render :json => @order, :status => :created, :location => @order }
         else
-          format.html { redirect_to(@order) }
+          format.html { redirect_to(order_path(@order, :return_index => @return_index)) }
           format.json { render :json => @order, :status => :created, :location => @order }
         end
       else
@@ -113,21 +117,27 @@ class OrdersController < ApplicationController
   # PUT /orders/1.json
   def update
     @order = Order.find(params[:id])
+    @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
 
     respond_to do |format|
       if @order.update_attributes(params[:order])
+        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.save
         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.order'))
+
         if @purchase_request
           format.html { redirect_to purchase_request_order_url(@order.purchase_request, @order) }
           format.json { head :no_content }
         else
-          format.html { redirect_to(@order) }
+          format.html { redirect_to( order_path(@order, :return_index => params[:return_index])) }
           format.json { head :no_content }
         end
       else
           @select_agent_tags = Order.struct_agent_selects
           @currencies = Currency.all
-        @order_lists = OrderList.not_ordered
+          @return_index = params[:return_index] if params[:return_index]
+          #@order_lists = OrderList.not_ordered
+         
         format.html { render :action => "edit" }
         format.json { render :json => @order.errors, :status => :unprocessable_entity }
       end
@@ -138,14 +148,27 @@ class OrdersController < ApplicationController
   # DELETE /orders/1.json
   def destroy
     @order = Order.find(params[:id])
+    manifestation = @order.manifestation
 
     respond_to do |format|
       if @order.destroy?
         @order.destroy
-        format.html {redirect_to(orders_url)}
+        format.html {
+          if params[:return_index]
+            redirect_to(manifestation_orders_url(manifestation))
+          else
+            redirect_to(orders_url)
+          end
+        }
       else
         flash[:message] = t('order.cannot_delete')
-        format.html {redirect_to(orders_url)}
+        format.html {
+          if params[:return_index]
+            redirect_to(manifestation_orders_url(manifestation))
+          else
+            redirect_to(orders_url)
+          end
+        }
       end
     end
   end
@@ -160,49 +183,37 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       flash[:notice] = t('controller.successfully_created', :model => t('payment.paid'))
-      format.html {redirect_to(@order)}
+      format.html {redirect_to(order_path(@order, :return_index => params[:return_index]))}
     end
   end
 
   def search
 
-    unless params[:manifestation_identifier].blank?
-      manifestation_num = Manifestation.where("identifier = ?", params[:manifestation_identifier])
+    where_str = ""
 
-      if manifestation_num.size == 0
-        flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.identifier'))
-      else
-        @search_manifestation = manifestation_num.first
-      end
+    unless params[:order_identifier].blank?
+      where_str += "order_identifier = '#{params[:order_identifier]}'"
+      order = Order.find_by_order_identifier(params[:order_identifier])
+
+      flash.now[:message] = t('order.no_matches_found_order', :attribute => t('activerecord.attributes.order.order_identifier')) unless order
     end
-
-    unless params[:manifestation_original_title].blank?
-      manifestation_num = Manifestation.where("original_title ILIKE ?", "\%#{params[:manifestation_original_title]}\%")
-        flash.now[:message] = t('order.no_matches_found_manifestation', :attribute => t('activerecord.attributes.manifestation.original_title')) if manifestation_num.size == 0
-    end
-
 
     unless params[:publication_year].blank?
-
-      unless params[:manifestation_identifier].blank?
-        @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ? AND original_title ILIKE ?", params[:publication_year].to_i, params[:manifestation_identifier], "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
-
-      else
-        @orders = Order.joins(:manifestation).where(["publication_year = ?  AND original_title ILIKE ?", params[:publication_year].to_i, "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
-      end
-    else
-
-      unless params[:manifestation_identifier].blank?
-        @orders = Order.joins(:manifestation).where(["identifier = ? AND original_title ILIKE ?",params[:manifestation_identifier], "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
-
-      else
-        @orders = Order.joins(:manifestation).where(["original_title ILIKE ?", "\%#{params[:manifestation_original_title]}\%"]).order("publication_year DESC, order_identifier DESC").page(params[:page])
-      end
+      where_str += " AND " unless where_str.empty?
+      where_str += "publication_year = #{params[:publication_year].to_i}"
     end
 
-    @selected_title = params[:manifestation_original_title]
-    @selected_manifestation = params[:manifestation_identifier]
-    @selected_year = params[:publication_year].to_i
+    if where_str.empty?
+      @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
+    else
+      @orders = Order.where([where_str]).order("publication_year DESC, order_identifier DESC").page(params[:page])
+
+      @selected_title = @orders.first.manifestation.original_title if (@orders.size == 1 && params[:order_identifier].present?)
+    end
+
+    @selected_order = params[:order_identifier]
+    @selected_year = params[:publication_year]
+
     set_select_years
 
     respond_to do |format|
@@ -223,10 +234,10 @@ class OrdersController < ApplicationController
 
   def create_subsequent_year_orders
 
-    if params[:manifestation_identifier].blank?
+    if params[:order_identifier].blank?
       @orders = Order.where(["publication_year = ?", params[:year].to_i])
     else
-      @orders = Order.joins(:manifestation).where(["publication_year = ? AND identifier = ?", params[:year].to_i, params[:manifestation_identifier]]).readonly(false)
+      @orders = Order.where(["publication_year = ? AND order_identifier = ?", params[:year].to_i, params[:order_identifier]])
     end
 
     create_count = 0
@@ -239,15 +250,18 @@ class OrdersController < ApplicationController
         @new_order.paid_flag = 0
         @new_order.buying_payment_year = nil
         @new_order.prepayment_settlements_of_account_year = nil
-        @new_order.auto_calculation_flag = 1
         @new_order.save
         create_count += 1
       end
     end
-    
-    flash[:notice] = t('controller.successfully_created', :model => t('order.subsequent_year_orders')) if create_count != 0
+ 
+    if create_count != 0   
+      flash[:notice] = t('controller.successfully_created', :model => t('order.subsequent_year_orders'))
+    else
+      flash[:message] = t('order.no_create_subsequent_year_orders')
+    end
 
-    redirect_to :action => "search", :publication_year => params[:year], :test => "test", :manifestation_identifier => params[:manifestation_identifier]
+    redirect_to :action => "search", :publication_year => params[:year], :test => "test", :order_identifier => params[:order_identifier]
 
   end
 

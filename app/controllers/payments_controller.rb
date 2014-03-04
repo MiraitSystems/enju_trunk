@@ -5,18 +5,18 @@ class PaymentsController < ApplicationController
 
   def index
     if params[:order_id]
-      @payments = Payment.where(["order_id = ?",params[:order_id]]).page(params[:page])
+      @payments = Payment.where(["order_id = ?",params[:order_id]]).order("id DESC").page(params[:page])
       @order = Order.find(params[:order_id])
     else
-      @payments = Payment.page(params[:page])
+      @payments = Payment.order("id DESC").page(params[:page])
     end
       set_select_years
   end
 
   def new
     @payment = Payment.new
-    @payment.auto_calculation_flag = 1
     @payment.billing_date = Date.today
+    @return_index = params[:return_index]
 
     if params[:order_id]
       @order = Order.find(params[:order_id])
@@ -27,11 +27,15 @@ class PaymentsController < ApplicationController
 
   def create
     @payment = Payment.new(params[:payment])
+    @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
+    @return_index = params[:return_index]
 
     respond_to do |format|
       if @payment.save
+        @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
+        @payment.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.payment'))
-        format.html { redirect_to @payment }
+        format.html { redirect_to (payment_path(@payment, :return_index => @return_index)) }
       else
         format.html { render :action => "new" }
       end
@@ -40,15 +44,22 @@ class PaymentsController < ApplicationController
 
   def edit
     @payment = Payment.find(params[:id])
+    @return_index = params[:return_index]
   end
 
   def update
     @payment = Payment.find(params[:id])
+    @return_index = params[:return_index]
+
+    @auto_calculation_flag = params[:payment_auto_calculation][:flag] == '1' ? true : false
+    @return_index = params[:return_index]
 
     respond_to do |format|
       if @payment.update_attributes(params[:payment])
-         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.payment'))
-        format.html { redirect_to(@payment) }
+        @payment.set_amount_of_payment if params[:payment_auto_calculation][:flag] == '1'
+        @payment.save
+        flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.payment'))
+        format.html { redirect_to(payment_path(@payment, :return_index => @return_index)) }
       else
         format.html { render :action => "edit" }
       end
@@ -57,14 +68,31 @@ class PaymentsController < ApplicationController
 
   def show
     @payment = Payment.find(params[:id])
+    @return_index = params[:return_index]
   end
 
   def destroy
     @payment = Payment.find(params[:id])
+    order = @payment.order
     respond_to do |format|
         @payment.destroy
-        format.html { redirect_to(payments_url) }
+        format.html {
+          if params[:return_index]
+            redirect_to(order_payments_url(order)) 
+          else
+            redirect_to(payments_url) 
+          end
+        }
     end
+  end
+
+  def set_select_years
+    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @select_years = []
+    @years.each do |p|
+      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+    end
+
   end
 
   def search
@@ -72,7 +100,7 @@ class PaymentsController < ApplicationController
     unless params[:order_identifier].blank?
       order = Order.find_by_order_identifier(params[:order_identifier])
 
-      if  order
+      if order
         @manifestation_original_title = order.manifestation.original_title
       else
         flash.now[:message] = t('payment.no_matches_found_order', :attribute => t('activerecord.attributes.order.order_identifier')) 
@@ -95,7 +123,7 @@ class PaymentsController < ApplicationController
     if where_str.empty?
       @payments = Payment.page(params[:page])
     else
-      @payments = Payment.joins(:order,:manifestation).where([where_str]).page(params[:page])
+      @payments = Payment.joins(:order,:manifestation).where([where_str]).order("id DESC").page(params[:page])
     end
 
 
@@ -118,7 +146,6 @@ class PaymentsController < ApplicationController
     end
 
   end
-
 
 private
   def get_order
