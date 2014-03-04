@@ -15,7 +15,7 @@ class Country < ActiveRecord::Base
   # alias_attribute :numeric, :numeric_3
 
   # Validations
-  validates_presence_of :alpha_2, :alpha_3, :numeric_3
+  validates_presence_of :alpha_2, :alpha_3#, :numeric_3
 
   after_save :clear_all_cache
   after_destroy :clear_all_cache
