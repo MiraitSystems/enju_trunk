@@ -192,8 +192,13 @@ class OrdersController < ApplicationController
     where_str = ""
 
     unless params[:order_identifier].blank?
-      where_str += "order_identifier = '#{params[:order_identifier]}'"
-      order = Order.find_by_order_identifier(params[:order_identifier])
+      if params[:index] == 'startwith_term'
+        where_str += "order_identifier like '#{params[:order_identifier]}%%' "
+        order = ''
+      else
+        where_str += "order_identifier = '#{params[:order_identifier]}'"
+        order = Order.find_by_order_identifier(params[:order_identifier])
+      end
 
       flash.now[:message] = t('order.no_matches_found_order', :attribute => t('activerecord.attributes.order.order_identifier')) unless order
     end
