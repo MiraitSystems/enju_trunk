@@ -13,6 +13,7 @@ class ExchangeRate < ActiveRecord::Base
     text :currency_display_name do
       currency.try(:display_name)
     end 
+    string :currency_id
     time :started_at
   end
 
