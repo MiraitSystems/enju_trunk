@@ -1,6 +1,6 @@
 <% if user_signed_in? && current_user.has_role?('Librarian') -%>
   <div id="shortcut">
-      <% 3.upto(9) do |num| %>
+      <% 2.upto(9) do |num| %>
         <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
           <div class="function_key"><h4>F<%= num %>: <%= SystemConfiguration.get("f#{num}.display_name") %></h4></div>
         <% end %>
@@ -14,7 +14,7 @@
   <% if user_signed_in? && current_user.has_role?('Librarian') -%>
     $(document).FunctionKeys(
     {
-       <% 3.upto(9) do |num| %>
+       <% 2.upto(9) do |num| %>
          <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
            F<%=num%> :function(obj,s,c,a){ 
              // document.location = '<%= SystemConfiguration.get("f#{num}.path") %>'; 
