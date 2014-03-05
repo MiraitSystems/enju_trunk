@@ -1081,7 +1081,10 @@ class ManifestationsController < ApplicationController
 
   def search_manifestation
     return nil unless request.xhr? or params[:original_title].blank?
-    manifestations = Manifestation.where(original_title: params[:original_title]).order(:id)
+    manifestations = Manifestation.search.build do
+      with(:original_title).equal_to params[:original_title]
+      with(:periodical).equal_to false
+    end.execute!.results
     manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
     return nil unless manifestations.present?
     manifestation_urls = []
