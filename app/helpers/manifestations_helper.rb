@@ -347,4 +347,13 @@ module ManifestationsHelper
       return 'http://www.junkudo.co.jp/'
     end
   end
+
+  def ncid_exist?(ncid)
+    return false if ncid.blank?
+    if Manifestation.where(:nacsis_identifier => ncid).first
+      true
+    else
+      false
+    end
+  end
 end
