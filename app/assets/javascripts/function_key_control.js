@@ -11,8 +11,20 @@ $.extend($.fn,{
 
       if(k>=112&&k<=123){
         if(o.F1&&k==112){o.F1(obj,s,c,a);}else
-        if(o.F2&&k==113){o.F2(obj,s,c,a);}else
-        if(o.F3&&k==114){o.F3(obj,s,c,a);}else
+        if(o.F2&&k==113){
+          "<% if SystemConfiguration.get('f2:.display_name').present? and SystemConfiguration.get('f2.path').present? %>"
+            if(check_form() == true){o.F2(obj,s,c,a);}
+          "<% else %>"
+            o.F2(obj,s,c,a);
+          "<% end %>"
+        }else
+        if(o.F3&&k==114){
+          "<% if SystemConfiguration.get('f3:.display_name').present? and SystemConfiguration.get('f3.path').present? %>"
+            if(check_form() == true){o.F3(obj,s,c,a);}
+          "<% else %>"
+            o.F3(obj,s,c,a);
+          "<% end %>"
+        }else
         if(o.F4&&k==115){
           "<% if SystemConfiguration.get('f4:.display_name').present? and SystemConfiguration.get('f4.path').present? %>"
             if(check_form() == true){o.F4(obj,s,c,a);}
