@@ -1098,7 +1098,11 @@ class ManifestationsController < ApplicationController
     ncid = params['ncid']
     type = params['manifestation_type'] || 'book'
 
-    manifestation = Manifestation.create_from_ncid(ncid)
+    if type == 'book'
+      manifestation = Manifestation.create_from_ncid(ncid)
+    else
+      manifestation = SeriesStatement.create_from_ncid(ncid)
+    end
 
     respond_to do |format|
       format.html do

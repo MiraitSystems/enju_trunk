@@ -376,7 +376,11 @@ class NacsisCat
         hash[:utl_info] = arraying(@record['UTL'])
       else
         hash[:issn] = issn
+        hash[:price] = @record['PRICE']
+        hash[:fid] = @record['FID']
+        hash[:bhn_info] = arraying(@record['BHNT'])
       end
+      hash[:ncid] = ncid
     end
   end
 
