@@ -458,6 +458,19 @@ class Manifestation < ActiveRecord::Base
     boolean :circulation_status_in_factory do
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
+
+    # 2014
+    string :manifestation_identifier, :multiple => true do
+      if root_of_series? # 雑誌の場合
+        # 同じ雑誌の全号の蔵書の蔵書情報IDのリストを取得する
+        series_manifestations.
+          map(&:manifestation_identifier).compact
+      else
+        manifestation_identifier
+      end
+    end
+
+
   end
 
   enju_manifestation_viewer
