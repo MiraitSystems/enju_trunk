@@ -13,15 +13,13 @@ class ExchangeRatesController < ApplicationController
     query = params[:query].to_s.strip
 
     order_list = @order_list
-    # state = @state
     search = ExchangeRate.search.build do
       fulltext query if query
       order_by(:started_at, :desc)
-      facet (:currency_id) do
-        order_by (:started_at :last)
-      end
+      # facet (:currency_id)
       paginate :page => page.to_i, :per_page => per_page
     end.execute
+    # @newest_rates_facet = search.facet(:currency_id).rows
     @exchange_rates = search.results
 
     # TODO

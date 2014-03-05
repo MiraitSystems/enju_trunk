@@ -1582,6 +1582,7 @@ ja:
         display_name: 表示名 
       exchange_rate:
         currency: 通貨単位
+        currency_id: 通貨単位
         rate: レート
         started_at: 利用開始年月日
       keycode:

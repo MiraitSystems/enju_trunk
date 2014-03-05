@@ -4,6 +4,7 @@ class ExchangeRate < ActiveRecord::Base
 
   paginates_per 10
 
+  validates_uniqueness_of :currency_id
   validates :rate, :presence => true
   validates :started_at, :presence => I18n.t('exchange_rate.invalid_started_at')
 
@@ -12,7 +13,7 @@ class ExchangeRate < ActiveRecord::Base
   searchable do
     text :currency_display_name do
       currency.try(:display_name)
-    end 
+    end
     string :currency_id
     time :started_at
   end
