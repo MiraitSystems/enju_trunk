@@ -31,7 +31,7 @@ function_00004:
   display_name: "目録管理"
   controller_name: ManifestationsController
   action_names: |
-                read:index,show
+                read:index,show,search_manifestation
                 update:new,create,edit,update,output_excelx
                 delete:destroy
   position: 4

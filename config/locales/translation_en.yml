@@ -1375,6 +1375,8 @@ en:
       nacsis_user_request:
         subject_heading: Subject heading
         subject_heading_reading: Subject heading (reading)
+        title_alternative: Title alternative
+        title_alternative_transcription: Title alternative (reading)
         publisher: Publisher
         pub_date: Publish date
         publish_year: Publish year
@@ -1386,10 +1388,32 @@ en:
         pub_country: Publish country
         title_language: Title language
         text_language: Text language
-        classmark: Classmark
         author_heading: Author heading
         subject: subject
         ncid: NCID
+        marc: MARC ID
+        cls_info: Classification info
+        vol_info: Volume info
+        VOL: Volume
+        ISBN: ISBN
+        PRICE: Price
+        XISBN: Invalid ISBN
+        nbn: NBN
+        lccn: LCCN
+        ptb_info: Parent manifestation info
+        PTBID: ID
+        PTBK: Type
+        PTBTR: Title
+        PTBTRR: Title (reading)
+        PTBTRVR: Title alternative (reading)
+        PTBNO: Number etc.
+        utl_info: Unification title info
+        UTID: ID
+        UTFLG: Main flag
+        UTHDNG: Title
+        UTHDNGR: Title (reading)
+        UTHDNGVR: Title alternative (reading)
+        UTINFO: Other info
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime
@@ -2002,6 +2026,7 @@ en:
     del_line: "-"
     user_notice: User notice
     select_use_titles: Use titles table
+    imported: Imported
     copy: Copy new create
 
   manual_for_user: "manual_for_user.pdf"
@@ -3000,6 +3025,7 @@ en:
     exinfo: Other
   external_catalog:
     ndl: NDL
+    nacsis: NACSIS
   copy_request:
     message: You can request to copy article.<br />
              Following information is required. 1.title, 2.author name, 3.series title(date of publication, volume&issue number, pages), 4.call number(if you know)<br />
@@ -3116,7 +3142,7 @@ en:
   manifestations:
     show_nacsis:
       local_import: Local import
-    more_than_last_number: " more than last number." 
+    more_than_last_number: " more than last number."
   function_class_abilities:
     index:
       ability_label:
