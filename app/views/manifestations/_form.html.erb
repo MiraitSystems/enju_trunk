@@ -10,7 +10,6 @@ jQuery(function(){
   });
 
   // look for manifestations with the same title
-alert(<%= @manifestation.new_record?%>);
   <% unless @manifestation.new_record? %>
     search_manifestation();
   <% end %>
