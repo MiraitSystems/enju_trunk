@@ -2954,6 +2954,7 @@ ja:
     binded: "製本済み"
     binder: "製本資料"
     status: "製本ステータス"
+    card: "製本カード"
   breadcrumb:
     lib_top: "図書館のトップページ"
     search_manifestations: "資料の検索"
