@@ -1451,50 +1451,34 @@ class Manifestation < ActiveRecord::Base
   end
 
   class << self
+
     # 指定されたNCIDによりNACSIS-CAT検索を行い、
     # 得られた情報からManifestationを作成する。
     #
     # * ncid - NCID
-    # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    def create_from_ncid(ncid, book_types = ManifestationType.book.all)
+    # * book_types - 書籍の書誌種別(ManifestationType)の配列
+    #                (NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
+    # * nacsis_cat - NacsisCat.searchを既に実行している場合、取得したNacsisCatモデルを設定する
+    def create_manifestation_from_ncid(ncid, book_types = ManifestationType.book.all, nacsis_cat = nil)
       raise ArgumentError if ncid.blank?
-
-      result = NacsisCat.search(dbs: [:book], id: ncid)
-      #子書誌情報の登録
-      attrs_result = new_from_nacsis_cat(ncid, result[:book].first, book_types)
-      child_manifestation = create(attrs_result[:attributes])
-      #親書誌情報の登録
-      create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
-
-      child_manifestation
-    end
-
-    # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
-    # 得られた情報からManifestationを作成する。
-    #
-    # * ncids - NCIDのリスト
-    # * opts
-    #   * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    #   * nacsis_batch_size - 一度に検索するNCID数
-    def batch_create_from_ncid(ncids, opts = {}, &block)
-      nacsis_batch_size = opts[:nacsis_batch_size] || 50
-      book_types = opts[:book_types] || ManifestationType.book.all
-
-      ncids.each_slice(nacsis_batch_size) do |ids|
-        result = NacsisCat.search(dbs: [:book], id: ids)
-        result[:book].each do |nacsis_cat|
-          #子書誌情報の登録
-          attrs_result = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
-          child_manifestation = create(attrs_result[:attributes])
-          #親書誌情報の登録
-          create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
-
-          block.call(child_manifestation) if block
-        end
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:book], id: ncid)
+        nacsis_cat = result[:book].first
       end
+      create_manifestation_from_nacsis_cat(ncid, nacsis_cat, book_types)
     end
 
     private
+
+      def create_manifestation_from_nacsis_cat(ncid, nacsis_cat, book_types)
+        return nil if ncid.nil? || nacsis_cat.blank?
+        #子書誌情報の登録
+        attrs_result = new_from_nacsis_cat(ncid, nacsis_cat, book_types)
+        child_manifestation = create(attrs_result[:attributes])
+        #親書誌情報の登録
+        create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
+        child_manifestation
+      end
 
       def new_from_nacsis_cat(ncid, nacsis_cat, book_types)
         attrs = {
@@ -1510,7 +1494,7 @@ class Manifestation < ActiveRecord::Base
           attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
           attrs[:note] = nacsis_info[:note]
           attrs[:marc_number] = nacsis_info[:marc]
-          attrs[:pub_date] = nacsis_info[:publish_year]
+          attrs[:date_of_publication_string] = nacsis_info[:publish_year]
           attrs[:size] = nacsis_info[:size]
           attrs[:nbn] = nacsis_info[:nbn]
           attrs[:lccn] = nacsis_info[:lccn]
@@ -1644,9 +1628,6 @@ class Manifestation < ActiveRecord::Base
             parent.derived_manifestations << child
           end
         end
-        logger.info "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        logger.info created_manifestations
-        logger.info "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         created_manifestations
       end
   end

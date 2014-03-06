@@ -149,214 +149,165 @@ class SeriesStatement < ActiveRecord::Base
     # 得られた情報からSeriesStatementを作成する。
     #
     # * ncid - NCID
-    # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    def create_from_ncid(ncid, book_types = ManifestationType.book.all)
+    # * book_types - 書籍の書誌種別(ManifestationType)の配列
+    #                (NOTE: バッチ時の外部キャッシュ用で和雑誌・洋雑誌にあたるレコードを与える)
+    # * nacsis_cat - NacsisCat.searchを既に実行している場合、取得したNacsisCatモデルを設定する
+    def create_series_statement_from_ncid(ncid, book_types = ManifestationType.series.all, nacsis_cat = nil)
       raise ArgumentError if ncid.blank?
-
-      result = NacsisCat.search(dbs: [:serial], id: ncid)
-      nacsis_detail_info = result[:serial].first.try(:detail)
-
-      # 元の雑誌情報作成
-      series_statement = create_series_statement_from_nacsis_cat(ncid, nacsis_detail_info, book_types)
-
-      # 遍歴ファミリーの作成
-      relationship_family = create_family_from_nacsis_cat(nacsis_detail_info)
-
-      if relationship_family
-        # 元の雑誌をファミリーに紐づける
-        relationship_family.series_statements = []
-        relationship_family.series_statements << series_statement
-
-        nacsis_detail_info[:bhn_info].each do |bhn|
-          result_bhn = NacsisCat.search(dbs: [:serial], id: bhn['BHBID'])
-          nacsis_detail_info_bhn = result_bhn[:serial].first.try(:detail)
-
-          # 遍歴の雑誌情報作成
-          series_statement_bhn = create_series_statement_from_nacsis_cat(nacsis_detail_info_bhn[:ncid], nacsis_detail_info_bhn, book_types)
-
-          # 雑誌同士の関連情報作成
-          series_statement_relationship = SeriesStatementRelationship.new(:seq => 1, :source => 1)
-          if check_relationship_before?(bhn['BHK'].to_s)
-            series_statement_relationship.before_series_statement_relationship = series_statement_bhn
-            series_statement_relationship.after_series_statement_relationship = series_statement
-          else
-            series_statement_relationship.before_series_statement_relationship = series_statement
-            series_statement_relationship.after_series_statement_relationship = series_statement_bhn
-          end
-          series_statement_relationship.series_statement_relationship_type = get_relationship_type(bhn['BHK'].to_s)
-          series_statement_relationship.relationship_family = relationship_family
-          series_statement_relationship.save!
-
-          # 遍歴ファミリーに遍歴の雑誌情報を関連付ける
-          relationship_family.series_statements << series_statement_bhn
-        end
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:serial], id: ncid)
+        nacsis_cat = result[:serial].first
       end
-      series_statement
-    end
-
-    # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
-    # 得られた情報からSeriesStatementを作成する。
-    #
-    # * ncids - NCIDのリスト
-    # * opts
-    #   * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    #   * nacsis_batch_size - 一度に検索するNCID数
-    def batch_create_from_ncid(ncids, opts = {}, &block)
-      nacsis_batch_size = opts[:nacsis_batch_size] || 50
-      book_types = opts[:book_types] || ManifestationType.book.all
-
-      ncids.each_slice(nacsis_batch_size) do |ids|
-        result = NacsisCat.search(dbs: [:serial], id: ids)
-        result[:serial].each do |nacsis_cat|
-
-          # 元の雑誌情報作成
-          series_statement = create_series_statement_from_nacsis_cat(ids, nacsis_cat.detail, book_types)
-
-          # 遍歴ファミリーの作成
-          relationship_family = create_family_from_nacsis_cat(nacsis_cat.detail)
-
-          if relationship_family
-            # 元の雑誌をファミリーに紐づける
-            relationship_family.series_statements = []
-            relationship_family.series_statements << series_statement
-
-            nacsis_cat.detail[:bhn_info].each do |bhn|
-              result_bhn = NacsisCat.search(dbs: [:serial], id: bhn['BHBID'])
-              nacsis_detail_info_bhn = result_bhn[:serial].first.try(:detail)
-
-              # 遍歴の雑誌情報作成
-              series_statement_bhn = create_series_statement_from_nacsis_cat(nacsis_detail_info_bhn[:ncid], nacsis_detail_info_bhn, book_types)
-
-              # 雑誌同士の関連情報作成
-              series_statement_relationship = SeriesStatementRelationship.new(:seq => 1, :source => 1)
-              if check_relationship_before?(bhn['BHK'].to_s)
-                series_statement_relationship.before_series_statement_relationship = series_statement_bhn
-                series_statement_relationship.after_series_statement_relationship = series_statement
-              else
-                series_statement_relationship.before_series_statement_relationship = series_statement
-                series_statement_relationship.after_series_statement_relationship = series_statement_bhn
-              end
-              series_statement_relationship.series_statement_relationship_type = get_relationship_type(bhn['BHK'].to_s)
-              series_statement_relationship.relationship_family = relationship_family
-              series_statement_relationship.save!
-
-              # 遍歴ファミリーに遍歴の雑誌情報を関連付ける
-              relationship_family.series_statements << series_statement_bhn
-            end
-          end
-
-          block.call(series_statement) if block
-        end
-      end
+      create_series_from_nacsis_cat(nacsis_cat.detail, book_types)
     end
 
     private
 
-      def create_series_statement_from_nacsis_cat(ncid, nacsis_info, book_types)
-        if nacsis_info.present?
-          series_attrs = new_series_from_nacsis_cat(ncid, nacsis_info)
+      def create_series_from_nacsis_cat(nacsis_info, book_types)
+        return nil if nacsis_info.blank? || book_types.blank?
+
+        # 元の雑誌情報作成
+        series_statement = create_series_statement_from_nacsis_cat(nacsis_info, book_types)
+
+        # 遍歴ファミリーの作成
+        relationship_family = create_family_from_nacsis_cat(nacsis_info)
+
+        if relationship_family
+          # 元の雑誌をファミリーに紐づける
+          relationship_family.series_statements = []
+          relationship_family.series_statements << series_statement
+
+          nacsis_info[:bhn_info].each do |bhn|
+            result_bhn = NacsisCat.search(dbs: [:serial], id: bhn['BHBID'])
+            nacsis_info_bhn = result_bhn[:serial].first.try(:detail)
+
+            # 遍歴の雑誌情報作成
+            series_statement_bhn = SeriesStatement.where(:nacsis_series_statementid => nacsis_info_bhn[:ncid]).first
+            if series_statement_bhn.nil?
+              series_statement_bhn = create_series_statement_from_nacsis_cat(nacsis_info_bhn, book_types)
+            end
+
+            # 雑誌同士の関連情報作成
+            series_statement_relationship = SeriesStatementRelationship.new(:seq => 1, :source => 1)
+            if check_relationship_before?(bhn['BHK'].to_s)
+              series_statement_relationship.before_series_statement_relationship = series_statement_bhn
+              series_statement_relationship.after_series_statement_relationship = series_statement
+            else
+              series_statement_relationship.before_series_statement_relationship = series_statement
+              series_statement_relationship.after_series_statement_relationship = series_statement_bhn
+            end
+            series_statement_relationship.series_statement_relationship_type = get_relationship_type(bhn['BHK'].to_s)
+            series_statement_relationship.relationship_family = relationship_family
+            series_statement_relationship.save!
+
+            # 遍歴ファミリーに遍歴の雑誌情報を関連付ける
+            relationship_family.series_statements << series_statement_bhn
+          end
+        end
+        series_statement
+      end
+
+      def create_series_statement_from_nacsis_cat(nacsis_info, book_types)
+        return nil if nacsis_info.blank? || book_types.blank?
+        series_statement = SeriesStatement.where(:nacsis_series_statementid => nacsis_info[:ncid]).first
+        if series_statement.nil?
+          series_attrs = new_series_statement_from_nacsis_cat(nacsis_info)
           series_statement = new(series_attrs)
-          root_attrs = new_root_from_nacsis_cat(ncid, nacsis_info, book_types)
+          root_attrs = new_root_from_nacsis_cat(nacsis_info, book_types)
           series_statement.root_manifestation = Manifestation.new(root_attrs)
           series_statement.root_manifestation.periodical_master = true
           series_statement.root_manifestation.save!
           series_statement.manifestations << series_statement.root_manifestation
           series_statement.save!
-          series_statement
-        else
-          nil
         end
+        series_statement
       end
 
-      def new_series_from_nacsis_cat(ncid, nacsis_info)
-        attrs = {
-          nacsis_series_statementid: ncid,
-        }
-        if nacsis_info.present?
-          attrs[:periodical] = true
-          attrs[:original_title] = nacsis_info[:subject_heading]
-          attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-          attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
-          attrs[:issn] = nacsis_info[:issn]
-          attrs[:note] = nacsis_info[:note]
-        end
+      def new_series_statement_from_nacsis_cat(nacsis_info)
+        return {} if nacsis_info.blank?
+        attrs = {}
+        attrs[:nacsis_series_statementid] = nacsis_info[:ncid]
+        attrs[:periodical] = true
+        attrs[:original_title] = nacsis_info[:subject_heading]
+        attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
+        attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
+        attrs[:issn] = nacsis_info[:issn]
+        attrs[:note] = nacsis_info[:note]
         attrs
       end
 
-      def new_root_from_nacsis_cat(ncid, nacsis_info, book_types)
-        attrs = {
-          nacsis_identifier: ncid,
-        }
-        if nacsis_info.present?
-          attrs[:external_catalog] = 2
-          attrs[:original_title] = nacsis_info[:subject_heading]
-          attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-          attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
-          attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
-          attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
-          attrs[:note] = nacsis_info[:note]
-          attrs[:marc_number] = nacsis_info[:marc]
-          attrs[:pub_date] = nacsis_info[:publish_year]
-          attrs[:size] = nacsis_info[:size]
-          attrs[:lccn] = nacsis_info[:lccn]
-          attrs[:price_string] = nacsis_info[:price]
+      def new_root_from_nacsis_cat(nacsis_info, book_types)
+        return {} if nacsis_info.blank? || book_types.blank?
+        attrs = {}
+        attrs[:nacsis_identifier] = nacsis_info[:ncid]
+        attrs[:external_catalog] = 2
+        attrs[:original_title] = nacsis_info[:subject_heading]
+        attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
+        attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
+        attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
+        attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
+        attrs[:note] = nacsis_info[:note]
+        attrs[:marc_number] = nacsis_info[:marc]
+        attrs[:date_of_publication_string] = nacsis_info[:publish_year]
+        attrs[:size] = nacsis_info[:size]
+        attrs[:lccn] = nacsis_info[:lccn]
+        attrs[:price_string] = nacsis_info[:price]
 
-          # 出版国がnilの場合、unknownを設定する。
-          if nacsis_info[:pub_country]
-            attrs[:country_of_publication] = nacsis_info[:pub_country]
+        # 出版国がnilの場合、unknownを設定する。
+        if nacsis_info[:pub_country]
+          attrs[:country_of_publication] = nacsis_info[:pub_country]
+        else
+          attrs[:country_of_publication] = Country.where(:name => 'unknown').first
+        end
+
+        # 和書または洋書を設定し、同時に言語も設定する。
+        # テキストの言語がnilの場合、未分類、不明を設定する。
+        attrs[:languages] = []
+        if nacsis_info[:text_language]
+          if nacsis_info[:text_language].name == 'Japanese'
+            attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
           else
-            attrs[:country_of_publication] = Country.where(:name => 'unknown').first
+            attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
           end
+          attrs[:languages] << nacsis_info[:text_language]
+        else
+          attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
+          attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
+        end
 
-          # 和書または洋書を設定し、同時に言語も設定する。
-          # テキストの言語がnilの場合、未分類、不明を設定する。
-          attrs[:languages] = []
-          if nacsis_info[:text_language]
-            if nacsis_info[:text_language].name == 'Japanese'
-              attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
-            else
-              attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
+        # 関連テーブル：著者の設定
+        attrs[:creators] = []
+        nacsis_info[:creators].each do |creator|
+          #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
+          attrs[:creators] <<
+            Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
+              if p.new_record?
+                p.agent_identifier = creator['AID']
+                p.full_name_transcription = creator['AHDNGR']
+                p.full_name_alternative_transcription = creator['AHDNGVR']
+              end
             end
-            attrs[:languages] << nacsis_info[:text_language]
-          else
-            attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
-            attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
-          end
+        end
 
-          # 関連テーブル：著者の設定
-          attrs[:creators] = []
-          nacsis_info[:creators].each do |creator|
-            #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
-            attrs[:creators] <<
-              Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
-                if p.new_record?
-                  p.agent_identifier = creator['AID']
-                  p.full_name_transcription = creator['AHDNGR']
-                  p.full_name_alternative_transcription = creator['AHDNGVR']
-                end
-              end
-          end
+        # 関連テーブル：出版者の設定
+        attrs[:publishers] = []
+        nacsis_info[:publishers].each do |pub|
+          attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
+        end
 
-          # 関連テーブル：出版者の設定
-          attrs[:publishers] = []
-          nacsis_info[:publishers].each do |pub|
-            attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
-          end
-
-          # 関連テーブル：件名の設定
-          attrs[:subjects] = []
-          nacsis_info[:subjects].each do |subject|
-            subject_type = SubjectType.where(:name => subject['SHK']).first
-            subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
-            if subject['SHD'].present? && subject_type
-              sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
-              if sub
-                attrs[:subjects] << sub
-              else
-                attrs[:subjects] << Subject.create(:term => subject['SHD'],
-                                                   :term_transcription => subject['SHR'],
-                                                   :subject_type_id => subject_type.id)
-              end
+        # 関連テーブル：件名の設定
+        attrs[:subjects] = []
+        nacsis_info[:subjects].each do |subject|
+          subject_type = SubjectType.where(:name => subject['SHK']).first
+          subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
+          if subject['SHD'].present? && subject_type
+            sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
+            if sub
+              attrs[:subjects] << sub
+            else
+              attrs[:subjects] << Subject.create(:term => subject['SHD'],
+                                                 :term_transcription => subject['SHR'],
+                                                 :subject_type_id => subject_type.id)
             end
           end
         end
@@ -364,12 +315,9 @@ class SeriesStatement < ActiveRecord::Base
       end
 
       def create_family_from_nacsis_cat(nacsis_info)
-        if nacsis_info.present? && nacsis_info[:fid]
-          RelationshipFamily.where(:fid => nacsis_info[:fid]).first_or_create do |rf|
-            rf.display_name = "CHANGE_#{nacsis_info[:fid]}" if rf.new_record?
-          end
-        else
-          nil
+        return nil if nacsis_info.blank? || nacsis_info[:fid].nil?
+        RelationshipFamily.where(:fid => nacsis_info[:fid]).first_or_create do |rf|
+          rf.display_name = "CHANGE_#{nacsis_info[:fid]}" if rf.new_record?
         end
       end
 

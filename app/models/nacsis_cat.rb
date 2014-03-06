@@ -93,6 +93,30 @@ class NacsisCat
       search_by_gateway(dbs: dbs, opts: db_opts, query: query)
     end
 
+    # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
+    # 得られた情報からManifestation,または SeriesStatement を作成する。
+    #
+    # * ncids - NCIDのリスト
+    # * opts
+    #   * nacsis_batch_size - 一度に検索するNCID数
+    def batch_create_from_ncid(ncids, opts = {}, &block)
+      nacsis_batch_size = opts[:nacsis_batch_size] || 50
+
+      ncids.each_slice(nacsis_batch_size) do |ids|
+        result = NacsisCat.search(dbs: [:all], id: ids)
+        result[:all].each do |nacsis_cat|
+          if nacsis_cat.serial?
+            created_record =
+              SeriesStatement.create_series_statement_from_ncid(nacsis_cat.ncid, ManifestationType.series.all, nacsis_cat)
+          else
+            created_record =
+              Manifestation.create_manifestation_from_ncid(nacsis_cat.ncid, ManifestationType.book.all, nacsis_cat)
+          end
+          block.call(created_record) if block
+        end
+      end
+    end
+
     private
 
       DB_KEY = {
@@ -342,7 +366,7 @@ class NacsisCat
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
       :title_alternative => map_attrs(@record['VT'], 'VTD').compact.uniq,
       :title_alternative_transcription => map_attrs(@record['VT'], 'VTR').compact.uniq,
-      :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
+      :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT', 'PUBF'], ',') },
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
       :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },

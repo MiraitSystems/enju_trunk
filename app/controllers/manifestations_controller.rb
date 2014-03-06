@@ -1102,20 +1102,22 @@ class ManifestationsController < ApplicationController
     type = params['manifestation_type'] || 'book'
 
     if type == 'book'
-      manifestation = Manifestation.create_from_ncid(ncid)
+      created_record = Manifestation.where(:nacsis_identifier => ncid).first
+      created_record = Manifestation.create_manifestation_from_ncid(ncid) if created_record.nil?
     else
-      manifestation = SeriesStatement.create_from_ncid(ncid)
+      created_record = SeriesStatement.where(:nacsis_series_statementid => ncid).first
+      created_record = SeriesStatement.create_series_statement_from_ncid(ncid) if created_record.nil?
     end
 
     respond_to do |format|
       format.html do
-        if manifestation.persisted?
-          redirect_to manifestation,
-            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
-        elsif record = Manifestation.where(nacsis_identifier: ncid).first
-          redirect_to record
-        else
+        if created_record.blank?
           redirect_to nacsis_manifestations_path(ncid: ncid, manifestation_type: type)
+        elsif created_record.new_record?
+          redirect_to created_record,
+            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
+        else
+          redirect_to created_record
         end
       end
     end
