@@ -88,4 +88,23 @@ class BookbindingsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+ 
+  def get_bookbinding_card
+    begin
+      @bookbinder = Manifestation.find(params[:param])
+      if @bookbinder.bookbinder == true
+        file = ReportExport.get_bookbinding_card_pdf(@bookbinder)
+        
+        send_data file.generate, :filename => Setting.bookbinding_card_pdf.filename, :type => 'application/pdf', :disposition => 'attachment'
+      else
+        flash[:error] = I18n.t('page.error_file')
+        redirect_to :back
+      end
+    rescue Exception => e
+      flash[:error] = I18n.t('page.error_file')
+      logger.error e
+      redirect_to :back
+    end
+  end
+
 end

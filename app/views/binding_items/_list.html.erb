@@ -32,7 +32,9 @@
   <p>
     <%= t('page.search_term') -%>:
     <%= search_field_tag 'query', nil, :class => 'search_form_short', :placeholder => t('page.search_term') -%>
-    <%= check_box_tag 'all_manifestations', true %><%= t('advanced_search.all_manifestations') %>
+    <% unless SystemConfiguration.get("manifestation.show_all") %>
+      <%= check_box_tag 'all_manifestations', true %><%= t('advanced_search.all_manifestations') %>
+    <% end %>
     <%= hidden_field_tag :without_article, true %>
     <%= hidden_field_tag :with_periodical_item, true %>
     <%= hidden_field_tag :per_page, 30 %>
