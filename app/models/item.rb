@@ -307,6 +307,33 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def binded_manifestations(sort = :id)
+    if sort == :serial_number 
+      binding_item, not_binding_item = self.binding_items.partition{|binding_items| binding_items.manifestation.serial_number?}
+      if binding_item
+        binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
+      else 
+        not_binding_item(&:manifestation)
+      end
+    else
+      self.binding_items.map(&:manifestation).sort_by(&sort)
+    end
+  end
+
+  def binded_missing_manifestations(sort = :id)
+    if sort == :serial_number
+      missing_manifestations = self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation)
+      binding_item, not_binding_item = missing_manifestations.partition{|binding_items| binding_items.serial_number?}
+      if binding_item
+        binding_item.sort_by(&sort) + not_binding_item
+      else
+        not_binding_item
+      end
+    else
+      self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation).sort_by(&sort)
+    end
+  end
+
   def exchangeable?
     case self.circulation_status.name
     when "In Process", "Available On Shelf" 

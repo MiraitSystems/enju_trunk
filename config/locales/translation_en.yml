@@ -3019,6 +3019,7 @@ en:
     binded: Binded
     binder: Binder
     status: Binding status
+    card: Binding card
   user_status:
     general: General
     guest: Guest

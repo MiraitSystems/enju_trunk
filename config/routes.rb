@@ -509,6 +509,7 @@ EnjuLeaf::Application.routes.draw do
     resources :binding_items
     get :bind_undo, :on => :collection
     get :add_binding_item, :on => :collection
+    get :get_bookbinding_card, :on => :collection
   end
   resources :binding_items
   match '/bookbindings/:bookbinder_id/manifestations' => 'manifestations#index'
