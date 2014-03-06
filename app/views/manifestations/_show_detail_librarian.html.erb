@@ -8,7 +8,7 @@
       <table id="resource_detail">
 
         <% manifestation.work_has_titles.each do |title| %>
-          <tr> 
+          <tr>
             <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name %>:</td>
             <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
           </tr>
@@ -17,7 +17,14 @@
         <%- if manifestation.try(:external_catalog) && manifestation.external_catalog > 0 -%>
           <tr>
             <td><%= t('activerecord.attributes.manifestation.external_catalog') %>:</td>
-            <td><%= t('external_catalog.ndl') %></td>
+            <td>
+              <%- case manifestation.external_catalog -%>
+              <%- when 1 -%>
+                <%= t('external_catalog.ndl') -%>
+              <%- when 2 -%>
+                <%= t('external_catalog.nacsis') -%>
+              <%- end -%>
+            </td>
           </tr>
         <%- end -%>
         <% if manifestation.bookbinder %>
@@ -34,7 +41,7 @@
               <% unless manifestation.article? %>
                 <%- if manifestation.series_statement.last_issues.include?(manifestation) %>
                   <%= t('manifestation.new_serial') -%>
-                  <%- end -%>           
+                  <%- end -%>
               <% end %>
               <%- if manifestation.issn.present? -%>
                 (<%= t('activerecord.attributes.manifestation.issn') -%>: <%= manifestation.issn -%>)

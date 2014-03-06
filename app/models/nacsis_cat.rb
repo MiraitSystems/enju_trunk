@@ -296,6 +296,15 @@ class NacsisCat
     end
   end
 
+  def classification_info
+    return nil if serial?
+    hash = {}
+    arraying(@record['CLS']).each do |cl|
+      hash.store(cl['CLSK'], cl['CLSD'])
+    end
+    hash
+  end
+
   def summary
     return nil unless @record
 
@@ -331,18 +340,14 @@ class NacsisCat
     {
       :subject_heading => @record['TR'].try(:[], 'TRD'),
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
-      :subject_heading_reading_alternative => @record['TR'].try(:[], 'TRVR'),
+      :title_alternative => map_attrs(@record['VT'], 'VTD').compact.uniq,
+      :title_alternative_transcription => map_attrs(@record['VT'], 'VTR').compact.uniq,
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT'], ',') },
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
-      :pub_country => @record['CNTRY'], # :pub_country => @record.cntry.try {|cntry| Country.where(:alpha_2 => cntry.upcase).first }, # XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html
+      :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
       :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
       :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
-      :classmark => if book?
-          map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(';')
-        else
-          nil
-        end,
       :author_heading => map_attrs(@record['AL']) do |al|
         if al['AHDNG'].blank? && al['AHDNGR'].blank?
           nil
@@ -352,13 +357,26 @@ class NacsisCat
           al['AHDNG'] || al['AHDNGR']
         end
       end.compact,
-      :subject => map_attrs(@record['SH'], 'SHD'),
+      :subject => map_attrs(@record['SH'], 'SHD').compact.uniq,
+      :note => arraying(@record['NOTE']).compact.join(" "),
+
+      :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
+      :size => @record['PHYS'].try(:[],'PHYSS'),
+      :creators => arraying(@record['AL']),
+      :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
+      :subjects => arraying(@record['SH']),
+      :marc => @record['MARCID'],
+      :lccn => @record['LCCN'],
     }.tap do |hash|
-        if book?
-          hash[:isbn] = isbn
-        else
-          hash[:issn] = issn
-        end
+      if book?
+        hash[:nbn] = arraying(@record['NBN']).compact.join(",")
+        hash[:cls_info] = classification_info
+        hash[:vol_info] = arraying(@record['VOLG'])
+        hash[:ptb_info] = arraying(@record['PTBL'])
+        hash[:utl_info] = arraying(@record['UTL'])
+      else
+        hash[:issn] = issn
+      end
     end
   end
 
@@ -421,6 +439,17 @@ class NacsisCat
         ary.blank? ? nil : ary.join(str)
       else
         obj
+      end
+    end
+
+    def arraying(obj)
+      case true
+      when obj.blank?
+        []
+      when obj.is_a?(Array)
+        obj
+      else
+        [obj]
       end
     end
 end

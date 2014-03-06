@@ -10,7 +10,9 @@ jQuery(function(){
   });
 
   // look for manifestations with the same title
-  search_manifestation();
+  <% unless @manifestation.new_record? %>
+    search_manifestation();
+  <% end %>
   $("#manifestation_original_title").change(function(){
      search_manifestation();
   });
@@ -20,7 +22,7 @@ function search_manifestation() {
   //var user_id = $("#manifestation_original_title").val();
   $.ajax({
     type: "GET",
-    url: "search_manifestation",
+    url: "/manifestations/search_manifestation",
     data: { 
       "original_title": $("#manifestation_original_title").val(),
       "manifestation_id": "<%= @manifestation.try(:id) %>"
