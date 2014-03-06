@@ -5,7 +5,19 @@ class ExchangeRatesController < ApplicationController
   after_filter :solr_commit, :only => [:create, :update, :destroy]
 
   def index
-    # TODO if 検索語を入力した時の処理
+
+    # TODO 通貨レート反映処理
+    started_at = params[:exchange_rates]
+=begin
+    if # 正しい日付が入力されている
+      update_to_orders
+      format.html { redirect_to }
+    else # エラーが存在する
+      format.html { render }
+    end
+=end
+
+    # TODO
 
     @count = {}
     page = params[:page] || 1
@@ -21,8 +33,6 @@ class ExchangeRatesController < ApplicationController
     end.execute
     # @newest_rates_facet = search.facet(:currency_id).rows
     @exchange_rates = search.results
-
-    # TODO
     @currencies = Currency.find(:all, :order => "display_name DESC")
   end
 
