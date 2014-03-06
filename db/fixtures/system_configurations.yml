@@ -1192,3 +1192,10 @@ system_configuration_00169:
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
+system_configuration_00170:
+  id: 170
+  keyname: manifestation.show_all
+  v: "false"
+  typename: Boolean
+  description: "ライブラリアン権限以上でログイン時、検索非対称資料を含む全ての資料を検索結果に表示する"
+  category: 'manifestation'

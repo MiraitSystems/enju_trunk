@@ -1326,7 +1326,9 @@ class ManifestationsController < ApplicationController
     if @removed
       with << [:has_removed, :equal_to, true]
     else
-      if !params[:missing_issue] && (@all_manifestations.blank? or !@all_manifestations == true)
+      if !params[:missing_issue] && 
+        (@all_manifestations.blank? or !@all_manifestations == true) &&
+        !SystemConfiguration.get("manifestation.show_all") 
         without << [:non_searchable, :equal_to, true]
       end
     end
