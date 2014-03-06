@@ -307,13 +307,9 @@ class Item < ActiveRecord::Base
   end
 
   def binded_manifestations(sort = :id)
-    if sort == :serial_number 
+    if sort == :serial_number
       binding_item, not_binding_item = self.binding_items.partition{|binding_items| binding_items.manifestation.serial_number?}
-      if binding_item
-        binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
-      else 
-        not_binding_item(&:manifestation)
-      end
+      binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
     else
       self.binding_items.map(&:manifestation).sort_by(&sort)
     end
@@ -321,13 +317,15 @@ class Item < ActiveRecord::Base
 
   def binded_missing_manifestations(sort = :id)
     if sort == :serial_number
-      missing_manifestations = self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation)
-      binding_item, not_binding_item = missing_manifestations.partition{|binding_items| binding_items.serial_number?}
-      if binding_item
-        binding_item.sort_by(&sort) + not_binding_item
-      else
-        not_binding_item
+      missing_manifestations = Array.new
+      binding_item, not_binding_item = self.binding_items.partition{|binding_items| binding_items.manifestation.serial_number?}
+      binding_manifestations = binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
+      binding_manifestations.each do |manifestation|
+        if manifestation.missing_issue ==1 || manifestation.missing_issue == 2
+          missing_manifestations << manifestation
+        end
       end
+      return missing_manifestations
     else
       self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation).sort_by(&sort)
     end
