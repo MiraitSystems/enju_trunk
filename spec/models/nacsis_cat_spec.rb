@@ -331,6 +331,14 @@ describe NacsisCat do
       build_query(issn: %w(foo bar baz)).should eq('ISSNKEY="foo" ISSNKEY="bar" OR ISSNKEY="baz" OR')
     end
 
+    it ':nbn指定からNBNの検索式を生成すること' do
+      build_query(nbn: 'foo').should eq('NBN="foo"')
+      build_query(nbn: %w(foo)).should eq('NBN="foo"')
+      build_query(nbn: %w(foo bar)).should eq('NBN="foo" NBN="bar" OR')
+      build_query(nbn: %w(foo bar baz)).should eq('NBN="foo" NBN="bar" OR NBN="baz" OR')
+    end
+
+
     it '複数の指定からAND条件の検索式を生成すること' do
       build_query(
         title: %w(foo),
@@ -576,6 +584,18 @@ describe NacsisCat do
     it '雑誌の書誌に対して、nilを返すこと' do
       nacsis_cat = nacsis_cat_with_mock_record(:serial)
       expect(nacsis_cat.isbn).to be_nil
+    end
+  end
+
+  describe '#nbnは' do
+    it '図書の書誌に対して、NBN情報を集めた配列を返すこと' do
+      nacsis_cat = nacsis_cat_with_mock_record(:book)
+      expect(nacsis_cat.nbn).to eq(["JP98050757", "JP82008076"])
+    end
+
+    it '雑誌の書誌に対して、nilを返すこと' do
+      nacsis_cat = nacsis_cat_with_mock_record(:serial)
+      expect(nacsis_cat.nbn).to be_nil
     end
   end
 
