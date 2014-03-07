@@ -364,6 +364,7 @@ class Manifestation < ActiveRecord::Base
     end
     # OTC end
     string :sort_title
+    string :original_title
     boolean :periodical do
       serial?
     end
@@ -1470,8 +1471,15 @@ class Manifestation < ActiveRecord::Base
     # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
     def create_from_ncid(ncid, book_types = ManifestationType.book.all)
       raise ArgumentError if ncid.blank?
+
       result = NacsisCat.search(dbs: [:book], id: ncid)
-      new_from_nacsis_cat(ncid, result[:book].first, book_types).tap {|record| record.save }
+      #子書誌情報の登録
+      attrs_result = new_from_nacsis_cat(ncid, result[:book].first, book_types)
+      child_manifestation = create(attrs_result[:attributes])
+      #親書誌情報の登録
+      create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
+
+      child_manifestation
     end
 
     # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
@@ -1488,9 +1496,13 @@ class Manifestation < ActiveRecord::Base
       ncids.each_slice(nacsis_batch_size) do |ids|
         result = NacsisCat.search(dbs: [:book], id: ids)
         result[:book].each do |nacsis_cat|
-          record = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
-          record.save
-          block.call(record) if block
+          #子書誌情報の登録
+          attrs_result = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
+          child_manifestation = create(attrs_result[:attributes])
+          #親書誌情報の登録
+          create_parent_manifestations(child_manifestation, attrs_result[:parents], book_types)
+
+          block.call(child_manifestation) if block
         end
       end
     end
@@ -1503,21 +1515,152 @@ class Manifestation < ActiveRecord::Base
         }
         if nacsis_cat.present?
           nacsis_info = nacsis_cat.detail
+          attrs[:external_catalog] = 2
           attrs[:original_title] = nacsis_info[:subject_heading]
           attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-          attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
+          attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
+          attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
+          attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
+          attrs[:note] = nacsis_info[:note]
+          attrs[:marc_number] = nacsis_info[:marc]
+          attrs[:pub_date] = nacsis_info[:publish_year]
+          attrs[:size] = nacsis_info[:size]
+          attrs[:nbn] = nacsis_info[:nbn]
+          attrs[:lccn] = nacsis_info[:lccn]
 
-          # 和書または洋書を設定する
-          if nacsis_info[:text_language] &&
-              nacsis_info[:text_language].name == 'Japanese'
-            type = book_types.detect {|bt| /japanese/io =~ bt.name }
+          # NDCは最新のバージョンのものを検索して設定する。
+          attrs[:ndc] = search_clasification(nacsis_info[:cls_info], "NDC")
+
+          # 出版国がnilの場合、unknownを設定する。
+          if nacsis_info[:pub_country]
+            attrs[:country_of_publication] = nacsis_info[:pub_country]
           else
-            type = book_types.detect {|bt| /foreign/io =~ bt.name }
+            attrs[:country_of_publication] = Country.where(:name => 'unknown').first
           end
-          attrs[:manifestation_type] = type
+
+          # 和書または洋書を設定し、同時に言語も設定する。
+          # テキストの言語がnilの場合、未分類、不明を設定する。
+          attrs[:languages] = []
+          if nacsis_info[:text_language]
+            if nacsis_info[:text_language].name == 'Japanese'
+              attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
+            else
+              attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
+            end
+            attrs[:languages] << nacsis_info[:text_language]
+          else
+            attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
+            attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
+          end
+
+          # 関連テーブル：著者の設定
+          attrs[:creators] = []
+          nacsis_info[:creators].each do |creator|
+            #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
+            attrs[:creators] <<
+              Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
+                if p.new_record?
+                  p.agent_identifier = creator['AID']
+                  p.full_name_transcription = creator['AHDNGR']
+                  p.full_name_alternative_transcription = creator['AHDNGVR']
+                end
+              end
+          end
+
+          # 関連テーブル：出版者の設定
+          attrs[:publishers] = []
+          nacsis_info[:publishers].each do |pub|
+            attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
+          end
+
+          # 関連テーブル：件名の設定
+          attrs[:subjects] = []
+          nacsis_info[:subjects].each do |subject|
+            subject_type = SubjectType.where(:name => subject['SHK']).first
+            subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
+            if subject['SHD'].present? && subject_type
+              sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
+              if sub
+                attrs[:subjects] << sub
+              else
+                attrs[:subjects] << Subject.create(:term => subject['SHD'],
+                                                   :term_transcription => subject['SHR'],
+                                                   :subject_type_id => subject_type.id)
+              end
+            end
+          end
+
+          # 関連テーブル：ISBNの設定
+          identifier_type = IdentifierType.where(:name => 'isbn').first
+          if identifier_type
+            attrs[:identifiers] = []
+            nacsis_info[:vol_info].each do |vol_info|
+              attrs[:identifiers] << Identifier.create(:body => vol_info['ISBN'], :identifier_type_id => identifier_type.id) if vol_info['ISBN']
+            end
+          end
+
+          # 親書誌の設定
+          parents = nacsis_info[:ptb_info]
+
         end
 
-        new(attrs)
+        {:attributes => attrs, :parents => parents}
+      end
+
+      def search_clasification(cls_hash, key)
+        return nil if cls_hash.blank? or key.blank?
+        return_value = nil
+        if key == "NDC"
+          ["NDC9","NDC8","NDC7","NDC6","NDC"].each do |ndc|
+            if cls_hash[ndc].present?
+              return_value = cls_hash[ndc]
+              break
+            end
+          end
+        else
+          return_value = cls_hash[key]
+        end
+        return_value
+      end
+
+      def create_parent_manifestations(child_manifestation, parent_attrs, book_types)
+        return nil if child_manifestation.nil? || parent_attrs.blank?
+        created_manifestations = []
+        created_manifestations << child_manifestation
+        parent_attrs.each do |ptbl_record|
+          parent_manifestation = where(:nacsis_identifier => ptbl_record['PTBID']).first
+          if parent_manifestation
+            created_manifestations << parent_manifestation
+          else
+            parent_result = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
+            if parent_result[:book].blank?
+              unless ptbl_record['PTBTR'].nil?
+                created_manifestations << where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
+                  if m.new_record?
+                    m.nacsis_identifier = ptbl_record['PTBID']
+                    m.title_transcription = ptbl_record['PTBTRR']
+                    m.title_alternative_transcription = ptbl_record['PTBTRVR']
+                    m.note = ptbl_record['PTBNO']
+                  end
+                end
+              end
+            else
+              parent_attrs_result = new_from_nacsis_cat(ptbl_record['PTBID'], parent_result[:book].first, book_types)
+              created_manifestations << create(parent_attrs_result[:attributes])
+            end
+          end
+        end
+        #親書誌関係の登録
+        created_manifestations.reverse.each do |parent|
+          created_manifestations.each do |child|
+            break if parent == child
+            parent.derived_manifestations << child
+          end
+        end
+        logger.info "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        logger.info created_manifestations
+        logger.info "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        created_manifestations
       end
   end
 

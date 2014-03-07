@@ -10,7 +10,9 @@ class Item < ActiveRecord::Base
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable,
-                  :item_has_operators_attributes
+                  :item_has_operators_attributes,
+                  :non_searchable, :item_exinfo
+
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL')
@@ -78,9 +80,8 @@ class Item < ActiveRecord::Base
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   has_many :item_has_operators, :dependent => :destroy
   has_many :operators, :through => :item_has_operators, :source => :user
-
-
  accepts_nested_attributes_for :item_has_operators
+  has_many :item_exinfos, :dependent => :destroy
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
@@ -308,6 +309,33 @@ class Item < ActiveRecord::Base
       else
         return false
       end
+    end
+  end
+
+  def binded_manifestations(sort = :id)
+    if sort == :serial_number 
+      binding_item, not_binding_item = self.binding_items.partition{|binding_items| binding_items.manifestation.serial_number?}
+      if binding_item
+        binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
+      else 
+        not_binding_item(&:manifestation)
+      end
+    else
+      self.binding_items.map(&:manifestation).sort_by(&sort)
+    end
+  end
+
+  def binded_missing_manifestations(sort = :id)
+    if sort == :serial_number
+      missing_manifestations = self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation)
+      binding_item, not_binding_item = missing_manifestations.partition{|binding_items| binding_items.serial_number?}
+      if binding_item
+        binding_item.sort_by(&sort) + not_binding_item
+      else
+        not_binding_item
+      end
+    else
+      self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation).sort_by(&sort)
     end
   end
 
