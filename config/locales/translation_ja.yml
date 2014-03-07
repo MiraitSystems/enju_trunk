@@ -1565,6 +1565,12 @@ ja:
         UTHDNGR: 読み
         UTHDNGVR: その他の読み
         UTINFO: その他の情報
+        price: 金額
+        fid: 遍歴ファミリーID
+        bhn_info: 遍歴注記情報
+        BHBID: 前後書誌レコードID
+        BHK: 遍歴タイプ
+        BHTR: 前後タイトル
         user_id: 利用者ID
         user_name: 利用者名
         request_datetime: 依頼日時
