@@ -203,7 +203,7 @@ class ManifestationsController < ApplicationController
     FACET_FIELDS = [
       :reservable, :carrier_type, :language, :library, :manifestation_type,
       :missing_issue, :in_process, :circulation_status_in_process,
-      :circulation_status_in_factory,
+      :circulation_status_in_factory
     ]
 
     class Container
@@ -1133,7 +1133,7 @@ class ManifestationsController < ApplicationController
     string_fields_for_query = [ # fulltext検索に対応するstring型フィールドのリスト
       :title, :contributor,
       :exinfo_1, :exinfo_6,
-      :subject, :isbn, :issn,
+      :subject, :isbn, :issn, :identifier,
       # 登録内容がroot_of_series?==trueの場合に相違
       :creator, :publisher,
       # 対応するstring型インデックスがない
@@ -1225,6 +1225,7 @@ class ManifestationsController < ApplicationController
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
+      [:identifier, 'identifier_s']
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 
@@ -1717,8 +1718,9 @@ class ManifestationsController < ApplicationController
 
       if params[:item_identifier].present? &&
             params[:item_identifier] !~ /\*/ ||
-          SystemConfiguration.get('manifestation.isbn_unique') &&
-            params[:isbn].present? && params[:isbn] !~ /\*/
+          (SystemConfiguration.get('manifestation.isbn_unique') &&
+            params[:isbn].present? && params[:isbn] !~ /\*/) ||
+              (params[:identifier].present? && params[:identifier] !~ /\*/)
         search_opts[:direct_mode] = true
       end
 
@@ -1835,6 +1837,10 @@ class ManifestationsController < ApplicationController
         params[:isbn].present?
       ms = Manifestation.where(:isbn => params[:isbn])
       manifestation = ms.first if ms.size == 1
+    end
+
+    if params[:identifier].present?
+      manifestation = Manifestation.where(:identifier => params[:identifier]).try(:first)
     end
 
     if manifestation

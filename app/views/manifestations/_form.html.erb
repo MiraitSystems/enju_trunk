@@ -246,6 +246,11 @@ $(document).keydown(function(e) {
     </div>
   <% end %>
 
+  <div class="field">
+    <%= f.label :identifier %><br />
+    <%= f.text_field :identifier %>
+  </div>
+
   <%= render 'form_agent_field' %>
   <div class="field">
     <%= f.label t('page.file') -%><br />
