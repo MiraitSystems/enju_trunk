@@ -10,7 +10,8 @@
           <%= link_to t('page.search_local'), m.manifestation -%>
         </strong><br />
       <%- end -%>
-      <%= link_to s[:subject_heading], { :action => "show_nacsis", :ncid => s[:ncid], :manifestation_type => mt } -%><br />
+      <%= link_to s[:subject_heading],
+        { :action => "show_nacsis", :ncid => s[:ncid], :manifestation_type => mt, :query => params[:query] } -%><br />
       <%= s[:publisher] -%>
       <%- if mt == 'book' && s[:series_title].present? -%>
         (<%= s[:series_title] -%>)
