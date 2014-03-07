@@ -1483,6 +1483,7 @@ en:
         padding_character: Padding letter
         last_number: Last number
         checkdigit: Check digit
+        numbering_type: Numbering type
       manifestation_types:
         book: Book
         series: Serial

@@ -289,7 +289,7 @@ class ItemsController < ApplicationController
       @checkout_types = CheckoutType.all
     end
     @roles = Role.all
-    @numberings = Numbering.all
+    @numberings = Numbering.where(:numbering_type => 'item')
     @shelf_categories = Shelf.try(:categories) rescue nil
     if @shelf_categories
       @shelves = []

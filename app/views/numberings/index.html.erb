@@ -14,6 +14,7 @@
     <th><%= t('activerecord.attributes.numbering.padding_character') -%></th>
     <th><%= t('activerecord.attributes.numbering.checkdigit') -%></th>
     <th><%= t('activerecord.attributes.numbering.last_number') -%></th>
+    <th><%= t('activerecord.attributes.numbering.numbering_type') -%></th>
     <th></th>
   </tr>
 
@@ -28,6 +29,7 @@
     <td><%= numbering.padding_character %></td>
     <td><%= numbering.checkdigit %></td>
     <td><%= numbering.last_number %></td>
+    <td><%= I18n.t("activerecord.models.#{numbering.numbering_type}") unless numbering.numbering_type.blank? %></td>
     <td>
     <%= link_to t('page.edit'), edit_numbering_path(numbering) -%>
     <%= link_to t('page.destroy'), numbering, :confirm => t('page.are_you_sure'), :method => :delete -%>

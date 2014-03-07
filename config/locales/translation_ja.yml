@@ -285,6 +285,7 @@ ja:
         padding_character: 埋める文字
         last_number: 最後の番号
         checkdigit: チェックデジットのルール
+        numbering_type: 採番タイプ
       manifestation_types:
         book: 図書
         series: 定期刊行物
