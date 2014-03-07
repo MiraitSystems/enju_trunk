@@ -4,8 +4,11 @@
   <%- s = m.request_summary -%>
   <tr class="line<%= cycle("0","1") -%>">
     <td style="480px">
-      <%- if ncid_exist?(s[:ncid]) -%>
-        <strong>[<%= t('page.imported') -%>]</strong><br />
+      <%- if m.manifestation -%>
+        <strong>
+          <%= "[#{t('page.imported')}]" -%>
+          <%= link_to t('page.search_local'), m.manifestation -%>
+        </strong><br />
       <%- end -%>
       <%= link_to s[:subject_heading], { :action => "show_nacsis", :ncid => s[:ncid], :manifestation_type => mt } -%><br />
       <%= s[:publisher] -%>

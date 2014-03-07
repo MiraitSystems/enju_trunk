@@ -4,6 +4,7 @@
   </h1>
   <div id="content_list">
     <p id="notice"><%= notice -%></p>
+    <%= back_to_manifestation_index -%>
     <h2 class="resource_title">
       <%= @nacsis_cat.request_summary[:subject_heading] -%>
     </h2>
@@ -37,7 +38,7 @@
           <%- when :cls_info -%>
             <td>
               <%- @nacsis_cat.detail[key].each do |cls_key, cls_value| -%>
-                <%= cls_key.to_s + ":" + cls_value.to_s -%>&nbsp;
+                <%= cls_key.to_s + ": " + cls_value.to_s -%>&nbsp;
               <%- end -%>
             </td>
           <%- when :vol_info, :ptb_info, :utl_info, :bhn_info -%>
@@ -104,7 +105,11 @@
            :manifestation_type => params[:manifestation_type],
            :request_type => "2" } -%>
       </li>
-      <% if !ncid_exist?(@nacsis_cat.ncid) %>
+      <% if @nacsis_cat.manifestation %>
+        <li>
+          <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
+        </li>
+      <% else %>
         <li>
           <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
             <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
