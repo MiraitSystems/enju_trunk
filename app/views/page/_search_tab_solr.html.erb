@@ -1,0 +1,207 @@
+<table style="width: 100%">
+  <tr>
+    <td><label><%= advanced_search_label(:solr_query) -%>:</label></td>
+    <td><%= text_field_tag 'solr_query', params[:solr_query], :class => 'search_form' -%><br /><%= t('advanced_search.help_solr_query') -%></td>
+  </tr>
+  <% unless SystemConfiguration.get("manifestation.show_all") %>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      <tr>
+        <td></td>
+        <td>
+          <%= check_box_tag 'all_manifestations', true, params[:all_manifestations].present? %>
+          <%= t('advanced_search.all_manifestations') %>
+        </td>
+      </tr>
+    <% end %>
+  <% end %>
+  <tr>
+    <td></td>
+    <td>
+      <%= submit_tag t('page.search'), :name => 'solr_commit' -%>
+      <%= button_to_function t('advanced_search.clear_query'), "clear_all()" %>
+    </td>
+  </tr>
+</table>
+<br />
+<strong><%= t('advanced_search.solr_query_format.format') %></strong>
+<div>
+  <table id="solr_query_format">
+    <tr>
+      <td style="width:120px;"><%= t('advanced_search.solr_query_format.word') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.word_description') %><br />
+        <br />
+        <%= t('advanced_search.solr_query_format.exsample') %>:<br />
+        <%= t('advanced_search.solr_query_format.word_ex') %>
+      </td>
+    </tr>
+    <tr>
+      <td><%= t('advanced_search.solr_query_format.and') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.and_description') %><br />
+        <br />
+        <%= t('advanced_search.solr_query_format.exsample') %>:<br />
+        <%= raw t('advanced_search.solr_query_format.and_ex') %>
+      </td>
+    </tr>
+    <tr>
+      <td><%= t('advanced_search.solr_query_format.or') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.or_description') %><br />
+        <br />
+        <%= t('advanced_search.solr_query_format.exsample') %>:<br />
+        <%= raw t('advanced_search.solr_query_format.or_ex') %>
+      </td>
+    </tr>
+      <td><%= t('advanced_search.solr_query_format.not') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.not_description') %><br />
+        <br />
+        <%= t('advanced_search.solr_query_format.exsample') %>:<br />
+        <%= raw t('advanced_search.solr_query_format.not_ex') %>
+      </td>
+    </tr>
+    <tr>
+      <td><%= t('advanced_search.solr_query_format.wild') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.wild_description') %><br />
+        <br />
+        <%= t('advanced_search.solr_query_format.exsample') %>:<br />
+        <%= raw t('advanced_search.solr_query_format.wild_ex') %>
+      </td>
+    </tr>
+    <tr>
+      <td><%= t('advanced_search.solr_query_format.field') %></td>
+      <td>
+        <%= t('advanced_search.solr_query_format.field_description') %><br />
+        <br />
+        <table>
+          <tr>
+            <th style="width:100px;"><%= t('advanced_search.solr_query_format.field_detail.target') %></th>
+            <th style="width:180px;"><%= t('advanced_search.solr_query_format.field_detail.format') %></th>
+            <th><%= t('advanced_search.solr_query_format.exsample') %></th>
+          </tr>
+          <% if defined?(EnjuBookmark) %>
+            <tr>
+              <td><%= advanced_search_label(:tag) %></td>
+              <td><%= t('advanced_search.solr_query_format.field_detail.tag_format') %></td>
+              <td><%= t('advanced_search.solr_query_format.field_detail.tag_ex') %></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td><%= advanced_search_label(:title) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.title_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.title_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:creator) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.creator_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.creator_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:publisher) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.publisher_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.publisher_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('agent.contributor') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.contributor_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.contributor_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:isbn) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.isbn_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.isbn_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:issn) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.issn_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.issn_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:item_identifier) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.item_identifier_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.item_identifier_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:pub_date) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.pub_date_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.pub_date_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:acquired) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.acquired_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.acquired_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:removed) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.removed_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.removed_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= advanced_search_label(:manifestation_types) %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.manifestation_type_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.manifestation_type_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.models.carrier_type') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.carrier_type_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.carrier_type_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.volume_number_string') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.volume_number_string_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.volume_number_string_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.issue_number_string') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.issue_number_string_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.issue_number_string_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.serial_number_string') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.serial_number_string_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.serial_number_string_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.description') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.description_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.description_ex') %></td>
+          </tr>
+          <% if user_signed_in? and current_user.has_role?('Librarian') %>
+            <tr>
+              <td><%= t('activerecord.attributes.manifestation.note') %></td>
+              <td><%= t('advanced_search.solr_query_format.field_detail.note_format') %></td>
+              <td><%= t('advanced_search.solr_query_format.field_detail.note_ex') %></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.exinfo_1') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.exinfo_1_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.exinfo_1_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.exinfo_6') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.exinfo_6_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.exinfo_6_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.models.library') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.library_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.library_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.models.shelf') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.shelf_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.shelf_ex') %></td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.series_statement.original_title') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.series_title_format') %></td>
+            <td><%= t('advanced_search.solr_query_format.field_detail.series_title_ex') %></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

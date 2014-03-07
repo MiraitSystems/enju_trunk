@@ -364,6 +364,7 @@ class Manifestation < ActiveRecord::Base
     end
     # OTC end
     string :sort_title
+    string :original_title
     boolean :periodical do
       serial?
     end
