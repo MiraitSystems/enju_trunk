@@ -78,7 +78,7 @@ class Item < ActiveRecord::Base
   has_many :expenses
   has_many :binding_items, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
-  has_many :item_has_operators, :dependent => :destroy
+  has_many :item_has_operators, :dependent => :destroy, :validate => true
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators
 
@@ -92,6 +92,37 @@ class Item < ActiveRecord::Base
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   after_save :check_price, :except => :delete
   after_save :reindex
+
+
+  before_validation :set_item_operator
+  def set_item_operator
+    item_has_operators.each do |operator|
+      operator.item = self if operator.item.blank?
+    end
+  end
+
+  before_validation :check_user_number
+  def check_user_number
+    item_has_operators.each_with_index do |operator, i|
+      operator.user_number = @user_number_list[i.to_s] if @user_number_list
+    end
+  end
+
+  before_validation :check_destroy_operator
+  def check_destroy_operator
+    item_has_operators.each do |operator|
+      if operator.operated_at.blank? && operator.library_id.blank?
+        operator.delete_flg = true
+        operator.destroy 
+      end
+    end
+  end
+
+  def set_user_number(index,number)
+    @user_number_list ={} if @user_number_list == nil
+    @user_number_list[index] = number
+  end
+
 
   #enju_union_catalog
   has_paper_trail

@@ -1197,5 +1197,5 @@ system_configuration_00172:
   keyname: manifestation.use_item_has_operator
   v: "false"
   typename: Boolean
-  description: "受入作業者テーブルテーブルを利用する"
+  description: "受入作業者テーブルを利用する"
   category: 'manifestation'

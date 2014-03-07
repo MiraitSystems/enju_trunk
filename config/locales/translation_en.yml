@@ -1722,6 +1722,8 @@ en:
         operated_at: Operated at
         library_id: Library
         note: Note
+      item_has_operators:
+        user: User
 
   page:
     user_title: Welcome %{login_name}
@@ -3195,4 +3197,5 @@ en:
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
-
+  item_has_operators:
+    no_matches_found_user: "No matches found user(%{user_number})"
