@@ -1138,7 +1138,7 @@ system_configuration_00161:
   category: 'function'
 system_configuration_00162:
   id: 162
-  keyname: f.path
+  keyname: f7.path
   v: "/order_lists"
   typename: String
   description: "F7のリンク先"
@@ -1152,7 +1152,7 @@ system_configuration_00163:
   category: 'function'
 system_configuration_00164:
   id: 164
-  keyname: f.path
+  keyname: f8.path
   v: ""
   typename: String
   description: "F8のリンク先"
@@ -1166,7 +1166,7 @@ system_configuration_00165:
   category: 'function'
 system_configuration_00166:
   id: 166
-  keyname: f.path
+  keyname: f9.path
   v: ""
   typename: String
   description: "F9のリンク先"

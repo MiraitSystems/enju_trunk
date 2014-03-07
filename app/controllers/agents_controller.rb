@@ -123,6 +123,7 @@ class AgentsController < ApplicationController
       with(:user_id).equal_to(nil)
       without(:exclude_state).equal_to(1)
       order_by(:id)
+      with(:agent_type).equal_to params[:agent_type] if params[:agent_type]
       facet :agent_type
     end
 
