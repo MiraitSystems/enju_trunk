@@ -49,6 +49,7 @@ class NacsisCat
     #  * :bid => '...' - NACSIS-CATの書蔵IDにより検索する(***)
     #  * :isbn => '...' - ISBN(ISBNKEY)により検索する(***)
     #  * :issn => '...' - ISSN(ISSNKEY)により検索する(***)
+    #  * :nbn => '...' - NBN(NBN)により検索する(***)#
     #  * :query => '...' - 一般検索語により検索する(*)
     #  * :title => [...] - 書名(_TITLE_)により検索する(*)
     #  * :author => [...] - 著者名(_AUTH_)により検索する(*)
@@ -158,6 +159,7 @@ class NacsisCat
         bid: 'BID',
         isbn: 'ISBNKEY',
         issn: 'ISSNKEY',
+        nbn: 'NBN',
       }
       def build_query(cond, inverse = false)
         if inverse
@@ -169,7 +171,7 @@ class NacsisCat
         except = cond.delete(:except)
         segments = cond.map do |key, value|
           case key
-          when :id, :bid, :isbn, :issn
+          when :id, :bid, :isbn, :issn, :nbn
             rpn_concat(
               'OR',
               [value].flatten.map {|v| rpn_seg(DB_KEY[key], v) })
