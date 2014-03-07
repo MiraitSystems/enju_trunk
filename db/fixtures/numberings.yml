@@ -9,6 +9,7 @@ numbering_00001:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00002: 
   name: 'haika'
   display_name: '配架'
@@ -19,6 +20,7 @@ numbering_00002:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00003: 
   name: 'tanki'
   display_name: '短期'
@@ -29,6 +31,7 @@ numbering_00003:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00004: 
   name: 'seihon'
   display_name: '製本'
@@ -39,6 +42,7 @@ numbering_00004:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00005: 
   name: 'book'
   display_name: '図書'
@@ -49,6 +53,7 @@ numbering_00005:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00006: 
   name: 'magazine'
   display_name: '雑誌'
@@ -59,6 +64,7 @@ numbering_00006:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
 numbering_00007: 
   name: 'article'
   display_name: '資料'
@@ -69,3 +75,26 @@ numbering_00007:
   padding_character: '0'
   last_number: 0
   checkdigit: 0
+  numbering_type: 'item'
+numbering_00008: 
+  name: 'order'
+  display_name: '発注'
+  prefix: ''
+  suffix: ''
+  padding: true
+  padding_number: 8
+  padding_character: '0' 
+  last_number: 0
+  checkdigit: 0
+  numbering_type: 'order'
+numbering_00009: 
+  name: 'manifestation'
+  display_name: '資料番号'
+  prefix: ''
+  suffix: ''
+  padding: true
+  padding_number: 8
+  padding_character: '0' 
+  last_number: 0
+  checkdigit: 0
+  numbering_type: 'manifestation'

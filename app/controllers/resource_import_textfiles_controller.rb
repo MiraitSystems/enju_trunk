@@ -100,7 +100,7 @@ class ResourceImportTextfilesController < ApplicationController
       render :nothing => true, :status => 404 and return
     end
     @manifestation_types = ManifestationType.all
-    @numberings = Numbering.all
+    @numberings = Numbering.where(:numbering_type => 'item')
     templatename = a.template_filename_edit
     filename = "lib/enju_trunk/resourceadapter/views/#{templatename}"
     logger.debug "filename=#{filename}"
@@ -120,7 +120,7 @@ class ResourceImportTextfilesController < ApplicationController
     File.open(path, "wb"){ |f| f.write(file.read) }
     @oo = Excelx.new(path)
     @manifestation_types = ManifestationType.all
-    @numberings = Numbering.all
+    @numberings = Numbering.where(:numbering_type => 'item')
     data = "lib/enju_trunk/resourceadapter/views/excelfile_select.html.erb"
     render :layout => false, :file => data
   end
