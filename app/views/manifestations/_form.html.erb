@@ -169,6 +169,7 @@ $(document).keydown(function(e) {
 
 
 <%= render 'page/required_field' %>
+<%= render 'observe_field' %>
 <%= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
   <%= f.error_messages -%>
 
@@ -249,6 +250,8 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label :identifier %><br />
     <%= f.text_field :identifier %>
+    <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
+    <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 
   <%= render 'form_agent_field' %>

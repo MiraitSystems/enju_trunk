@@ -7,7 +7,7 @@ class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation, :numbering]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -962,6 +962,11 @@ class ManifestationsController < ApplicationController
     end
   end
 
+  def numbering
+    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil 
+    render :json => {:success => 1, :manifestation_identifier => manifestation_identifier}
+  end 
+
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
@@ -1472,6 +1477,7 @@ class ManifestationsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @numberings = Numbering.where(:numbering_type => 'manifestation')
   end
 
   def input_agent_parameter
