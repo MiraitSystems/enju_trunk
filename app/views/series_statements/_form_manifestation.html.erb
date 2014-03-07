@@ -62,6 +62,11 @@ var ItemField_language = {
     <%= f_m.text_field :article_title, :class => 'resource_title' %>
   </div>
 
+  <div class="field">
+    <%= f_m.label :identifier %><br />
+    <%= f_m.text_field :identifier %>
+  </div>
+ 
   <%= render 'manifestations/form_agent_field' %>
 
   <div class="field">
