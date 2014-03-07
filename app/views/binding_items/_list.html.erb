@@ -34,24 +34,22 @@ $(function(){
       <%= check_box_tag 'all_manifestations', true, :checked => true %><%= t('advanced_search.all_manifestations') %>
     <% end %>
 
-
+    <br />
     <%= advanced_search_label(:manifestation_identifier) -%>:
     <%= search_field_tag 'manifestation_identifier', params[:manifestaion_identifier] %><br />
-
 
     <%= advanced_search_label(:pub_date) -%>:
     <%= t('advanced_search.from') -%> <%= search_field_tag 'pub_date_from', params[:pub_date_from], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>
     <%= t('advanced_search.to') -%> <%= search_field_tag 'pub_date_to', params[:pub_date_to], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2011, 2011-04-12"-%><br />
 
-
-        <%= advanced_search_label(:edition_display_value) -%>
-        <%= search_field_tag 'edition_display_value', params[:edition_display_value], :size => 8 -%>
-        <%= advanced_search_label(:volume_number_string) -%>
-        <%= search_field_tag 'volume_number_string', params[:volume_number_string], :size => 8 -%>
-        <%= advanced_search_label(:issue_number_string) -%>
-        <%= search_field_tag 'issue_number_string', params[:issue_number_string], :size => 8 -%>
-        <%= advanced_search_label(:serial_number_string) -%>
-        <%= search_field_tag 'serial_number_string', params[:serial_number_string], :size => 8 -%>
+    <%= advanced_search_label(:edition_display_value) -%>
+    <%= search_field_tag 'edition_display_value', params[:edition_display_value], :size => 8 -%>
+    <%= advanced_search_label(:volume_number_string) -%>
+    <%= search_field_tag 'volume_number_string', params[:volume_number_string], :size => 8 -%>
+    <%= advanced_search_label(:issue_number_string) -%>
+    <%= search_field_tag 'issue_number_string', params[:issue_number_string], :size => 8 -%>
+    <%= advanced_search_label(:serial_number_string) -%>
+    <%= search_field_tag 'serial_number_string', params[:serial_number_string], :size => 8 -%><br />
 
     <%= hidden_field_tag :without_article, true %>
     <%= hidden_field_tag :with_periodical_item, true %>
