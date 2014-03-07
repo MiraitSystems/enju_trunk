@@ -7,15 +7,16 @@ class ExchangeRatesController < ApplicationController
   def index
 
     # TODO 通貨レート反映処理
-    started_at = params[:exchange_rates]
-=begin
-    if # 正しい日付が入力されている
-      update_to_orders
-      format.html { redirect_to }
-    else # エラーが存在する
-      format.html { render }
-    end
-=end
+    start_at = params[:orders_started_at]
+    end_at = params[:orders_ended_at]
+    if orders_started_at.present? && orders_ended_at.present?
+      orders = Order.where(:order_day => orders_started_at...orders_ended_at)
+      orders.each do |order|
+        newest_rate = ExchangeRate.find(:first, :conditions => { :currency_id => (order.currency_id) }, :order => "started_at DESC")
+        order.currency_rate = newest_rate.rate
+        order.save
+      end
+    end 
 
     # TODO
 
