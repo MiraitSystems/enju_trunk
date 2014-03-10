@@ -1856,8 +1856,10 @@ class ManifestationsController < ApplicationController
     end
 
     if manifestation
-      redirect_to manifestation
-      return true
+      unless params[:binding_items_flg]
+        redirect_to manifestation
+        return true
+      end
     end
 
     false
