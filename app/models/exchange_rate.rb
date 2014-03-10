@@ -9,8 +9,8 @@ class ExchangeRate < ActiveRecord::Base
   validates_uniqueness_of :currency_id
   validates :rate, :presence => true
   validates :started_at, :presence => I18n.t('exchange_rate.invalid_started_at')
-  validate :check_order_date
-  validate :happened_at_is_valid_datetime
+  # validate :check_order_date
+  # validate :happened_at_is_valid_datetime
 
   validates_numericality_of :rate, :less_than => 100000000
 
@@ -22,11 +22,12 @@ class ExchangeRate < ActiveRecord::Base
     time :started_at
   end
 
-  def happened_at_is_valid_datetime
-    errors.add(:orders_started_at, 'must be a valid datetime') if ((DateTime.parse(orders_started_at) rescue ArgumentError) == ArgumentError)
-  end
+#  def happened_at_is_valid_datetime
+#    errors.add(:orders_started_at, 'must be a valid datetime') if ((DateTime.parse(orders_started_at) rescue ArgumentError) == ArgumentError)
+#  end
 
-  def check_order_date# (start_at, end_at)
+=begin
+  def check_order_date#(start_at, end_at)
     if orders_started_at and orders_ended_at
       if orders_started_at > orders_ended_at
         return false
@@ -34,10 +35,22 @@ class ExchangeRate < ActiveRecord::Base
       return true
     end
   end
+=end
 
-  def order_day_notice
-    @messages = []
-    @messages << "Test"
-    return @messages
+  def self.check_order_date(start_at, end_at)
+    logger.error "############# check_orader_date now!! ##############"
+    if start_at.present? && end_at.present?
+      begin
+        start_at_new = Time.zone.parse(start_at)
+        end_at_new = Time.zone.parse(end_at)
+      rescue ArgumentError
+        raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+      end
+      if start_at > end_at
+        raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+      end
+    else
+      raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+    end
   end
 end

@@ -2,6 +2,8 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.exchange_rate')) -%></h1>
 <div id="content_list">
 
+<p id="notice"><%= notice %></p>
+
 <%= form_tag({:action => "index"},  {:method => "get"}) do %>
   <%= select(:currency, :display_name, @currencies.collect{|c| [c.display_name,c.id]}, {:selected => @currencies_selected, :prompt => t('page.all_search_term')}, :onchange => 'submit();') %>
 <% end %>
