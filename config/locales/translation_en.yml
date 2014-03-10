@@ -205,6 +205,7 @@ en:
       function_class_ability: Function class ability
       title_type: Title type
       title: Title
+      item_has_operator: ItemHasOperator
 
     attributes:
       use_license:
@@ -1414,6 +1415,12 @@ en:
         UTHDNGR: Title (reading)
         UTHDNGVR: Title alternative (reading)
         UTINFO: Other info
+        price: price
+        fid: Family ID
+        bhn_info: Bibliographic history note info
+        BHBID: Before/After ID
+        BHK: History type
+        BHTR: Before/After Title
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime
@@ -1483,6 +1490,7 @@ en:
         padding_character: Padding letter
         last_number: Last number
         checkdigit: Check digit
+        numbering_type: Numbering type
       manifestation_types:
         book: Book
         series: Serial
@@ -1716,6 +1724,13 @@ en:
         name: Name
         display_name: Display name
         note: Note
+      item_has_operator:
+        user_id: User
+        operated_at: Operated at
+        library_id: Library
+        note: Note
+      item_has_operators:
+        user: User
 
   page:
     user_title: Welcome %{login_name}
@@ -3190,4 +3205,5 @@ en:
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
-
+  item_has_operators:
+    no_matches_found_user: "No matches found user(%{user_number})"

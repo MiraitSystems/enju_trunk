@@ -130,6 +130,9 @@ class ItemsController < ApplicationController
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
 
+    @countoperators = 1
+    @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @item }
@@ -140,6 +143,17 @@ class ItemsController < ApplicationController
   def edit
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
+
+    if SystemConfiguration.get('manifestation.use_item_has_operator')
+      @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", params[:id]])
+      if @countoperators == 0
+        operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
+        operator.user_number = ""
+        @item.item_has_operators << operator
+        @countoperators = 1
+      end
+    end
+
   end
 
   # POST /items
@@ -147,6 +161,9 @@ class ItemsController < ApplicationController
   def create
     @item = Item.new(params[:item])
     @manifestation = Manifestation.find(@item.manifestation_id)
+    @countoperators = @item.item_has_operators.size
+    set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
+
     respond_to do |format|
       if @item.valid?
         @item.manifestation = @manifestation 
@@ -184,6 +201,8 @@ class ItemsController < ApplicationController
   # PUT /items/1
   # PUT /items/1.json
   def update
+    set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
+
     respond_to do |format|
       if @item.update_attributes(params[:item])
         if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
@@ -201,6 +220,7 @@ class ItemsController < ApplicationController
         format.html { redirect_to @item }
         format.json { head :no_content }
       else
+        @countoperators = @item.item_has_operators.size
         prepare_options
         unless params[:item][:remove_reason_id]
           format.html { render :action => "edit" }
@@ -289,7 +309,7 @@ class ItemsController < ApplicationController
       @checkout_types = CheckoutType.all
     end
     @roles = Role.all
-    @numberings = Numbering.all
+    @numberings = Numbering.where(:numbering_type => 'item')
     @shelf_categories = Shelf.try(:categories) rescue nil
     if @shelf_categories
       @shelves = []
@@ -306,4 +326,12 @@ class ItemsController < ApplicationController
     end
     return true
   end
+
+  def set_operator_user_number
+    operators = params[:item][:item_has_operators_attributes]
+    operators.each do |key, value|
+      @item.set_user_number(key,params["item_has_operators_attributes_#{key}_user_number"])
+    end
+  end
+
 end
