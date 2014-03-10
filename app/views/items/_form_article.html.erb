@@ -79,6 +79,8 @@ $(function(){
     <%= f.text_area :note, :class => 'resource_textarea' %>
   </div>
 
+  <%= render(:partial => 'form_item_has_operator', :locals=>{:f => f}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
+
   <div class="actions">
     <%= f.hidden_field :checkout_type_id, :value => CheckoutType.where(:name => 'article').first.id %>
     <%= f.hidden_field :circulation_status_id, :value =>  CirculationStatus.where(:name => 'Not Available').first.id %>

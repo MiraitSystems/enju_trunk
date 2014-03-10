@@ -208,6 +208,7 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      item_has_operator: 受入作業者
 
     attributes:
       use_license:
@@ -1712,7 +1713,14 @@ ja:
       title_type:
         name: 名前
         display_name: 表示名
-        note: 注記        
+        note: 注記
+      item_has_operator:
+        user_id: 作業者
+        operated_at: 作業日
+        library_id: 作業館
+        note: メモ
+      item_has_operators:
+        user: 作業者
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -3170,4 +3178,5 @@ ja:
     no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
-
+  item_has_operators:
+    no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"

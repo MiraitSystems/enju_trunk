@@ -133,6 +133,8 @@ $(function(){
     <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
   </div>
 
+  <%= render(:partial => 'form_item_has_operator', :locals=>{:f => f}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
+
   <div class="actions">
     <%= f.submit :disable_with => t('page.wait') %>
   </div>

@@ -1199,3 +1199,10 @@ system_configuration_00170:
   typename: Boolean
   description: "ライブラリアン権限以上でログイン時、検索非対称資料を含む全ての資料を検索結果に表示する"
   category: 'manifestation'
+system_configuration_00171:
+  id: 172
+  keyname: manifestation.use_item_has_operator
+  v: "false"
+  typename: Boolean
+  description: "受入作業者テーブルを利用する"
+  category: 'manifestation'
