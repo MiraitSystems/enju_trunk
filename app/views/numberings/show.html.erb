@@ -48,6 +48,11 @@
     <%= @numbering.last_number -%>
     </p>
 
+    <p>
+    <strong><%= t('activerecord.attributes.numbering.numbering_type') -%>:</strong>
+    <%= I18n.t("activerecord.models.#{@numbering.numbering_type}") -%>
+    </p>
+
 </div>
 </div>
 

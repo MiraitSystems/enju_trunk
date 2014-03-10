@@ -488,7 +488,7 @@ class ManifestationsController < ApplicationController
       if params[:removed_from].present? || params[:removed_to].present? || params[:removed]
         @removed = true
       end
-      
+
       if params[:theme_id]
         @theme = Theme.find(params[:theme_id]) rescue nil
         @all_manifestations = params[:all_manifestations] = false
@@ -1101,17 +1101,23 @@ class ManifestationsController < ApplicationController
     ncid = params['ncid']
     type = params['manifestation_type'] || 'book'
 
-    manifestation = Manifestation.create_from_ncid(ncid)
+    if type == 'book'
+      created_record = Manifestation.where(:nacsis_identifier => ncid).first
+      created_record = NacsisCat.create_manifestation_from_ncid(ncid) if created_record.nil?
+    else
+      created_record = SeriesStatement.where(:nacsis_series_statementid => ncid).first
+      created_record = NacsisCat.create_series_statement_from_ncid(ncid) if created_record.nil?
+    end
 
     respond_to do |format|
       format.html do
-        if manifestation.persisted?
-          redirect_to manifestation,
-            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
-        elsif record = Manifestation.where(nacsis_identifier: ncid).first
-          redirect_to record
-        else
+        if created_record.nil?
           redirect_to nacsis_manifestations_path(ncid: ncid, manifestation_type: type)
+        elsif created_record.new_record?
+          redirect_to created_record,
+            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
+        else
+          redirect_to created_record
         end
       end
     end

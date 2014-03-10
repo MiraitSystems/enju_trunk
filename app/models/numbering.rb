@@ -3,7 +3,7 @@ class EnjuTrunkNumberingError < StandardError ; end
 class EnjuTrunkNumberingConflictError < StandardError ; end
 
 class Numbering < ActiveRecord::Base
-  attr_accessible :checkdigit, :display_name, :last_number, :name, :padding, :padding_number, :padding_character, :prefix, :suffix
+  attr_accessible :checkdigit, :display_name, :last_number, :name, :padding, :padding_number, :padding_character, :prefix, :suffix, :numbering_type
 
   validates_presence_of :name, :display_name
   validates_numericality_of :last_number, :allow_blank => true

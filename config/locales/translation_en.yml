@@ -1415,6 +1415,12 @@ en:
         UTHDNGR: Title (reading)
         UTHDNGVR: Title alternative (reading)
         UTINFO: Other info
+        price: price
+        fid: Family ID
+        bhn_info: Bibliographic history note info
+        BHBID: Before/After ID
+        BHK: History type
+        BHTR: Before/After Title
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime
@@ -1484,6 +1490,7 @@ en:
         padding_character: Padding letter
         last_number: Last number
         checkdigit: Check digit
+        numbering_type: Numbering type
       manifestation_types:
         book: Book
         series: Serial
