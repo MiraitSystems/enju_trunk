@@ -1,0 +1,13 @@
+<script type="text/javascript">
+  function numbering() {
+    var type = $("#numbering_type").val();
+    $.ajax({
+      type: "Get",
+      url: "<%= numbering_manifestations_path %>",
+      data: {type: type},
+      success: function(obj) {
+        $("#manifestation_identifier").val(obj.manifestation_identifier);
+      }
+    });
+  }
+</script>
