@@ -937,6 +937,8 @@ ja:
         date_of_publication: 出版日
         pub_date: 出版日
         pub_date_article: 刊行年
+        dis_date: 出版停止日
+        date_of_discontinuance: 出版停止日
         country_of_publication: 出版国
         place_of_publication: 出版地
         pub_year: 版年
