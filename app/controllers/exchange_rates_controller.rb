@@ -15,23 +15,19 @@ class ExchangeRatesController < ApplicationController
     search = ExchangeRate.search.build do
       fulltext query if query
       order_by(:started_at, :desc)
-      # facet (:currency_id)
       paginate :page => page.to_i, :per_page => per_page
     end.execute
-    # @newest_rates_facet = search.facet(:currency_id).rows
-
-    # TODO 通貨レート反映処理
     @exchange_rates = search.results
     @currencies = Currency.find(:all, :order => "display_name DESC")
+
+    # 発注への通貨レート反映処理
     begin
       start_at = params[:orders_started_at]
       end_at = params[:orders_ended_at]
       update_to_orders = params[:update_to_orders]
-      # logger.error "############# update_to_orders? = #{update_to_orders} ##############"
 
       if update_to_orders
         ExchangeRate.check_order_date(start_at, end_at)
-        logger.error "############# if check_order_date ##############"
         orders = Order.where(:order_day => start_at...end_at)
         orders.each do |order|
           newest_rate = ExchangeRate.find(:first, :conditions => { :currency_id => (order.currency_id) }, :order => "started_at DESC")
@@ -41,12 +37,10 @@ class ExchangeRatesController < ApplicationController
         flash[:orders_notice] = t('controller.successfully_updated', :model => t('activerecord.models.order'))
         redirect_to :action => "index"
       end
-    rescue => e # エラー時の処理
-        # logger.error "############# error!!! error!!! ##############"
+    rescue => e
         flash[:orders_error] = e.message
         redirect_to :action => "index"
     end 
-    # TODO
   end
 
   def new
