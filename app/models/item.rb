@@ -11,7 +11,8 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable,
                   :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo
+                  :non_searchable, :item_exinfo,
+                  :claim_type_id, :claim_note
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -82,6 +83,8 @@ class Item < ActiveRecord::Base
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators
   has_many :item_exinfos, :dependent => :destroy
+  #has_one :claim, :dependent => :destroy
+  belongs_to :claim
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank

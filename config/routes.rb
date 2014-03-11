@@ -1,5 +1,8 @@
 EnjuLeaf::Application.routes.draw do
 
+  resources :claim_types
+
+
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection
@@ -11,6 +14,8 @@ EnjuLeaf::Application.routes.draw do
       post :update_all, :on => :collection
     end
   end
+
+  #match 'items/get_item_label' => 'items#get_item_label', :via => :get
 
   resources :exchange_rates
   resources :currencies

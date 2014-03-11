@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @claim_type.name %>
+</p>
+
+<p>
+  <b>Display name:</b>
+  <%= @claim_type.display_name %>
+</p>
+
+
+<%= link_to 'Edit', edit_claim_type_path(@claim_type) %> |
+<%= link_to 'Back', claim_types_path %>

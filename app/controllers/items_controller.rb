@@ -166,7 +166,7 @@ class ItemsController < ApplicationController
 
     respond_to do |format|
       if @item.valid?
-        @item.manifestation = @manifestation 
+        @item.manifestation = @manifestation
         @item.save!
         Item.transaction do
           if @item.shelf
@@ -317,6 +317,7 @@ class ItemsController < ApplicationController
     else
       @shelves = @library.shelves
     end
+    @claim_types = ClaimType.all
   end
 
   def check_status
