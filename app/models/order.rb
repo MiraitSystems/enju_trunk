@@ -1,5 +1,5 @@
 class Order < ActiveRecord::Base
-
+  include Order::OutputColumns
   attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'

@@ -1,6 +1,30 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
 <div id="content_list">
+<%-
+    cols_book = Order::BOOK_COLUMNS.call.map{|c| "order.#{c}"}
+    cols_all = Order::ALL_COLUMNS
+    form_type = :basic
+    form_opts = {:method => :get}
+    form_opts_ex = {:url => {:action => 'output_excelx'}, :method => :post}
+    methods = [:get, :post]
+-%>
+
+
+<%- methods.each do |method| %>
+  <% if method == :post %><% opts = form_opts_ex %><% else %><% opts = form_opts %><% end %>
+  <%= form_for :orders, opts do -%>
+    <% if method == :post %>
+      <!-- start hidden checkboxes for selecting excel columns -->
+      <%- Order::ALL_COLUMNS.each do |x| -%>
+        <%= check_box_tag 'cols[]', x, false, :id => "chkbox_#{x.gsub('.','_')}", :style => "display: none;" -%>
+      <%- end -%>
+      <!-- end hidden checkboxes for selecting excel columns -->
+      <%= hidden_field_tag :format_type, nil %>
+      <%= submit_tag t('page.output', :model => t('page.search_result')), :name => 'output', :id => 'output', :style => "display: none;" %>
+    <% end %>
+  <%- end -%>
+<%- end -%>
 
 <% if @manifestation %>
 
@@ -34,10 +58,12 @@
     <%= t('activerecord.attributes.order.publication_year') %>:
     <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
     </p>
-
     <%= submit_tag t('page.search') %>
-
+    <button id='excelx_book_dialog_opener'>
+      <%= t('page.output', :model => t('page.search_result')) %>
+    </button>
   <% end %>
+
 <% end %>
 
 <div style="color: red"><%= raw flash[:message].to_s -%></div>
@@ -116,3 +142,157 @@
   <% end %>
 <% end %>
 
+<script>
+<!--
+$(function(){
+    // set the dialog box default properties
+    $('#excelx_book_dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: Math.floor($(window).width() * 0.60),
+    });
+
+    // make sure to set all the checkboxes to checked by default
+    <%- cols_all.each do |x| -%>
+      $('#chkbox_<%= x.gsub('.','_') -%>').attr('checked', false);
+      $('#chkbox2_<%= x.gsub('.','_') -%>').attr('checked', true);
+      $('#chkbox2_<%= x.gsub('.','_') -%>').removeAttr('disabled');
+    <%- end -%>
+
+    // check columns layout
+    $("input:radio[name='layout_type']").click(function() {
+      var layout_type = $("input:radio[name='layout_type']:checked").val();
+      // clean
+      $("#check_cols_book").hide();
+      $('#format_type_book2_pdf').attr('disabled', false);
+      $('#format_type_book2_tsv').attr('disabled', false);
+      $('#format_type_book2_excelx').attr('disabled', false);
+      // set
+      switch (layout_type) {
+        case 'request':
+          $('#format_type_book2_tsv').prop('checked', false);
+          $('#format_type_book2_excelx').prop('checked', false);
+          $('#format_type_book2_pdf').prop('checked', true);
+          $('#format_type_book2_tsv').attr('disabled', 'disabled');
+          $('#format_type_book2_excelx').attr('disabled', 'disabled');
+          break;
+        case 'label':
+          $('#format_type_book2_pdf').prop('checked', false);
+          $('#format_type_book2_excelx').prop('checked', false);
+          $('#format_type_book2_tsv').prop('checked', true);
+          $('#format_type_book2_pdf').attr('disabled', 'disabled');
+          $('#format_type_book2_excelx').attr('disabled', 'disabled');
+          break;
+        case 'search':
+          $('#format_type_book2_tsv').attr('disabled', false);
+          $('#format_type_book2_excelx').attr('disabled', false);
+          var format_type = $("input:radio[name='format_type_book2']:checked").val();
+          if(format_type == 'excelx' || format_type == 'tsv')
+            $("#check_cols_book").show();
+          break;
+      }
+    });
+
+    <%- ['book'].each do |t| -%>
+      // check columns layout
+      $("input:radio[name='format_type_<%= t %>2']").click( function() {
+        var format_type = $("input:radio[name='format_type_<%= t %>2']:checked").val();
+        if(format_type == 'excelx' || format_type == 'tsv')
+          $("#check_cols_<%= t %>").show();
+        else
+          $("#check_cols_<%= t %>").hide();
+      });
+
+      // function to open the dialog
+      $('#excelx_<%= t -%>_dialog_opener').click( function() {
+        $('#excelx_<%= t -%>_dialog').dialog('open');
+        return false;
+      });
+
+      // trigger function to submit the form itself
+      $('#excelx_<%= t -%>_trigger').click( function() {
+        alert("excel_book_trigger_click");
+        // make sure the statuses of all the hidden checkboxes
+        <%- eval("cols_#{t}").each do |x| -%>
+          $('#chkbox_<%= x.gsub('.','_') -%>').prop('checked', $('#chkbox2_<%= x.gsub('.','_') -%>').is(':checked'));
+        <%- end -%>
+        // format type
+        var layout_type = $("input:radio[name='layout_type']:checked").val();
+        if (layout_type == 'request' || layout_type == 'label')
+          $('#format_type').val(layout_type);
+        else
+          $('#format_type').val($("input:radio[name='format_type_<%= t %>2']:checked").val()); 
+        // close the dialog before we go
+        $('#excelx_<%= t -%>_dialog').dialog('close');
+        // submit the form itself
+        $('#output').click();
+        // make sure all the checkboxes are unchecked again
+        <%- cols_all.each do |x| -%>
+          $('#chkbox_<%= x.gsub('.','_') -%>').prop('checked', false);
+        <%- end -%>
+        $('#format_type').val('');
+        return false;
+      });
+    <%- end -%>
+});
+function change_layout() {
+
+}
+// -->
+</script>
+
+<!-- start dialog for selecting excel columns -->
+<div id="excelx_book_dialog" title="<%= t('page.output', :model => t('page.search_result')) %>" style="display:none;">
+<div>
+  <strong><%= t('page.output_layout') %></strong><br />
+  <%= radio_button_tag(:layout_type, 'search', :checked => true) %><%= t('page.search_result') %><br />
+  <% if defined?(EnjuSakura) %>
+    <%= radio_button_tag(:layout_type, 'label') %><%= t('page.output_label') %><br />
+  <% end %>
+  <% if params[:missing_issue] %>
+    <%= radio_button_tag(:layout_type, 'request') %><%= t('page.output_request') %><br />
+  <% end %>
+  <br />
+
+  <strong><%= t('page.output_filetype') %></strong><br />
+  <%= radio_button_tag(:format_type_book2, 'excelx', :checked => true) %><%= t('page.output_filetype_format.excelx') %><br />
+  <%= radio_button_tag(:format_type_book2, 'tsv') %><%= t("page.output_filetype_format.#{ SystemConfiguration.get("set_output_format_type") ? 'tsv' : 'csv'}") %><br />
+  <%= radio_button_tag(:format_type_book2, 'pdf') %><%= t('page.output_filetype_format.pdf') %>
+</div>
+<div id='check_cols_book'>
+  <br />
+  <strong><%= t('page.output_excelx_dialog') %></strong><br />
+  <div style="width: 33%; float: left;">
+    <% cols_book[0, cols_book.length / 2].each do |x| %>
+      <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
+      <% split_cols = x.split('.') %>
+      <% if split_cols[1] == 'manifestation_exinfo' %>
+        <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
+      <% elsif split_cols[1] == 'manifestation_extext' %>
+        <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
+      <% else %>
+        <%= t("resource_import_textfile.excel.#{x}") %><br />
+      <% end %>
+    <% end %>
+  </div>
+  <div style="width: 34%; float: left;">
+    <% cols_book[cols_book.length / 2, cols_book.length - (cols_book.length / 2)].each do |x| %>
+      <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
+      <% split_cols = x.split('.') %>
+      <% if split_cols[1] == 'manifestation_exinfo' %>
+        <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
+      <% elsif split_cols[1] == 'manifestation_extext' %>
+        <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
+      <% else %>
+        <%= t("resource_import_textfile.excel.#{x}") %><br />
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<br style='clear: both' />
+<div>
+  <br /><button id="excelx_book_trigger"><%= t('page.output_excelx_detail') %></button>
+</div>
+</div>
+
+<!-- end dialog for selecting excel columns -->

@@ -7,14 +7,19 @@ class OrdersController < ApplicationController
   # GET /orders
   # GET /orders.json
   def index
-      if params[:manifestation_id]
-        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year DESC, order_identifier DESC").page(params[:page])
-        @manifestation = Manifestation.find(params[:manifestation_id])
-      else
-        @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
-      end
+    if params[:manifestation_id]
+      @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year DESC, order_identifier DESC").page(params[:page])
+      @manifestation = Manifestation.find(params[:manifestation_id])
+    else
+      @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
+    end
 
     set_select_years
+
+    # 検索オブジェクトの生成と検索の実行
+#    search_opts = make_index_plan # 検索動作の方針を抽出する
+#    search = factory.new_search
+#    do_file_output_proccess(search_opts, search) and return
 
     respond_to do |format|
       format.html # index.html.erb
@@ -24,6 +29,145 @@ class OrdersController < ApplicationController
       format.csv
     end
   end
+
+  def output_excelx
+    puts '==============output_excelx=========================='
+    index
+  end
+
+  # indexアクションにおける各種形式のファイルでの出力を行う。
+  # ファイル送信するか、バックグラウンド処理をした旨の通知を行ったらtrueを返す。
+  #
+  #  * search_opts - 検索条件
+  #  * search - 検索に用いるオブジェクト(Sunspotなど)
+  def do_file_output_proccess(search_opts, search)
+    return false unless search_opts[:index] == :local
+    return false unless search_opts[:output_mode]
+
+    # TODO: 第一引数にparamsまたは生成した検索語、フィルタ指定を渡すようにして、バックグラウンドファイル生成で一時ファイルを作らなくて済むようにする
+    summary = @query.present? ? "#{@query} " : ""
+    summary += advanced_search_condition_summary
+    Manifestation.generate_manifestation_list(search[:all], search_opts[:output_type], current_user, summary, search_opts[:output_cols]) do |output|
+      send_opts = {
+        :filename => output.filename,
+        :type => output.mime_type || 'application/octet-stream',
+      }
+      case output.result_type
+      when :path
+        send_file output.path, send_opts
+      when :data
+        send_data output.data, send_opts
+      when :delayed
+        flash[:message] = t('manifestation.output_job_queued', :job_name => output.job_name)
+        redirect_to manifestations_path(params.dup.tap {|h| h.delete_if {|k, v| /\Aoutput/ =~ k || /\Acol/ =~ k} })
+      else
+        msg = "unknown result type: #{output.result_type.inspect} (bug?)"
+        logger.error msg
+        raise msg
+      end
+    end
+
+    true
+  end
+
+  # indexアクションのおおまかな動作を決める
+  # いくつかのパラメータの検査と整理を行う。
+  def make_index_plan
+    search_opts = {
+      :index => :local,
+    }
+
+    if params[:mode] == 'add'
+      search_opts[:add_mode] = true
+      access_denied unless current_user.has_role?('Librarian')
+      @add = true
+    end
+    if params[:format] == 'csv'
+      search_opts[:csv_mode] = true
+
+    elsif params[:format] == 'oai'
+      search_opts[:oai_mode] = true
+      @oai = check_oai_params(params)
+
+    elsif params[:format] == 'sru'
+      search_opts[:sru_mode] = true
+      raise InvalidSruOperationError unless params[:operation] == 'searchRetrieve'
+
+    elsif params[:api] == 'openurl'
+      search_opts[:openurl_mode] = true
+
+    elsif defined?(EnjuBookmark) && params[:view] == 'tag_cloud'
+      search_opts[:tag_cloud_mode] = true
+    elsif params[:output]
+      search_opts[:output_mode] = true
+      search_opts[:output_type] =
+        case params[:format_type]
+        when 'excelx'  then :excelx
+        when 'tsv'     then :tsv
+        when 'pdf'     then :pdf
+        when 'request' then :request
+        when 'label'   then :label
+        end
+      raise UnknownFileTypeError unless search_opts[:output_type]
+      search_opts[:output_cols] = params[:cols]
+
+    elsif params[:format].blank? || params[:format] == 'html'
+      search_opts[:html_mode] = true
+      if params[:index] == 'nacsis'
+        # NOTE: 検索ソースをlocal以外にできるのはformatがhtmlのときだけの限定。
+        search_opts[:index] = :nacsis
+      end
+      if search_opts[:index] == :local &&
+          params[:solr_query].present?
+        search_opts[:solr_query_mode] = true
+      end
+
+      if params[:item_identifier].present? &&
+            params[:item_identifier] !~ /\*/ ||
+          SystemConfiguration.get('manifestation.isbn_unique') &&
+            params[:isbn].present? && params[:isbn] !~ /\*/
+        search_opts[:direct_mode] = true
+      end
+
+      # split option (local)
+      search_opts[:split_by_type] = SystemConfiguration.get('manifestations.split_by_type')
+      if search_opts[:split_by_type] && search_opts[:index] == :local
+        if params[:without_article]
+          search_opts[:with_article] = false
+        else
+          search_opts[:with_article] = !SystemConfiguration.isWebOPAC || clinet_is_special_ip?
+        end
+      end
+
+      # split option (nacsis)
+      search_opts[:nacsis_search_each] = SystemConfiguration.get('nacsis.search_each')
+      if search_opts[:nacsis_search_each] && search_opts[:index] == :nacsis
+        search_opts[:with_serial] = true
+      end
+    end
+
+    # prepare: per_page
+    per_page = 65534
+    per_page = cookies[:per_page] if cookies[:per_page] # XXX: セッションデータに格納してはダメ?
+    per_page = params[:per_page] if params[:per_page]#Manifestation.per_page
+
+    cookies.permanent[:per_page] = { :value => per_page } # XXX: セッションデータに格納してはダメ?
+    search_opts[:per_page] = per_page
+
+    # prepare: page
+    if search_opts[:oai_mode]
+      search_opts[:page] = next_page_number_for_oai_search
+    else
+      search_opts[:page] = params[:page].try(:to_i) || 1
+      search_opts[:page_article] = params[:page_article].try(:to_i) || 1
+      search_opts[:page_serial] = params[:page_serial].try(:to_i) || 1
+    end
+    search_opts[:page_session] = 1
+    search_opts[:per_page_session] = SystemConfiguration.get("max_number_of_results")
+
+    search_opts
+  end
+
 
   # GET /orders/1
   # GET /orders/1.json

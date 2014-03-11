@@ -273,6 +273,7 @@ EnjuLeaf::Application.routes.draw do
     get :paid, :on => :member
     get :search, :on => :collection
     get :create_subsequent_year_orders, :on => :collection 
+    post :output_excelx, :on => :collection
   end
   match 'payments/search', :to => 'payments#search'
   resources :payments

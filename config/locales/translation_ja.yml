@@ -2670,7 +2670,30 @@ ja:
         pub_date: 刊行年
         call_number: 請求記号 
         access_address: ＵＲＬ
-        subject: 件名 
+        subject: 件名
+      order:
+        group: グループ名
+        manifestation_identifier: 資料番号
+        order_identifier: 発注番号
+        original_title: 書名
+        country_of_publication: 発行国
+        frequency: 刊行頻度
+        payment_form: 支払形式
+        transportation_route: 輸送経路
+        currency: 発注通貨単位
+        prepayment_principal: 前払版元金額
+        currency_rate: 発注基準為替レート
+        yen_prepayment_principal: 前払版元円貨
+        discount_commision: 手数料率
+        yen_imprest: 円貨前払金額
+        publisher: 出版社名
+        issn: ＩＳＳＮ
+        pair_manifestation_identifier: セット購入コンビ親番号
+        pair_manifestation_kbn: S=コンビ親1=コンビ子
+        note: 注記
+        bookstore: 書店コード
+        adption: 採択
+
     message:
       read_start: "読み取りを開始します。"
       read_end: "読み取りが完了しました。"
