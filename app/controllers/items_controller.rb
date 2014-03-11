@@ -130,9 +130,10 @@ class ItemsController < ApplicationController
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
 
-    @countoperators = 1
-    @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
-
+    if SystemConfiguration.get('manifestation.use_item_has_operator')
+      @countoperators = 1
+      @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
+    end
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @item }
@@ -161,8 +162,10 @@ class ItemsController < ApplicationController
   def create
     @item = Item.new(params[:item])
     @manifestation = Manifestation.find(@item.manifestation_id)
-    @countoperators = @item.item_has_operators.size
-    set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
+    if SystemConfiguration.get('manifestation.use_item_has_operator')
+      @countoperators = @item.item_has_operators.size
+      set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
+    end
 
     respond_to do |format|
       if @item.valid?
@@ -220,7 +223,9 @@ class ItemsController < ApplicationController
         format.html { redirect_to @item }
         format.json { head :no_content }
       else
-        @countoperators = @item.item_has_operators.size
+        if SystemConfiguration.get('manifestation.use_item_has_operator')
+          @countoperators = @item.item_has_operators.size
+        end
         prepare_options
         unless params[:item][:remove_reason_id]
           format.html { render :action => "edit" }
