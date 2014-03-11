@@ -35,8 +35,8 @@ $(function(){
     <% end %>
 
     <br />
-    <%= advanced_search_label(:manifestation_identifier) -%>:
-    <%= search_field_tag 'manifestation_identifier', params[:manifestation_identifier] %><br />
+    <%= advanced_search_label(:identifier) -%>:
+    <%= search_field_tag 'identifier', params[:identifier] %><br />
 
     <%= advanced_search_label(:pub_date) -%>:
     <%= t('advanced_search.from') -%> <%= search_field_tag 'pub_date_from', params[:pub_date_from], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>

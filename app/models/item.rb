@@ -93,7 +93,8 @@ class Item < ActiveRecord::Base
   after_save :reindex
 
 
-  before_validation :set_item_operator
+  before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
+
   def set_item_operator
     item_has_operators.each do |operator|
       operator.item = self if operator.item.blank?

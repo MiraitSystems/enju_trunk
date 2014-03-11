@@ -192,7 +192,13 @@ class Manifestation < ActiveRecord::Base
         items.collect(&:item_identifier)
       end
     end
-    string :identifier
+    string :identifier, :multiple => true do
+      if series_statement && series_statement.root_manifestation
+        [identifier, series_statement.root_manifestation.identifier]
+      else
+        [identifier]  
+      end
+    end
     string :removed_at, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の除籍日のリストを取得する

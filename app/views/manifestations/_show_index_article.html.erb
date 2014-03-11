@@ -7,9 +7,9 @@
     <%- end -%>
   </strong>
   <br />
-  <% if manifestation.manifestation_identifier %>
-    <%= t('activerecord.attributes.manifestation.manifestation_identifier') %>:
-    <%= manifestation.manifestation_identifier %>
+  <% unless manifestation.identifier.blank? %>
+    <%= t('activerecord.attributes.manifestation.identifier') %>:
+    <%= manifestation.identifier %>
   <% end %>  
   <div id="creator_list_<%= manifestation.id -%>">
     <%= render 'manifestations/show_creators', :manifestation => manifestation -%>

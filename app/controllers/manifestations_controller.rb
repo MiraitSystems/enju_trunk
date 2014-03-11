@@ -352,7 +352,7 @@ class ManifestationsController < ApplicationController
           :volume_number_string, :issue_number_string, :serial_number_string,
           :date_of_publication, :pub_date, :periodical_master,
           :carrier_type_id, :created_at, :note, :missing_issue, :article_title,
-          :start_page, :end_page, :exinfo_1, :exinfo_6, :identifier, :manifestation_identifier
+          :start_page, :end_page, :exinfo_1, :exinfo_6, :identifier
         ]
       end
 
@@ -517,7 +517,6 @@ class ManifestationsController < ApplicationController
       # 検索システムに合わせた検索条件の生成などはfactoryにおいて実装する。
       # ただしlocal検索については過去の経緯から特別扱いとなっており、
       # 検索条件生成コードのほとんどがコントローラに実装されている。
-
       if search_opts[:index] == :nacsis
         factory = NacsisCatSearchFactory.new(search_opts, params)
 
@@ -554,7 +553,7 @@ class ManifestationsController < ApplicationController
 
       search.setup_collation!(@query)
       search.setup_facet!
-      search.setup_paginate!
+      search.setup_paginate! unless request.xhr?
 
       begin
         search_all_result, search_book_result,
@@ -625,7 +624,7 @@ class ManifestationsController < ApplicationController
     end
 
     store_location # before_filter ではファセット検索のURLを記憶してしまう
-
+    
     respond_to do |format|
       if params[:opac]
         if @manifestations.size > 0
@@ -1094,8 +1093,8 @@ class ManifestationsController < ApplicationController
     return nil unless manifestations.present?
     manifestation_urls = []
     manifestations.each do |m|
-      str = "#{t('activerecord.attributes.manifestation.manifestation_identifier')}:"
-      str += m.manifestation_identifier.to_s
+      str = "#{t('activerecord.attributes.manifestation.identifier')}:"
+      str += m.identifier.to_s
       manifestation_urls << ApplicationController.helpers.link_to(str, manifestation_path(m))
     end
     render :json => { success: 1, manifestation_urls: manifestation_urls }
@@ -1236,7 +1235,7 @@ class ManifestationsController < ApplicationController
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
-      [:identifier, 'identifier_s']
+      [:identifier, 'identifier_sm']
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 
@@ -1733,7 +1732,7 @@ class ManifestationsController < ApplicationController
           (SystemConfiguration.get('manifestation.isbn_unique') &&
             params[:isbn].present? && params[:isbn] !~ /\*/) ||
               (params[:identifier].present? && params[:identifier] !~ /\*/)
-        search_opts[:direct_mode] = true
+        search_opts[:direct_mode] = true unless params[:binding_items_flg] 
       end
 
       # split option (local)

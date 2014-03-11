@@ -11,9 +11,6 @@ class Numbering < ActiveRecord::Base
   validates_uniqueness_of :name
   before_save :set_padding_character 
 
-  scope :order, :numbering_type => 'order'
-  scope :item, :numbering_type => 'item'
-  scope :manifestation, :numbering_type => 'manifestation'
 
   include GenerateCheckdigit
   class << self

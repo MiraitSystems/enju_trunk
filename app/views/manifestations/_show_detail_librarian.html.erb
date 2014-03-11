@@ -6,7 +6,7 @@
       <%- end -%>
     <%# cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'detail', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
       <table id="resource_detail">
-        <% if manifestation.identifier %>
+        <% unless manifestation.identifier.blank? %>
           <tr>
             <td><%= t('activerecord.attributes.manifestation.identifier') %>:</td>
             <td><%= manifestation.identifier %></td>
