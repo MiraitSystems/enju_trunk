@@ -6,7 +6,7 @@
   <li>
     <p>
       <strong><%= t('activerecord.attributes.item_has_operator.user_id') %>:</strong>
-      <%= operator.try(:user).try(:username) %>
+      <%= link_to operator.try(:user).try(:agent).try(:full_name), operator.try(:user) %>
     </p>
 
     <p>

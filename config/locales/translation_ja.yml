@@ -938,6 +938,8 @@ ja:
         date_of_publication: 出版日
         pub_date: 出版日
         pub_date_article: 刊行年
+        dis_date: 出版停止日
+        date_of_discontinuance: 出版停止日
         country_of_publication: 出版国
         place_of_publication: 出版地
         pub_year: 版年
@@ -1717,6 +1719,8 @@ ja:
         operated_at: 作業日
         library_id: 作業館
         note: メモ
+      item_has_operators:
+        user: 作業者
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -3174,4 +3178,5 @@ ja:
     no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
-
+  item_has_operators:
+    no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"
