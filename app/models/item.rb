@@ -81,7 +81,6 @@ class Item < ActiveRecord::Base
   has_many :item_has_operators, :dependent => :destroy, :validate => true
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators
-
   has_many :item_exinfos, :dependent => :destroy
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
@@ -94,7 +93,8 @@ class Item < ActiveRecord::Base
   after_save :reindex
 
 
-  before_validation :set_item_operator
+  before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
+
   def set_item_operator
     item_has_operators.each do |operator|
       operator.item = self if operator.item.blank?
