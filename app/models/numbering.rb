@@ -28,7 +28,7 @@ class Numbering < ActiveRecord::Base
     return padding
   end
 
-  def self.do_numbering(name, is_save = true)
+  def self.do_numbering(name, is_save = true, options = {})
     counter = 10
     n = nil
     number = ''
@@ -83,13 +83,15 @@ class Numbering < ActiveRecord::Base
     end
 
     checkdigitstr = ""
-    checkdigit = n.checkdigit ? (n.checkdigit):(0)
-    #puts "checkdigit=#{checkdigit}"
-    case checkdigit
-    when 0
-    when 1
-      # modulus 10/weight 3
-      checkdigitstr = generate_checkdigit_modulas10_weight3(number)
+    unless options[:not_use_checkdigitstr]
+      checkdigit = n.checkdigit ? (n.checkdigit):(0)
+      #puts "checkdigit=#{checkdigit}"
+      case checkdigit
+      when 0
+      when 1
+        # modulus 10/weight 3
+        checkdigitstr = generate_checkdigit_modulas10_weight3(number)
+      end
     end
 
     r = "#{prefix}#{nstr}#{suffix}#{checkdigitstr}"
