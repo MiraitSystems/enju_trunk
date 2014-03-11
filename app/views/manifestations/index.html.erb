@@ -110,16 +110,6 @@ $(document).ready(function() {
   <% else %>
   })
   <% end %>
-  //検索フォームをクリックした場合の処理
-  <!--
-  $(first_focus[0]).click(function(){
-    var tags = document.getElementsByClassName('active');
-    if ($(tags).size()){
-      var manifestation_tag = tags[0].getAttribute('id');
-      $("#"+ manifestation_tag).removeClass('active');
-    }
-  });
-  -->
   //外側をクリックしたときに枠を外す
   $listover = false;
   $(document).click(function(){
@@ -134,7 +124,6 @@ $(document).ready(function() {
   });
   $("#list").hover(function () {$listover = true;},function () {$listover = false;});
 });
-
 </script>
 
 <div id="content_detail" class="ui-corner-all">
