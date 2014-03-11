@@ -205,6 +205,7 @@ en:
       function_class_ability: Function class ability
       title_type: Title type
       title: Title
+      item_has_operator: ItemHasOperator
 
     attributes:
       use_license:
@@ -856,6 +857,8 @@ en:
         classification_number: Classification number
         identifier: Manifestation identifier
         date_of_publication: Date of publication
+        date_of_discontinuance: Date of Discontinuance
+        dis_date: Dis Date
         country_of_publication: Country of publication
         place_of_publication: Place of publication
         pub_date: Date of publication
@@ -1723,6 +1726,13 @@ en:
         name: Name
         display_name: Display name
         note: Note
+      item_has_operator:
+        user_id: User
+        operated_at: Operated at
+        library_id: Library
+        note: Note
+      item_has_operators:
+        user: User
 
   page:
     user_title: Welcome %{login_name}
@@ -3197,4 +3207,5 @@ en:
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
-
+  item_has_operators:
+    no_matches_found_user: "No matches found user(%{user_number})"
