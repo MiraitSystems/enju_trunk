@@ -175,7 +175,8 @@ class Ability
         UserStatus,
         Wareki,
         WorkHasSubject,
-        WorkHasTitle
+        WorkHasTitle,
+        LanguageType
       ]
       can [:read, :update], [
         AcceptType,
@@ -365,6 +366,7 @@ class Ability
         FormOfWork,
         ItemHasUseRestriction,
         Language,
+        LanguageType,
         Library,
         LibraryGroup,
         License,
