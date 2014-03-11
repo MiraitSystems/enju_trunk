@@ -1684,6 +1684,15 @@ en:
         donation_request_sample: Donation request sample
         donation_request_collection: Donation request collection
         refusal_latter: Refusal_latter
+        approval_identifier: Approval identifier
+        thrsis_review_flg: Thrsis review flag
+        ja_text_author_summary_flg: Japanese text author summary flag
+        en_text_author_summary_flg: English text author summary flag
+        proceedings_number_of_year: Proceedings number of year
+        excepting_number_of_year: Excepting number of year
+        four_priority_areas: Four priority areas
+        document_classification_1: Document classification 1
+        document_classification_2: Document classification 2
       approval_extext:
         value: Value
         created_by: Created by
@@ -3209,3 +3218,6 @@ en:
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
+  approval:
+    no_matches_found_manifestation: "no matches found to manifestation"
+    no_blank_identifier: "can't be blank"
