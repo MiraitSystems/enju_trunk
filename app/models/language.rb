@@ -33,14 +33,6 @@ class Language < ActiveRecord::Base
     Language.where(:iso_639_1 => I18n.available_locales.map{|l| l.to_s}).order(:position)
   end
 
-  def self.add_language(language_ids)
-    return [] if language_ids.blank?
-    list = []
-    language_ids.uniq.compact.each do |language_id|
-      list << Language.find(language_id)
-    end
-    return list
-  end
 end
 
 # == Schema Information

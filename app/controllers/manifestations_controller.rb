@@ -907,6 +907,7 @@ class ManifestationsController < ApplicationController
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
     @language = params[:language_id].try(:values)
+    @language_type = params[:language_type].try(:values)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -940,7 +941,7 @@ class ManifestationsController < ApplicationController
 
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
-          @manifestation.languages = Language.add_language(@language) unless @language.blank?
+          @manifestation.work_has_languages = WorkHasLanguage.add(@language, @language_type) unless @language.blank?
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -976,6 +977,7 @@ class ManifestationsController < ApplicationController
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
     @language = params[:language_id].try(:values)
+    @language_type = params[:language_type].try(:values)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1007,7 +1009,8 @@ class ManifestationsController < ApplicationController
 
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
-        @manifestation.languages.destroy_all; @manifestation.languages = Language.add_language(@language)
+        @manifestation.work_has_languages.destroy_all;
+        @manifestation.work_has_languages = WorkHasLanguage.add(@language, @language_type)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1474,6 +1477,7 @@ class ManifestationsController < ApplicationController
     @manifestation_types = ManifestationType.all
     @roles = Role.all
     @languages = Language.all_cache
+    @language_types = LanguageType.all
     @countries = Country.all
     @frequencies = Frequency.all
     @nii_types = NiiType.all if defined?(NiiType)

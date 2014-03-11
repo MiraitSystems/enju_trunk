@@ -97,7 +97,10 @@ $(document).keydown(function(e) {
     currentNumber : <%= raw (@manifestation_languages.blank? ? 1 : @manifestation_languages.size).to_json %>,
     itemTemplate : ''
       + '<select id="language_id___count__" name="language_id[__count__]">'
-      + <%= raw @languages.collect{ |language| ["<option value='" + language.id.to_s + "'>" + language.display_name.localize + "</option>"] }.join().to_json %>
+      + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
+      + '<select id="language_id___count__" name="language_type[__count__]">'
+      + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
       + '</select>&#10'
       + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
       + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
@@ -320,23 +323,28 @@ $(document).keydown(function(e) {
 
   <div class="field" id="language">
     <%= f.label t('activerecord.models.language') -%>
-    <% if @manifestation_languages.blank? %>
+    <% if @manifestation.work_has_languages.blank? %>
       <div id="LANG0">
         <%#= select2_script "language_id_0" %>
         <%#= make_select2("manifestation", 'language_id[0]', @languages, @default_language.id, 200) %>
         <%= select_tag 'language_id[0]',
             options_for_select(@languages.collect{ |language| [language.display_name.localize, language.id] },
             :selected => @default_language.id ) %>
+        <%= select_tag 'language_type[0]',
+            options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
         <%= button_to_function '+', 'ItemField_language.add()' -%>
       </div>
     <% else %>
-      <% @manifestation_languages.each_with_index do |language, i| %>
+      <% @manifestation.work_has_languages.each_with_index do |whl, i| %>
         <div id="LANG<%= i.to_s %>">
           <%#= select2_script "language_id_" + i.to_s %>
           <%#= make_select2(:language_id_0, "language_id[" + i.to_s + "]", @languages, @default_language.id, 200) %>
           <%= select_tag 'language_id[' + i.to_s + ']',
-              options_for_select(@languages.collect{|language| [language.display_name.localize, language.id] },
-              :selected => language ) %>
+              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id] },
+              :selected => whl.language_id ) %>
+          <%= select_tag 'language_type[' + i.to_s + ']',
+              options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] },
+              :selected => whl.language_type_id ) %>
           <%= button_to_function '+', 'ItemField_language.add()' -%>
           <%= button_to_function '-', 'ItemField_language.remove(' + i.to_s + ')' if i > 0 -%>
         </div>
