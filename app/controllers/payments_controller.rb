@@ -87,10 +87,10 @@ class PaymentsController < ApplicationController
   end
 
   def set_select_years
-    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @years = Order.select(:order_year).uniq.order('order_year desc')
     @select_years = []
     @years.each do |p|
-      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+      @select_years.push [p.order_year, p.order_year] unless p.order_year.blank?
     end
 
   end
@@ -114,9 +114,9 @@ class PaymentsController < ApplicationController
       where_str += "order_identifier = '#{params[:order_identifier]}'"
     end
 
-    unless params[:publication_year].blank?
+    unless params[:order_year].blank?
       where_str += " AND " unless where_str.empty?
-      where_str += "publication_year = #{params[:publication_year].to_i}"
+      where_str += "order_year = #{params[:order_year].to_i}"
     end
 
 
@@ -128,7 +128,7 @@ class PaymentsController < ApplicationController
 
 
     @selected_order_identifier = params[:order_identifier]
-    @selected_year = params[:publication_year]
+    @selected_year = params[:order_year]
 
     set_select_years
 
@@ -139,10 +139,10 @@ class PaymentsController < ApplicationController
   end
 
   def set_select_years
-    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @years = Order.select(:order_year).uniq.order('order_year desc')
     @select_years = []
     @years.each do |p|
-      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+      @select_years.push [p.order_year, p.order_year] unless p.order_year.blank?
     end
 
   end

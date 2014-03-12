@@ -14,8 +14,8 @@
     <%= t('activerecord.attributes.payment.order_id') %>:
     <%= link_to @order.order_identifier, order_path(@order, :return_index => true) %>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= @order.publication_year %>
+    <%= t('activerecord.attributes.order.order_year') %>:
+    <%= @order.order_year %>
   </p><br />
 
 
@@ -33,8 +33,8 @@
     <%= t('activerecord.attributes.payment.order_id') %>:
     <%= text_field_tag :order_identifier, @selected_order_identifier %>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
+    <%= t('activerecord.attributes.order.order_year') %>:
+    <%= select('', :order_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
     </p>
 
     <%= submit_tag t('page.search') %>
