@@ -380,6 +380,13 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def self.numbering_item_identifier(numbering_name, options = {}) 
+    begin
+      item_identifier = Numbering.do_numbering(numbering_name, options)
+    end while Item.where(:item_identifier => item_identifier).first
+    return item_identifier
+  end
+
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
