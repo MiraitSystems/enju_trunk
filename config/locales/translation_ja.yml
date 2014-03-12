@@ -209,6 +209,7 @@ ja:
       title_type: 書名種類
       title: 書名
       item_has_operator: 受入作業者
+      claim_type: クレーム
 
     attributes:
       use_license:
@@ -1721,6 +1722,9 @@ ja:
         note: メモ
       item_has_operators:
         user: 作業者
+      claim_type:
+        name: 名前
+        display_name: 表示名
 
   page:
     user_title: "ようこそ %{login_name} さん"

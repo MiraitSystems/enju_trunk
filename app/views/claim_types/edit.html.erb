@@ -1,6 +1,13 @@
-<h1>Editing claim_type</h1>
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.editing', :model => t('activerecord.models.claim_type')) -%></h1>
+  <div id="content_list">
+    <%= render 'form' %>
+  </div>
+</div>
 
-<%= render 'form' %>
-
-<%= link_to 'Show', @claim_type %> |
-<%= link_to 'Back', claim_types_path %>
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.show'), claim_type_path(@claim_type) -%></li>
+    <li><%= link_to t('page.back'), claim_types_path -%></li>
+  </ul>
+</div>
