@@ -440,6 +440,7 @@ ja:
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
+        grade: 学年
       feeds/app:
         source_url: ソースURL
         title: タイトル
