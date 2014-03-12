@@ -796,6 +796,7 @@ class ManifestationsController < ApplicationController
   def new
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects
+    @work_has_languages = []
     output_agent_parameter_for_new_edit
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation
@@ -811,7 +812,7 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',')
-      @manifestation_languages = original_manifestation.languages.reorder('work_has_languages.position').pluck(:id)
+      @work_has_languages = original_manifestation.work_has_languages
       if original_manifestation.manifestation_exinfos
         original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
       end
@@ -864,7 +865,7 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @manifestation_languages = @manifestation.languages.reorder('work_has_languages.position').pluck(:id) if @manifestation_languages.blank?
+    @work_has_languages = @manifestation.work_has_languages
     output_agent_parameter_for_new_edit
     @subject = @manifestation.subjects.collect(&:term).join(';')
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
@@ -906,8 +907,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @language = params[:language_id].try(:values)
-    @language_type = params[:language_type].try(:values)
+    @work_has_languages = create_whl_hash(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -941,7 +941,7 @@ class ManifestationsController < ApplicationController
 
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
-          @manifestation.work_has_languages = WorkHasLanguage.add(@language, @language_type) unless @language.blank?
+          @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -949,12 +949,11 @@ class ManifestationsController < ApplicationController
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_created', :model => t('activerecord.models.manifestation')) }
         format.json { render :json => @manifestation, :status => :created, :location => @manifestation }
       else
-        @manifestation_languages = @language
         prepare_options
         output_agent_parameter
         new_work_has_title
 
-      format.html { render :action => "new" }
+        format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
         @keep_themes = @theme
@@ -976,8 +975,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @language = params[:language_id].try(:values)
-    @language_type = params[:language_type].try(:values)
+    @work_has_languages = create_whl_hash(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1010,7 +1008,7 @@ class ManifestationsController < ApplicationController
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
         @manifestation.work_has_languages.destroy_all;
-        @manifestation.work_has_languages = WorkHasLanguage.add(@language, @language_type)
+        @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1020,7 +1018,6 @@ class ManifestationsController < ApplicationController
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
         format.json { head :no_content }
       else
-        @manifestation_languages = @language
         prepare_options
         output_agent_parameter
         new_work_has_title
@@ -1953,5 +1950,17 @@ class ManifestationsController < ApplicationController
         @count_titles = 1
       end
     end
+  end
+
+  def create_whl_hash(language_ids, language_type_ids)
+    return [] if language_ids.blank? || ( language_ids.size != language_type_ids.size)
+    list = []
+    language_ids.zip(language_type_ids).each do |language_id ,language_type_id|
+      whl = {}
+      whl[:language_id] = language_id
+      whl[:language_type_id] = language_type_id
+      list << whl
+    end
+    return list
   end
 end

@@ -1,5 +1,5 @@
 class WorkHasLanguage < ActiveRecord::Base
-  attr_accessible :language_id, :position, :work_id
+  attr_accessible :language_id, :position, :work_id, :language_type_id
   belongs_to :language
   belongs_to :language_type
   belongs_to :work, :class_name => 'Manifestation'
@@ -14,14 +14,11 @@ class WorkHasLanguage < ActiveRecord::Base
     self.work.try(:index)
   end
 
-  def self.add(language_ids, language_type_ids)
-    return [] if language_ids.blank? || ( language_ids.size != language_type_ids.size)
+  def self.new_objs(whl_ary)
     list = []
-    language_ids.each_with_index do |language_id ,i|
-      whl = self.new
-      whl.language = Language.find(language_id)
-      whl.language_type = LanguageType.find(language_type_ids[i])
-      list << whl
+    whl_ary.each do |whl|
+      work_has_language = self.new(whl)
+      list << work_has_language
     end
     return list
   end
