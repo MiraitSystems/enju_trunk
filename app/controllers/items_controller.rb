@@ -168,10 +168,11 @@ class ItemsController < ApplicationController
     end
 
     respond_to do |format|
-      if @item.valid?
-        @item.manifestation = @manifestation 
-        @item.save!
+      # if @item.valid?
+      begin
         Item.transaction do
+          @item.manifestation = @manifestation 
+          @item.save!
           if @item.shelf
             @item.shelf.library.agent.items << @item
           end
@@ -193,7 +194,7 @@ class ItemsController < ApplicationController
           format.html { redirect_to(@item) }
           format.json { render :json => @item, :status => :created, :location => @item }
         end
-      else
+      rescue
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
