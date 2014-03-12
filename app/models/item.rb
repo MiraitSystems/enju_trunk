@@ -84,6 +84,8 @@ class Item < ActiveRecord::Base
   has_many :item_exinfos, :dependent => :destroy
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
+  validates_associated :exemplify
+  # validates_associated :exemplify, :message => I18n.t('page.holding') + I18n.t('import_request.isbn_taken')
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
   validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   before_validation :set_circulation_status, :on => :create
