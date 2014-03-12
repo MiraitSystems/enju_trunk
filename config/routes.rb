@@ -97,6 +97,7 @@ EnjuLeaf::Application.routes.draw do
     get :search_manifestation, :on => :member
     get :search_manifestation, :on => :collection
     post :create_from_nacsis, :on => :collection
+    get :numbering, :on => :collection
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'

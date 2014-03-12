@@ -96,7 +96,8 @@ class Item < ActiveRecord::Base
   after_save :reindex
 
 
-  before_validation :set_item_operator
+  before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
+
   def set_item_operator
     item_has_operators.each do |operator|
       operator.item = self if operator.item.blank?
@@ -380,6 +381,13 @@ class Item < ActiveRecord::Base
     else
       return false
     end
+  end
+
+  def self.numbering_item_identifier(numbering_name, options = {}) 
+    begin
+      item_identifier = Numbering.do_numbering(numbering_name, options)
+    end while Item.where(:item_identifier => item_identifier).first
+    return item_identifier
   end
 
   # XLSX形式でのエクスポートのための値を生成する

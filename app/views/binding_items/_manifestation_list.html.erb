@@ -1,5 +1,5 @@
+<div style="color: green"><%= flash[:message] -%></div>
 <%- if @manifestations -%>
-  <div style="color: green"><%= flash[:message] -%></div>
     <table class="index">
       <tr>
         <th class='binding_item_title'><%= t('activerecord.attributes.manifestation.original_title') %></th>
@@ -8,7 +8,7 @@
         <th></th>
       </tr>
 
-      <%- @manifestations_all[0].each_with_index do |manifestation, i| -%>
+      <%- @manifestations.each_with_index do |manifestation, i| -%>
         <% manifestation.items.each do |item| %>
           <%- unless item.bookbinder_id %>
           <tr class="line<%= cycle("0", "1") -%>">
