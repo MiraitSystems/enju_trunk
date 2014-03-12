@@ -192,6 +192,13 @@ class Manifestation < ActiveRecord::Base
         items.collect(&:item_identifier)
       end
     end
+    string :identifier, :multiple => true do
+      if series_statement && series_statement.root_manifestation
+        [identifier, series_statement.root_manifestation.identifier]
+      else
+        [identifier]  
+      end
+    end
     string :removed_at, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の除籍日のリストを取得する
@@ -364,6 +371,7 @@ class Manifestation < ActiveRecord::Base
     end
     # OTC end
     string :sort_title
+    string :original_title
     boolean :periodical do
       serial?
     end
@@ -1447,65 +1455,6 @@ class Manifestation < ActiveRecord::Base
       end
     end
     return report 
-  end
-
-  class << self
-    # 指定されたNCIDによりNACSIS-CAT検索を行い、
-    # 得られた情報からManifestationを作成する。
-    #
-    # * ncid - NCID
-    # * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    def create_from_ncid(ncid, book_types = ManifestationType.book.all)
-      raise ArgumentError if ncid.blank?
-      result = NacsisCat.search(dbs: [:book], id: ncid)
-      new_from_nacsis_cat(ncid, result[:book].first, book_types).tap {|record| record.save }
-    end
-
-    # 指定されたNCIDリストによりNACSIS-CAT検索を行い、
-    # 得られた情報からManifestationを作成する。
-    #
-    # * ncids - NCIDのリスト
-    # * opts
-    #   * book_types - 書籍の書誌種別(ManifestationType)の配列(NOTE: バッチ時の外部キャッシュ用で和書・洋書にあたるレコードを与える)
-    #   * nacsis_batch_size - 一度に検索するNCID数
-    def batch_create_from_ncid(ncids, opts = {}, &block)
-      nacsis_batch_size = opts[:nacsis_batch_size] || 50
-      book_types = opts[:book_types] || ManifestationType.book.all
-
-      ncids.each_slice(nacsis_batch_size) do |ids|
-        result = NacsisCat.search(dbs: [:book], id: ids)
-        result[:book].each do |nacsis_cat|
-          record = new_from_nacsis_cat(nacsis_cat.ncid, nacsis_cat, book_types)
-          record.save
-          block.call(record) if block
-        end
-      end
-    end
-
-    private
-
-      def new_from_nacsis_cat(ncid, nacsis_cat, book_types)
-        attrs = {
-          nacsis_identifier: ncid,
-        }
-        if nacsis_cat.present?
-          nacsis_info = nacsis_cat.detail
-          attrs[:original_title] = nacsis_info[:subject_heading]
-          attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-          attrs[:title_alternative] = nacsis_info[:subject_heading_reading_alternative]
-
-          # 和書または洋書を設定する
-          if nacsis_info[:text_language] &&
-              nacsis_info[:text_language].name == 'Japanese'
-            type = book_types.detect {|bt| /japanese/io =~ bt.name }
-          else
-            type = book_types.detect {|bt| /foreign/io =~ bt.name }
-          end
-          attrs[:manifestation_type] = type
-        end
-
-        new(attrs)
-      end
   end
 
   class GenerateManifestationListJob

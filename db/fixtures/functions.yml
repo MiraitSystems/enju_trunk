@@ -13,7 +13,7 @@ function_user:
   display_name: "利用者管理"
   controller_name: UsersController
   action_names: |
-                read:index,show
+                read:index,show,search_family
                 update:new,create,edit,update
                 delete:destroy
   position: 2
@@ -31,8 +31,8 @@ function_00004:
   display_name: "目録管理"
   controller_name: ManifestationsController
   action_names: |
-                read:index,show
-                update:new,create,edit,update,output_excelx
+                read:index,show,search_manifestation
+                update:new,create,edit,update,output_excelx,numbering
                 delete:destroy
   position: 4
 function_00005:

@@ -7,7 +7,7 @@ class ManifestationsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.manifestation'))", 'new_manifestation_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.manifestation'))", 'edit_manifestation_path(params[:id])', :only => [:edit, :update]
 
-  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation]
+  load_and_authorize_resource :except => [:index, :show_nacsis, :create_from_nacsis, :output_show, :output_pdf, :search_manifestation, :numbering]
   authorize_resource :only => :index
 
   before_filter :authenticate_user!, :only => :edit
@@ -203,7 +203,7 @@ class ManifestationsController < ApplicationController
     FACET_FIELDS = [
       :reservable, :carrier_type, :language, :library, :manifestation_type,
       :missing_issue, :in_process, :circulation_status_in_process,
-      :circulation_status_in_factory,
+      :circulation_status_in_factory
     ]
 
     class Container
@@ -488,7 +488,7 @@ class ManifestationsController < ApplicationController
       if params[:removed_from].present? || params[:removed_to].present? || params[:removed]
         @removed = true
       end
-      
+
       if params[:theme_id]
         @theme = Theme.find(params[:theme_id]) rescue nil
         @all_manifestations = params[:all_manifestations] = false
@@ -517,7 +517,6 @@ class ManifestationsController < ApplicationController
       # 検索システムに合わせた検索条件の生成などはfactoryにおいて実装する。
       # ただしlocal検索については過去の経緯から特別扱いとなっており、
       # 検索条件生成コードのほとんどがコントローラに実装されている。
-
       if search_opts[:index] == :nacsis
         factory = NacsisCatSearchFactory.new(search_opts, params)
 
@@ -554,7 +553,7 @@ class ManifestationsController < ApplicationController
 
       search.setup_collation!(@query)
       search.setup_facet!
-      search.setup_paginate!
+      search.setup_paginate! unless request.xhr?
 
       begin
         search_all_result, search_book_result,
@@ -625,7 +624,7 @@ class ManifestationsController < ApplicationController
     end
 
     store_location # before_filter ではファセット検索のURLを記憶してしまう
-
+    
     respond_to do |format|
       if params[:opac]
         if @manifestations.size > 0
@@ -962,6 +961,11 @@ class ManifestationsController < ApplicationController
     end
   end
 
+  def numbering
+    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil 
+    render :json => {:success => 1, :manifestation_identifier => manifestation_identifier}
+  end 
+
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
@@ -1081,13 +1085,16 @@ class ManifestationsController < ApplicationController
 
   def search_manifestation
     return nil unless request.xhr? or params[:original_title].blank?
-    manifestations = Manifestation.where(original_title: params[:original_title]).order(:id)
+    manifestations = Manifestation.search.build do
+      with(:original_title).equal_to params[:original_title]
+      with(:periodical).equal_to false
+    end.execute!.results
     manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
     return nil unless manifestations.present?
     manifestation_urls = []
     manifestations.each do |m|
-      str = "#{t('activerecord.attributes.manifestation.manifestation_identifier')}:"
-      str += m.manifestation_identifier.to_s
+      str = "#{t('activerecord.attributes.manifestation.identifier')}:"
+      str += m.identifier.to_s
       manifestation_urls << ApplicationController.helpers.link_to(str, manifestation_path(m))
     end
     render :json => { success: 1, manifestation_urls: manifestation_urls }
@@ -1098,17 +1105,23 @@ class ManifestationsController < ApplicationController
     ncid = params['ncid']
     type = params['manifestation_type'] || 'book'
 
-    manifestation = Manifestation.create_from_ncid(ncid)
+    if type == 'book'
+      created_record = Manifestation.where(:nacsis_identifier => ncid).first
+      created_record = NacsisCat.create_manifestation_from_ncid(ncid) if created_record.nil?
+    else
+      created_record = SeriesStatement.where(:nacsis_series_statementid => ncid).first
+      created_record = NacsisCat.create_series_statement_from_ncid(ncid) if created_record.nil?
+    end
 
     respond_to do |format|
       format.html do
-        if manifestation.persisted?
-          redirect_to manifestation,
-            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
-        elsif record = Manifestation.where(nacsis_identifier: ncid).first
-          redirect_to record
-        else
+        if created_record.nil?
           redirect_to nacsis_manifestations_path(ncid: ncid, manifestation_type: type)
+        elsif created_record.new_record?
+          redirect_to created_record,
+            notice: t('controller.successfully_created', :model => t('activerecord.models.manifestation'))
+        else
+          redirect_to created_record
         end
       end
     end
@@ -1130,7 +1143,7 @@ class ManifestationsController < ApplicationController
     string_fields_for_query = [ # fulltext検索に対応するstring型フィールドのリスト
       :title, :contributor,
       :exinfo_1, :exinfo_6,
-      :subject, :isbn, :issn,
+      :subject, :isbn, :issn, :identifier,
       # 登録内容がroot_of_series?==trueの場合に相違
       :creator, :publisher,
       # 対応するstring型インデックスがない
@@ -1222,6 +1235,7 @@ class ManifestationsController < ApplicationController
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
+      [:identifier, 'identifier_sm']
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 
@@ -1323,7 +1337,9 @@ class ManifestationsController < ApplicationController
     if @removed
       with << [:has_removed, :equal_to, true]
     else
-      if !params[:missing_issue] && (@all_manifestations.blank? or !@all_manifestations == true)
+      if !params[:missing_issue] && 
+        (@all_manifestations.blank? or !@all_manifestations == true) &&
+        !SystemConfiguration.get("manifestation.show_all") 
         without << [:non_searchable, :equal_to, true]
       end
     end
@@ -1466,6 +1482,7 @@ class ManifestationsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @numberings = Numbering.where(:numbering_type => 'manifestation')
   end
 
   def input_agent_parameter
@@ -1712,9 +1729,10 @@ class ManifestationsController < ApplicationController
 
       if params[:item_identifier].present? &&
             params[:item_identifier] !~ /\*/ ||
-          SystemConfiguration.get('manifestation.isbn_unique') &&
-            params[:isbn].present? && params[:isbn] !~ /\*/
-        search_opts[:direct_mode] = true
+          (SystemConfiguration.get('manifestation.isbn_unique') &&
+            params[:isbn].present? && params[:isbn] !~ /\*/) ||
+              (params[:identifier].present? && params[:identifier] !~ /\*/)
+        search_opts[:direct_mode] = true unless params[:binding_items_flg] 
       end
 
       # split option (local)
@@ -1832,9 +1850,15 @@ class ManifestationsController < ApplicationController
       manifestation = ms.first if ms.size == 1
     end
 
+    if params[:identifier].present?
+      manifestation = Manifestation.where(:identifier => params[:identifier]).try(:first)
+    end
+
     if manifestation
-      redirect_to manifestation
-      return true
+      unless params[:binding_items_flg]
+        redirect_to manifestation
+        return true
+      end
     end
 
     false

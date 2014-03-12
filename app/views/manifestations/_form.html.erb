@@ -8,7 +8,43 @@ jQuery(function(){
     article_title = ""
     displayArticleTitle(article_title);
   });
+
+  // look for manifestations with the same title
+  <% unless @manifestation.new_record? %>
+    search_manifestation();
+  <% end %>
+  $("#manifestation_original_title").change(function(){
+     search_manifestation();
+  });
 })
+
+function search_manifestation() {
+  //var user_id = $("#manifestation_original_title").val();
+  $.ajax({
+    type: "GET",
+    url: "/manifestations/search_manifestation",
+    data: { 
+      "original_title": $("#manifestation_original_title").val(),
+      "manifestation_id": "<%= @manifestation.try(:id) %>"
+    },
+    success: function(obj) {
+      $('#search_manifestation > li').remove();
+      $('#search_manifestation').hide();
+      if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
+        $('#search_manifestation').show();
+        var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
+        data += "<ui>";
+        jQuery.each(obj["manifestation_urls"], function(index, value) {  
+          data += "<li>";
+          data += value;
+          data += "</li>";
+        });
+        data += "</ui>";
+        $('#search_manifestation').html(data);
+      } 
+    }
+  });
+}
 
 function displayArticleTitle(article_title) {
   var manifestation_type = $('#manifestation_manifestation_type_id').val();
@@ -133,6 +169,7 @@ $(document).keydown(function(e) {
 
 
 <%= render 'page/required_field' %>
+<%= render 'observe_field' %>
 <%= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
   <%= f.error_messages -%>
 
@@ -154,22 +191,35 @@ $(document).keydown(function(e) {
     <%- end -%>
   </div>
 
-  <div class="field">
-    <%= f.label :original_title -%><br />
-    <%= f.text_field :original_title, :class => 'resource_title' -%>
-  </div>
-  <div class="field">
-    <%= f.label :title_transcription -%><br />
-    <%= f.text_field :title_transcription, :class => 'resource_title' -%>
-  </div>
-  <div class="field">
-    <%= f.label :title_alternative -%><br />
-    <%= f.text_field :title_alternative, :class => 'resource_title' -%>
-  </div>
-  <div class="field" id="article_title_field">
-    <%= f.label :article_title %><br />
-    <%= f.text_field :article_title, :class => 'resource_title' %>
-  </div>
+  <table style='border:none; margin: -4px;'>
+    <tr>
+      <td style='border:none;'>
+        <div class="field">
+          <%= f.label :original_title -%><br />
+          <%= f.text_field :original_title, :class => 'resource_title' -%>
+        </div>
+      </td>
+      <td style='border:none;'>
+        <div id="search_manifestation"></div>
+      </td>
+    </tr>
+    <tr>
+      <td style='border:none;'>
+        <div class="field">
+          <%= f.label :title_transcription -%><br />
+          <%= f.text_field :title_transcription, :class => 'resource_title' -%>
+        </div>
+        <div class="field">
+          <%= f.label :title_alternative -%><br />
+         <%= f.text_field :title_alternative, :class => 'resource_title' -%>
+        </div>
+        <div class="field" id="article_title_field">
+          <%= f.label :article_title %><br />
+          <%= f.text_field :article_title, :class => 'resource_title' %>
+        </div>
+      </td>
+    </tr>
+  </table>
 
   <% if SystemConfiguration.get('manifestation.use_titles') %>
     <div class="field">
@@ -196,6 +246,13 @@ $(document).keydown(function(e) {
       </div>
     </div>
   <% end %>
+
+  <div class="field">
+    <%= f.label :identifier %><br />
+    <%= f.text_field :identifier %>
+    <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
+    <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+  </div>
 
   <%= render 'form_agent_field' %>
   <div class="field">
@@ -231,7 +288,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "manifestation_type_id" %>
-    <%= make_select2(:manifestation_type_id, "manifestation_type_id", @manifestation_types, @manifestation.manifestation_type_id, 300) %>
+    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300) %>
   </div>
 
   <div class="field">

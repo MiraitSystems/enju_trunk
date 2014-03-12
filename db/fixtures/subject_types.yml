@@ -1,32 +1,112 @@
---- 
+---
 subject_type_00001:
   id: 1
-  name: Concept  
-  display_name: "en:Concept\r\n\
-  ja:件名概念"
-  note: 
+  name: Concept
+  display_name: "en:Concept\r\nja:件名概念"
+  note:
   position: 1
 
 subject_type_00002:
   id: 2
-  name: Event  
-  display_name: "en:Event\r\n\
-  ja:対象イベント"
-  note: 
+  name: Event
+  display_name: "en:Event\r\nja:対象イベント"
+  note:
   position: 2
 
 subject_type_00003:
   id: 3
-  name: Object  
-  display_name: "en:Object\r\n\
-  ja:件名オブジェクト"
-  note: 
+  name: Object
+  display_name: "en:Object\r\nja:件名オブジェクト"
+  note:
   position: 3
 
 subject_type_00004:
   id: 4
-  name: Place  
-  display_name: "en:Place\r\n\
-  ja:対象地"
-  note: 
+  name: Place
+  display_name: "en:Place\r\nja:対象地"
+  note:
   position: 4
+
+subject_type_00005:
+  id: 5
+  name: A
+  display_name: "en:Personal name\r\nja:個人名"
+  note: for nacsis data
+  position: 5
+
+subject_type_00006:
+  id: 6
+  name: B
+  display_name: "en:Corporate name\r\nja:団体名"
+  note: for nacsis data
+  position: 6
+
+subject_type_00007:
+  id: 7
+  name: C
+  display_name: "en:Meeting name\r\nja:会議名"
+  note: for nacsis data
+  position: 7
+
+subject_type_00008:
+  id: 8
+  name: D
+  display_name: "en:Uniform title\r\nja:統一タイトル"
+  note: for nacsis data
+  position: 8
+
+subject_type_00009:
+  id: 9
+  name: E
+  display_name: "en:Place term\r\nja:地名件名"
+  note: for nacsis data
+  position: 9
+
+subject_type_00010:
+  id: 10
+  name: F
+  display_name: "en:Geographic name\r\nja:地理的名称"
+  note: for nacsis data
+  position: 10
+
+subject_type_00011:
+  id: 11
+  name: G
+  display_name: "en:Reversed geographic\r\nja:地理的名称（転地形）"
+  note: for nacsis data
+  position: 11
+
+subject_type_00012:
+  id: 12
+  name: H
+  display_name: "en:Index term-uncontrolled\r\nja:非統制標目"
+  note: for nacsis data
+  position: 12
+
+subject_type_00013:
+  id: 13
+  name: J
+  display_name: "en:Genre/form\r\nja:ジャンル指示用標目"
+  note: for nacsis data
+  position: 13
+
+subject_type_00014:
+  id: 14
+  name: K
+  display_name: "en:Topical term\r\nja:普通件名"
+  note: for nacsis data
+  position: 14
+
+subject_type_00015:
+  id: 15
+  name: L
+  display_name: "en:Term with excepting of personal name\r\nja:個人名以外の件名"
+  note: for nacsis data
+  position: 15
+
+subject_type_00016:
+  id: 16
+  name: M
+  display_name: "en:Uniform title\r\nja:統一タイトル"
+  note: for nacsis data
+  position: 16

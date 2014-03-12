@@ -24,21 +24,33 @@ namespace :enju do
           ncids.delete(record.nacsis_identifier)
         end
 
-      created = failed = 0
-      types = ManifestationType.book.all
-      Manifestation.batch_create_from_ncid(ncids.keys, book_types: types) do |m|
+      SeriesStatement.
+        where(nacsis_series_statementid: ncids.keys).
+        select(:nacsis_series_statementid).each do |record|
+          ncids.delete(record.nacsis_series_statementid)
+        end
+
+      created_m = created_s = failed = 0
+      NacsisCat.batch_create_from_ncid(ncids.keys) do |m|
         if m.persisted?
-          created += 1
+          case m.class.name
+          when Manifestation.name
+            created_m += 1
+          when SeriesStatement.name
+            created_s += 1
+          end
         else
           failed += 1
         end
       end
 
-      if created > 0
+      if (created_m + created_s) > 0
         Sunspot.commit
       end
 
-      puts "imported #{created} records, #{failed} failures"
+      puts "#{Manifestation.name} imported #{created_m} records"
+      puts "#{SeriesStatement.name} imported #{created_s} records"
+      puts "#{failed} failures"
     end
   end
 end

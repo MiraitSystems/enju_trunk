@@ -40,6 +40,11 @@
     <%= f.text_field :last_number -%>
   </div>
 
+  <div class="field">
+    <%= f.label :numbering_type %><br />
+    <%= f.select :numbering_type, [[I18n.t('activerecord.models.item'), 'item'], [I18n.t('activerecord.models.order'), 'order'], [I18n.t('activerecord.models.manifestation'), 'manifestation']] %>
+  </div>
+
   <div class="actions">
     <%= f.submit :disable_with => t('page.wait') %>
   </div>

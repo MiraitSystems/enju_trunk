@@ -208,6 +208,7 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      item_has_operator: 受入作業者
 
     attributes:
       use_license:
@@ -285,6 +286,7 @@ ja:
         padding_character: 埋める文字
         last_number: 最後の番号
         checkdigit: チェックデジットのルール
+        numbering_type: 採番タイプ
       manifestation_types:
         book: 図書
         series: 定期刊行物
@@ -936,6 +938,8 @@ ja:
         date_of_publication: 出版日
         pub_date: 出版日
         pub_date_article: 刊行年
+        dis_date: 出版停止日
+        date_of_discontinuance: 出版停止日
         country_of_publication: 出版国
         place_of_publication: 出版地
         pub_year: 版年
@@ -1524,7 +1528,9 @@ ja:
         created_at: 登録日
       nacsis_user_request:
         subject_heading: 本表題/責任表示
-        subject_heading_reading: 本表題等のよみ
+        subject_heading_reading: 本表題等の読み
+        title_alternative: その他の表題
+        title_alternative_transcription: その他の表題の読み
         publisher: 出版者
         pub_date: 出版年
         publish_year: 出版年
@@ -1536,10 +1542,38 @@ ja:
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
-        classmark: 分類記号
         author_heading: 著者情報
         subject: 件名
         ncid: NCID
+        marc: MARC ID
+        cls_info: 分類記号
+        vol_info: 版情報
+        VOL: 巻冊次
+        ISBN: ISBN
+        PRICE: 価格
+        XISBN: 無効ISBN
+        nbn: NBN
+        lccn: LCCN
+        ptb_info: 親書誌情報
+        PTBID: ID
+        PTBK: 種類
+        PTBTR: 標題
+        PTBTRR: 読み
+        PTBTRVR: その他の読み
+        PTBNO: 番号等
+        utl_info: 統一書名情報
+        UTID: ID
+        UTFLG: 主記入フラグ
+        UTHDNG: 書名
+        UTHDNGR: 読み
+        UTHDNGVR: その他の読み
+        UTINFO: その他の情報
+        price: 金額
+        fid: 遍歴ファミリーID
+        bhn_info: 遍歴注記情報
+        BHBID: 前後書誌レコードID
+        BHK: 遍歴タイプ
+        BHTR: 前後タイトル
         user_id: 利用者ID
         user_name: 利用者名
         request_datetime: 依頼日時
@@ -1679,7 +1713,14 @@ ja:
       title_type:
         name: 名前
         display_name: 表示名
-        note: 注記        
+        note: 注記
+      item_has_operator:
+        user_id: 作業者
+        operated_at: 作業日
+        library_id: 作業館
+        note: メモ
+      item_has_operators:
+        user: 作業者
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1970,6 +2011,7 @@ ja:
     del_line: "-"
     user_notice: 利用者通知書
     select_use_titles: 書名テーブルを利用する
+    imported: インポート済み
     copy: コピーして新規作成
 
   manual_for_user: "利用マニュアル.pdf"
@@ -2954,6 +2996,7 @@ ja:
     binded: "製本済み"
     binder: "製本資料"
     status: "製本ステータス"
+    card: "製本カード"
   breadcrumb:
     lib_top: "図書館のトップページ"
     search_manifestations: "資料の検索"
@@ -2968,6 +3011,7 @@ ja:
     exinfo: "その他"
   external_catalog:
     ndl: NDL
+    nacsis: NACSIS
   copy_request:
     message: "地方官署に勤務する職員のための郵送による文献複写サービスです。<br />
               以下に名前・所属・送付先住所と複写を希望する文献（入力項目：①表題，②著者名，③誌名（刊行年、巻号、ページ），④請求記号[分かる場合]）を入力し、登録するボタンを押してください。<br />
@@ -3134,4 +3178,5 @@ ja:
     no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
     no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
-
+  item_has_operators:
+    no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"

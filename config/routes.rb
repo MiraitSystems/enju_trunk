@@ -1,6 +1,5 @@
 EnjuLeaf::Application.routes.draw do
 
-
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection
@@ -90,7 +89,10 @@ EnjuLeaf::Application.routes.draw do
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
     get 'nacsis/:ncid', :on => :collection, :to => 'manifestations#show_nacsis', :as => 'nacsis'
+    get :search_manifestation, :on => :member
+    get :search_manifestation, :on => :collection
     post :create_from_nacsis, :on => :collection
+    get :numbering, :on => :collection
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'
@@ -508,6 +510,7 @@ EnjuLeaf::Application.routes.draw do
     resources :binding_items
     get :bind_undo, :on => :collection
     get :add_binding_item, :on => :collection
+    get :get_bookbinding_card, :on => :collection
   end
   resources :binding_items
   match '/bookbindings/:bookbinder_id/manifestations' => 'manifestations#index'

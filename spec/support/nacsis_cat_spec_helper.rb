@@ -56,6 +56,7 @@ module NacsisCatSpecHelper
         {'SHD' => '件名1'},
         {'SHD' => '件名2'},
       ],
+			'NBN' => ['JP98050757','JP82008076'],
     }
 
     serial_attrs = {
