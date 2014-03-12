@@ -819,9 +819,6 @@ class ManifestationsController < ApplicationController
       if original_manifestation.manifestation_extexts
         original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
       end
-    elsif @expression
-      @manifestation.original_title = @expression.original_title
-      @manifestation.title_transcription = @expression.title_transcription
     elsif @series_statement
       @manifestation.original_title = @series_statement.original_title
       @manifestation.title_transcription = @series_statement.title_transcription
@@ -841,6 +838,7 @@ class ManifestationsController < ApplicationController
         @manifestation.place_of_publication = root_manifestation.place_of_publication
         @manifestation.access_address = root_manifestation.access_address
         @manifestation.required_role = root_manifestation.required_role
+        @work_has_languages = root_manifestation.work_has_languages
       end
       @manifestation.series_statement = @series_statement
     end
@@ -907,7 +905,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @work_has_languages = create_whl_hash(params[:language_id].try(:values), params[:language_type].try(:values))
+    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -975,7 +973,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @work_has_languages = create_whl_hash(params[:language_id].try(:values), params[:language_type].try(:values))
+    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1918,7 +1916,7 @@ class ManifestationsController < ApplicationController
   end
 
   def create_titles
- 
+
     return unless SystemConfiguration.get('manifestation.use_titles')
 
     if params[:manifestation][:work_has_titles_attributes]
@@ -1952,15 +1950,4 @@ class ManifestationsController < ApplicationController
     end
   end
 
-  def create_whl_hash(language_ids, language_type_ids)
-    return [] if language_ids.blank? || ( language_ids.size != language_type_ids.size)
-    list = []
-    language_ids.zip(language_type_ids).each do |language_id ,language_type_id|
-      whl = {}
-      whl[:language_id] = language_id
-      whl[:language_type_id] = language_type_id
-      list << whl
-    end
-    return list
-  end
 end

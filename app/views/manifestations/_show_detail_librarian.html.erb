@@ -149,11 +149,7 @@
         </tr>
         <tr>
           <td><%= t('activerecord.models.language') -%>:</td>
-          <td>
-            <span itemprop="inLanguage">
-              <%= manifestation.work_has_languages.collect{|l| "#{l.language.display_name.localize}(#{l.language_type.display_name.localize})" }.join(", ") -%>
-            </span>
-          </td>
+          <td><span itemprop="inLanguage"><%= display_work_has_languages(manifestation) %></span></td>
         </tr>
         <tr>
           <td><%= t('activerecord.attributes.manifestation.country_of_publication') -%>:</td>

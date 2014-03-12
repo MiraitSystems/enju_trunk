@@ -22,4 +22,17 @@ class WorkHasLanguage < ActiveRecord::Base
     end
     return list
   end
+
+  def self.create_attrs(language_ids, language_type_ids)
+    return [] if language_ids.blank? || ( language_ids.size != language_type_ids.size)
+    list = []
+    language_ids.zip(language_type_ids).each do |language_id ,language_type_id|
+      whl = {}
+      whl[:language_id] = language_id
+      whl[:language_type_id] = language_type_id
+      list << whl
+    end
+    return list
+  end
+
 end

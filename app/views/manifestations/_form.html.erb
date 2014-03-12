@@ -99,7 +99,7 @@ $(document).keydown(function(e) {
       + '<select id="language_id___count__" name="language_id[__count__]">'
       + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
       + '</select>&#10'
-      + '<select id="language_id___count__" name="language_type[__count__]">'
+      + '<select id="language_type___count__" name="language_type[__count__]">'
       + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
       + '</select>&#10'
       + '<input type="button" value="+" onClick="ItemField_language.add();" /> '

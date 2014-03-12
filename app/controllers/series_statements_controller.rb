@@ -81,7 +81,7 @@ class SeriesStatementsController < ApplicationController
     original_series_statement = SeriesStatement.where(:id => params[:series_statement_id]).first if params[:series_statement_id]
     if original_series_statement
       @series_statement = original_series_statement.dup
-      if @series_statement.root_manifestation 
+      if @series_statement.root_manifestation
         @manifestation = @series_statement.root_manifestation
         @series_statement.root_manifestation = @manifestation
       else
@@ -94,6 +94,7 @@ class SeriesStatementsController < ApplicationController
       @series_statement.root_manifestation = Manifestation.new
       output_agent_parameter_for_new_edit
     end
+    @series_work_has_languages = @series_statement.root_manifestation.work_has_languages
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -104,7 +105,7 @@ class SeriesStatementsController < ApplicationController
   def edit
     @series_statement.work = @work if @work
     @series_statement.root_manifestation = Manifestation.new unless @series_statement.root_manifestation
-    @series_statement_languages = @series_statement.root_manifestation.languages.reorder('work_has_languages.position').pluck(:id)
+    @series_work_has_languages = @series_statement.root_manifestation.work_has_languages
     output_agent_parameter_for_new_edit
     if @series_statement.root_manifestation
       manifestation = @series_statement.root_manifestation
@@ -117,6 +118,7 @@ class SeriesStatementsController < ApplicationController
   def create
     @series_statement = SeriesStatement.new(params[:series_statement])
     @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
+    @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     SeriesStatement.transaction do
       if @series_statement.periodical
         @series_statement.root_manifestation.original_title = params[:series_statement][:original_title] if  params[:series_statement][:original_title]
@@ -125,9 +127,8 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation.periodical_master = true
         @subject = params[:manifestation][:subject]
         @series_statement.root_manifestation.subjects = Subject.import_subject(@subject) unless @subject.blank?
-        @language = params[:language_id].values
-        @series_statement.root_manifestation.languages = Language.add_language(@language) unless @language.blank?
         @series_statement.root_manifestation.save! # if @series_statement.periodical
+        @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
         @series_statement.manifestations << @series_statement.root_manifestation
       end
       @series_statement.save!
@@ -162,7 +163,6 @@ class SeriesStatementsController < ApplicationController
     end
     rescue Exception => e
       logger.error "Failed to create: #{e}"
-      @series_statement_languages = @language
       prepare_options
       output_agent_parameter
       respond_to do |format|
@@ -180,13 +180,13 @@ class SeriesStatementsController < ApplicationController
     end
     @series_statement.assign_attributes(params[:series_statement])
     @series_statement.root_manifestation = @series_statement.root_manifestation if @series_statement.root_manifestation
+    @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     input_agent_parameter
 
     respond_to do |format|
       begin
         SeriesStatement.transaction do
           @subject = params[:manifestation][:subject]
-          @language = params[:language_id].values
           if params[:series_statement][:periodical].to_s == "1"
             if @series_statement.root_manifestation
               @series_statement.root_manifestation.assign_attributes(params[:manifestation])
@@ -199,8 +199,8 @@ class SeriesStatementsController < ApplicationController
             end
             #TODO update position to edit agents without destroy
             @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject)
-            @series_statement.root_manifestation.languages = Language.add_language(@language)
             @series_statement.root_manifestation.save!
+            @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
             @series_statement.manifestations << @series_statement.root_manifestation unless @series_statement.manifestations.include?(@series_statement.root_manifestation)
           else
             if @series_statement.root_manifestation && @series_statement.valid?
@@ -239,7 +239,6 @@ class SeriesStatementsController < ApplicationController
       rescue Exception => e
         logger.error "Failed to update: #{e}"
         @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
-        @series_statement_languages = @language
         prepare_options
         output_agent_parameter
         format.html { render :action => "edit" }
@@ -285,11 +284,11 @@ class SeriesStatementsController < ApplicationController
     @frequencies = Frequency.all
     @countries = Country.all
     @languages = Language.all_cache
+    @language_types = LanguageType.all
     @roles = Role.all
     @create_types = CreateType.find(:all, :select => "id, display_name")
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
-    @series_statement_languages_count = @series_statement_languages.blank? ? 1 : @series_statement_languages.size
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.where(:numbering_type => 'manifestation')
   end

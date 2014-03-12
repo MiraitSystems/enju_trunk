@@ -350,4 +350,18 @@ module ManifestationsHelper
     end
   end
 
+  def display_work_has_languages(manifestation)
+    return nil if manifestation.nil? || manifestation.work_has_languages.blank?
+    list = []
+    manifestation.work_has_languages.each do |whl|
+      str = ''
+      if whl.language
+        str << whl.language.display_name.localize
+        str << "(#{whl.language_type.display_name.localize})" if whl.language_type
+      end
+      list << str
+    end
+    list.join(", ").html_safe
+  end
+
 end
