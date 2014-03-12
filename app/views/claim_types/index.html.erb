@@ -19,7 +19,9 @@
           <% if can? :edit, ClaimType %>
             <td>
               <%= link_to t('page.edit'), edit_claim_type_path(claim_type) %>
-              <%= link_to t('page.destroy'), claim_type, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+              <% if claim_type.claims.blank? %>
+                <%= link_to t('page.destroy'), claim_type, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+              <% end %>
             </td>
           <% end %>
         </tr>
