@@ -1737,6 +1737,9 @@ en:
       claim_type:
         name: Name
         display_name: Display name
+      claim:
+        claim_type_id: Claim type
+        note: Note
 
   page:
     user_title: Welcome %{login_name}

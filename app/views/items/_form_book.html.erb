@@ -135,17 +135,16 @@ $(function(){
 
   <% #TODO claim %>
   <% unless @claim_types.blank? %> 
-    <%= @claim_types %> 
+    <div class="field">
+      <%#= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
+      <%= f.fields_for :claim, @item.claim do |f_claim| %>
+        <%= f_claim.label :claim_type_id %><br />
+        <%= f_claim.select :claim_type_id, @claim_types.map{|c| [c.display_name, c.id]}, :include_blank => true %><br />
+        <%= f_claim.label :note %><br />
+        <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
+      <% end %>
+    </div>
   <% end %>
-
-  <div class="field">
-    <% f.fields_for :claim do |f_claim| %>
-      <%= f_claim.label :claim -%><br />
-      <%= f_claim.select :claim_type_id, @claim_types.map{|c| [c.display_name, c.id]}, :include_blank => true %><br />
-      <%= f_claim.label :item_identifier -%><br />
-      <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
-    <% end %>
-  </div>
 
   <%= render(:partial => 'form_item_has_operator', :locals=>{:f => f}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
 

@@ -1725,6 +1725,9 @@ ja:
       claim_type:
         name: 名前
         display_name: 表示名
+      claim:
+        claim_type_id: クレームタイプ
+        note: 注記
 
   page:
     user_title: "ようこそ %{login_name} さん"

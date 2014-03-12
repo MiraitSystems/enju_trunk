@@ -134,6 +134,7 @@ class ItemsController < ApplicationController
       @countoperators = 1
       @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
     end
+    @item.claim << Claim.new
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @item }
@@ -207,11 +208,14 @@ class ItemsController < ApplicationController
     set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
 
     respond_to do |format|
+        logger.info("#############21#################")
+        logger.info(params[:item])
       if @item.update_attributes(params[:item])
+        logger.info("#############22#################")
         if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
+        logger.info("#############23#################")
           Manifestation.find(@item.manifestation.series_statement.root_manifestation_id).index
         end
-
         unless @item.remove_reason.nil?
           if @item.reserve
             @item.reserve.revert_request rescue nil
