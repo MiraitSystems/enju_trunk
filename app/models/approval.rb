@@ -1,6 +1,9 @@
 class Approval < ActiveRecord::Base
   attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_agent_id, :refuse_at, :sample_arrival_at, :sample_carrier_type, :sample_name, :sample_note, :sample_request_at, :status, :updated_at, :collection_sources,
-:approval_extexts_attributes
+                  :approval_extexts_attributes,
+                  :approval_identifier, :thrsis_review_flg, :ja_text_author_summary_flg, :en_text_author_summary_flg, :proceedings_number_of_year, :excepting_number_of_year, :four_priority_areas, :document_classification_1, :document_classification_2
+
+  attr_accessor :identifier
 
   has_many :approval_extexts, :dependent => :destroy, :order => "position"
   belongs_to :manifestation
@@ -8,7 +11,32 @@ class Approval < ActiveRecord::Base
   belongs_to :group_user, :class_name => "User", :foreign_key => :group_user_id
   belongs_to :reception_agent, :class_name => "Agent", :foreign_key => :reception_agent_id
 
+  belongs_to :thrsis_review_flg_code, :class_name => 'Keycode', :foreign_key => 'thrsis_review_flg'
+  belongs_to :ja_text_author_summary_flg_code, :class_name => 'Keycode', :foreign_key => 'ja_text_author_summary_flg'
+  belongs_to :en_text_author_summary_flg_code, :class_name => 'Keycode', :foreign_key => 'en_text_author_summary_flg'
+  belongs_to :four_priority_areas_code, :class_name => 'Keycode', :foreign_key => 'four_priority_areas'
+  belongs_to :document_classification_1_code, :class_name => 'Keycode', :foreign_key => 'document_classification_1'
+  belongs_to :document_classification_2_code, :class_name => 'Keycode', :foreign_key => 'document_classification_2'
+
   accepts_nested_attributes_for :approval_extexts
+
+  validates_uniqueness_of :approval_identifier, :allow_nil => true, :allow_blank => true
+
+  validate :validate_identifier
+  def validate_identifier
+    return if self.manifestation_id
+
+    if self.identifier.blank?
+    errors.add(I18n.t('activerecord.attributes.manifestation.identifier'), I18n.t('approval.no_blank_identifier'))
+    else
+      manifestation = Manifestation.find_by_identifier(self.identifier)
+      if manifestation
+        self.manifestation_id = manifestation.id
+      else
+        errors.add(I18n.t('activerecord.attributes.manifestation.identifier'), I18n.t('approval.no_matches_found_manifestation'))
+      end
+    end
+  end
 
 
   before_save :mark_destroy_extext, :set_created_by_extext

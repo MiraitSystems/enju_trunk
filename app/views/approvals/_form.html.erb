@@ -1,9 +1,5 @@
 <%- if @manifestation -%>
   <%= render 'manifestations/title', :manifestation => @manifestation -%>
-<%- else -%>
-  <%= TODO input manifestation.identifier %>
-  <strong><%= t('activerecord.attributes.manifestation.identifier') %></strong><br />
-  <%= text_field :identifier %>
 <%- end -%>
 
 <script>
@@ -56,6 +52,13 @@ $(function(){
   <%= f.error_messages %>
 
   <%= f.hidden_field :manifestation_id %>
+
+  <% unless @manifestation %>
+    <div class="field">
+    <strong><%= t('activerecord.attributes.manifestation.identifier') %></strong><br />
+      <%= text_field '','identifier', :value => @identifier %>
+    </div>
+  <% end %>
 
   <div class="field">
     <%= f.label :created_by %><br />
@@ -239,6 +242,63 @@ $(function(){
     <%= f.label :reception_agent_id %><br />
     <%= f.text_field :reception_agent_id -%>
   </div>
+
+  <div class="field">
+    <%= f.label :approval_identifier %><br />
+    <%= f.text_field :approval_identifier -%>
+  </div>
+
+  <% if select_thrsis_review_flg  %>
+    <div class="field">
+      <%= f.label :thrsis_review_flg %><br />
+      <%= f.collection_select :thrsis_review_flg, select_thrsis_review_flg, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
+
+  <% if select_ja_text_author_summary_flg  %>
+    <div class="field">
+      <%= f.label :ja_text_author_summary_flg %><br />
+      <%= f.collection_select :ja_text_author_summary_flg, select_ja_text_author_summary_flg, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
+
+  <% if select_en_text_author_summary_flg  %>
+    <div class="field">
+      <%= f.label :en_text_author_summary_flg %><br />
+      <%= f.collection_select :en_text_author_summary_flg, select_en_text_author_summary_flg, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :proceedings_number_of_year %><br />
+    <%= f.text_field :proceedings_number_of_year -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :excepting_number_of_year %><br />
+    <%= f.text_field :excepting_number_of_year -%>
+  </div>
+
+  <% if select_four_priority_areas  %>
+    <div class="field">
+      <%= f.label :four_priority_areas %><br />
+      <%= f.collection_select :four_priority_areas, select_four_priority_areas, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
+
+  <% if select_document_classification_1 %>
+    <div class="field">
+      <%= f.label :document_classification_1 %><br />
+      <%= f.collection_select :document_classification_1, select_document_classification_1, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
+
+  <% if select_document_classification_2 %>
+    <div class="field">
+      <%= f.label :document_classification_2 %><br />
+      <%= f.collection_select :document_classification_2, select_document_classification_2, :id, :keyname, :include_blank => true -%>
+    </div>
+  <% end %>
 
 <script>
 

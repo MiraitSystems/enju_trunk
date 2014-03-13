@@ -1206,3 +1206,10 @@ system_configuration_00171:
   typename: Boolean
   description: "受入作業者テーブルテーブルを利用する"
   category: 'manifestation'
+system_configuration_00172:
+  id: 172
+  keyname: copy_request.avalable_for_anyone
+  v: "false"
+  typename: Boolean
+  description: "文献複写依頼を未ログインで申請できる"
+  category: 'copy_request'

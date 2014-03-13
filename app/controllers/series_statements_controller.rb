@@ -273,6 +273,11 @@ class SeriesStatementsController < ApplicationController
     end
   end
 
+  def numbering
+    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil 
+    render :json => {:success => 1, :manifestation_identifier => manifestation_identifier}
+  end 
+
   private
   def prepare_options
     @carrier_types = CarrierType.all
@@ -286,6 +291,7 @@ class SeriesStatementsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @series_statement_languages_count = @series_statement_languages.blank? ? 1 : @series_statement_languages.size
     @default_language = Language.where(:iso_639_1 => @locale).first
+    @numberings = Numbering.where(:numbering_type => 'manifestation')
   end
 
   def input_agent_parameter
