@@ -1,4 +1,9 @@
 class CurrenciesController < ApplicationController
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.currency'))", 'currencies_path', :only => [:index]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.currency'))", 'currency_path(params[:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.currency'))", 'new_currency_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.currency'))", 'edit_currency_path(params[:id])', :only => [:edit, :update]
+
   before_filter :check_client_ip_address
   load_and_authorize_resource
 
