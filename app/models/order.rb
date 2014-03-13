@@ -36,6 +36,9 @@ class Order < ActiveRecord::Base
 
   has_many :payments
 
+  has_many :order_has_manifestations
+  has_many :ordered_manifestations, :through => :order_has_manifestations, :source => :manifestation
+
   validates :ordered_at, :presence => true
   validates :order_year, :numericality => true
   validates :buying_payment_year, :numericality => true, :allow_blank => true
