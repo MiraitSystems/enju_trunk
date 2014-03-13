@@ -1674,6 +1674,15 @@ ja:
         donation_request_sample: 寄贈依頼状（サンプル）
         donation_request_collection: 寄贈依頼状（収集）
         refusal_latter: 断り状
+        approval_identifier: 見計らい識別子
+        thrsis_review_flg: 論文審査有無
+        ja_text_author_summary_flg: 和文著者抄録有無
+        en_text_author_summary_flg: 英文著者抄録有無
+        proceedings_number_of_year: 年間件数（予稿集以外）
+        excepting_number_of_year: 年間件数（予稿集）
+        four_priority_areas: 重点４分野
+        document_classification_1: 資料分類１
+        document_classification_2: 資料分類２
       approval_extext:
         value: メモ
         created_by: 記入者
@@ -3182,3 +3191,6 @@ ja:
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
   item_has_operators:
     no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"
+  approval:
+    no_matches_found_manifestation: "に該当する資料が見つかりませんでした。"
+    no_blank_identifier: "を入力してください。"

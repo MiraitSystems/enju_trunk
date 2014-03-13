@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
 class ExchangeRatesController < ApplicationController
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.exchange_rate'))", 'exchange_rates_path', :only => [:index]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.exchange_rate'))", 'exchange_rate_path(params[:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.exchange_rate'))", 'new_exchange_rate_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.exchange_rate'))", 'edit_exchange_rate_path(params[:id])', :only => [:edit, :update]
+
   before_filter :check_client_ip_address
   load_and_authorize_resource
   after_filter :solr_commit, :only => [:create, :update, :destroy]
