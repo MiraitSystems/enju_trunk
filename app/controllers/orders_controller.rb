@@ -1,4 +1,9 @@
 class OrdersController < ApplicationController
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.order'))", 'orders_path', :only => [:index]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.order'))", 'order_path(params[:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.order'))", 'new_order_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.order'))", 'edit_order_path(params[:id])', :only => [:edit, :update]
+
   #before_filter :check_client_ip_address
   #authorize_function
   load_and_authorize_resource
