@@ -16,7 +16,11 @@
         <% end %>
       <% end %>
       <% if SystemConfiguration.get('use_copy_request') %>
-        <li><%= link_to t('activerecord.models.copy_request'), copy_requests_path %></li>
+         <% if user_signed_in? %>
+          <li><%= link_to t('activerecord.models.copy_request'), copy_requests_path %></li>
+         <% elsif can? :create, CopyRequest %>
+          <li><%= link_to t('activerecord.models.copy_request'), new_copy_request_path %></li>
+         <% end %>
       <% end %>
     </ul>
     <%- end -%>

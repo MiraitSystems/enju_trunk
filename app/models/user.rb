@@ -906,6 +906,22 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.dummylibrarian
+    dummylibrarian = User.where(:username => 'dummylibrarian').try(:first)
+    unless dummylibrarian
+      User.transaction do
+        dummylibrarian = User.new(:username => 'dummylibrarian', :locale => 'ja', :role_id => Role.where(:name => 'Guest').first.id)
+        dummylibrarian.role = Role.where(:name => 'Guest').first
+        dummylibrarian.set_auto_generated_password
+        dummyagent = Agent.create_with_user({:full_name => 'dummylibrarian', :language_id => Language.first.id}, dummylibrarian)
+        dummyagent.save
+        dummylibrarian.agent = dummyagent
+        dummylibrarian.save
+      end 
+    end
+    return dummylibrarian
+  end
+
   private
   def self.get_object_method(obj,array)
     _obj = obj.send(array.shift)

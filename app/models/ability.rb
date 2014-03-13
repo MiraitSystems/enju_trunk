@@ -469,7 +469,7 @@ class Ability
         Country,
         Create,
         CreateType,
-	      Department,
+        Department,
         Exemplify,
         Extent,
         Frequency,
@@ -516,6 +516,7 @@ class Ability
         manifestation.required_role_id <= 1
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
+      can [:create], CopyRequest if SystemConfiguration.get('copy_request.avalable_for_anyone')
       can :read, [
         CarrierType,
         CirculationStatus,

@@ -5,8 +5,10 @@
   <div><%= raw t('copy_request.message') %></div><br />
 
   <div class="field">
-    <%= f.label :user -%><br />
-    <%= current_user.username -%>
+    <% if user_signed_in? %>
+      <%= f.label :user -%><br />
+      <%= @copy_request.user.username -%>
+    <% end %>
     <%= f.hidden_field :user_id %>
   </div>
 

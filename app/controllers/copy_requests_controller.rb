@@ -12,7 +12,8 @@ class CopyRequestsController < ApplicationController
 
   def new
     @copy_request = CopyRequest.new
-    @copy_request.user = current_user
+    @copy_request.user = current_user || User.dummylibrarian
+    access_denied unless @copy_request.user    
   end
 
   def edit
@@ -23,8 +24,13 @@ class CopyRequestsController < ApplicationController
     respond_to do |format|
       if @copy_request.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.copy_request'))
-        format.html { redirect_to(@copy_request) }
-        format.json { render :json => @copy_request, :status => :created, :location => @copy_request }
+        if current_user
+          format.html { redirect_to(@copy_request) }
+          format.json { render :json => @copy_request, :status => :created, :location => @copy_request }
+        else
+          format.html { redirect_to root_path }
+          format.json { render :json => @copy_request, :status => :created, :location => @copy_request }
+        end
       else
         format.html { render :action => "new" }
         format.json { render :json => @area.errors, :status => :unprocessable_entity }

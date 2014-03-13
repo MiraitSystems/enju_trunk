@@ -1208,7 +1208,7 @@ system_configuration_00171:
   category: 'manifestation'
 system_configuration_00172:
   id: 172
-  keyname: copy_request.avalable_for_anyone
+  keyname: copy_request.available_for_anyone
   v: "false"
   typename: Boolean
   description: "文献複写依頼を未ログインで申請できる"
