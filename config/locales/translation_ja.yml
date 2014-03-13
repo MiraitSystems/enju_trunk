@@ -2645,6 +2645,7 @@ ja:
     excel:
       series:
         issn: ISSN
+        ncid: NCID
         original_title: シリーズ名
         title_transcription: シリーズ名（ヨミ）
         periodical: 定期刊行物
@@ -2655,6 +2656,7 @@ ja:
         original_title: タイトル
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
+        ncid: NCID
         isbn: ISBN
         lccn: LCCN
         marc_number: MARC番号

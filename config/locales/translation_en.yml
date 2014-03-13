@@ -2639,6 +2639,7 @@ en:
     excel:
       series:
         issn: ISSN
+        ncid: NCID
         original_title: Series name
         title_transcription: Series name（transcription）
         periodical: Periodical
@@ -2649,6 +2650,7 @@ en:
         original_title: Title
         title_transcription: Title（transcription）
         title_alternative: Alternative title
+        ncid: NCID
         isbn: ISBN
         lccn: LCCN
         marc_number: MARC number

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 module EnjuTrunk
   module ImportBook
-    SERIES_REQUIRE_COLUMNS = %w(original_title issn)
-    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn)
+    SERIES_REQUIRE_COLUMNS = %w(original_title issn ncid ndc)
+    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn ncid ndc)
     BOOK_HEADER_ROW        = 1
     BOOK_DATA_ROW          = 2
 
@@ -151,9 +151,11 @@ module EnjuTrunk
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
+      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s
       #ここを変えるissue6696
       #manifestation = import_isbn(isbn) unless manifestation
-      manifestation = import_from_external_resource(isbn)
+      #manifestation = import_from_external_resource(isbn) unless manifestation
+      manifstation = NacsisCat.create_manifestation_from_ncid(ncid) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
 
       manifestation = Manifestation.new unless manifestation
@@ -394,23 +396,20 @@ module EnjuTrunk
     def import_from_external_resource(resource)
       manifestation = nil
       unless resource.blank?
-        #if SystemConfiguration.get('import_from')?
-        #else
-          begin
-            resource = Lisbn.new(resource)
-            exist_manifestation = Manifestation.find_by_isbn(resource)
-            unless exist_manifestation
-              manifestation = Manifestation.import_isbn(resource)
-              # raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
-            else
-              manifestation = exist_manifestation
-            end
-          rescue EnjuNdl::InvalidIsbn
-            raise I18n.t('resource_import_textfile.error.book.wrong_isbn')
-          rescue EnjuNdl::RecordNotFound
-            raise I18n.t('resource_import_textfile.error.book.record_not_found')
+        begin
+          resource = Lisbn.new(resource)
+          exist_manifestation = Manifestation.find_by_isbn(resource)
+          unless exist_manifestation
+            manifestation = Manifestation.import_isbn(resource)
+            # raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
+          else
+            manifestation = exist_manifestation
           end
-        #end
+        rescue EnjuNdl::InvalidIsbn
+          raise I18n.t('resource_import_textfile.error.book.wrong_isbn')
+        rescue EnjuNdl::RecordNotFound
+          raise I18n.t('resource_import_textfile.error.book.record_not_found')
+        end
       end
       manifestation.external_catalog = 1 if manifestation
       return manifestation
