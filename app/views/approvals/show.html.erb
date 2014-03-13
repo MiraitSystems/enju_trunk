@@ -141,6 +141,50 @@
   <%= @approval.reception_agent.full_name  if @approval.reception_agent %>
 </p>
 
+<p>
+  <strong><%= t('activerecord.attributes.approval.approval_identifier') %>:</strong>
+  <%= @approval.approval_identifier %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.thrsis_review_flg') %>:</strong>
+  <%= @approval.thrsis_review_flg_code.keyname  if @approval.thrsis_review_flg %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.ja_text_author_summary_flg') %>:</strong>
+  <%= @approval.ja_text_author_summary_flg_code.keyname  if @approval.ja_text_author_summary_flg %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.en_text_author_summary_flg') %>:</strong>
+  <%= @approval.en_text_author_summary_flg_code.keyname  if @approval.en_text_author_summary_flg %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.proceedings_number_of_year') %>:</strong>
+  <%= @approval.proceedings_number_of_year %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.excepting_number_of_year') %>:</strong>
+  <%= @approval.excepting_number_of_year %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.four_priority_areas') %>:</strong>
+  <%= @approval.four_priority_areas_code.keyname  if @approval.four_priority_areas %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.document_classification_1') %>:</strong>
+  <%= @approval.document_classification_1_code.keyname  if @approval.document_classification_1 %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.approval.document_classification_2') %>:</strong>
+  <%= @approval.document_classification_2_code.keyname  if @approval.document_classification_2 %>
+</p>
 
 <% unless @approval.approval_extexts.empty? %>
 

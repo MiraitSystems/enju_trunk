@@ -4,6 +4,36 @@
   </h1>
   <div id="content_list">
     <p id="notice"><%= notice -%></p>
+    <%= form_for :manifestation, {:url => manifestations_path, :method => 'get'} do -%>
+      <div>
+        <%= link_to t('page.back'), session['user_return_to'] -%>
+        <%= t('page.search_term') -%>:
+        <%= search_field_tag 'query', params[:query], {:id => "search_form_top", :class => 'search_form_short', :placeholder => t('page.search_term')} -%>
+        <%= hidden_field_tag 'user_id', params[:user_id] if params[:user_id] %>
+        <%= hidden_field_tag 'removed', true if @removed %>
+        <%= hidden_advanced_search_field_tags -%>
+        <%= submit_tag t('page.search') -%>
+        <% if params[:query].present? %>
+          <input type="button" value="<%= t('page.search_clear') -%>" onclick='<%= "$(" + "'#search_form_top" + "').val('')" %>' >
+        <% end %>
+        <% unless SystemConfiguration.get("manifestation.show_all") %>
+          <% if user_signed_in? and current_user.has_role?('Librarian') %>
+            <% if params[:all_manifestations] %>
+              <%= check_box_tag 'all_manifestations', true, true %>
+            <% else %>
+              <%= check_box_tag 'all_manifestations', true %>
+            <% end %>
+            <%= t('advanced_search.all_manifestations') %><br />
+          <% end %>
+        <% end %>
+        <%- if SystemConfiguration.get('nacsis.can_use') -%>
+          <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false -%><%= t('page.search_local') -%>
+          <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false, {:checked => true} -%><%= t('page.search_nacsis') -%>
+          </br>
+        <%- end -%>
+        <%= link_to_advanced_search %> <%= link_to_normal_search %> <%= advanced_search_condition_summary %>
+      </div>
+    <% end %>
     <h2 class="resource_title">
       <%= @nacsis_cat.request_summary[:subject_heading] -%>
     </h2>
@@ -37,10 +67,10 @@
           <%- when :cls_info -%>
             <td>
               <%- @nacsis_cat.detail[key].each do |cls_key, cls_value| -%>
-                <%= cls_key.to_s + "[" + cls_value.to_s + "]" -%>&nbsp;
+                <%= cls_key.to_s + ": " + cls_value.to_s -%>&nbsp;
               <%- end -%>
             </td>
-          <%- when :vol_info, :ptb_info, :utl_info -%>
+          <%- when :vol_info, :ptb_info, :utl_info, :bhn_info -%>
             <td>
               <%- @nacsis_cat.detail[key].each do |info| -%>
                 <%- info.each do |info_key, info_value| %>
@@ -104,7 +134,11 @@
            :manifestation_type => params[:manifestation_type],
            :request_type => "2" } -%>
       </li>
-      <% if @nacsis_cat.book? && !ncid_exist?(@nacsis_cat.ncid) %>
+      <% if @nacsis_cat.manifestation %>
+        <li>
+          <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
+        </li>
+      <% else %>
         <li>
           <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
             <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>

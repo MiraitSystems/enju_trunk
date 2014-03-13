@@ -3,12 +3,12 @@ class SeriesStatement < ActiveRecord::Base
   attr_accessible :original_title, :numbering, :title_subseries,
     :numbering_subseries, :title_transcription, :title_alternative,
     :series_statement_identifier, :issn, :periodical, :note,
-    :title_subseries_transcription, :relationship_family_id
+    :title_subseries_transcription, :relationship_family_id, :nacsis_series_statementid
 
   has_many :series_has_manifestations
   has_many :manifestations, :through => :series_has_manifestations
   belongs_to :root_manifestation, :foreign_key => :root_manifestation_id, :class_name => 'Manifestation'
-  belongs_to :relationship_family 
+  belongs_to :relationship_family
   validates_presence_of :original_title
   validate :check_issn
   #after_create :create_initial_manifestation
@@ -142,6 +142,7 @@ class SeriesStatement < ActiveRecord::Base
 
     val
   end
+
 end
 
 # == Schema Information

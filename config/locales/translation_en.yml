@@ -205,6 +205,7 @@ en:
       function_class_ability: Function class ability
       title_type: Title type
       title: Title
+      item_has_operator: ItemHasOperator
 
     attributes:
       use_license:
@@ -856,6 +857,8 @@ en:
         classification_number: Classification number
         identifier: Manifestation identifier
         date_of_publication: Date of publication
+        date_of_discontinuance: Date of Discontinuance
+        dis_date: Dis Date
         country_of_publication: Country of publication
         place_of_publication: Place of publication
         pub_date: Date of publication
@@ -1414,6 +1417,12 @@ en:
         UTHDNGR: Title (reading)
         UTHDNGVR: Title alternative (reading)
         UTINFO: Other info
+        price: price
+        fid: Family ID
+        bhn_info: Bibliographic history note info
+        BHBID: Before/After ID
+        BHK: History type
+        BHTR: Before/After Title
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime
@@ -1483,6 +1492,7 @@ en:
         padding_character: Padding letter
         last_number: Last number
         checkdigit: Check digit
+        numbering_type: Numbering type
       manifestation_types:
         book: Book
         series: Serial
@@ -1674,6 +1684,15 @@ en:
         donation_request_sample: Donation request sample
         donation_request_collection: Donation request collection
         refusal_latter: Refusal_latter
+        approval_identifier: Approval identifier
+        thrsis_review_flg: Thrsis review flag
+        ja_text_author_summary_flg: Japanese text author summary flag
+        en_text_author_summary_flg: English text author summary flag
+        proceedings_number_of_year: Proceedings number of year
+        excepting_number_of_year: Excepting number of year
+        four_priority_areas: Four priority areas
+        document_classification_1: Document classification 1
+        document_classification_2: Document classification 2
       approval_extext:
         value: Value
         created_by: Created by
@@ -1716,6 +1735,13 @@ en:
         name: Name
         display_name: Display name
         note: Note
+      item_has_operator:
+        user_id: User
+        operated_at: Operated at
+        library_id: Library
+        note: Note
+      item_has_operators:
+        user: User
 
   page:
     user_title: Welcome %{login_name}
@@ -3190,4 +3216,8 @@ en:
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
-
+  item_has_operators:
+    no_matches_found_user: "No matches found user(%{user_number})"
+  approval:
+    no_matches_found_manifestation: "no matches found to manifestation"
+    no_blank_identifier: "can't be blank"

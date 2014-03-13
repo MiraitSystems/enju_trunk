@@ -333,6 +333,7 @@ module ApplicationHelper
     solr_query: 'page.solr_query',
     manifestation_types: 'activerecord.models.manifestation_type',
     carrier_types: 'activerecord.models.carrier_type',
+    identifier: 'activerecord.attributes.manifestation.identifier'
   }
 
   def advanced_search_label(key)

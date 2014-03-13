@@ -1138,7 +1138,7 @@ system_configuration_00161:
   category: 'function'
 system_configuration_00162:
   id: 162
-  keyname: f.path
+  keyname: f7.path
   v: "/order_lists"
   typename: String
   description: "F7のリンク先"
@@ -1152,7 +1152,7 @@ system_configuration_00163:
   category: 'function'
 system_configuration_00164:
   id: 164
-  keyname: f.path
+  keyname: f8.path
   v: ""
   typename: String
   description: "F8のリンク先"
@@ -1166,7 +1166,7 @@ system_configuration_00165:
   category: 'function'
 system_configuration_00166:
   id: 166
-  keyname: f.path
+  keyname: f9.path
   v: ""
   typename: String
   description: "F9のリンク先"
@@ -1192,3 +1192,24 @@ system_configuration_00169:
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
+system_configuration_00170:
+  id: 170
+  keyname: manifestation.show_all
+  v: "false"
+  typename: Boolean
+  description: "ライブラリアン権限以上でログイン時、検索非対称資料を含む全ての資料を検索結果に表示する"
+  category: 'manifestation'
+system_configuration_00171:
+  id: 171
+  keyname: manifestation.use_item_has_operator
+  v: "false"
+  typename: Boolean
+  description: "受入作業者テーブルテーブルを利用する"
+  category: 'manifestation'
+system_configuration_00172:
+  id: 172
+  keyname: copy_request.avalable_for_anyone
+  v: "false"
+  typename: Boolean
+  description: "文献複写依頼を未ログインで申請できる"
+  category: 'copy_request'
