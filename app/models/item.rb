@@ -384,7 +384,7 @@ class Item < ActiveRecord::Base
 
   def self.numbering_item_identifier(numbering_name, options = {}) 
     begin
-      item_identifier = Numbering.do_numbering(numbering_name, options)
+      item_identifier = Numbering.do_numbering(numbering_name, true, options)
     end while Item.where(:item_identifier => item_identifier).first
     return item_identifier
   end
