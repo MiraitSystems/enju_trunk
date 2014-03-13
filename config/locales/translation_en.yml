@@ -1397,6 +1397,7 @@ en:
         pub_country: Publish country
         title_language: Title language
         text_language: Text language
+        original_language: Original Language
         author_heading: Author heading
         subject: subject
         ncid: NCID

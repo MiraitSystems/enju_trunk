@@ -1548,6 +1548,7 @@ ja:
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
+        original_language: 原本言語
         author_heading: 著者情報
         subject: 件名
         ncid: NCID
