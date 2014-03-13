@@ -111,7 +111,6 @@
     <% end %>
   <% end %>
 <% end %>
-
 <% if user_signed_in? and current_user.has_role?('Librarian') %>
   <%= render(:partial => 'show_item_has_operator', :locals => {:item => @item}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
 <% end %>

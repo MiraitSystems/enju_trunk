@@ -7,6 +7,7 @@ class Keycode < ActiveRecord::Base
 
   has_many :agents
   has_many :orders
+  has_many :approvals
 
   paginates_per 10
 

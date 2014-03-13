@@ -24,5 +24,4 @@ class ItemHasOperator < ActiveRecord::Base
       end
     end
   end
-
 end
