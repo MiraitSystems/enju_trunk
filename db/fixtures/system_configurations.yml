@@ -1192,10 +1192,3 @@ system_configuration_00169:
   typename: Boolean
   description: "書名テーブルを利用する"
   category: 'manifestation'
-system_configuration_00170:
-  id: 170
-  keyname: import_from
-  v: "false"
-  typename: Boolean
-  description: "NACSISからインポートするか"
-  category: 'general'
