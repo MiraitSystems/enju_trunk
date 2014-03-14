@@ -18,7 +18,7 @@ end
 if defined?(EnjuCustomize)
   begin
     #require EnjuCustomize.render_dir + '/custom_validator'
-    Dir[EnjuCustomize.root.to_s + EnjuCustomize.render_dir + "/*.rb"].each { |file| require file }
+    Dir[EnjuCustomize.root.to_s + EnjuCustomize.class_evals_dir + "*.rb"].each { |file| require file }
   rescue
     # NO CUSTOM VALIDATOR
   end
