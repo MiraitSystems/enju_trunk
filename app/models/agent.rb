@@ -162,38 +162,45 @@ class Agent < ActiveRecord::Base
   end
 
   def set_date_of_birth
-    return if birth_date.blank?
-    begin
-      date = Time.zone.parse("#{birth_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{birth_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{birth_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
+    if birth_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{birth_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{birth_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{birth_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
+
     self.date_of_birth = date
   end
 
   def set_date_of_death
-    return if death_date.blank?
-    begin
-      date = Time.zone.parse("#{death_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{death_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{death_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
+    if death_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{death_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{death_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{death_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
 
     self.date_of_death = date
   end
