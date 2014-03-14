@@ -382,15 +382,18 @@ class NacsisCat
           attrs[:country_of_publication] = Country.where(:name => 'unknown').first
         end
 
-        # タイトルの言語により、和書または洋書を設定する。
+        # テキストの言語により、和書または洋書を設定する。
         if nacsis_info[:text_language].present?
           if nacsis_info[:text_language].first.name == 'Japanese'
             attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
+            attrs[:jpn_or_foreign] = 0
           else
             attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
+            attrs[:jpn_or_foreign] = 1
           end
         else
           attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
+          attrs[:jpn_or_foreign] = nil
         end
 
         # 関連テーブル：著者の設定
