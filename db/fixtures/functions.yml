@@ -41,7 +41,7 @@ function_00005:
   controller_name: ItemsController
   action_names:  |
                  read:index,show
-                 update:new,create,edit,update,numbering
+                 update:new,create,edit,update,numbering,remove,restore
                  delete:destroy
   position: 5
 function_00006:
