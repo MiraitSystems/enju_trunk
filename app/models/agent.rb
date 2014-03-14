@@ -14,7 +14,8 @@ class Agent < ActiveRecord::Base
     :extelephone_number_1_type_id, :fax_number_1_type_id,
     :telephone_number_2_type_id, :extelephone_number_2,
     :extelephone_number_2_type_id, :fax_number_2_type_id, :user_username,
-    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id
+    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id,
+		:grade
 
   scope :readable_by, lambda{|user| {:conditions => ['required_role_id <= ?', user.try(:user_has_role).try(:role_id) || Role.where(:name => 'Guest').select(:id).first.id]}}
   has_many :creates, :dependent => :destroy

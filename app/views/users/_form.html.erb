@@ -173,6 +173,11 @@
     <%= f.text_field :birth_date, :class => 'date_field' -%>
   </div>
 
+  <div class="field">
+    <%= f.label :grade -%><br />
+    <%= f.text_field :grade, :class => 'date_field' -%>
+  </div>
+
   <% unless @user.id.blank? %>
     <%- if current_user.has_role?('Librarian') -%>
       <div class="field">
