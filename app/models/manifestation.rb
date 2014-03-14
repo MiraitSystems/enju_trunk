@@ -61,8 +61,9 @@ class Manifestation < ActiveRecord::Base
   searchable(SUNSPOT_EAGER_LOADING) do
     text :extexts do
       if root_of_series? # 雑誌の場合
-        series_manifestations.
-          manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
+        series_manifestations.each do |m|
+          m.manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
+        end
       else
         manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
       end

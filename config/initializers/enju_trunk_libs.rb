@@ -14,10 +14,11 @@ rescue Errno::ENOENT
   # skip.
 end
 
-# custom validator
+# custom 
 if defined?(EnjuCustomize)
   begin
-    require EnjuCustomize.render_dir + '/custom_validator'
+    #require EnjuCustomize.render_dir + '/custom_validator'
+    Dir[EnjuCustomize.root.to_s + EnjuCustomize.class_evals_dir + "*.rb"].each { |file| require file }
   rescue
     # NO CUSTOM VALIDATOR
   end

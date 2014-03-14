@@ -48,9 +48,29 @@ module ApprovalsHelper
     end
   end
 
+  def select_thrsis_review_flg
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", thrsis_review_flg_key, Time.zone.now) rescue nil
+  end
 
+  def select_ja_text_author_summary_flg
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", ja_text_author_summary_flg_key, Time.zone.now) rescue nil
+  end
 
+  def select_en_text_author_summary_flg
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", en_text_author_summary_flg_key, Time.zone.now) rescue nil
+  end
 
+  def select_four_priority_areas
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", four_priority_areas_key, Time.zone.now) rescue nil
+  end
+
+  def select_document_classification_1
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", document_classification_1_key, Time.zone.now) rescue nil
+  end
+
+  def select_document_classification_2
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", document_classification_2_key, Time.zone.now) rescue nil
+  end
 
   def get_keyname_publication_status(v)
     if respond_to? :publication_status_key

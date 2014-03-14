@@ -84,6 +84,12 @@ class SeriesStatementsController < ApplicationController
       if @series_statement.root_manifestation
         @manifestation = @series_statement.root_manifestation
         @series_statement.root_manifestation = @manifestation
+        if @manifestation.manifestation_exinfos
+          @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") }
+        end
+        if @manifestation.manifestation_extexts
+          @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
+        end
       else
         @manifestation = @series_statement.root_manifestation
         @series_statement.root_manifestation = Manifestation.new
@@ -110,6 +116,9 @@ class SeriesStatementsController < ApplicationController
     if @series_statement.root_manifestation
       manifestation = @series_statement.root_manifestation
       @subject = manifestation.subjects.collect(&:term).join(';')
+      @subject_transcription = manifestation.subjects.collect(&:term_transcription).join(';')
+      manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if manifestation.manifestation_exinfos
+      manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if manifestation.manifestation_extexts
     end
   end
 
@@ -125,8 +134,11 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation.title_transcription = params[:series_statement][:title_transcription] if params[:series_statement][:title_transcription]
         @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
         @series_statement.root_manifestation.periodical_master = true
+        params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+        params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
         @subject = params[:manifestation][:subject]
-        @series_statement.root_manifestation.subjects = Subject.import_subject(@subject) unless @subject.blank?
+        @subject_transcription = params[:manifestation][:subject_transcription]
+        @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
         @series_statement.root_manifestation.save! # if @series_statement.periodical
         @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
         @series_statement.manifestations << @series_statement.root_manifestation
@@ -153,6 +165,11 @@ class SeriesStatementsController < ApplicationController
         Produce.add_produces(@series_statement.root_manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher, true)
         Produce.add_produces(@series_statement.root_manifestation.id, @add_publisher, @add_publisher_type)
         Produce.add_produces(@series_statement.root_manifestation.id, @new_publisher, @new_publisher_type)
+        # exinfos, extextsの追加
+        @series_statement.root_manifestation.
+          manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @series_statement.root_manifestation.id) if params[:exinfos] 
+        @series_statement.root_manifestation.
+          manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @series_statement.root_manifestation.id) if params[:extexts] 
       end
 
       respond_to do |format|
@@ -187,6 +204,9 @@ class SeriesStatementsController < ApplicationController
       begin
         SeriesStatement.transaction do
           @subject = params[:manifestation][:subject]
+          @subject_transcription = params[:manifestation][:subject_transcription]
+          params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+          params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
           if params[:series_statement][:periodical].to_s == "1"
             if @series_statement.root_manifestation
               @series_statement.root_manifestation.assign_attributes(params[:manifestation])
@@ -198,7 +218,15 @@ class SeriesStatementsController < ApplicationController
               @series_statement.root_manifestation.periodical_master = true
             end
             #TODO update position to edit agents without destroy
-            @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject)
+            @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
+            if params[:exinfos]
+              @series_statement.root_manifestation.
+                manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @series_statement.root_manifestation.id)
+            end
+            if params[:extexts]
+              @series_statement.root_manifestation.
+                manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @series_statement.root_manifestation.id)
+            end
             @series_statement.root_manifestation.save!
             @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
             @series_statement.manifestations << @series_statement.root_manifestation unless @series_statement.manifestations.include?(@series_statement.root_manifestation)
