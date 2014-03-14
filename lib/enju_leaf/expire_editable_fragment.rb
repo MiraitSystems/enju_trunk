@@ -1,5 +1,5 @@
 module ExpireEditableFragment
-	def expire_editable_fragment(record, fragments = [])
+	def expire_editable_fragment(record, fragments = [], formats = [])
 		fragments.uniq!
 		if record.is_a?(Manifestation)
 			if fragments.empty?
