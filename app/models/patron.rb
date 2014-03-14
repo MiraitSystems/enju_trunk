@@ -128,40 +128,45 @@ class Patron < ActiveRecord::Base
   end
 
   def set_date_of_birth
-    return if birth_date.blank?
-    begin
-      date = Time.zone.parse("#{birth_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{birth_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{birth_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
+    if birth_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{birth_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{birth_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{birth_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
     self.date_of_birth = date
   end
 
   def set_date_of_death
-    return if death_date.blank?
-    begin
-      date = Time.zone.parse("#{death_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{death_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{death_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
-
-    self.date_of_death = date
+    if death_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{death_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{death_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{death_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
+		self.date_of_death = date
   end
 
   def check_birth_date
@@ -284,6 +289,7 @@ class Patron < ActiveRecord::Base
   end
 
   def self.add_patrons(patron_names, patron_transcriptions = nil)
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1000"
     return [] if patron_names.blank?
     names = patron_names.gsub('；', ';').split(/;/)
     transcriptions = []
@@ -291,26 +297,38 @@ class Patron < ActiveRecord::Base
       transcriptions = patron_transcriptions.gsub('；', ';').split(/;/) 
       transcriptions = transcriptions.uniq.compact
     end
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1100"
     list = []
     names.uniq.compact.each_with_index do |name, i|
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1100"
       name = name.exstrip_with_full_size_space
       next if name.empty?
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1100"
       patron = Patron.find(:first, :conditions => ["full_name=?", name])
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1300"
       full_name_transcription = transcriptions[i].exstrip_with_full_size_space rescue nil
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1400"
       if patron.nil?
         patron = Patron.new
         patron.full_name = name
         patron.full_name_transcription = full_name_transcription
         exclude_patrons = SystemConfiguration.get("exclude_patrons").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
         patron.exclude_state = 1 if exclude_patrons.include?(name)
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1500"
         patron.save
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1600"
       else
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1700 patron.id=#{patron.id}"
         if full_name_transcription
           patron.full_name_transcription = full_name_transcription
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1800 full_name_transcription=#{full_name_transcription}"
           patron.save
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@1801"
         end
       end
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@3000"
       list << patron
+puts "#{Time.now.strftime("%H:%M:%S.%L")} @@3100"
     end
     list
   end
