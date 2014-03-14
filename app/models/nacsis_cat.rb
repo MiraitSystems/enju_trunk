@@ -383,8 +383,8 @@ class NacsisCat
         end
 
         # タイトルの言語により、和書または洋書を設定する。
-        if nacsis_info[:title_language].present?
-          if nacsis_info[:title_language].first.name == 'Japanese'
+        if nacsis_info[:text_language].present?
+          if nacsis_info[:text_language].first.name == 'Japanese'
             attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
           else
             attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
@@ -808,11 +808,11 @@ class NacsisCat
       languages = []
       if lang_str.is_a?(String)
         lang_str.each_char.each_slice(3).map{|a| a.join}.each do |lang|
-          if lang == 'und'
-            languages << Language.where(:iso_639_2 => 'unknown').first
-          else
+          #if lang == 'und'
+          #  languages << Language.where(:iso_639_2 => 'unknown').first
+          #else
             languages << Language.where(:iso_639_2 => lang).first
-          end
+          #end
         end
       end
       languages.compact
