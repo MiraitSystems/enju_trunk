@@ -87,6 +87,8 @@ class ItemsController < ApplicationController
   def show
     #@item = Item.find(params[:id])
     @item = @item.versions.find(@version).item if @version
+    # logger.error "############## #{@item.manifestation.id} ##############"
+    # logger.error "############## #{@item.manifestation.manifestation_type.id} ##############"
 
     respond_to do |format|
       format.html # show.html.erb
@@ -168,7 +170,6 @@ class ItemsController < ApplicationController
     end
 
     respond_to do |format|
-      # if @item.valid?
       begin
         Item.transaction do
           @item.manifestation = @manifestation 
@@ -194,7 +195,8 @@ class ItemsController < ApplicationController
           format.html { redirect_to(@item) }
           format.json { render :json => @item, :status => :created, :location => @item }
         end
-      rescue
+      rescue => e
+        logger.error "################ #{e.message} ##################"
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
