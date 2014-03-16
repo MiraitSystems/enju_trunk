@@ -1,0 +1,43 @@
+<div id="content_detail" class="ui-corner-all">
+
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.claim_type')) -%></h1>
+  <div id="content_list">
+
+    <table class="index">
+      <tr>
+        <th><%= t('activerecord.attributes.claim_type.name') %></th>
+        <th><%= t('activerecord.attributes.claim_type.display_name') %></th>
+        <% if can? :edit, ClaimType %>
+          <th></th>
+        <% end %>
+      </tr>
+
+      <% @claim_types.each do |claim_type| %>
+        <tr class="line<%= cycle("0", "1") -%>">
+          <td><%= link_to claim_type.name, claim_type %></td>
+          <td><%= link_to claim_type.display_name, claim_type %></td>
+          <% if can? :edit, ClaimType %>
+            <td>
+              <%= link_to t('page.edit'), edit_claim_type_path(claim_type) %>
+              <% if claim_type.claims.blank? %>
+                <%= link_to t('page.destroy'), claim_type, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+
+    <br />
+    <%= paginate(@claim_types) -%>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :edit, ClaimType %>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.claim_type')), new_claim_type_path %></li>
+    <% end %>
+  </ul>
+</div>
+

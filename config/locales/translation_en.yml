@@ -207,6 +207,7 @@ en:
       title: Title
       identifier: Identifier
       item_has_operator: ItemHasOperator
+      claim_type: Claim type
 
     attributes:
       use_license:
@@ -1743,6 +1744,12 @@ en:
         note: Note
       item_has_operators:
         user: User
+      claim_type:
+        name: Name
+        display_name: Display name
+      claim:
+        claim_type_id: Claim type
+        note: Note
 
   page:
     user_title: Welcome %{login_name}

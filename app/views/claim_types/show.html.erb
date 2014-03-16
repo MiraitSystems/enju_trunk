@@ -1,0 +1,26 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.claim_type')) %></h1>
+  <div id="content_list">
+
+    <p id="notice"><%= notice %></p>
+
+    <p>
+      <b><%= t('activerecord.attributes.claim_type.name') %>:</b>
+      <%= @claim_type.name %>
+    </p>
+
+    <p>
+      <b><%= t('activerecord.attributes.claim_type.display_name') %>:</b>
+      <%= @claim_type.display_name %>
+    </p>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :create, Theme %>
+      <li><%= link_to t('page.edit'), edit_claim_type_path(@claim_type) %>
+    <% end %>
+    <li><%= link_to t('page.back'), claim_types_path %>
+  </ul>
+</div>

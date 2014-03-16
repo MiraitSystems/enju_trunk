@@ -210,6 +210,7 @@ ja:
       title: 書名
       identifier: その他の識別子
       item_has_operator: 受入作業者
+      claim_type: クレーム
 
     attributes:
       use_license:
@@ -1732,6 +1733,12 @@ ja:
         note: メモ
       item_has_operators:
         user: 作業者
+      claim_type:
+        name: 名前
+        display_name: 表示名
+      claim:
+        claim_type_id: クレームタイプ
+        note: クレーム注記
 
   page:
     user_title: "ようこそ %{login_name} さん"
