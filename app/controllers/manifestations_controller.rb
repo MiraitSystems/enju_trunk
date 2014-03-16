@@ -590,7 +590,17 @@ class ManifestationsController < ApplicationController
         @manifestations_all << ary
 
         instance_variable_set(:"@manifestations#{ivsfx}", ary)
+
+        if search_opts[:index] == :nacsis && (ivsfx == '_book' || ivsfx == '_serial')
+          session.delete("nacsis_cat#{ivsfx}_ids")
+          ncid_ary = []
+          ary.each do |nacsis_cat|
+            ncid_ary << nacsis_cat.try(:ncid)
+          end
+          session["nacsis_cat#{ivsfx}_ids"] = ncid_ary unless ncid_ary.empty?
+        end
       end
+      session[:params] = params if search_opts[:index] == :nacsis
 
       @count[:query_result] = sum
       @collation = search_all_result.collation if @count[:query_result] == 0
