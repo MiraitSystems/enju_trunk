@@ -1213,3 +1213,10 @@ system_configuration_00172:
   typename: Boolean
   description: "文献複写依頼を未ログインで申請できる"
   category: 'copy_request'
+system_configuration_00173:
+  id: 173
+  keyname: manifestation.use_identifiers
+  v: "false"
+  typename: Boolean
+  description: "その他の識別子を利用する"
+  category: 'manifestation'

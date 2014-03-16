@@ -858,6 +858,7 @@ class ManifestationsController < ApplicationController
     @original_manifestation = original_manifestation if params[:mode] == 'add'
 
     new_work_has_title
+    @manifestation.identifiers << Identifier.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -1493,6 +1494,10 @@ class ManifestationsController < ApplicationController
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @numberings = Numbering.where(:numbering_type => 'manifestation')
+    if SystemConfiguration.get('manifestation.use_identifiers')
+      @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position")
+      @manifestation.identifiers << Identifier.new if @manifestation.identifiers.blank?
+    end
   end
 
   def input_agent_parameter

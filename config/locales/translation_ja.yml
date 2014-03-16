@@ -208,6 +208,7 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      identifier: その他の識別子
       item_has_operator: 受入作業者
 
     attributes:
