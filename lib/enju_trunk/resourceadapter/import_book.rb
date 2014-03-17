@@ -151,8 +151,8 @@ module EnjuTrunk
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
-      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s if SystemConfiguration.get('import_from')
-      #nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from')
+      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s if SystemConfiguration.get('import_from_nacsis')
+      #nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from_nacsis')
       manifestation = import_from_external_resource(isbn, ncid) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
 
@@ -402,7 +402,7 @@ module EnjuTrunk
           exist_manifestation = Manifestation.find_by_isbn(isbn)
           unless exist_manifestation
             #ISBNインポート先の選択
-            #if SystemConfiguration.get('import_from')?
+            #if SystemConfiguration.get('import_from_nacsis')?
               #manifestation = NacsisCat.import_isbn(isbn)
             #else
               manifestation = Manifestation.import_isbn(isbn)
