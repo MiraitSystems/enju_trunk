@@ -408,7 +408,7 @@ module EnjuTrunk
           exist_manifestation = Manifestation.find_by_isbn(isbn)
           unless exist_manifestation
             #ISBNインポート先の選択
-            if SystemConfiguration.get('import_from_nacsis')?
+            if SystemConfiguration.get('import_from_nacsis')
               manifestation = NacsisCat.create_manifestation_from_isbn(isbn)
             else
               manifestation = Manifestation.import_isbn(isbn)
