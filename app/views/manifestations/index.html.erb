@@ -152,20 +152,20 @@ $(document).ready(function() {
       <br style="clear: both;"/>
     </div>
       <%- if SystemConfiguration.get('nacsis.search_each') -%>
+        <p>
+          <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result_book]) -%></strong>
+        </p>
         <%- if @manifestations_book && (@manifestations_book.count > 0) -%>
-          <p>
-            <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result_book]) -%></strong>
-          </p>
           <div class="autopagerize_page_element" id="list">
           <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_book, :type => "book" -%>
           </div>
         <%- else -%>
           <%= render 'manifestations/not_found' -%>
         <%- end -%>
+        <p>
+          <strong><%= t('page.number_of_nacsis_serial_search_results', :count => @count[:query_result_serial]) -%></strong>
+        </p>
         <%- if @manifestations_serial && (@manifestations_serial.count > 0) -%>
-          <p>
-            <strong><%= t('page.number_of_nacsis_serial_search_results', :count => @count[:query_result_serial]) -%></strong>
-          </p>
           <div class="autopagerize_page_element" id="list">
           <%= render 'manifestations/list_nacsis', :manifestations => @manifestations_serial, :type => "serial" -%>
           </div>
@@ -173,10 +173,10 @@ $(document).ready(function() {
           <%= render 'manifestations/not_found' -%>
         <%- end -%>
       <%- else -%>
+        <p>
+          <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result]) -%></strong>
+        </p>
         <%- if @manifestations && (@manifestations.total_count > 0) -%>
-          <p>
-            <strong><%= t('page.number_of_nacsis_book_search_results', :count => @count[:query_result]) -%></strong>
-          </p>
           <div class="autopagerize_page_element" id="list">
           <%= render 'manifestations/list_nacsis', :manifestations => @manifestations, :type => "book" -%>
           </div>

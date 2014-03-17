@@ -19,12 +19,19 @@
     <% end %>
     <%- if manifestation.pub_date.present? -%>
       <meta itemprop="publishDate" content="<%= manifestation.try(:date_of_publication).try(:iso8601) %>" />
-      (<%- if manifestation.article? -%>
-         <%= t('activerecord.attributes.manifestation.pub_date_article') %>
-       <%- else -%>
-         <%= t('activerecord.attributes.manifestation.pub_date') %>
-       <%- end -%>
-       : <%= manifestation.pub_date -%>)
+      (
+      <%- if manifestation.article? -%>
+        <%= t('activerecord.attributes.manifestation.pub_date_article') %>
+      <%- else -%>
+        <%= t('activerecord.attributes.manifestation.pub_date') %>
+      <%- end -%>
+      : <%= manifestation.pub_date -%>
+      <% if manifestation.dis_date.present? %>
+        -
+        <%= t('activerecord.attributes.manifestation.dis_date') %>:
+        <%= manifestation.dis_date %>
+      <% end %>
+      )
     <%- end -%>
     <%- unless SystemConfiguration.isWebOPAC -%>
       <%- unless manifestation.access_address.blank? -%>

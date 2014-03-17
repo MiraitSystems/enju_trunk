@@ -1,5 +1,5 @@
 EnjuLeaf::Application.routes.draw do
-
+  resources :claim_types
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection

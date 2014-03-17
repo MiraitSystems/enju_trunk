@@ -14,7 +14,8 @@ class Agent < ActiveRecord::Base
     :extelephone_number_1_type_id, :fax_number_1_type_id,
     :telephone_number_2_type_id, :extelephone_number_2,
     :extelephone_number_2_type_id, :fax_number_2_type_id, :user_username,
-    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id
+    :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id,
+		:grade
 
   scope :readable_by, lambda{|user| {:conditions => ['required_role_id <= ?', user.try(:user_has_role).try(:role_id) || Role.where(:name => 'Guest').select(:id).first.id]}}
   has_many :creates, :dependent => :destroy
@@ -162,38 +163,45 @@ class Agent < ActiveRecord::Base
   end
 
   def set_date_of_birth
-    return if birth_date.blank?
-    begin
-      date = Time.zone.parse("#{birth_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{birth_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{birth_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
+    if birth_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{birth_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{birth_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{birth_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
+
     self.date_of_birth = date
   end
 
   def set_date_of_death
-    return if death_date.blank?
-    begin
-      date = Time.zone.parse("#{death_date}")
-    rescue ArgumentError
-      begin
-        date = Time.zone.parse("#{death_date}-01")
-      rescue ArgumentError
-        begin
-          date = Time.zone.parse("#{death_date}-01-01")
-        rescue
-          nil
-        end
-      end
-    end
+    if death_date.blank?
+			date = nil
+		else
+			begin
+				date = Time.zone.parse("#{death_date}")
+			rescue ArgumentError
+				begin
+					date = Time.zone.parse("#{death_date}-01")
+				rescue ArgumentError
+					begin
+						date = Time.zone.parse("#{death_date}-01-01")
+					rescue
+						nil
+					end
+				end
+			end
+		end
 
     self.date_of_death = date
   end

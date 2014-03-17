@@ -90,6 +90,18 @@
   <%= @item.note %>
 </p>
 
+<% if @item.claim %>
+  <p>
+    <strong><%= t('activerecord.attributes.claim.claim_type_id') -%>:</strong>
+    <%= @item.claim.claim_type.display_name if @item.claim %>
+  </p>
+
+  <p>
+    <strong><%= t('activerecord.attributes.claim.note') -%>:</strong>
+    <%= @item.claim.note if @item.claim %>
+  </p>
+<% end %>
+
 <p>
   <strong><%= t('page.created_at') %>:</strong>
   <%= l(@item.created_at) %>

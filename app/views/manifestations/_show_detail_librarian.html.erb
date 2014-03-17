@@ -245,6 +245,11 @@
                   <br />
                   NDC: <%= manifestation.ndc -%>
                 <%- end -%>
+                <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
+                  <%- manifestation.identifiers.each do |identifier| -%>
+                    <%= identifier.identifier_type.display_name.localize %>: <%= identifier.body %><br />
+                  <%- end -%>
+                <%- end -%>
               </td>
             </tr>
           <%- else -%>
