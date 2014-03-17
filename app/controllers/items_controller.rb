@@ -160,7 +160,9 @@ class ItemsController < ApplicationController
   # POST /items
   # POST /items.json
   def create
-    params[:item].delete("claim_attributes") if params[:item][:claim_attributes][:claim_type_id].blank?
+    if params[:item][:claim_attributes]
+      params[:item].delete("claim_attributes") if params[:item][:claim_attributes][:claim_type_id].blank?
+    end
     @item = Item.new(params[:item])
 
     @manifestation = Manifestation.find(@item.manifestation_id)
