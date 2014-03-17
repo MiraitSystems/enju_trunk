@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 module EnjuTrunk
   module ImportBook
-    SERIES_REQUIRE_COLUMNS = %w(original_title issn ncid ndc)
-    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn ncid ndc)
+    SERIES_REQUIRE_COLUMNS = %w(original_title issn ncid nbn)
+    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn ncid nbn)
     BOOK_HEADER_ROW        = 1
     BOOK_DATA_ROW          = 2
 
@@ -151,7 +151,8 @@ module EnjuTrunk
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
-      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s
+      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s if SystemConfiguration.get('import_from')
+      #nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from')
       manifestation = import_from_external_resource(isbn, ncid) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
 
@@ -390,8 +391,9 @@ module EnjuTrunk
       return manifestation, mode, nil, error_msg
     end
 
-    def import_from_external_resource(isbn, ncid)
+    def import_from_external_resource(isbn, ncid)#(isbn, ncid, nbn)
       manifestation = nil
+
       unless isbn.blank?
         begin
           isbn = Lisbn.new(isbn)
@@ -418,7 +420,13 @@ module EnjuTrunk
         manifestation = NacsisCat.create_manifestation_from_ncid(ncid)
       end
 
-      manifestation.external_catalog = 1 if manifestation
+=begin
+      unless nbn.blank?
+        manifestation = NacsisCat.create_manifestation_from_nbn(nbn)
+      end
+=end
+
+      #manifestation.external_catalog = 1 if manifestation
       return manifestation
     end
 
