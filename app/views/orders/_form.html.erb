@@ -13,7 +13,7 @@
 
 <script>
 $(function(){
-  $('#order_order_day').setCalendar({src:'/assets/calendar.png'});
+  $('#order_ordered_at').setCalendar({src:'/assets/calendar.png'});
   $('#order_collection_stop_day').setCalendar({src:'/assets/calendar.png'});
 });
 </script>
@@ -61,24 +61,23 @@ multiple: false,
 
   <div class="field">
     <%= f.label :order_identifier %><br />
-    <%= @order.order_identifier %>
-    <%= f.hidden_field :order_identifier %>
+    <%= f.text_field :order_identifier %>
   </div>
 
   <%= f.hidden_field :manifestation_id %>
 
   <div class="field">
-    <%= f.label :order_day %><br />
-    <% if @order.order_day %>
-      <%= f.text_field :order_day, :value => @order.order_day.to_date %>
+    <%= f.label :ordered_at %><br />
+    <% if @order.ordered_at %>
+      <%= f.text_field :ordered_at, :value => @order.ordered_at.to_date %>
     <% else %>
-      <%= f.text_field :order_day %>
+      <%= f.text_field :ordered_at %>
     <% end %>
   </div>
 
   <div class="field">
-    <%= f.label :publication_year %><br />
-    <%= f.text_field :publication_year %>
+    <%= f.label :order_year %><br />
+    <%= f.text_field :order_year %>
   </div>
 
   <div class="field">
@@ -143,10 +142,12 @@ multiple: false,
       <%= f.label :deliver_place_code_4 %><br />
       <%= f.select :deliver_place_code_4, @deliver_place_codes, :include_blank => true %>
     </div>
+  <% end %>
 
+  <% if reference_codes %>
     <div class="field">
-      <%= f.label :deliver_place_code_5 %><br />
-      <%= f.select :deliver_place_code_5, @deliver_place_codes, :include_blank => true %>
+      <%= f.label :reference_code_id %><br />
+      <%= f.select :reference_code_id, reference_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
     </div>
   <% end %>
 
@@ -255,10 +256,10 @@ multiple: false,
     <%= f.text_field :discount_commision %>
   </div>
 
-  <% if reason_for_settlements_of_account_codes %>
+  <% if publisher_types %>
     <div class="field">
-      <%= f.label :reason_for_settlements_of_account_code %><br />
-      <%= f.select :reason_for_settlements_of_account_code, reason_for_settlements_of_account_codes.collect{|p| [p.keyname.localize, p.id]} %>
+      <%= f.label :publisher_type_id %><br />
+      <%= f.select :publisher_type_id, publisher_types.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
     </div>
   <% end %>
 
