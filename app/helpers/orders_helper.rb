@@ -48,9 +48,14 @@ module OrdersHelper
     return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_bookstore_code_key, Time.zone.now) rescue nil
   end
 
-  def reason_for_settlements_of_account_codes
-    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_reason_for_settlements_of_account_code_key, Time.zone.now) rescue nil
+  def reference_codes
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_order_reference_code_key, Time.zone.now) rescue nil
   end
+
+  def publisher_types
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_publisher_type_key, Time.zone.now) rescue nil
+  end
+
 
   def get_paid_flag
 #    return Keycode.find(:conditions => ["name = ? AND v = ? AND (ended_at < ? OR ended_at IS NULL)",use_paid_flag_key, '1', Time.zone.now]) rescue nil

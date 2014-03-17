@@ -13,10 +13,10 @@ class OrdersController < ApplicationController
   # GET /orders.json
   def index
       if params[:manifestation_id]
-        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("publication_year DESC, order_identifier DESC").page(params[:page])
+        @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("order_year DESC, order_identifier DESC").page(params[:page])
         @manifestation = Manifestation.find(params[:manifestation_id])
       else
-        @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
+        @orders = Order.order("order_year DESC, order_identifier DESC").page(params[:page])
       end
 
     set_select_years
@@ -51,13 +51,13 @@ class OrdersController < ApplicationController
     if original_order
       @order = original_order.dup
       @order.set_probisional_identifier(Date.today.year.to_i + 1)
-      @order.order_day = Date.new((Date.today + 1.years).year, original_order.order_day.month, original_order.order_day.day)
-      @order.publication_year = Date.today.year.to_i + 1
+      @order.ordered_at = Date.new((Date.today + 1.years).year, original_order.ordered_at.month, original_order.ordered_at.day)
+      @order.order_year = Date.today.year.to_i + 1
       @order.paid_flag = 0
       @order.buying_payment_year = nil
       @order.prepayment_settlements_of_account_year = nil
     else
-      @order.order_day = Date.today
+      @order.ordered_at = Date.today
       @order.set_probisional_identifier
       if params[:manifestation_id]
         @order.manifestation_id = params[:manifestation_id].to_i
@@ -203,21 +203,21 @@ class OrdersController < ApplicationController
       flash.now[:message] = t('order.no_matches_found_order', :attribute => t('activerecord.attributes.order.order_identifier')) unless order
     end
 
-    unless params[:publication_year].blank?
+    unless params[:order_year].blank?
       where_str += " AND " unless where_str.empty?
-      where_str += "publication_year = #{params[:publication_year].to_i}"
+      where_str += "order_year = #{params[:order_year].to_i}"
     end
 
     if where_str.empty?
-      @orders = Order.order("publication_year DESC, order_identifier DESC").page(params[:page])
+      @orders = Order.order("order_year DESC, order_identifier DESC").page(params[:page])
     else
-      @orders = Order.where([where_str]).order("publication_year DESC, order_identifier DESC").page(params[:page])
+      @orders = Order.where([where_str]).order("order_year DESC, order_identifier DESC").page(params[:page])
 
       @selected_title = @orders.first.manifestation.original_title if (@orders.size == 1 && params[:order_identifier].present?)
     end
 
     @selected_order = params[:order_identifier]
-    @selected_year = params[:publication_year]
+    @selected_year = params[:order_year]
     set_select_years
 
     respond_to do |format|
@@ -228,10 +228,10 @@ class OrdersController < ApplicationController
 
   def set_select_years
 
-    @years = Order.select(:publication_year).uniq.order('publication_year desc')
+    @years = Order.select(:order_year).uniq.order('order_year desc')
     @select_years = []
     @years.each do |p|
-      @select_years.push [p.publication_year, p.publication_year] unless p.publication_year.blank?
+      @select_years.push [p.order_year, p.order_year] unless p.order_year.blank?
     end
 
   end
@@ -239,9 +239,9 @@ class OrdersController < ApplicationController
   def create_subsequent_year_orders
 
     if params[:order_identifier].blank?
-      @orders = Order.where(["publication_year = ?", params[:year].to_i])
+      @orders = Order.where(["order_year = ?", params[:year].to_i])
     else
-      @orders = Order.where(["publication_year = ? AND order_identifier = ?", params[:year].to_i, params[:order_identifier]])
+      @orders = Order.where(["order_year = ? AND order_identifier = ?", params[:year].to_i, params[:order_identifier]])
     end
 
     create_count = 0
@@ -249,8 +249,8 @@ class OrdersController < ApplicationController
       if order.order_form && order.order_form.v == '1'
         @new_order = order.dup
         @new_order.set_probisional_identifier(Date.today.year.to_i + 1)
-        @new_order.order_day = Date.new((Date.today + 1.years).year, order.order_day.month, order.order_day.day)
-        @new_order.publication_year = Date.today.year.to_i + 1
+        @new_order.ordered_at = Date.new((Date.today + 1.years).year, order.ordered_at.month, order.ordered_at.day)
+        @new_order.order_year = Date.today.year.to_i + 1
         @new_order.paid_flag = 0
         @new_order.buying_payment_year = nil
         @new_order.prepayment_settlements_of_account_year = nil
@@ -265,7 +265,7 @@ class OrdersController < ApplicationController
       flash[:message] = t('order.no_create_subsequent_year_orders')
     end
 
-    redirect_to :action => "search", :publication_year => params[:year], :test => "test", :order_identifier => params[:order_identifier]
+    redirect_to :action => "search", :order_year => params[:year], :test => "test", :order_identifier => params[:order_identifier]
 
   end
 

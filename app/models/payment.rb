@@ -133,7 +133,7 @@ class Payment < ActiveRecord::Base
   order = Order.find(order_id)
 
   @payment = Payment.new(:order_id => order_id)
-  @payment.billing_date = order.order_day
+  @payment.billing_date = order.ordered_at
   @payment.manifestation_id = order.manifestation_id
   @payment.currency_id = order.currency_id
   @payment.currency_rate = order.currency_rate
