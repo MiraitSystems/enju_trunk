@@ -2655,6 +2655,7 @@ ja:
       series:
         issn: ISSN
         ncid: NCID
+        nbn: NBN
         original_title: シリーズ名
         title_transcription: シリーズ名（ヨミ）
         periodical: 定期刊行物
@@ -2666,6 +2667,7 @@ ja:
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
         ncid: NCID
+        nbn: NBN
         isbn: ISBN
         lccn: LCCN
         marc_number: MARC番号

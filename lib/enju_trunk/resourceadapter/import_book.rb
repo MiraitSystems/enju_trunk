@@ -152,8 +152,8 @@ module EnjuTrunk
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
       ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s if SystemConfiguration.get('import_from_nacsis')
-      #nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from_nacsis')
-      manifestation = import_from_external_resource(isbn, ncid) unless manifestation
+      nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from_nacsis')
+      manifestation = import_from_external_resource(isbn, ncid, nbn) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
 
       manifestation = Manifestation.new unless manifestation
@@ -209,6 +209,8 @@ module EnjuTrunk
       manifestation.isbn                      = isbn.to_s                 unless isbn.nil?
       manifestation.issn                      = issn.to_s                 unless issn.nil?
       manifestation.lccn                      = lccn.to_s                 unless lccn.nil?
+      manifestation.nacsis_identifier         = ncid.to_s                 unless ncid.nil?
+      manifestation.nbn                       = nbn.to_s                  unless nbn.nil?
       manifestation.marc_number               = marc_number.to_s          unless marc_number.nil?
       manifestation.ndc                       = ndc.to_s                  unless ndc.nil?
       manifestation.height                    = height                    unless height.nil?
@@ -393,27 +395,25 @@ module EnjuTrunk
       return manifestation, mode, nil, error_msg
     end
 
-    def import_from_external_resource(isbn, ncid)#(isbn, ncid, nbn)
+    def import_from_external_resource(isbn, ncid, nbn)
       manifestation = nil
 
       if ncid.present?
         manifestation = NacsisCat.create_manifestation_from_ncid(ncid)
-=begin
       elsif nbn.present?
         manifestation = NacsisCat.create_manifestation_from_nbn(nbn)
-=end
       elsif isbn.present?
         begin
           isbn = Lisbn.new(isbn)
           exist_manifestation = Manifestation.find_by_isbn(isbn)
           unless exist_manifestation
             #ISBNインポート先の選択
-            #if SystemConfiguration.get('import_from_nacsis')?
-              #manifestation = NacsisCat.import_isbn(isbn)
-            #else
+            if SystemConfiguration.get('import_from_nacsis')?
+              manifestation = NacsisCat.create_manifestation_from_isbn(isbn)
+            else
               manifestation = Manifestation.import_isbn(isbn)
             # raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
-            # end
+             end
           else
             manifestation = exist_manifestation
           end

@@ -2648,6 +2648,7 @@ en:
       series:
         issn: ISSN
         ncid: NCID
+        nbn: NBN
         original_title: Series name
         title_transcription: Series name（transcription）
         periodical: Periodical
@@ -2659,6 +2660,7 @@ en:
         title_transcription: Title（transcription）
         title_alternative: Alternative title
         ncid: NCID
+        nbn: NBN
         isbn: ISBN
         lccn: LCCN
         marc_number: MARC number
