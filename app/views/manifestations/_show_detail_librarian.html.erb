@@ -432,6 +432,34 @@
             </tr>
           <%- end -%>
         <% end %>
+
+        <%# TODO 書誌と所蔵を１：１で管理する設定時、item の情報を表示する %>
+        <% if SystemConfiguration.get("manifestation.has_one_item") %>
+          <tr>
+            <td><%= t('activerecord.models.shelf') -%>:</td>
+            <td>
+              <%=  %> 
+            </td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.item.item_identifier') -%>:</td>
+            <td>
+              <%=  %> 
+            </td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.models.circulation_status') -%>:</td>
+            <td>
+              <%=  %> 
+            </td>
+          </tr>
+          <tr>
+            <td><%= t('activerecord.attributes.item.acquired_at_string') -%>:</td>
+            <td>
+              <%=  %> 
+            </td>
+          </tr>
+        <% end %>
       </table>
     <%# end %>
       <%# - if manifestation.items.on_shelf.exists? -%>
