@@ -1630,6 +1630,7 @@ en:
         display_name: Display name
       exchange_rate:
         currency: Currency
+        currency_id: Currency
         rate: Rate
         started_at: Started at
       keycode:
