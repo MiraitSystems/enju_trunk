@@ -1,0 +1,33 @@
+<h4>発注レコードへの反映</h4>
+<%= form_tag({:action => "index"}, {:method => "get"}) do |f| %>
+  <p id="notice"><%= flash[:orders_notice] %></p>
+  <font color="red"><%= flash[:orders_error] %></font>
+
+  <script>
+  $(function(){
+    $('#orders_started_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  </script>
+  <script>
+  $(function(){
+    $('#orders_ended_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  </script>
+
+  <div class="field">
+    <%= label_tag 'orders_started_at', "発注期間" %><br />
+    <%= text_field_tag :orders_started_at, "#{Date.today.next_year.beginning_of_year.to_s}" %>
+  </div>
+
+  <div class="field">
+    ～<%= text_field_tag :orders_ended_at, "#{Date.today.next_year.end_of_year.to_s}" %>
+  </div>
+
+  <div class="field">
+    <%= hidden_field_tag :update_to_orders, true %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag("反映する") %>
+  </div>
+<% end %>

@@ -15,7 +15,7 @@ class Manifestation < ActiveRecord::Base
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy
+  has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy, :order => :position
   has_many :languages, :through => :work_has_languages, :order => :position
   belongs_to :carrier_type
   belongs_to :manifestation_type

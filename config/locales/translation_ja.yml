@@ -24,6 +24,7 @@ ja:
       subject_has_classification: 件名と分類の関係
       expression: 協力した資料
       language: 言語
+      language_type: 言語の種類
       agent_merge_list: 人物・団体の統合リスト
       user: 利用者
       work_has_subject: 資料と件名の関係
@@ -505,6 +506,11 @@ ja:
         iso_639_1: ISO 639-1
         iso_639_2: ISO 639-2
         iso_639_3: ISO 639-3
+        note: 注記
+        position: 位置
+      language_type:
+        name: 名前
+        display_name: 表示名
         note: 注記
         position: 位置
       agent_merge_list:
@@ -1545,6 +1551,7 @@ ja:
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
+        original_language: 原本言語
         author_heading: 著者情報
         subject: 件名
         ncid: NCID
@@ -1619,6 +1626,7 @@ ja:
         display_name: 表示名 
       exchange_rate:
         currency: 通貨単位
+        currency_id: 通貨単位
         rate: レート
         started_at: 利用開始年月日
       keycode:

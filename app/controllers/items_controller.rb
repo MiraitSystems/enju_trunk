@@ -112,7 +112,9 @@ class ItemsController < ApplicationController
       @item.item_identifier = nil
       @item.rank = 1 if original_item.rank == 0
       @item.use_restriction_id = original_item.use_restriction.id
-      @shelves << @item.shelf
+      @shelves <<  Shelf.find(original_item.shelf_id)
+      @item.library_id = original_item.shelf.library.id
+      @item.claim = nil
     else
       @item = Item.new
     end

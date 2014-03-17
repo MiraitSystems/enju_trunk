@@ -1,0 +1,26 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.language_type')) -%></h1>
+  <div id="content_list">
+    <p>
+      <strong><%= t('activerecord.attributes.language_type.name') -%>:</strong>
+      <%= @language_type.name -%>
+    </p>
+    <p>
+      <strong><%= t('activerecord.attributes.language_type.display_name') -%>:</strong>
+      <%= @language_type.display_name.localize -%>
+    </p>
+    <p>
+      <strong><%= t('activerecord.attributes.language_type.note') -%>:</strong>
+      <%= @language_type.note -%>
+    </p>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <%- if can? :update, @language_type -%>
+      <li><%= link_to t('page.edit'), edit_language_type_path(@language_type) -%></li>
+    <%- end -%>
+    <li><%= link_to t('page.back'), :back -%></li>
+  </ul>
+</div>

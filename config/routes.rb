@@ -1,5 +1,6 @@
 EnjuLeaf::Application.routes.draw do
   resources :claim_types
+  resources :language_types
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection
@@ -25,7 +26,7 @@ EnjuLeaf::Application.routes.draw do
   resources :barcode_registrations, :only => [:index] do
     post :output, :on => :collection
   end
- 
+
   #resources :identifier_types
   resources :warekis
   resources :user_request_logs
