@@ -396,7 +396,13 @@ module EnjuTrunk
     def import_from_external_resource(isbn, ncid)#(isbn, ncid, nbn)
       manifestation = nil
 
-      unless isbn.blank?
+      if ncid.present?
+        manifestation = NacsisCat.create_manifestation_from_ncid(ncid)
+=begin
+      elsif nbn.present?
+        manifestation = NacsisCat.create_manifestation_from_nbn(nbn)
+=end
+      elsif isbn.present?
         begin
           isbn = Lisbn.new(isbn)
           exist_manifestation = Manifestation.find_by_isbn(isbn)
@@ -417,16 +423,6 @@ module EnjuTrunk
           raise I18n.t('resource_import_textfile.error.book.record_not_found')
         end
       end
-
-      unless ncid.blank?
-        manifestation = NacsisCat.create_manifestation_from_ncid(ncid)
-      end
-
-=begin
-      unless nbn.blank?
-        manifestation = NacsisCat.create_manifestation_from_nbn(nbn)
-      end
-=end
 
       #manifestation.external_catalog = 1 if manifestation
       return manifestation
