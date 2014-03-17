@@ -52,19 +52,23 @@
       }
     });
   });
+
+<% if SystemConfiguration.get('import_from_nacsis') %>
+  $(document).ready( function(){
+    $("#from_nacsis").attr("checked", true );
+  });
+<% end %>
 </script>
 
 <div id="content_detail" class="ui-corner-all">
   <h1 class="title"><%= t('page.new', :model => t('activerecord.models.resource_import_textfile')) %></h1>
   <div id="content_list">
 
-    <div>
-      <%= radio_button_tag 'from', 'ndl', true %><b>NDL</b>
-      <%= radio_button_tag 'from', 'nacsis' %><b>NACSIS</b>
-    </div>
-    <br />
-
     <%= form_for(@resource_import_textfile, :html => { :multipart => true }, :remote => true ) do |f| %>
+      <%= radio_button_tag 'from', 'ndl', true %><b>NDL</b>
+      <%= radio_button_tag 'from', 'nacsis' %><b>NACSIS</b><br />
+      <br />
+
       <%= f.error_messages %>
       <div class="field" id="select_file">
         <%= f.label t('page.file') %><br />

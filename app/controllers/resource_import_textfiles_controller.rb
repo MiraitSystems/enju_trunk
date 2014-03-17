@@ -59,6 +59,16 @@ class ResourceImportTextfilesController < ApplicationController
     params["auto_numbering"]     = auto_numberings
     @resource_import_textfile.extraparams = params.to_s
 
+    #NACSISかNDLか選択
+    if resource = params["from"].to_s
+      import_from_nacsis = SystemConfiguration.find_by_keyname('import_from_nacsis')
+      if resource == "NACSIS"
+        import_from_nacsis.update_attribute(:v, 'true')
+      else
+        import_from_nacsis.update_attribute(:v, 'false')
+      end
+    end
+
     respond_to do |format|
       if @resource_import_textfile.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.resource_import_textfile'))
