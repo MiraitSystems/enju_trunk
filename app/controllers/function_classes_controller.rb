@@ -7,10 +7,26 @@ class FunctionClassesController < InheritedResources::Base
   load_and_authorize_resource
 
   def update
-    redirect_to function_classes_url    
+    respond_to do |format|
+      if @function_class.update_attributes(params[:function_class])
+        flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.function_class'))
+        format.html { redirect_to function_classes_url }
+      else
+        format.html { render :action => "edit" }
+      end
+    end
   end
  
   def create
-    redirect_to function_classes_url
+    @function_class = FunctionClass.new(params[:function_class])
+    respond_to do |format|
+      if @function_class.valid?
+        @function_class.save!
+        flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.function_class'))
+        format.html { redirect_to function_classes_url }
+      else
+        format.html { render :action => "new" }
+      end
+    end
   end
 end
