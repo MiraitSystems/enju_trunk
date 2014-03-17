@@ -64,6 +64,34 @@ module ManifestationsHelper
     links.join(" ").html_safe
   end
 
+  def paginate_ncid_link(nacsis_cat)
+    return nil unless nacsis_cat.is_a?(NacsisCat)
+    links = []
+    if nacsis_cat.serial?
+      ids_ary = session['nacsis_cat_serial_ids']
+      type = 'serial'
+    else
+      ids_ary = session['nacsis_cat_book_ids']
+      type = 'book'
+    end
+    if ids_ary.present?
+      current_seq = ids_ary.index(nacsis_cat.ncid)
+      if current_seq
+        unless nacsis_cat.ncid == ids_ary.last
+          links << link_to(t('page.next'), params.merge(:ncid => ids_ary[current_seq + 1]))
+        else
+          links << t('page.next').to_s
+        end
+        unless nacsis_cat.ncid == ids_ary.first
+          links << link_to(t('page.previous'), params.merge(:ncid => ids_ary[current_seq - 1]))
+        else
+          links << t('page.previous').to_s
+        end
+      end
+    end
+    links.join(" ").html_safe
+  end
+
   def embed_content(manifestation)
     case
     when manifestation.youtube_id

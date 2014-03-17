@@ -162,7 +162,9 @@ class ItemsController < ApplicationController
   # POST /items
   # POST /items.json
   def create
+    params[:item].delete("claim_attributes") if params[:item][:claim_attributes][:claim_type_id].blank?
     @item = Item.new(params[:item])
+
     @manifestation = Manifestation.find(@item.manifestation_id)
     if SystemConfiguration.get('manifestation.use_item_has_operator')
       @countoperators = @item.item_has_operators.size
@@ -208,13 +210,19 @@ class ItemsController < ApplicationController
   # PUT /items/1.json
   def update
     set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
+    if params[:item][:claim_attributes]
+      if params[:item][:claim_attributes][:claim_type_id].blank?
+        params[:item].delete("claim_attributes")
+        @item.claim.destroy unless @item.claim_id.blank? && @item.claim.blank?
+        @item.claim_id = nil unless @item.claim_id.blank?
+      end  
+    end
 
     respond_to do |format|
       if @item.update_attributes(params[:item])
         if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
           Manifestation.find(@item.manifestation.series_statement.root_manifestation_id).index
         end
-
         unless @item.remove_reason.nil?
           if @item.reserve
             @item.reserve.revert_request rescue nil
@@ -325,6 +333,7 @@ class ItemsController < ApplicationController
     else
       @shelves = @library.shelves
     end
+    @claim_types = ClaimType.all
   end
 
   def check_status

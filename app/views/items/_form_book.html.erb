@@ -133,6 +133,17 @@ $(function(){
     <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
   </div>
 
+  <% unless @claim_types.blank? %> 
+    <div class="field">
+      <%= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
+        <%= f_claim.label :claim_type_id %><br />
+        <%= f_claim.select :claim_type_id, @claim_types.map{|c| [c.display_name, c.id]}, :include_blank => true %><br />
+        <%= f_claim.label :note %><br />
+        <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= render(:partial => 'form_item_has_operator', :locals=>{:f => f}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
 
   <div class="actions">

@@ -208,7 +208,9 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      identifier: その他の識別子
       item_has_operator: 受入作業者
+      claim_type: クレーム
 
     attributes:
       use_license:
@@ -442,6 +444,7 @@ ja:
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
+        grade: 学年
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -1732,6 +1735,12 @@ ja:
         note: メモ
       item_has_operators:
         user: 作業者
+      claim_type:
+        name: 名前
+        display_name: 表示名
+      claim:
+        claim_type_id: クレームタイプ
+        note: クレーム注記
 
   page:
     user_title: "ようこそ %{login_name} さん"

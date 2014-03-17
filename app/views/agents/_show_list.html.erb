@@ -109,6 +109,10 @@
         <td><strong><%= t('activerecord.attributes.agent.url') -%>:</strong></td>
         <td><%= link_to @agent.url, @agent.url, :class => 'url' if @agent.url? -%></td>
       </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.grade') -%>:</strong></td>
+        <td><%= @agent.grade %></td>
+      </tr>
 <%- if false -%>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.other_designation') -%>:</strong></td>

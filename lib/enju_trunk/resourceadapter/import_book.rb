@@ -164,6 +164,7 @@ module EnjuTrunk
       frequency              = set_data(field, datas, mode, Frequency, 'frequency', { :default => '不明', :check_column => :display_name })
       country_of_publication = set_data(field, datas, mode, Country, 'country_of_publication', { :default => 'unknown' }) 
       pub_date               = datas[field[I18n.t('resource_import_textfile.excel.book.pub_date')]]
+      dis_date               = datas[field[I18n.t('resource_import_textfile.excel.book.dis_date')]]
       place_of_publication   = datas[field[I18n.t('resource_import_textfile.excel.book.place_of_publication')]]
       edition                = datas[field[I18n.t('resource_import_textfile.excel.book.edition_display_value')]]
       volume_number_string   = datas[field[I18n.t('resource_import_textfile.excel.book.volume_number_string')]]
@@ -196,6 +197,7 @@ module EnjuTrunk
       manifestation.carrier_type              = carrier_type              unless carrier_type.nil?
       manifestation.frequency                 = frequency                 unless frequency.nil?
       manifestation.pub_date                  = pub_date.to_s             unless pub_date.nil?
+      manifestation.dis_date                  = dis_date.to_s             unless dis_date.nil?
       manifestation.country_of_publication_id = country_of_publication.id unless country_of_publication.nil? 
       manifestation.place_of_publication      = place_of_publication.to_s unless place_of_publication.nil?
       manifestation.edition_display_value     = edition                   unless edition.nil?

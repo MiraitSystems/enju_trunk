@@ -40,6 +40,7 @@ class Manifestation < ActiveRecord::Base
   has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
   has_many :manifestation_titles, :through => :work_has_titles
   accepts_nested_attributes_for :work_has_titles
+  accepts_nested_attributes_for :identifiers, :reject_if => proc {|attributes| attributes['body'].blank?}, :allow_destroy => true
   before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
@@ -61,8 +62,9 @@ class Manifestation < ActiveRecord::Base
   searchable(SUNSPOT_EAGER_LOADING) do
     text :extexts do
       if root_of_series? # 雑誌の場合
-        series_manifestations.
-          manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
+        series_manifestations.each do |m|
+          m.manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
+        end
       else
         manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
       end
