@@ -141,8 +141,8 @@ class Order < ActiveRecord::Base
 
     @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
     if @numbering
-      number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s);
-      self.order_identifier = year.to_s + number
+      number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s) rescue nil
+      self.order_identifier = year.to_s + number if number
     end
   end
 
