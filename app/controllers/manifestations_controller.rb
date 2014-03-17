@@ -806,6 +806,7 @@ class ManifestationsController < ApplicationController
   def new
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects
+    @work_has_languages = []
     output_agent_parameter_for_new_edit
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation
@@ -821,16 +822,13 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',')
-      @manifestation_languages = original_manifestation.languages.reorder('work_has_languages.position').pluck(:id)
+      @work_has_languages = original_manifestation.work_has_languages
       if original_manifestation.manifestation_exinfos
         original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
       end
       if original_manifestation.manifestation_extexts
         original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
       end
-    elsif @expression
-      @manifestation.original_title = @expression.original_title
-      @manifestation.title_transcription = @expression.title_transcription
     elsif @series_statement
       @manifestation.original_title = @series_statement.original_title
       @manifestation.title_transcription = @series_statement.title_transcription
@@ -850,6 +848,7 @@ class ManifestationsController < ApplicationController
         @manifestation.place_of_publication = root_manifestation.place_of_publication
         @manifestation.access_address = root_manifestation.access_address
         @manifestation.required_role = root_manifestation.required_role
+        @work_has_languages = root_manifestation.work_has_languages
       end
       @manifestation.series_statement = @series_statement
     end
@@ -875,7 +874,7 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @manifestation_languages = @manifestation.languages.reorder('work_has_languages.position').pluck(:id) if @manifestation_languages.blank?
+    @work_has_languages = @manifestation.work_has_languages
     output_agent_parameter_for_new_edit
     @subject = @manifestation.subjects.collect(&:term).join(';')
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
@@ -917,7 +916,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @language = params[:language_id].try(:values)
+    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -951,7 +950,7 @@ class ManifestationsController < ApplicationController
 
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
-          @manifestation.languages = Language.add_language(@language) unless @language.blank?
+          @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -959,12 +958,11 @@ class ManifestationsController < ApplicationController
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_created', :model => t('activerecord.models.manifestation')) }
         format.json { render :json => @manifestation, :status => :created, :location => @manifestation }
       else
-        @manifestation_languages = @language
         prepare_options
         output_agent_parameter
         new_work_has_title
 
-      format.html { render :action => "new" }
+        format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
         @select_theme_tags = Manifestation.struct_theme_selects
         @keep_themes = @theme
@@ -986,7 +984,7 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
-    @language = params[:language_id].try(:values)
+    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1018,7 +1016,8 @@ class ManifestationsController < ApplicationController
 
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
-        @manifestation.languages.destroy_all; @manifestation.languages = Language.add_language(@language)
+        @manifestation.work_has_languages.destroy_all;
+        @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1028,7 +1027,6 @@ class ManifestationsController < ApplicationController
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
         format.json { head :no_content }
       else
-        @manifestation_languages = @language
         prepare_options
         output_agent_parameter
         new_work_has_title
@@ -1485,6 +1483,7 @@ class ManifestationsController < ApplicationController
     @manifestation_types = ManifestationType.all
     @roles = Role.all
     @languages = Language.all_cache
+    @language_types = LanguageType.all
     @countries = Country.all
     @frequencies = Frequency.all
     @nii_types = NiiType.all if defined?(NiiType)
@@ -1932,7 +1931,7 @@ class ManifestationsController < ApplicationController
   end
 
   def create_titles
- 
+
     return unless SystemConfiguration.get('manifestation.use_titles')
 
     if params[:manifestation][:work_has_titles_attributes]
@@ -1965,4 +1964,5 @@ class ManifestationsController < ApplicationController
       end
     end
   end
+
 end

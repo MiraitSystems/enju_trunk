@@ -62,8 +62,10 @@
           <%- case key -%>
           <%- when :publisher, :subject -%>
             <td style="width: 490px"><%= @nacsis_cat.detail[key].join(", ") -%></td>
-          <%- when :title_language, :text_language, :pub_country -%>
+          <%- when :pub_country -%>
             <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
+          <%- when :title_language, :text_language, :original_language -%>
+            <td><%= @nacsis_cat.detail[key].map{|lang| lang.display_name.localize}.join(", ") -%> </td>
           <%- when :author_heading, :title_alternative, :title_alternative_transcription -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
           <%- when :cls_info -%>
