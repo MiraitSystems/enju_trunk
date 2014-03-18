@@ -7,7 +7,6 @@
         <%= missing_status_facet(facet.value, current_status, facet) %>
       </li>
     <%- end -%>
-    <%= params %>
     <%- @no_item_facet.each do |facet| %>
       <% next unless facet.value %>
       <li><%= no_item_facet('no_item', facet) %></li>

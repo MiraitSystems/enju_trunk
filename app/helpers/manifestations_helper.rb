@@ -129,14 +129,14 @@ module ManifestationsHelper
       languages << language.name
     end
     languages = nil if languages.blank?
-    params.merge!(:page => nil, :language => languages, :carrier_type => nil, :view => nil)
+    lang_p = params.merge(:page => nil, :language => languages, :carrier_type => nil, :view => nil)
     if current
       string << "<strong>"
       string << "#{language.display_name.localize} (" + facet.count.to_s + ") &nbsp"
-      string << link_to(t('page.remove_facet'), url_for(params))
+      string << link_to(t('page.remove_facet'), url_for(lang_p))
       string << "</strong>" if current
     else
-      string << link_to("#{language.display_name.localize} (" + facet.count.to_s + ")", url_for(params))
+      string << link_to("#{language.display_name.localize} (" + facet.count.to_s + ")", url_for(lang_p))
     end
     string.html_safe
   end
