@@ -53,7 +53,7 @@
     });
   });
 
-<% if SystemConfiguration.get('import_from_nacsis') %>
+<% if SystemConfiguration.get('nacsis.can_use') %>
   $(document).ready( function(){
     $("#extraparams_external_resource_nacsis").attr("checked", true );
   });
@@ -65,9 +65,14 @@
   <div id="content_list">
 
     <%= form_for(@resource_import_textfile, :html => { :multipart => true }, :remote => true ) do |f| %>
-      <%= radio_button_tag 'extraparams[external_resource]', 'ndl', true %><b>NDL</b>
-      <%= radio_button_tag 'extraparams[external_resource]', 'nacsis' %><b>NACSIS</b><br />
-      <br />
+
+      <% if SystemConfiguration.get('nacsis.can_use') %>
+        <%= radio_button_tag 'extraparams[external_resource]', 'ndl', true %><b>NDL</b>
+        <%= radio_button_tag 'extraparams[external_resource]', 'nacsis' %><b>NACSIS</b><br />
+        <br />
+      <% else %>
+        <%= hidden_field_tag 'extraparams[external_resource]', 'ndl' %>
+      <% end %>
 
       <%= f.error_messages %>
       <div class="field" id="select_file">

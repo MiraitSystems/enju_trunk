@@ -1220,10 +1220,3 @@ system_configuration_00173:
   typename: Boolean
   description: "その他の識別子を利用する"
   category: 'manifestation'
-system_configuration_00174:
-  id: 174
-  keyname: import_from_nacsis
-  v: "false"
-  typename: Boolean
-  description: "インポート時にNACSISからインポートする"
-  category: 'general'
