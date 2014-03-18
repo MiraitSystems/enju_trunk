@@ -101,6 +101,7 @@ class SeriesStatementsController < ApplicationController
       output_agent_parameter_for_new_edit
     end
     @series_work_has_languages = @series_statement.root_manifestation.work_has_languages
+    new_work_has_title
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -120,11 +121,13 @@ class SeriesStatementsController < ApplicationController
       manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if manifestation.manifestation_exinfos
       manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if manifestation.manifestation_extexts
     end
+    new_work_has_title
   end
 
   # POST /series_statements
   # POST /series_statements.json
   def create
+    create_titles
     @series_statement = SeriesStatement.new(params[:series_statement])
     @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
     @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
@@ -182,6 +185,7 @@ class SeriesStatementsController < ApplicationController
       logger.error "Failed to create: #{e}"
       prepare_options
       output_agent_parameter
+      new_work_has_title
       respond_to do |format|
         format.html { render :action => "new" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
@@ -195,6 +199,7 @@ class SeriesStatementsController < ApplicationController
       move_position(@series_statement, params[:move])
       return
     end
+    create_titles
     @series_statement.assign_attributes(params[:series_statement])
     @series_statement.root_manifestation = @series_statement.root_manifestation if @series_statement.root_manifestation
     @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
@@ -269,6 +274,7 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
         prepare_options
         output_agent_parameter
+        new_work_has_title
         format.html { render :action => "edit" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
       end
@@ -319,6 +325,7 @@ class SeriesStatementsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.where(:numbering_type => 'manifestation')
+    @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
   end
 
   def input_agent_parameter
@@ -420,4 +427,44 @@ class SeriesStatementsController < ApplicationController
     @new_publisher_type = [""]
     @new_publisher_number = @new_publisher.length
   end
+
+
+  def create_titles
+
+    return unless SystemConfiguration.get('manifestation.use_titles')
+
+    if params[:manifestation][:work_has_titles_attributes]
+      @work_has_titles = params[:manifestation][:work_has_titles_attributes]
+      @work_has_titles.each do |key, value|
+        if value[:title_id] != ""
+          @title = Title.find(value[:title_id])
+          @title.title = params[:manifestation_title][key]
+          @title.save
+        else
+          @title = Title.new(:title => params[:manifestation_title][key])
+          @title.save
+          value[:title_id] = @title.id
+        end
+      end
+    end
+  end
+
+
+  def new_work_has_title
+
+    @count_titles = 0
+    if SystemConfiguration.get('manifestation.use_titles')
+
+      manifestation = @series_statement.root_manifestation
+
+      @count_titles = manifestation.work_has_titles.size
+      if manifestation.work_has_titles.empty?
+        @workhastitle = WorkHasTitle.new(:title_id => 1, :title_type_id => 1, :position => 0)
+        manifestation.work_has_titles << @workhastitle
+        manifestation.work_has_titles[0].title_id = nil
+        @count_titles = 1
+      end
+    end
+  end
+
 end

@@ -59,6 +59,55 @@ var ItemField_language = {
   }
 }
 </script>
+<script id="script_add_title">
+  var ItemField_title = {
+    currentNumber :<%= @count_titles-1 -%>,
+    itemTemplate : ''
+                 + '<input id="manifestation_title___count__" name="manifestation_title[__count__]"  placeholder=<%= t('activerecord.models.title') %> type="text" value="" class="resource_title" /> '
+                 + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
+                 <% @title_types.collect do |m| %>
+                   + '<option value="<%= m.id %>"><%= m.display_name %></option>'
+                 <% end %>
+
+                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> ' 
+
+                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
+
+                 + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
+                 + '<input type="button" value="-" onClick="ItemField_title.remove();" /> ',
+    add : function () {
+
+      this.currentNumber++;
+      var field = document.getElementById('VF' + this.currentNumber);
+
+      if (field.style.display == "none"){
+        field.style.display = "block";
+      }else{
+        var replaceCount = this.currentNumber;
+        var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+        field.innerHTML = newItem;
+        var nextNumber = this.currentNumber + 1;
+        var new_area = document.createElement("div");
+        new_area.setAttribute("id", "VF" + nextNumber);
+        new_area.setAttribute("class", "field");
+        field.appendChild(new_area);
+      }
+    },
+    remove : function () {
+
+      if ( this.currentNumber == 0) { return; }
+
+      var field = document.getElementById('VF' + this.currentNumber);
+      input_value = document.getElementById('manifestation_title_' + this.currentNumber);
+      input_value.value = "";
+      var select_state = document.getElementById('manifestation_work_has_titles_attributes_' + this.currentNumber + '_title_type_id').getElementsByTagName('option');
+      select_state[0].selected = true;
+      field.style.display="none";
+      this.currentNumber--;
+
+    }
+  };
+</script>
 
   <%= render 'manifestations/observe_field' %>
 
@@ -66,6 +115,36 @@ var ItemField_language = {
     <%= f_m.label :article_title %><br />
     <%= f_m.text_field :article_title, :class => 'resource_title' %>
   </div>
+
+  <% if SystemConfiguration.get('manifestation.use_titles') %>
+    <div class="field">
+      <label><%= t('activerecord.attributes.manifestation.titles') %></label>
+      <% i = 0 %>
+      <%= f_m.fields_for :work_has_titles, @series_statement.root_manifestation.work_has_titles do |title| %>
+        <div id="VF<%= i %>">
+          <% if title.object.manifestation_title %>
+           <%= text_field_tag "manifestation_title[#{i}]",
+                title.object.manifestation_title.title,
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
+          <% else %>
+            <%= text_field_tag "manifestation_title[#{i}]",
+                "",
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
+          <% end %>
+          <%= title.select :title_type_id, @title_types.collect{ |m| [m.display_name,m.id] } %>
+          <%= title.hidden_field :title_id  %>
+          <%= title.hidden_field :position %>
+          <%= button_to_function '+', 'ItemField_title.add()' -%>
+          <%= button_to_function '-', 'ItemField_title.remove()' if i > 0 %>
+          <br />
+        </div>
+        <% i +=1 %>
+      <% end %>
+      <div id="VF<%= i %>" class="field"></div>
+    </div>
+  <% end %>
 
   <div class="field">
     <%= f_m.label :identifier %><br />
