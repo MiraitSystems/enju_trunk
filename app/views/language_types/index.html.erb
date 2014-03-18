@@ -1,0 +1,45 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.language_type')) -%></h1>
+  <div id="content_list">
+  <p id="notice"><%= notice %></p>
+  <table class="table table-striped index">
+    <tr>
+      <th>ID</th>
+      <th><%= t('activerecord.attributes.language_type.name') -%></th>
+      <th><%= t('activerecord.attributes.language_type.display_name') -%></th>
+      <th><%= t('activerecord.attributes.language_type.note') -%></th>
+      <th></th>
+    </tr>
+
+    <%- @language_types.each do |language_type| -%>
+      <tr class="line<%= cycle("0", "1") -%>">
+        <td><%= language_type.id -%></td>
+        <td><%= language_type.name -%></td>
+        <td><%= language_type.display_name.localize -%></td>
+        <td><%= language_type.note -%></td>
+        <td>
+          <%= link_to t('page.show'), language_type -%>
+          <%- if can? :update, language_type -%>
+            <%= link_to t('page.edit'), edit_language_type_path(language_type) -%>
+          <%- end -%>
+          <%- if can? :delete, language_type -%>
+            <%= link_to t('page.destroy'),
+              language_type_path(language_type),
+              :data => {:confirm => t('page.are_you_sure')},
+              :method => :delete -%>
+          <%- end -%>
+        </td>
+      </tr>
+    <%- end -%>
+  </table>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <%- if can? :create, LanguageType -%>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.language_type')), new_language_type_path -%></li>
+    <%- end -%>
+    <li><%= link_to t('page.back'), :back -%></li>
+  </ul>
+</div>

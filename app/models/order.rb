@@ -1,6 +1,8 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :order_day, :publication_year, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :deliver_place_code_5, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :reason_for_settlements_of_account_code, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment
+  attr_accessible :order_identifier, :manifestation_id, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment,
+                  :ordered_at, :order_year, :reference_code_id, :publisher_type_id
+
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
   belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
@@ -12,7 +14,6 @@ class Order < ActiveRecord::Base
   belongs_to :deliver_place_2, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_2'
   belongs_to :deliver_place_3, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_3'
   belongs_to :deliver_place_4, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_4'
-  belongs_to :deliver_place_5, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_5'
   belongs_to :application_form_1, :class_name => 'Keycode', :foreign_key => 'application_form_code_1'
   belongs_to :application_form_2, :class_name => 'Keycode', :foreign_key => 'application_form_code_2'
 
@@ -24,7 +25,9 @@ class Order < ActiveRecord::Base
   belongs_to :budget_subject, :class_name => 'Keycode', :foreign_key => 'budget_subject_code'
   belongs_to :transportation_route, :class_name => 'Keycode', :foreign_key => 'transportation_route_code'
   belongs_to :bookstore, :class_name => 'Keycode', :foreign_key => 'bookstore_code'
-  belongs_to :reason_for_settlements_of_account, :class_name => 'Keycode', :foreign_key => 'reason_for_settlements_of_account_code'
+
+  belongs_to :reference_code, :class_name => 'Keycode', :foreign_key => 'reference_code_id'
+  belongs_to :publisher_type, :class_name => 'Keycode', :foreign_key => 'publisher_type_id'
 
 
   belongs_to :contract
@@ -33,8 +36,8 @@ class Order < ActiveRecord::Base
 
   has_many :payments
 
-  validates :order_day, :presence => true
-  validates :publication_year, :numericality => true
+  validates :ordered_at, :presence => true
+  validates :order_year, :numericality => true
   validates :buying_payment_year, :numericality => true, :allow_blank => true
   validates :prepayment_settlements_of_account_year, :numericality => true, :allow_blank => true
   validates :number_of_acceptance_schedule, :numericality => true
@@ -51,6 +54,7 @@ class Order < ActiveRecord::Base
 
   validates :taxable_amount, :numericality => true
   validates :tax_exempt_amount, :numericality => true
+  validates :order_identifier, :presence => true, :uniqueness => true
 
   before_validation :set_default
   def set_default
@@ -89,7 +93,7 @@ class Order < ActiveRecord::Base
   end
 
   def set_yen_imprest
-      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.order_day])
+      exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.ordered_at])
 
       if exchangerate
         self.currency_rate = exchangerate.rate
@@ -105,6 +109,10 @@ class Order < ActiveRecord::Base
       end
   end
 
+  before_save :set_created_at
+  def set_created_at
+    self.created_at = self.ordered_at
+  end
 
   before_save :set_unit_price
   def set_unit_price
@@ -132,9 +140,10 @@ class Order < ActiveRecord::Base
   def set_probisional_identifier(year = Date.today.year)
 
     @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
-    number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s);
-    self.order_identifier = year.to_s + number
-
+    if @numbering
+      number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s) rescue nil
+      self.order_identifier = year.to_s + number if number
+    end
   end
 
   def create_payment_to_advance_payment

@@ -10,6 +10,8 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
     end
 
   def import(params)
+    I18n.locale = :ja
+
     adapter = EnjuTrunk::ResourceAdapter::Base.find_by_classname(params.adapter_name)
     adapter.logger = logger
     logger.info "adapter=#{adapter.to_s}"

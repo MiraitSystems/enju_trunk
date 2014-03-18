@@ -2,10 +2,20 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.exchange_rate')) -%></h1>
 <div id="content_list">
 
+<p id="notice"><%= notice %></p>
+
 <%= form_tag({:action => "index"},  {:method => "get"}) do %>
   <%= select(:currency, :display_name, @currencies.collect{|c| [c.display_name,c.id]}, {:selected => @currencies_selected, :prompt => t('page.all_search_term')}, :onchange => 'submit();') %>
 <% end %>
 <br />
+
+<%= form_for :exchange_rates, :url => exchange_rates_path, :html => {:method => 'get'} do %>
+  <p>
+    <%= t('page.search_term') %>:
+    <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} %>
+    <%= submit_tag t('page.search') %>
+  </p>
+<% end %>
 
 <table class="index">
   <tr>
@@ -35,6 +45,7 @@
 </div>
 
 <div id="submenu" class="ui-corner-all">
+  <%= render 'submit_to_order' %>
   <ul>
     <li><%= link_to t('page.new', :model => t('activerecord.models.exchange_rate')), new_exchange_rate_path %></li>
     <li><%= link_to t('activerecord.models.currency'), currencies_path -%></li>
