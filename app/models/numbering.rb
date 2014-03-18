@@ -11,6 +11,8 @@ class Numbering < ActiveRecord::Base
   validates_uniqueness_of :name
   before_save :set_padding_character 
 
+  validates_presence_of :padding_number, :if => proc { self.padding.present? }
+  validates_presence_of :padding_character, :if => proc{ self.padding.present? }
 
   include GenerateCheckdigit
   class << self
@@ -95,7 +97,7 @@ class Numbering < ActiveRecord::Base
     #puts "r=#{r}"
     return r
   end
-  
+
 end
 
 

@@ -2,6 +2,8 @@
 <h1 class="title"><%= t('page.listing', :model => FunctionClass.model_name.human) %></h1>
 <div id="content_list">
 
+<p id="notice"><%= notice %></p>
+
 <table class='index'>
   <tr>
     <th><%= FunctionClass.human_attribute_name('display_name') %></th>

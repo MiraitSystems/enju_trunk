@@ -203,7 +203,7 @@ class ManifestationsController < ApplicationController
     FACET_FIELDS = [
       :reservable, :carrier_type, :language, :library, :manifestation_type,
       :missing_issue, :in_process, :circulation_status_in_process,
-      :circulation_status_in_factory
+      :circulation_status_in_factory, :no_item
     ]
 
     class Container
@@ -1374,6 +1374,7 @@ class ManifestationsController < ApplicationController
     with << [:manifestation_type, :equal_to, params[:manifestation_type]] if params[:manifestation_type]
     with << [:circulation_status_in_process, :equal_to, params[:circulation_status_in_process]] if params[:circulation_status_in_process]
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
+    with << [:no_item, :equal_to, params[:no_item]] if params[:no_item]
 
     [
       [:publisher_ids, @agent],

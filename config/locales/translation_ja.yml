@@ -212,6 +212,7 @@ ja:
       identifier: その他の識別子
       item_has_operator: 受入作業者
       claim_type: クレーム
+      output_column_list: 出力項目設定
 
     attributes:
       use_license:
@@ -1021,6 +1022,7 @@ ja:
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
         manifestation_identifier: 資料番号
+        titles: その他の書名
       user_group:
         name: 名前
         display_name: 表示名
@@ -1747,6 +1749,8 @@ ja:
       claim:
         claim_type_id: クレームタイプ
         note: クレーム注記
+      output_column_list:
+        name: 設定名
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1925,6 +1929,9 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
+    output_list: 出力リスト
+    output_select_all: すべて選択
+    output_cancel_all: すべて解除
     batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"
@@ -2255,6 +2262,7 @@ ja:
     publisher_transcription: 出版者(ヨミ)
     subject_transcription: 件名(ヨミ)
     same_manifestation_already_exist: 同じ%{attribute}の資料が既に存在しています。
+    no_item: 所蔵情報なし
   missing_issue:
     no_request: 未請求
     requested: 請求済

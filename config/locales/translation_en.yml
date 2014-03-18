@@ -209,6 +209,7 @@ en:
       identifier: Identifier
       item_has_operator: ItemHasOperator
       claim_type: Claim type
+      output_column_list: Setting of output column
 
     attributes:
       use_license:
@@ -946,6 +947,7 @@ en:
         external_catalog: Cataloging Authority
         jpn_or_foreign: Japan or foreign
         manifestation_identifier: manifestation_identifier
+        titles: Titles
       user_group:
         name: Name
         display_name: Display name
@@ -1758,6 +1760,8 @@ en:
       claim:
         claim_type_id: Claim type
         note: Note
+      output_column_list:
+        name: Name
 
   page:
     user_title: Welcome %{login_name}
@@ -1934,6 +1938,9 @@ en:
     output_layout: Output layout
     output_request: Request
     output_label: Label
+    output_list: Output template list
+    output_select_all: Select all
+    output_cansel_all: Cancel all
     batch_change: "Batch Change"
     batch_change_dialog: "Select action"
     batch_change_description: "Update the information contained in the basket. <br />Please select the action you want to."
@@ -2269,6 +2276,7 @@ en:
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
     same_manifestation_already_exist: Same %{attribute} already exist
+    no_item: No item
   item:
     current_checkout: Current checkout
     donor: Donors
