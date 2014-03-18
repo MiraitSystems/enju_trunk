@@ -472,6 +472,18 @@ defaults: &defaults
   barcode_output:
     filename: "output_barcode_registration"
 
+  ldap:
+    type: "ldapbind"    # "ldapsearch" or "ldapbind"
+    host: "ldap.example.com"
+    port: 389
+    ldaps: false          # true or false
+    account: "username"   # binddn 
+    password: "password"
+    basedn: "cn=example.com"
+    bind_column:
+      username: "uid"
+      full_name: "cn"
+
 development:
   <<: *defaults
 
