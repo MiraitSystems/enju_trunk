@@ -98,7 +98,7 @@ module EnjuTrunk
       return ''
     end
 
-    def import_book_data(import_textresult, field, datas, manifestation_type, textfile, numbering, auto_numbering, num, options = { sheet: sheet })
+    def import_book_data(import_textresult, field, datas, manifestation_type, textfile, numbering, auto_numbering, external_resource, num, options = { sheet: sheet })
       item = nil
       item_identifier = datas[field[I18n.t('resource_import_textfile.excel.book.item_identifier')]]
       item = Item.where(:item_identifier => item_identifier.to_s).order("created_at asc").first unless item_identifier.nil? or item_identifier.blank?
@@ -110,7 +110,7 @@ module EnjuTrunk
         manifestation_type = set_manifestation_type(field, datas, item) unless manifestation_type
         check_book_datas_has_necessary_field(field, datas, item, manifestation_type)
 
-        manifestation, item, m_mode, import_textresult = fetch_book(field, datas, manifestation_type, item, import_textresult)
+        manifestation, item, m_mode, import_textresult = fetch_book(field, datas, manifestation_type, item, import_textresult, external_resource)
         item, i_mode, import_textresult = create_book_item(field, datas, textfile, numbering, auto_numbering, manifestation, item, import_textresult)
         import_textresult.manifestation = manifestation
         import_textresult.item = item
@@ -140,10 +140,10 @@ module EnjuTrunk
       end
     end
 
-    def fetch_book(field, datas, manifestation_type, item = nil, import_textresult = nil)
+    def fetch_book(field, datas, manifestation_type, item = nil, import_textresult = nil, external_resource)
       mode = 'create'
       manifestation = nil
-
+      external_resource = external_resource[0]
       if item
         manifestation = item.manifestation
         mode = 'edit'
@@ -151,11 +151,12 @@ module EnjuTrunk
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
-      ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s if SystemConfiguration.get('import_from_nacsis')
-      nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s if SystemConfiguration.get('import_from_nacsis')
-      manifestation = import_from_external_resource(isbn, ncid, nbn) unless manifestation
+      if external_resource == "nacsis"
+        ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s
+        nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s
+      end
+      manifestation = import_from_external_resource(isbn, ncid, nbn, external_resource) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
-
       manifestation = Manifestation.new unless manifestation
       manifestation.series_statement = series_statement if series_statement
       original_title         = datas[field[I18n.t('resource_import_textfile.excel.book.original_title')]]
@@ -209,8 +210,6 @@ module EnjuTrunk
       manifestation.isbn                      = isbn.to_s                 unless isbn.nil?
       manifestation.issn                      = issn.to_s                 unless issn.nil?
       manifestation.lccn                      = lccn.to_s                 unless lccn.nil?
-      manifestation.nacsis_identifier         = ncid.to_s                 unless ncid.nil?
-      manifestation.nbn                       = nbn.to_s                  unless nbn.nil?
       manifestation.marc_number               = marc_number.to_s          unless marc_number.nil?
       manifestation.ndc                       = ndc.to_s                  unless ndc.nil?
       manifestation.height                    = height                    unless height.nil?
@@ -395,7 +394,7 @@ module EnjuTrunk
       return manifestation, mode, nil, error_msg
     end
 
-    def import_from_external_resource(isbn, ncid, nbn)
+    def import_from_external_resource(isbn, ncid, nbn, external_resource)
       manifestation = nil
 
       if ncid.present?
@@ -408,12 +407,12 @@ module EnjuTrunk
           exist_manifestation = Manifestation.find_by_isbn(isbn)
           unless exist_manifestation
             #ISBNインポート先の選択
-            if SystemConfiguration.get('import_from_nacsis')
+            if external_resource == "nacsis"
               manifestation = NacsisCat.create_manifestation_from_isbn(isbn)
             else
               manifestation = Manifestation.import_isbn(isbn)
             # raise I18n.t('resource_import_textfile.error.book.wrong_isbn') unless manifestation
-             end
+            end
           else
             manifestation = exist_manifestation
           end
