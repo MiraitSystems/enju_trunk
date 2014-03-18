@@ -2269,6 +2269,7 @@ en:
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
     same_manifestation_already_exist: Same %{attribute} already exist
+    no_item: No item
   item:
     current_checkout: Current checkout
     donor: Donors

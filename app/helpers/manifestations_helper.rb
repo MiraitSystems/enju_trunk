@@ -270,6 +270,15 @@ module ManifestationsHelper
     string.html_safe
   end
 
+  def no_item_facet(status, facet)
+    current = params[:no_item] ? true : false
+    string = ''
+    string << "<strong>" if current
+    string << link_to("#{t('manifestation.no_item')}(" + facet.count.to_s + ")", url_for(params.merge(:page => nil, :no_item => true, :carrier_type => nil, :view => nil)))
+    string << "</strong>" if current
+    string.html_safe
+  end
+
   def missing_status(num)
     case num
     when 1
@@ -320,6 +329,7 @@ module ManifestationsHelper
             :missing_issue => nil,
             :circulation_status_in_process => nil,
             :circulation_status_in_factory => nil,
+            :no_item => nil,
             :page => nil,
             :view => nil
           )
