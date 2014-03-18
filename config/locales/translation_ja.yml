@@ -1021,6 +1021,7 @@ ja:
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
         manifestation_identifier: 資料番号
+        titles: その他の書名
       user_group:
         name: 名前
         display_name: 表示名

@@ -946,6 +946,7 @@ en:
         external_catalog: Cataloging Authority
         jpn_or_foreign: Japan or foreign
         manifestation_identifier: manifestation_identifier
+        titles: Titles
       user_group:
         name: Name
         display_name: Display name
