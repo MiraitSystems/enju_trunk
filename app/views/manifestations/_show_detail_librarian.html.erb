@@ -433,39 +433,171 @@
           <%- end -%>
         <% end %>
 
-        <%# TODO 書誌と所蔵を１：１で管理する設定時、item の情報を表示する %>
+        <%# 書誌と所蔵を１：１で管理する設定時、item の情報を表示する %>
         <% if SystemConfiguration.get("manifestation.has_one_item") %>
-          <tr>
-            <td><%= t('activerecord.models.shelf') -%>:</td>
-            <td>
-              <%=  %> 
-            </td>
-          </tr>
-          <tr>
-            <td><%= t('activerecord.attributes.item.item_identifier') -%>:</td>
-            <td>
-              <%=  %> 
-            </td>
-          </tr>
-          <tr>
-            <td><%= t('activerecord.models.circulation_status') -%>:</td>
-            <td>
-              <%=  %> 
-            </td>
-          </tr>
-          <tr>
-            <td><%= t('activerecord.attributes.item.acquired_at_string') -%>:</td>
-            <td>
-              <%=  %> 
-            </td>
-          </tr>
+          <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+          <% items.each do |item| %>
+            <% next if hide_item?(true, item) %>
+            <tr>
+              <td><%= t('activerecord.models.shelf') -%>:</td>
+              <td>
+                <%= link_to item.shelf.display_name.localize, item.shelf if item.shelf %> (<%= link_to item.shelf.library.display_name.localize, item.shelf.library if item.shelf.library %>) 
+              </td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.checkout_type') -%>:</td>
+              <td><%= link_to item.checkout_type.display_name.localize, item.checkout_type %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.models.accept_type') -%>:</td>
+              <td><%= link_to item.accept_type.display_name.localize, item.accept_type if item.accept_type %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.retention_period') -%>:</td>
+              <td>
+                <%= link_to item.retention_period.display_name.localize, item.retention_period if item.retention_period %>
+              </td>
+            </tr>
+            <%- if Setting.operation -%>
+              <tr>
+                <td><%= t('activerecord.models.lending_policy') -%>:</td>
+                <td>
+                  <%- item.lending_policies.each do |lending_policy| -%>
+                    <%= link_to lending_policy.user_group.display_name.localize, lending_policy -%>
+                  <%- end -%>
+                </td>
+              </tr>
+            <%- end -%>
+            <tr>
+              <td><%= t('activerecord.models.circulation_status') -%>:</td>
+              <td>
+                <% if item.circulation_status.name != 'Available On Shelf' %>
+                  <span class="not_rent_item">
+                    <%= item.circulation_status.display_name.localize if item.circulation_status %>
+                    <% if item.use_restriction.name == 'Not For Loan' %>
+                      (<%= t('activerecord.attributes.checkout.not_available') %>)
+                    <% end %>
+                  </span>
+                <% else %>
+                  <% if item.circulation_status %>
+                    <% if item.use_restriction.name != 'Not For Loan' %>
+                      <%= item.circulation_status.display_name.localize %>
+                    <% else %>
+                      <span class="not_rent_item"><%= t('activerecord.attributes.checkout.not_for_loan') %></span>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <% if item.rent? %>
+                  <% if user_signed_in? and current_user.has_role?('Librarian') %>
+                    (
+                    <%= t('activerecord.attributes.checkout.due_date') %>:
+                    <%= l(item.checkouts.first.due_date, :format => :only_date) %>
+                    <% if Time.zone.parse(item.checkouts.first.due_date.to_s) < Time.now %>
+                      <span class="not_rent_item"><%= t('activerecord.attributes.checkout.past_due') -%></span>
+                    <% end %>
+                    )
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+            <%- if item.manifestation.series_statement && item.manifestation.series_statement.last_issues.include?(item.manifestation) -%>
+              <tr>
+                <td><%= t('item.new_serial') -%>:</td>
+                <td>
+            <%- end -%>
+            <%- if Setting.operation -%>
+              <%- unless item.checkouts.not_returned.blank? -%>
+                 (<%= link_to t('item.current_checkout'), user_checkout_path(item.checkouts.not_returned.first.user, item.checkouts.not_returned.first) -%>)
+              <%- end -%>
+            <%- end -%>
+              </td>
+            </tr>
+            <% if item.remove_reason %>
+              <tr>
+                <td><%= t('activerecord.models.remove_reason') %></td>
+                <td><%= link_to item.remove_reason.display_name.localize, item.remove_reason %></td>
+              </tr>
+              <tr>
+                <td><%= t('activerecord.attributes.item.removed_at') %></td>
+                <td><%=l (item.removed_at) if item.removed_at %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td><%= t('activerecord.attributes.item.call_number') %></td>
+              <td><%= call_numberformat(item) %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.item_identifier') -%>:</td>
+              <td>
+                <% if item.item_identifier? %>
+                  <%= link_to item.item_identifier, item %>
+                <% else %>
+                  (<%= link_to t('item.no_number'), item %>)
+                <% end %>
+              </td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.models.bookstore') -%>:</td>
+              <td><%= item.bookstore.try(:name) %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.price') -%>:</td>
+              <td><%= item.price %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.url') -%>:</td>
+              <td><%= link_to item.url, item.url %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.include_supplements') -%>:</td>
+              <td><%= localized_boolean(item.include_supplements) %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.models.use_restriction') -%>:</td>
+              <% if item.use_restriction %>
+              <td><%= item.use_restriction.display_name.localize %></td>
+              <% end %>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.non_searchable') -%>:</td>
+              <td><%= localized_boolean(item.non_searchable) %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.acquired_at_string') -%>:</td>
+              <td><%=l item.acquired_at if item.acquired_at %></td>
+            </tr>
+            <tr>
+              <td><%= t('activerecord.attributes.item.note') -%>:</td>
+              <td><%= item.note %></td>
+            </tr>
+            <% if item.claim %> 
+              <tr>
+                <td><%= t('activerecord.attributes.claim.claim_type_id') -%>:</td>
+                <td><%= item.claim.claim_type.display_name if item.claim %></td>
+              </tr>
+              <tr>
+                <td><%= t('activerecord.attributes.claim.note') -%>:</td>
+                <td><%= item.claim.note if item.claim %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td><%= t('page.created_at') -%> (<%= t('activerecord.models.item') -%>):</td>
+              <td><%=l (item.created_at) %></td>
+            </tr>
+            <tr>
+              <td><%= t('page.updated_at') -%> (<%= t('activerecord.models.item') -%>):</td>
+              <td><%=l (item.updated_at) %></td>
+            </tr>
+          <% end %>
         <% end %>
       </table>
     <%# end %>
       <%# - if manifestation.items.on_shelf.exists? -%>
-      <%- if manifestation.items.exists? -%>
-        <%= render 'manifestations/show_holding', :manifestation => manifestation -%>
-      <%- end -%>
+      <% unless SystemConfiguration.get("manifestation.has_one_item") %> 
+        <%- if manifestation.items.exists? -%>
+          <%= render 'manifestations/show_holding', :manifestation => manifestation -%>
+        <%- end -%>
+      <% end %>
     </div>
     <%= render 'manifestations/tab_list', :manifestation => manifestation %>
   </div>
