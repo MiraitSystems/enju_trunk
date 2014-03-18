@@ -580,6 +580,8 @@
                 <td><%= item.claim.note if item.claim %></td>
               </tr>
             <% end %>
+
+            <%# TODO 登録フォームを資料と合わせた時に対応が必要（削除？） %>
             <tr>
               <td><%= t('page.created_at') -%> (<%= t('activerecord.models.item') -%>):</td>
               <td><%=l (item.created_at) %></td>
