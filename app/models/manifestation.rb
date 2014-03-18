@@ -469,7 +469,9 @@ class Manifestation < ActiveRecord::Base
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
     boolean :no_item do
-      true if items.blank?
+      unless root_of_series?
+        true if items.blank?
+      end
     end
 
   end
