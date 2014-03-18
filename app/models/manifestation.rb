@@ -15,7 +15,7 @@ class Manifestation < ActiveRecord::Base
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
-  has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy
+  has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy, :order => :position
   has_many :languages, :through => :work_has_languages, :order => :position
   belongs_to :carrier_type
   belongs_to :manifestation_type
@@ -468,6 +468,19 @@ class Manifestation < ActiveRecord::Base
     boolean :circulation_status_in_factory do
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
+
+    # 2014
+    string :manifestation_identifier, :multiple => true do
+      if root_of_series? # 雑誌の場合
+        # 同じ雑誌の全号の蔵書の蔵書情報IDのリストを取得する
+        series_manifestations.
+          map(&:manifestation_identifier).compact
+      else
+        manifestation_identifier
+      end
+    end
+
+
   end
 
   enju_manifestation_viewer

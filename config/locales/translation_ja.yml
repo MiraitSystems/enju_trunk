@@ -24,6 +24,7 @@ ja:
       subject_has_classification: 件名と分類の関係
       expression: 協力した資料
       language: 言語
+      language_type: 言語の種類
       agent_merge_list: 人物・団体の統合リスト
       user: 利用者
       work_has_subject: 資料と件名の関係
@@ -507,6 +508,11 @@ ja:
         iso_639_3: ISO 639-3
         note: 注記
         position: 位置
+      language_type:
+        name: 名前
+        display_name: 表示名
+        note: 注記
+        position: 位置
       agent_merge_list:
         title: タイトル
       user:
@@ -826,8 +832,8 @@ ja:
       order:
         order_identifier: 発注番号
         manifestation: 資料
-        order_day: 発注年月日
-        publication_year: 雑誌刊行年
+        ordered_at: 発注年月日
+        order_year: 発注年
         buying_payment_year: 購入費支払年
         prepayment_settlements_of_account_year: 前払資料精算年 
         paid_flag: 精算済フラグ
@@ -839,7 +845,7 @@ ja:
         deliver_place_code_2: 回付先2
         deliver_place_code_3: 回付先3
         deliver_place_code_4: 回付先4
-        deliver_place_code_5: 回付先5
+        reference_code_id: 引用情報
         application_form_code_1: 申込書指定1
         application_form_code_2: 申込書指定2
         number_of_acceptance: 受入冊数
@@ -856,7 +862,7 @@ ja:
         currency_id: 通貨単位
         currency_rate: 通貨レート
         discount_commision: 割引手数料
-        reason_for_settlements_of_account_code: 精算理由
+        publisher_type_id: メタデータ発行元種別
         prepayment_principal: 換算前発注金額
         yen_imprest: 発注金額
         unit_price: 単価
@@ -1546,6 +1552,7 @@ ja:
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
+        original_language: 原本言語
         author_heading: 著者情報
         subject: 件名
         ncid: NCID

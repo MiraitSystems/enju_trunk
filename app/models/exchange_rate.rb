@@ -26,13 +26,13 @@ class ExchangeRate < ActiveRecord::Base
         start_at_new = Time.zone.parse(start_at)
         end_at_new = Time.zone.parse(end_at)
       rescue ArgumentError
-        raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+        raise I18n.t('activerecord.attributes.order.ordered_at')+I18n.t('exchange_rate.invalid_started_at')
       end
       if start_at > end_at
-        raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+        raise I18n.t('activerecord.attributes.order.ordered_at')+I18n.t('exchange_rate.invalid_started_at')
       end
     else
-      raise I18n.t('activerecord.attributes.order.order_day')+I18n.t('exchange_rate.invalid_started_at')
+      raise I18n.t('activerecord.attributes.order.ordered_at')+I18n.t('exchange_rate.invalid_started_at')
     end
   end
 

@@ -1,0 +1,21 @@
+---
+language_type_00001:
+  id: 1
+  name: body
+  display_name: "en:Body\r\nja:本文"
+  note:
+  position: 1
+
+language_type_00002:
+  id: 2
+  name: title
+  display_name: "en:Title\r\nja:本標題"
+  note:
+  position: 2
+
+language_type_00003:
+  id: 3
+  name: original
+  display_name: "en:Original\r\nja:原本"
+  note:
+  position: 3

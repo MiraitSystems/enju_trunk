@@ -33,7 +33,7 @@ class ExchangeRatesController < ApplicationController
 
       if update_to_orders
         ExchangeRate.check_order_date(start_at, end_at)
-        orders = Order.where(:order_day => start_at...end_at)
+        orders = Order.where(:ordered_at => start_at...end_at)
         orders.each do |order|
           newest_rate = ExchangeRate.find(:first, :conditions => { :currency_id => (order.currency_id) }, :order => "started_at DESC")
           order.currency_rate = newest_rate.rate

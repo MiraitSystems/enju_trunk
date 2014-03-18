@@ -22,6 +22,7 @@ en:
       subject_has_classification: Subject has classification
       expression: Expression
       language: Language
+      language_type: Language type
       agent_merge_list: Agent merge list
       user: User
       work_has_subject: Resource has subject
@@ -423,6 +424,11 @@ en:
         iso_639_3: ISO 639 3
         note: Note
         position: Position
+      language_type:
+        name: Name
+        display_name: Display name
+        note: Note
+        position: Position
       agent_merge_list:
         title: Title
       user:
@@ -745,8 +751,8 @@ en:
       order:
         order_identifier: Order identifier
         manifestation: Manifestation
-        order_day: Order day
-        publication_year: Publication year
+        ordered_at: Ordered at
+        order_year: Order year
         buying_payment_year: Buying payment year 
         prepayment_settlements_of_account_year: Prepayment settlements of account year 
         paid_flag: Paid flag 
@@ -758,13 +764,13 @@ en:
         deliver_place_code_2: Deliver place code 2
         deliver_place_code_3: Deliver place code 3
         deliver_place_code_4: Deliver place code 4
-        deliver_place_code_5: Deliver place code 5
+        reference_code_id: Reference Code
         application_form_code_1: Application form code 1
         application_form_code_2: Application form code 2
         number_of_acceptance: Number of acceptance
         number_of_missing: Number of missing
         collection_status_code: Collection status code
-        reason_for_collection_stop_code: Reason for collection stop code
+        publisher_type_id: Publisher type
         collection_stop_day: Collection stop day
         order_form_code: Order form code
         collection_form_code: Collection form code
@@ -1393,6 +1399,7 @@ en:
         pub_country: Publish country
         title_language: Title language
         text_language: Text language
+        original_language: Original Language
         author_heading: Author heading
         subject: subject
         ncid: NCID
