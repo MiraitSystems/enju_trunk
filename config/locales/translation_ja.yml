@@ -212,6 +212,7 @@ ja:
       identifier: その他の識別子
       item_has_operator: 受入作業者
       claim_type: クレーム
+      output_column_list: 出力項目設定
 
     attributes:
       use_license:
@@ -1747,6 +1748,8 @@ ja:
       claim:
         claim_type_id: クレームタイプ
         note: クレーム注記
+      output_column_list:
+        name: 設定名
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1925,6 +1928,9 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
+    output_list: 出力リスト
+    output_select_all: すべて選択
+    output_cancel_all: すべて解除
     batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"

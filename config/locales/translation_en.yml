@@ -209,6 +209,7 @@ en:
       identifier: Identifier
       item_has_operator: ItemHasOperator
       claim_type: Claim type
+      output_column_list: Setting of output column
 
     attributes:
       use_license:
@@ -1758,6 +1759,8 @@ en:
       claim:
         claim_type_id: Claim type
         note: Note
+      output_column_list:
+        name: Name
 
   page:
     user_title: Welcome %{login_name}
@@ -1934,6 +1937,9 @@ en:
     output_layout: Output layout
     output_request: Request
     output_label: Label
+    output_list: Output template list
+    output_select_all: Select all
+    output_cansel_all: Cancel all
     batch_change: "Batch Change"
     batch_change_dialog: "Select action"
     batch_change_description: "Update the information contained in the basket. <br />Please select the action you want to."

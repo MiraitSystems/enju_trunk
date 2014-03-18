@@ -1,0 +1,32 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.output_column_list')) -%></h1>
+<div id="content_list">
+<div style="color: green"><%= flash[:message] -%></div>
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.output_column_list.name') -%></th>
+    <th></th>
+  </tr>
+<% @output_column_lists.each do |output_column_list| %>
+  <tr>
+    <td><%= output_column_list.name %></td>
+    <td>
+    <%= link_to t('page.edit'), edit_output_column_list_path(output_column_list) -%>
+    <%= link_to t('page.destroy'), output_column_list, :confirm => t('page.are_you_sure'), :method => :delete -%>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<%= paginate(@output_column_lists) -%>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.output_column_list')), new_output_column_list_path -%></li>
+  </ul>
+</div>
+

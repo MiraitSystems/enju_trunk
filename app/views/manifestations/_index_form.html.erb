@@ -243,6 +243,29 @@ function change_layout() {
 
 }
 // -->
+
+function BoxChecked(check){
+  column = $('#column [name=col_check]')
+  for (var i=0; i<column.length; i++){
+    if ( column[i].disabled == false ){
+      column[i].checked = check;
+    }
+  }
+}
+
+<% if output_column_lists = OutputColumnList.find(:all) %>
+  function TemplateChecked(index){
+    BoxChecked(false);
+    colList = new Array();
+  <% output_column_lists.each_with_index do |column_list, count| %>
+    colList[<%= count %>] = ("<%= column_list.column_list.to_s %>").split( ',' );
+  <% end %>
+    for (var i=0; i<colList[index].length; i++){
+      document.getElementById(colList[index][i]).checked = true;
+    }
+  }
+<% end %>
+
 </script>
 <!--
       <button id="excelx_book_dialog_opener"><%= t('page.output_excelx', :model => t('page.search_result')) -%></button>
@@ -273,14 +296,28 @@ function change_layout() {
       <strong><%= t('page.output_filetype') %></strong><br />
       <%= radio_button_tag(:format_type_book2, 'excelx', :checked => true) %><%= t('page.output_filetype_format.excelx') %><br />
       <%= radio_button_tag(:format_type_book2, 'tsv') %><%= t("page.output_filetype_format.#{ SystemConfiguration.get("set_output_format_type") ? 'tsv' : 'csv'}") %><br />
-      <%= radio_button_tag(:format_type_book2, 'pdf') %><%= t('page.output_filetype_format.pdf') %>
-    </div>
-    <div id='check_cols_book'>
+      <%= radio_button_tag(:format_type_book2, 'pdf') %><%= t('page.output_filetype_format.pdf') %><br />
       <br />
-      <strong><%= t('page.output_excelx_dialog') %></strong><br />
+
+      <% if output_column_lists = OutputColumnList.find(:all) %>
+        <strong><%= t('page.output_list') %></strong><br />
+        <% output_column_lists.each_with_index do |column_list, i| %>
+          <%= button_tag column_list.name, :onClick=>"TemplateChecked(#{i})" %>
+        <% end %>
+      <% end %>
+    </div>
+    <br />
+    <%= button_tag t('page.output_select_all'), :onClick=>"BoxChecked(true);", :type=>'button' %>
+    <%= button_tag t('page.output_cancel_all'), :onClick=>"BoxChecked(false);", :type=>'button' %>
+
+    <div id='check_cols_book'>
+      <form id = "column" name="column" method="GET">
+      <br />
+      <strong><%= t('page.output_excelx_dialog') %></strong>
+      <%if false%><%= check_box_tag 'all_check','all_check', true, :onclick=>"AllChecked()" %>すべて選択<%end%><br />
       <div style="width: 33%; float: left;">
         <% cols_book[0, cols_book.length / 2].each do |x| %>
-          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
+          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
           <% split_cols = x.split('.') %>
           <% if split_cols[1] == 'manifestation_exinfo' %>
             <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
@@ -293,7 +330,7 @@ function change_layout() {
       </div>
       <div style="width: 34%; float: left;">
         <% cols_book[cols_book.length / 2, cols_book.length - (cols_book.length / 2)].each do |x| %>
-          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
+          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
           <% split_cols = x.split('.') %>
           <% if split_cols[1] == 'manifestation_exinfo' %>
             <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
@@ -306,7 +343,7 @@ function change_layout() {
       </div>
       <div style="width: 33%; float: left;">
         <% cols_series.each do |x| %>
-          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %>
+          <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
           <% split_cols = x.split('.') %>
           <% if split_cols[1] == 'manifestation_exinfo' %>
             <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
@@ -322,6 +359,7 @@ function change_layout() {
     <div>
       <br /><button id="excelx_book_trigger"><%= t('page.output_excelx_detail') %></button>
     </div>
+  </form>
   </div>
 
   <div id="excelx_article_dialog" title="<%= t('page.output', :model => t('page.search_result')) %>" style="display:none;">
