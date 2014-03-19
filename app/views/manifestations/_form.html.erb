@@ -313,7 +313,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "carrier_type_id" %>
-    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250) %>
+    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250, false) %>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
@@ -321,7 +321,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "manifestation_type_id" %>
-    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300) %>
+    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300, false) %>
   </div>
 
   <div class="field">
@@ -343,7 +343,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
     <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
     <%= select2_script "country_of_publication_id" %>
-    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false) %>
+    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false, false) %>
   </div>
 
   <div class="field">
@@ -466,7 +466,7 @@ $(document).keydown(function(e) {
     <%= f.label t('role.required_role') -%>
     <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
     <%= select2_script "required_role_id"%>
-    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false) %>
+    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false, false) %>
   </div>
 
   <div class="field">
