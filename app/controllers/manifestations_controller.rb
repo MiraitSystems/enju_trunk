@@ -1495,8 +1495,10 @@ class ManifestationsController < ApplicationController
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @numberings = Numbering.where(:numbering_type => 'manifestation')
     if SystemConfiguration.get('manifestation.use_identifiers')
-      @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position")
+      @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
       @manifestation.identifiers << Identifier.new if @manifestation.identifiers.blank?
+    else
+      @identifier_types = []
     end
   end
 
