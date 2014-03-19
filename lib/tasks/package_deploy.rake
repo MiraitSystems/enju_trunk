@@ -1,4 +1,8 @@
-package_dir = "/home/enju/customer/pack/"
+dirprefix = "customer"
+if ENV["ENJU_CUSTOMER_PREFIX"]
+	dirprefix = ENV["ENJU_CUSTOMER_PREFIX"]
+end
+package_dir = "/home/enju/#{dirprefix}/pack/"
 packprefix = "enju_production"
 root = "#{::Rails.root}"
 
