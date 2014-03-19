@@ -227,6 +227,7 @@ class AgentImportFile < ActiveRecord::Base
     agent_type = I18n.t('activerecord.models.agent_type')
     url = I18n.t('activerecord.attributes.agent.url')
     email = I18n.t('activerecord.attributes.agent.email')
+    grade = I18n.t('activerecord.attributes.agent.grade')
     other_designation = I18n.t('activerecord.attributes.agent.other_designation')
     place = I18n.t('activerecord.attributes.agent.place')
     language = I18n.t('activerecord.models.language')
@@ -315,6 +316,7 @@ class AgentImportFile < ActiveRecord::Base
     agent.other_designation = row[other_designation].to_s.strip if row[other_designation]
     agent.place = row[place].to_s.strip if row[place]
     agent.email = row[email].to_s.strip if row[email]
+    agent.grade = row[grade] if row[grade]
 
     if row[username].to_s.strip.blank?
       agent.required_role = Role.where(:name => row['required_role_name'].to_s.strip.camelize).first || Role.find('Guest')
