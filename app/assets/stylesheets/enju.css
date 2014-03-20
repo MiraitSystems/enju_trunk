@@ -609,9 +609,7 @@ tr{
 }
 .active{
     /* 線 */
-    border-color:#993333; 
-    border-style:ridge; 
-    border-width:5px;
+    border-left: solid 2px red; 
     /* 色 */
     /* background-color:yellow !important; */
 }
