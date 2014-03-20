@@ -95,7 +95,7 @@ class OrdersController < ApplicationController
     
     respond_to do |format|
       if @order.save
-        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.set_cost if params[:order_auto_calculation][:flag] == '1'
         @order.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.order'))
         flash[:notice] += t('order.create_payment_to_advance_payment') if @order.create_payment_to_advance_payment
@@ -126,7 +126,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       if @order.update_attributes(params[:order])
-        @order.set_yen_imprest if params[:order_auto_calculation][:flag] == '1'
+        @order.set_cost if params[:order_auto_calculation][:flag] == '1'
         @order.save
         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.order'))
 
@@ -255,6 +255,7 @@ class OrdersController < ApplicationController
         @new_order.buying_payment_year = nil
         @new_order.prepayment_settlements_of_account_year = nil
         @new_order.save
+        @new_order.create_payment_to_advance_payment
         create_count += 1
       end
     end

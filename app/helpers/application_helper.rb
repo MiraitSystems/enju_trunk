@@ -595,7 +595,7 @@ module ApplicationHelper
     ")
   end
 
-  def make_select2(selector_id, selector_name, data, obj_data, width, include_blank, alt_display=true)
+  def make_select2(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
     html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
     if include_blank
       html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>") )

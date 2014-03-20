@@ -138,10 +138,6 @@ multiple: false,
       <%= f.select :deliver_place_code_3, @deliver_place_codes, :include_blank => true %>
     </div>
 
-    <div class="field">
-      <%= f.label :deliver_place_code_4 %><br />
-      <%= f.select :deliver_place_code_4, @deliver_place_codes, :include_blank => true %>
-    </div>
   <% end %>
 
   <% if reference_codes %>
@@ -252,8 +248,8 @@ multiple: false,
   </div>
 
   <div class="field">
-    <%= f.label :discount_commision %><br />
-    <%= f.text_field :discount_commision %>
+    <%= f.label :margin_ratio %><br />
+    <%= f.text_field :margin_ratio %>
   </div>
 
   <% if publisher_types %>
@@ -264,8 +260,8 @@ multiple: false,
   <% end %>
 
   <div class="field">
-    <%= f.label :prepayment_principal %><br />
-    <%= f.text_field :prepayment_principal %>
+    <%= f.label :original_price %><br />
+    <%= f.text_field :original_price %>
   </div>
 
   <div class="filed">
@@ -284,8 +280,8 @@ multiple: false,
     </div>
 
     <div class="field">
-      <%= f.label :yen_imprest %><br />
-      <%= f.text_field :yen_imprest %>
+      <%= f.label :cost %><br />
+      <%= f.text_field :cost %>
     </div>
   </div>  
 
@@ -317,11 +313,6 @@ multiple: false,
   <div class="field">
     <%= f.label :pair_manifestation_id %><br />
     <%= f.text_field :pair_manifestation_id %>
-  </div>
-
-  <div class="field">
-    <%= f.label :contract_id %><br />
-    <%= f.text_field :contract_id %>
   </div>
 
   <%= hidden_field_tag :return_index, @return_index  if @return_index %>
