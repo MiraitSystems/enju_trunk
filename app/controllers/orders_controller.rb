@@ -255,6 +255,7 @@ class OrdersController < ApplicationController
         @new_order.buying_payment_year = nil
         @new_order.prepayment_settlements_of_account_year = nil
         @new_order.save
+        @new_order.create_payment_to_advance_payment
         create_count += 1
       end
     end
