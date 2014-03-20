@@ -46,6 +46,8 @@ class Manifestation < ActiveRecord::Base
   has_many :orders
   has_many :payments
 
+  belongs_to :use_license, :foreign_key => 'use_license_id'
+
   scope :without_master, where(:periodical_master => false)
   JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
 
@@ -492,6 +494,7 @@ class Manifestation < ActiveRecord::Base
 
   validates_presence_of :carrier_type, :manifestation_type, :country_of_publication
   validates_associated :carrier_type, :languages, :manifestation_type, :country_of_publication
+  validates_associated :use_license, :allow_nil => true
   validates_numericality_of :acceptance_number, :allow_nil => true
   validates_uniqueness_of :nacsis_identifier, :allow_nil => true
   validate :check_rank

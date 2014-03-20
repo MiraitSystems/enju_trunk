@@ -317,6 +317,13 @@ var ItemField_language = {
   </div>
 -->
 
+
+  <div class="field">
+    <%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %><br />
+    <%= f_m.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+  </div>
+
+
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>

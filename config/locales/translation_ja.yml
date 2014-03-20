@@ -1021,6 +1021,7 @@ ja:
         jpn_or_foreign: 和洋区分
         manifestation_identifier: 資料番号
         titles: その他の書名
+        use_license_id: 著者抄録許諾(許諾機関名称)
       user_group:
         name: 名前
         display_name: 表示名

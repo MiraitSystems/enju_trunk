@@ -946,6 +946,7 @@ en:
         jpn_or_foreign: Japan or foreign
         manifestation_identifier: manifestation_identifier
         titles: Titles
+        use_license_id: UseLicense
       user_group:
         name: Name
         display_name: Display name

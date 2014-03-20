@@ -1500,6 +1500,7 @@ class ManifestationsController < ApplicationController
     else
       @identifier_types = []
     end
+    @use_licenses = UseLicense.all
   end
 
   def input_agent_parameter

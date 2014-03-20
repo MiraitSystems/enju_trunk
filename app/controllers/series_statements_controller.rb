@@ -176,8 +176,7 @@ class SeriesStatementsController < ApplicationController
       end
 
       respond_to do |format|
-        format.html { redirect_to @series_statement,
-          :notice => t('controller.successfully_created', :model => t('activerecord.models.series_statement')) }
+        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
         format.json { render :json => @series_statement, :status => :created, :location => @series_statement }
       end
     end
@@ -266,7 +265,7 @@ class SeriesStatementsController < ApplicationController
             Produce.add_produces(@series_statement.root_manifestation.id, @new_publisher, @new_publisher_type)
           end
 
-          format.html { redirect_to @series_statement, :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
+          format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
           format.json { head :no_content }
         end
       rescue Exception => e
@@ -326,6 +325,7 @@ class SeriesStatementsController < ApplicationController
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.where(:numbering_type => 'manifestation')
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @use_licenses = UseLicense.all
   end
 
   def input_agent_parameter
