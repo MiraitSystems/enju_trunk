@@ -2248,6 +2248,7 @@ ja:
     binding_status: "製本雑誌"
     undo_binding: "製本解除"
     missing: "[欠号]"
+    periodical: "[定期刊行物]"
     output_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
     output_job_success_subject: "ファイル出力が完了しました [ID: %{job_name}]"
     output_job_success_body: "お知らせID「%{job_name}」のファイル出力が完了しました。次のアドレスからファイルを取得してください。\n%{url}"
