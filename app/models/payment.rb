@@ -137,9 +137,9 @@ class Payment < ActiveRecord::Base
   @payment.manifestation_id = order.manifestation_id
   @payment.currency_id = order.currency_id
   @payment.currency_rate = order.currency_rate
-  @payment.discount_commision = order.discount_commision
-  @payment.before_conv_amount_of_payment = order.prepayment_principal
-  @payment.amount_of_payment = order.yen_imprest
+  @payment.discount_commision = order.margin_ratio
+  @payment.before_conv_amount_of_payment = order.original_price
+  @payment.amount_of_payment = order.cost
   @payment.taxable_amount = order.taxable_amount
   @payment.tax_exempt_amount = order.tax_exempt_amount
   @payment.number_of_payment = order.number_of_acceptance_schedule

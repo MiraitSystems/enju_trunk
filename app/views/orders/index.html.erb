@@ -34,7 +34,6 @@
     <%= select('', :order_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
     </p>
 
-
     <%= submit_tag t('page.search') %>
 
   <% end %>
@@ -48,7 +47,7 @@
     <th><%= t('activerecord.attributes.order.order_year') -%></th>
     <th><%= t('activerecord.attributes.order.order_identifier') -%>/</br>
     <%= t('activerecord.attributes.manifestation.identifier') -%></th>
-    <th><%= t('activerecord.attributes.order.yen_imprest') -%></th>
+    <th><%= t('activerecord.attributes.order.cost') -%></th>
     <th><%= t('activerecord.attributes.order.payment_sum') -%></th>
     <th><%= t('activerecord.attributes.order.adption_code') %>/</br>
     <%= t('activerecord.attributes.order.bookstore_code') %></th>
@@ -69,7 +68,7 @@
     <% end %>
     <%= link_to order.manifestation.identifier, order.manifestation, {:href =>manifestation_path(order.manifestation, :all_manifestations => true)} %></td>
 
-    <td><%= order.yen_imprest %></td>
+    <td><%= order.cost %></td>
     <td><%= order.total_payment %></td> 
     <td><%= order.adption.keyname if order.adption -%></br>
     <%= order.bookstore.keyname if order.bookstore -%></td>
