@@ -102,6 +102,9 @@ class AgentImportFile < ActiveRecord::Base
               if user.password.blank?
                 user.set_auto_generated_password
               end
+              if user.save!
+                import_result.user = user
+              end
               if agent.save!
                 import_result.agent = agent
                 num[:agent_imported] += 1
@@ -109,9 +112,6 @@ class AgentImportFile < ActiveRecord::Base
                   Sunspot.commit
                   GC.start
                 end
-              end
-              if user.save!
-                import_result.user = user
               end
               import_result.error_msg = I18n.t('import.successfully_created')
               num[:user_imported] += 1
