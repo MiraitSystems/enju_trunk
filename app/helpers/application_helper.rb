@@ -595,14 +595,23 @@ module ApplicationHelper
     ")
   end
 
-  def make_select2(selector_id, selector_name, data, obj_data, width, alt_display=true)
+  def make_select2(selector_id, selector_name, data, obj_data, width, include_blank, alt_display=true)
     html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+    if include_blank
+      html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>") )
+    end
     data.each do |data|
       html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
       if obj_data == data.id
         html.concat( raw (", selected=\"selected\"") )
       end
-      html.concat( raw (">#{ data.display_name.localize }") )
+
+      if data.attribute_present?(:display_name)
+        html.concat( raw (">#{ data.display_name.localize }") )
+      else
+        html.concat( raw (">#{ data.name.localize }") )
+      end
+
       if alt_display
         html.concat( raw (" (#{ data.name })") )
       end
