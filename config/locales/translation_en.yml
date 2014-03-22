@@ -210,6 +210,7 @@ en:
       item_has_operator: ItemHasOperator
       claim_type: Claim type
       output_column_list: Setting of output column
+      public_status: Public status
 
     attributes:
       use_license:
@@ -1761,6 +1762,10 @@ en:
         note: Note
       output_column_list:
         name: Name
+      public_status:
+        name: Name
+        display_name: Display name
+        note: Note
 
   page:
     user_title: Welcome %{login_name}

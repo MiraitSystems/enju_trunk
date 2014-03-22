@@ -1,4 +1,7 @@
 EnjuLeaf::Application.routes.draw do
+
+
+  resources :public_statuses
   resources :claim_types
   resources :language_types
   resources :output_column_lists

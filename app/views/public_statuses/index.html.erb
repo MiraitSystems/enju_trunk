@@ -1,0 +1,33 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.public_status')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.public_status.name') -%></th>
+    <th><%= t('activerecord.attributes.public_status.display_name') -%></th>
+    <th></th>
+  </tr>
+
+<% @public_statuses.each do |public_status| %>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to public_status.name, public_status %></td>
+    <td><%= public_status.display_name %></td>
+    <td>
+      <%= link_to t('page.edit'), edit_public_status_path(public_status) %>
+      <%= link_to t('page.destroy'), public_status, :confirm => t('page.are_you_sure'), :method => :delete %>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate(@public_statuses) %>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+    <ul>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.public_status')), new_public_status_path -%></li>
+    </ul>
+</div>
+
