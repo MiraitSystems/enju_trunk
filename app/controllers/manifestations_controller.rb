@@ -853,7 +853,8 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = @series_statement
     end
 
-    @manifestation = ManifestationsController.helpers.set_serial_number(@manifestation) if params[:mode] == 'new_issue'
+    @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
+
     @original_manifestation = original_manifestation if params[:mode] == 'add'
 
     new_work_has_title

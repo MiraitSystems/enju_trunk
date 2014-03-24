@@ -211,6 +211,7 @@ en:
       claim_type: Claim type
       output_column_list: Setting of output column
       public_status: Public status
+      sequence_pattern: Sequence Pattern
 
     attributes:
       use_license:
@@ -1318,6 +1319,7 @@ en:
         title_transcription: Title transcription
         id: ID
         note: Note
+        sequence_pattern: Sequence Pattern
       series_statement_relationship:
         seq: SEQ
         before_series_statement_relationship: Before series statement relationship 
@@ -1766,6 +1768,11 @@ en:
         name: Name
         display_name: Display name
         note: Note
+      sequence_pattern:
+        name: Name
+        volume_param: Volume Number Param
+        issue_param: Issue Number Param
+        sequence_type: Issue Number Type
 
   page:
     user_title: Welcome %{login_name}
@@ -3093,6 +3100,10 @@ en:
     output_job_error_body: ! 'job ID: %{job_name}縲絞s failed beacuse of following reason.
 
       %{message}'
+  sequence_pattern:
+    cardinal: Cardinal
+    ordinal: Ordinal
+    month: Month
   opac:
     finish: Finish
     push_touchpanel: 笆ｼ Select menu
