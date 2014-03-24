@@ -1,0 +1,44 @@
+---
+keycodes_1:
+  id: 1
+  name: 'collection_form_code'
+  display_name: '収集形式コード'
+  v: 'purchase'
+  keyname: '購入'
+  started_at: 2014-03-01 
+keycodes_2:
+  id: 2
+  name: 'collection_form_code'
+  display_name: '収集形式コード'
+  v: 'donate'
+  keyname: '寄贈'
+  started_at: 2014-03-01 
+keycodes_3:
+  id: 3
+  name: 'collection_form_code'
+  display_name: '収集形式コード'
+  v: 'other'
+  keyname: 'その他'
+  started_at: 2014-03-01 
+keycodes_4:
+  id: 4
+  name: 'collection_status_code'
+  display_name: '収集ステータスコード'
+  v: 'new'
+  keyname: '新規収集'
+  started_at: 2014-03-01 
+keycodes_5:
+  id: 5
+  name: 'collection_status_code'
+  display_name: '収集ステータスコード'
+  v: 'continue'
+  keyname: '継続収集'
+  started_at: 2014-03-01 
+keycodes_6:
+  id: 6
+  name: 'collection_status_code'
+  display_name: '収集ステータスコード'
+  v: 'other'
+  keyname: 'その他'
+  started_at: 2014-03-01 
+
