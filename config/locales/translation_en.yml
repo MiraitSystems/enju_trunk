@@ -3244,7 +3244,13 @@ en:
     no_create_subsequent_year_orders: "No create subsequent year orders."
     create_payment_to_advance_payment: "<br />Create payment to advance payment"
     copy: Copy and create new order
-    
+    document_application: Document application
+    list_of_order: List of ordering
+    list_of_deferred_payment_acceptance: List of deferred payment acceptance
+    list_of_acceptance_situation: List of acceptance situation
+    list_of_payment: List of payment
+    list_of_acceptance_after_payment: List of acceptance after payment
+    select_document: Select Document
   payment:
     system_menu_title: Payment search
     switch_manual_entry: "Use auto calculate the amount"
@@ -3260,3 +3266,45 @@ en:
   approval:
     no_matches_found_manifestation: "no matches found to manifestation"
     no_blank_identifier: "can't be blank"
+  order_output_csv:
+    number: "No."
+    full_name: "Contracting agency"
+    zip_code_1: "Zip code"
+    address_1: "Address"
+    country_of_publication_id: "Country of publication"
+    date_of_publication: "Date of publication"
+    bookstore_code: "Bookstore"
+    collection_status_code: "Collection status code"
+    currency_id: "Currency"
+    edition: "Edition"
+    frequency_id: "Frequency"
+    currency_rate: "Currency rate"
+    discount_commision: "Discount commision"
+    group: "Group"
+    order_note: "Order note"
+    prepayment_principal_rate: "Prepayment principal rate"
+    number_of_acceptance: "Number of acceptance"
+    number_of_acceptance_schedule: "Number of acceptance schedule"
+    identifier: "Identifier"
+    issn: "ISSN"
+    number_of_missing: "Number of missing"
+    order_identifier: "Order identifier"
+    pair_manifestation_id: "Pair manifestation"
+    issue_number_string: "Issue Number"
+    report_number_string: "Report Number"
+    original_title: "Original title"
+    publishers: "Publisher"
+    volume_number_string: "Volume Number"
+    report_volume_number_string: "Report pattern"
+    acquired_at: "Acquired at"
+    quantity: "Quantity"
+    payment_form_code: "Payment"
+    prepayment_principal: "Prepayment principal"
+    publication_year: "Publication year"
+    tax_exempt_amount: "Tax exempt amount"
+    taxable_amount: "Taxable amount"
+    item_note: "Item note"
+    transportation_route_code: "Transportation route"
+    yen_imprest: "Yen imprest"
+    deduction_quantity: "Deduction quantity"
+    delayed_quantity: "Delayed quantity"

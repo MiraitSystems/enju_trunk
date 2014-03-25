@@ -807,16 +807,12 @@ class ManifestationsController < ApplicationController
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects
     @work_has_languages = []
-    output_agent_parameter_for_new_edit
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
-    if original_manifestation
+    if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
-      @creators = original_manifestation.creators
-      @creators_type = original_manifestation.creates.order("position").pluck("create_type_id").collect{|c| c.to_i }
-      @contributors = original_manifestation.contributors
-      @contributors_type = original_manifestation.realizes.order("position").pluck("realize_type_id").collect{|c| c.to_i }
-      @publishers = original_manifestation.publishers
-      @publishers_type = original_manifestation.produces.order("position").pluck("produce_type_id").collect{|c| c.to_i }
+      @creates = original_manifestation.creates.order(:position)
+      @realizes = original_manifestation.realizes.order(:position)
+      @produces = original_manifestation.produces.order(:position)
       @subject = original_manifestation.subjects.collect(&:term).join(';')
       @subject_transcription = original_manifestation.subjects.collect(&:term_transcription).join(';')
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
@@ -829,18 +825,15 @@ class ManifestationsController < ApplicationController
       if original_manifestation.manifestation_extexts
         original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
       end
-    elsif @series_statement
+    elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation.original_title = @series_statement.original_title
       @manifestation.title_transcription = @series_statement.title_transcription
       @manifestation.issn = @series_statement.issn
       if @series_statement.root_manifestation
         root_manifestation = @series_statement.root_manifestation
-        @creators = root_manifestation.creators
-        @creators_type = root_manifestation.creates.order("position").pluck("create_type_id").collect{|c| c.to_i }
-        @contributors = root_manifestation.contributors
-        @contributors_type = root_manifestation.realizes.order("position").pluck("realize_type_id").collect{|c| c.to_i }
-        @publishers = root_manifestation.publishers
-        @publishers_type = root_manifestation.produces.order("position").pluck("produce_type_id").collect{|c| c.to_i }
+        @creates = root_manifestation.creates.order(:position)
+        @realizes = root_manifestation.realizes.order(:position)
+        @produces = root_manifestation.produces.order(:position)
         @manifestation.carrier_type = root_manifestation.carrier_type
         @manifestation.manifestation_type = root_manifestation.manifestation_type
         @manifestation.frequency = root_manifestation.frequency
@@ -856,7 +849,6 @@ class ManifestationsController < ApplicationController
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
-
     new_work_has_title
     @manifestation.identifiers << Identifier.new
 
@@ -876,7 +868,9 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     @work_has_languages = @manifestation.work_has_languages
-    output_agent_parameter_for_new_edit
+    @creates = @manifestation.creates.order(:position)
+    @realizes = @manifestation.realizes.order(:position)
+    @produces = @manifestation.produces.order(:position)
     @subject = @manifestation.subjects.collect(&:term).join(';')
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
@@ -890,16 +884,14 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
-
     new_work_has_title
   end
 
   # POST /manifestations
   # POST /manifestations.json
   def create
-
-    create_titles 
-
+    create_titles
+    set_agent_instance_from_params # Implemented in application_controller.rb
     @manifestation = Manifestation.new(params[:manifestation])
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if @manifestation.respond_to?(:post_to_scribd)
@@ -912,8 +904,6 @@ class ManifestationsController < ApplicationController
       series_statement = SeriesStatement.find(params[:manifestation][:series_statement_id])
       @manifestation.series_statement = series_statement if  series_statement
     end
-
-    input_agent_parameter
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
@@ -930,25 +920,9 @@ class ManifestationsController < ApplicationController
           if @manifestation.series_statement and @manifestation.series_statement.periodical
             Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
           end
-
-          unless SystemConfiguration.get("add_only_exist_agent")
-            @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
-            @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-            @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
-          end
-          #著作関係(creates)のagent追加
-          Create.add_creates(@manifestation.id, @upd_creator, @upd_creator_type, @del_creator, true)
-          Create.add_creates(@manifestation.id, @add_creator, @add_creator_type)
-          Create.add_creates(@manifestation.id, @new_creator, @new_creator_type)
-          #表現関係(realizes)のagent追加
-          Realize.add_realizes(@manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor, true)
-          Realize.add_realizes(@manifestation.id, @add_contributor, @add_contributor_type)
-          Realize.add_realizes(@manifestation.id, @new_contributor, @new_contributor_type)
-          #出版関係(produces)のagent追加
-          Produce.add_produces(@manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher, true)
-          Produce.add_produces(@manifestation.id, @add_publisher, @add_publisher_type)
-          Produce.add_produces(@manifestation.id, @new_publisher, @new_publisher_type)
-
+          @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
+          @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
+          @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
           @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
@@ -960,7 +934,6 @@ class ManifestationsController < ApplicationController
         format.json { render :json => @manifestation, :status => :created, :location => @manifestation }
       else
         prepare_options
-        output_agent_parameter
         new_work_has_title
 
         format.html { render :action => "new" }
@@ -979,9 +952,8 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
-    input_agent_parameter
-    create_titles 
-
+    create_titles
+    set_agent_instance_from_params # Implemented in application_controller.rb
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme]
@@ -995,26 +967,9 @@ class ManifestationsController < ApplicationController
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
         #TODO update position to edit agents without destroy
-
-        #agentsテーブルに無いagentの追加
-        unless SystemConfiguration.get("add_only_exist_agent")
-          @new_creator = Agent.add_agents(@new_creator_name, @new_creator_transcription).collect(&:id)
-          @new_contributor = Agent.add_agents(@new_contributor_name, @new_contributor_transcription).collect(&:id)
-          @new_publisher = Agent.add_agents(@new_publisher_name, @new_publisher_transcription).collect(&:id)
-        end
-        #著作関係(creates)のagent追加
-        Create.add_creates(@manifestation.id, @upd_creator, @upd_creator_type, @del_creator)
-        Create.add_creates(@manifestation.id, @add_creator, @add_creator_type)
-        Create.add_creates(@manifestation.id, @new_creator, @new_creator_type)
-        #表現関係(realizes)のagent追加
-        Realize.add_realizes(@manifestation.id, @upd_contributor, @upd_contributor_type, @del_contributor)
-        Realize.add_realizes(@manifestation.id, @add_contributor, @add_contributor_type)
-        Realize.add_realizes(@manifestation.id, @new_contributor, @new_contributor_type)
-        #出版関係(produces)のagent追加
-        Produce.add_produces(@manifestation.id, @upd_publisher, @upd_publisher_type, @del_publisher)
-        Produce.add_produces(@manifestation.id, @add_publisher, @add_publisher_type)
-        Produce.add_produces(@manifestation.id, @new_publisher, @new_publisher_type)
-
+        @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
+        @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
+        @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
         @manifestation.work_has_languages.destroy_all;
@@ -1025,11 +980,11 @@ class ManifestationsController < ApplicationController
         if params[:extexts]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
         end
+
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
         format.json { head :no_content }
       else
         prepare_options
-        output_agent_parameter
         new_work_has_title
 
         format.html { render :action => "edit" }
@@ -1502,106 +1457,15 @@ class ManifestationsController < ApplicationController
       @identifier_types = []
     end
     @use_licenses = UseLicense.all
-  end
-
-  def input_agent_parameter
-    if SystemConfiguration.get("add_only_exist_agent")
-      @add_creator = params[:add_creator][:creator_id].split(",")  #select2からデータ受取
-      @add_creator_type = Array.new(@add_creator.length, params[:add_creator][:creator_type])
-      @add_contributor = params[:add_contributor][:contributor_id].split(",")  #select2からデータ受取
-      @add_contributor_type = Array.new(@add_contributor.length, params[:add_contributor][:contributor_type])
-      @add_publisher = params[:add_publisher][:publisher_id].split(",")  #select2からデータ受取
-      @add_publisher_type = Array.new(@add_publisher.length, params[:add_publisher][:publisher_type])
-    else
-      @new_creator_name = params[:creator_full_name].values.join(";") rescue ''
-      @new_creator_transcription = params[:creator_full_name_transcription].values.join(";") rescue ''
-      @new_creator = []
-      @new_creator_type = params[:creator_type_id].values rescue []
-      @new_contributor_name = params[:contributor_full_name].values.join(";") rescue ''
-      @new_contributor_transcription = params[:contributor_full_name_transcription].values.join(";") rescue ''
-      @new_contributor = []
-      @new_contributor_type = params[:contributor_type_id].values rescue []
-      @new_publisher_name = params[:publisher_full_name].values.join(";") rescue ''
-      @new_publisher_transcription = params[:publisher_full_name_transcription].values.join(";") rescue ''
-      @new_publisher = []
-      @new_publisher_type = params[:publisher_type_id].values rescue []
-    end
-    @upd_creator = params[:upd_creator].keys rescue []
-    @upd_creator_type = params[:upd_creator].values rescue []
-    @del_creator = Array.new(@upd_creator.length, false)
-    @del_creator = Hash[[@upd_creator, @del_creator].transpose].merge(params[:del_creator]).values rescue []
-    @upd_contributor = params[:upd_contributor].keys rescue []
-    @upd_contributor_type = params[:upd_contributor].values rescue []
-    @del_contributor = Array.new(@upd_contributor.length, false)
-    @del_contributor = Hash[[@upd_contributor, @del_contributor].transpose].merge(params[:del_contributor]).values rescue []
-    @upd_publisher = params[:upd_publisher].keys rescue []
-    @upd_publisher_type = params[:upd_publisher].values rescue []
-    @del_publisher = Array.new(@upd_publisher.length, false)
-    @del_publisher = Hash[[@upd_publisher, @del_publisher].transpose].merge(params[:del_publisher]).values rescue []
-  end
-
-  def output_agent_parameter
-    @creators = @manifestation.creators
-    @creators_type = @upd_creator_type.collect{|r| r.to_i}
-    @keep_creator = @add_creator.collect{|r| r.to_i}.join(",") rescue nil
-    @keep_creator_type = @add_creator_type
-    @keep_creator_del = @del_creator
-    @new_creator = params[:creator_full_name].values rescue []
-    @new_creator_transcription = params[:creator_full_name_transcription].values rescue []
-    @new_creator_type = params[:creator_type_id].values.collect{|r| r.to_i} rescue []
-    @new_creator_number = @new_creator.length
-
-    @contributors = @manifestation.contributors
-    @contributors_type = @upd_contributor_type.collect{|r| r.to_i}
-    @keep_contributor = @add_contributor.collect{|r| r.to_i}.join(",") rescue nil
-    @keep_contributor_type = @add_contributor_type
-    @keep_contributor_del = @del_contributor
-    @new_contributor = params[:contributor_full_name].values rescue []
-    @new_contributor_transcription = params[:contributor_full_name_transcription].values rescue []
-    @new_contributor_type = params[:contributor_type_id].values.collect{|r| r.to_i} rescue []
-    @new_contributor_number = @new_contributor.length
-
-    @publishers = @manifestation.publishers
-    @publishers_type = @upd_publisher_type.collect{|r| r.to_i}
-    @keep_publisher = @add_publisher.collect{|r| r.to_i}.join(",") rescue nil
-    @keep_publisher_type = @add_publisher_type
-    @keep_publisher_del = @del_publisher
-    @new_publisher = params[:publisher_full_name].values rescue []
-    @new_publisher_transcription = params[:publisher_full_name_transcription].values rescue []
-    @new_publisher_type = params[:publisher_type_id].values.collect{|r| r.to_i} rescue []
-    @new_publisher_number = @new_publisher.length
-  end
-
-  def output_agent_parameter_for_new_edit
-    @creators = @manifestation.creators
-    @creators_type = @manifestation.creates.order("position").pluck("create_type_id").collect{|c| c.to_i }
-    @keep_creator = nil
-    @keep_creator_type = []
-    @keep_creator_del = []
-    @new_creator =[""]
-    @new_creator_transcription = [""]
-    @new_creator_type = [""]
-    @new_creator_number = @new_creator.length
-
-    @contributors = @manifestation.contributors
-    @contributors_type = @manifestation.realizes.order("position").pluck("realize_type_id").collect{|c| c.to_i }
-    @keep_contributor = nil
-    @keep_contributor_type = []
-    @keep_contributor_del = []
-    @new_contributor =[""]
-    @new_contributor_transcription = [""]
-    @new_contributor_type = [""]
-    @new_contributor_number = @new_contributor.length
-
-    @publishers = @manifestation.publishers
-    @publishers_type = @manifestation.produces.order("position").pluck("produce_type_id").collect{|c| c.to_i }
-    @keep_publisher = nil
-    @keep_publisher_type = []
-    @keep_publisher_del = []
-    @new_publisher =[""]
-    @new_publisher_transcription = [""]
-    @new_publisher_type = [""]
-    @new_publisher_number = @new_publisher.length
+    @creates = [] if @creates.blank?
+    @realizes = [] if @realizes.blank?
+    @produces = [] if @produces.blank?
+    @del_creators = [] if @del_creators.blank?
+    @del_contributors = [] if @del_contributors.blank?
+    @del_publishers = [] if @del_publishers.blank?
+    @add_creators = [{}] if @add_creators.blank?
+    @add_contributors = [{}] if @add_contributors.blank?
+    @add_publishers = [{}] if @add_publishers.blank?
   end
 
   def save_search_history(query, offset = 0, total = 0, user = nil)

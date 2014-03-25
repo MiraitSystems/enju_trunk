@@ -364,6 +364,29 @@ class Agent < ActiveRecord::Base
     list
   end
 
+  def self.add_agent(name, transcription)
+    return {} if name.blank?
+    name = name.exstrip_with_full_size_space
+    unless name.empty?
+      agent = Agent.find(:first, :conditions => ["full_name=?", name])
+      transcription = transcription.exstrip_with_full_size_space rescue nil
+      if agent.nil?
+        agent = Agent.new
+        agent.full_name = name
+        agent.full_name_transcription = transcription
+        exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+        agent.exclude_state = 1 if exclude_agents.include?(name)
+        agent.save
+      else
+        if transcription
+          agent.full_name_transcription = transcription
+          agent.save
+        end
+      end
+    end
+    agent
+  end
+
   def agents
     self.original_agents + self.derived_agents
   end

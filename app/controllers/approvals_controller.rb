@@ -71,7 +71,7 @@ class ApprovalsController < ApplicationController
       if @approval.update_attributes(params[:approval])
          @approval.check_status
 
-        format.html { redirect_to(@approval) }
+        format.html { redirect_to @approval, :notice => t('controller.successfully_updated', :model => t('activerecord.models.approval')) }
       else
 
         @manifestation = Manifestation.find(@approval.manifestation_id)
