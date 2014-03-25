@@ -9,42 +9,47 @@ jQuery(function(){
     displayArticleTitle(article_title);
   });
 
-  // look for manifestations with the same title
-  <% unless @manifestation.new_record? %>
-    search_manifestation();
+  <% if SystemConfiguration.get('manifestation.check_duplicate_title') %>
+    // look for manifestations with the same title
+    <% unless @manifestation.new_record? %>
+      search_manifestation();
+    <% end %>
+    $("#manifestation_original_title").change(function(){
+       search_manifestation();
+    });
   <% end %>
-  $("#manifestation_original_title").change(function(){
-     search_manifestation();
-  });
 })
 
-function search_manifestation() {
-  //var user_id = $("#manifestation_original_title").val();
-  $.ajax({
-    type: "GET",
-    url: "/manifestations/search_manifestation",
-    data: { 
-      "original_title": $("#manifestation_original_title").val(),
-      "manifestation_id": "<%= @manifestation.try(:id) %>"
-    },
-    success: function(obj) {
-      $('#search_manifestation > li').remove();
-      $('#search_manifestation').hide();
-      if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
-        $('#search_manifestation').show();
-        var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
-        data += "<ui>";
-        jQuery.each(obj["manifestation_urls"], function(index, value) {  
-          data += "<li>";
-          data += value;
-          data += "</li>";
-        });
-        data += "</ui>";
-        $('#search_manifestation').html(data);
-      } 
-    }
-  });
-}
+<% if SystemConfiguration.get('manifestation.check_duplicate_title') %>
+  // look for manifestations with the same title
+  function search_manifestation() {
+    //var user_id = $("#manifestation_original_title").val();
+    $.ajax({
+      type: "GET",
+      url: "/manifestations/search_manifestation",
+      data: { 
+        "original_title": $("#manifestation_original_title").val(),
+        "manifestation_id": "<%= @manifestation.try(:id) %>"
+      },
+      success: function(obj) {
+        $('#search_manifestation > li').remove();
+        $('#search_manifestation').hide();
+        if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
+          $('#search_manifestation').show();
+          var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
+          data += "<ui>";
+          jQuery.each(obj["manifestation_urls"], function(index, value) {  
+            data += "<li>";
+            data += value;
+            data += "</li>";
+          });
+          data += "</ui>";
+          $('#search_manifestation').html(data);
+        } 
+      }
+   });
+ } 
+<% end %>
 
 function displayArticleTitle(article_title) {
   var manifestation_type = $('#manifestation_manifestation_type_id').val();

@@ -1220,3 +1220,10 @@ system_configuration_00173:
   typename: Boolean
   description: "その他の識別子を利用する"
   category: 'manifestation'
+system_configuration_00174:
+  id: 174
+  keyname: manifestation.check_duplicate_title
+  v: "false"
+  typename: Boolean
+  description: "資料の登録画面にに同一タイトルチェック機能を表示する"
+  category: 'manifestation'
