@@ -1,4 +1,4 @@
-module Manifestation::OutputColumns
+module OutputColumns
   # NOTE: resource_import_textfile.excelとの整合性を維持すること
   BOOK_COLUMNS = lambda { %W(
     #{ 'manifestation_type' unless SystemConfiguration.get('manifestations.split_by_type') }

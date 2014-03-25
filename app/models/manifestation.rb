@@ -4,7 +4,7 @@ require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation')
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
-  include Manifestation::OutputColumns
+  include OutputColumns
   has_many :creators, :through => :creates, :source => :agent, :order => :position
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
   has_many :publishers, :through => :produces, :source => :agent, :order => :position
