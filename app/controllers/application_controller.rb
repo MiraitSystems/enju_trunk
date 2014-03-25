@@ -460,6 +460,52 @@ class ApplicationController < ActionController::Base
       raise CanCan::AccessDenied
     end
   end
+
+  def set_agent_instance_from_params # Use manifestations_controller.rb and series_statements_controller.rb
+    @creates = Create.new_attrs(params[:creates].try(:keys), params[:creates].try(:values))
+    @realizes = Realize.new_attrs(params[:realizes].try(:keys), params[:realizes].try(:values))
+    @produces = Produce.new_attrs(params[:produces].try(:keys), params[:produces].try(:values))
+    @del_creators = params[:del_creator_ids].nil? ? [] : params[:del_creator_ids]
+    @del_contributors = params[:del_contributor_ids].nil? ? [] : params[:del_contributor_ids]
+    @del_publishers = params[:del_publisher_ids].nil? ? [] : params[:del_publisher_ids]
+    @add_creators = set_agent_attrs(params[:creator_ids].try(:values),
+                                    params[:creator_full_names].try(:values),
+                                    params[:creator_full_name_transcriptions].try(:values),
+                                    params[:creator_type_ids].try(:values))
+    @add_contributors = set_agent_attrs(params[:contributor_ids].try(:values),
+                                        params[:contributor_full_names].try(:values),
+                                        params[:contributor_full_name_transcriptions].try(:values),
+                                        params[:contributor_type_ids].try(:values))
+    @add_publishers = set_agent_attrs(params[:publisher_ids].try(:values),
+                                      params[:publisher_full_names].try(:values),
+                                      params[:publisher_full_name_transcriptions].try(:values),
+                                      params[:publisher_type_ids].try(:values))
+  end
+
+  def set_agent_attrs(agent_ids, full_names, full_name_reads, type_ids)
+    list = []
+    if agent_ids
+      agent_ids.each_with_index.each do |agent_id ,i|
+        next if agent_id.blank?
+        param = {}
+        param[:agent_id] = agent_id
+        param[:type_id] = type_ids[i] if type_ids
+        list << param
+      end
+    elsif full_names
+      full_names.each_with_index.each do |full_name ,i|
+        next if full_name.blank?
+        param = {}
+        param[:full_name] = full_name
+        param[:full_name_transcription] = full_name_reads[i] if full_name_reads
+        param[:type_id] = type_ids[i] if type_ids
+        list << param
+      end
+    else
+      list = []
+    end
+    list
+  end
 end
 
 class InvalidLocaleError < StandardError

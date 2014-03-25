@@ -402,4 +402,12 @@ module ManifestationsHelper
     list.join(", ").html_safe
   end
 
+  def order_str(type_str)
+    if SystemConfiguration.get("use_agent_type")
+      order_str = "#{type_str}s.#{type_str}_type_id, #{type_str}s.position"
+    else
+      order_str = "#{type_str}s.position"
+    end
+    order_str
+  end
 end

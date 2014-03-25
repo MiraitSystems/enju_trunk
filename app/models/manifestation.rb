@@ -6,11 +6,8 @@ class Manifestation < ActiveRecord::Base
   include EnjuNdl::NdlSearch
   include Manifestation::OutputColumns
   has_many :creators, :through => :creates, :source => :agent, :order => :position
-  has_many :creators_order_type, :through => :creates, :source => :agent, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
-  has_many :contributors_order_type, :through => :realizes, :source => :agent, :order => 'realize_type_id, position'
   has_many :publishers, :through => :produces, :source => :agent, :order => :position
-  has_many :publishers_order_type, :through => :produces, :source => :agent, :order => 'produce_type_id, position'
   has_many :work_has_subjects, :foreign_key => 'work_id', :dependent => :destroy
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position

@@ -144,19 +144,20 @@ class AgentsController < ApplicationController
   end
 
   def search_name
-    @agent_id = params[:agent_id]
-    if @agent_id.blank?
-       @agents = Agent.where("full_name like '#{params[:search_phrase]}%'").select("id, full_name")
-    else
-       @agents = Agent.where(id: @agent_id.split(",")).select("id, full_name")
-    end
     struct_agent = Struct.new(:id, :text)
-    @struct_agent_array = []
-    @agents.each do |agent|
-      @struct_agent_array << struct_agent.new(agent.id, agent.full_name)
+    if params[:agent_id]
+       a = Agent.where(id: params[:agent_id]).select("id, full_name").first
+       result = nil
+       result = struct_agent.new(a.id, a.full_name)
+    else
+       agents = Agent.where("full_name like '%#{params[:search_phrase]}%'").select("id, full_name").limit(10)
+       result = []
+       agents.each do |agent|
+         result << struct_agent.new(agent.id, agent.full_name)
+       end
     end
     respond_to do |format|
-      format.json { render :text => @struct_agent_array.to_json }
+      format.json { render :text => result.to_json }
     end
   end
 
