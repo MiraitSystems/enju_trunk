@@ -40,6 +40,13 @@
   <%= @series_statement.series_statement_identifier %>
 </p>
 
+<%- if @series_statement.sequence_pattern %>
+  <p>
+    <strong><%= t('activerecord.attributes.series_statement.sequence_pattern') -%>:</strong>
+    <%= @series_statement.sequence_patten.name %>
+  </p>
+<%- end -%>
+
 <p>
   <strong><%= t('activerecord.attributes.series_statement.note') -%>:</strong>
   <%= raw simple_format(h(@series_statement.note)) -%>

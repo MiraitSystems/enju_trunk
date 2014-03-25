@@ -1,0 +1,39 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.sequence_pattern')) -%></h1>
+<div id="content_list">
+<div style="color: red"><%= flash[:message].to_s -%></div>
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.sequence_pattern.name') -%></th>
+    <th><%= t('activerecord.attributes.sequence_pattern.volume_param') -%></th>
+    <th><%= t('activerecord.attributes.sequence_pattern.issue_param') -%></th>
+    <th><%= t('activerecord.attributes.sequence_pattern.sequence_type') -%></th>
+    <th></th>
+  </tr>
+
+<%- @sequence_patterns.each do |sequence_pattern| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= sequence_pattern.name %></td>
+    <td><%= sequence_pattern.volume_param %></td>
+    <td><%= sequence_pattern.issue_param %></td>
+    <td><%= sequence_pattern.sequence_type %></td>
+    <td>
+      <%- if can? :update, sequence_pattern -%>
+        <%= link_to t('page.edit'), edit_sequence_pattern_path(sequence_pattern) -%>
+      <% end %>
+      <%- if sequence_pattern.destroy? -%>
+        <%= link_to t('page.destroy'), sequence_pattern, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.sequence_pattern')), new_sequence_pattern_path -%></li>
+  </ul>
+</div>

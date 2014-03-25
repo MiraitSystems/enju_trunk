@@ -1,0 +1,30 @@
+<%= form_for(@sequence_pattern) do |f| %>
+  <%= f.error_messages %>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :volume_param %><br />
+    <%= f.text_field :volume_param %>
+  </div>
+
+  <div class="field">
+    <%= f.label :issue_param %><br />
+    <%= f.text_field :issue_param %>
+  </div>
+  <div class="field">
+    <%= f.label :sequence_type %><br />
+    <%= f.select :sequence_type, @sequence_types.collect{|key,name| [t("sequence_pattern.#{name}"), key]} %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
