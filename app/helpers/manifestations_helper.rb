@@ -256,9 +256,21 @@ module ManifestationsHelper
   end
 
   def missing_issue_statuses
+=begin
+    SELECT2_OBJ = Struct.new(:id, :name)
+    MISSING_ISSUE_STATUSES = [
+      SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
+      SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
+      SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))
+    ]
+
     list = [[I18n.t('missing_issue.no_request'), 1],
             [I18n.t('missing_issue.requested'), 2],
             [I18n.t('missing_issue.received'), 3]]
+=end
+    list = [Manifestation::SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
+            Manifestation::SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
+            Manifestation::SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))]
   end
 
   def missing_status_facet(status, current_status, facet)

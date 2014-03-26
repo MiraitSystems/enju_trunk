@@ -512,7 +512,9 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
-    <%= f.select :missing_issue, missing_issue_statuses, :include_blank => true -%>
+    <%#= f.select :missing_issue, missing_issue_statuses, :include_blank => true -%>
+    <%= select2_script "missing_issue" %>
+    <%= make_select2_struct(:missing_issue, "manifestation[missing_issue]", missing_issue_statuses, @manifestation.missing_issue, 200, true, false) %>
   </div>
 
   <div class="field">
@@ -572,6 +574,17 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
     <%= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+    <%# TODO make_select2 内の分岐がうまくできない %>
+    <%#= select2_script "use_license_id" %>
+    <%#= test_select2(
+      :use_license_id, 
+      "manifestation[use_license_id]", 
+      @use_licenses, 
+      @manifestation.use_license_id, 
+      250, 
+      true, 
+      false
+    ) %>
   </div>
 
   <div class="actions">
