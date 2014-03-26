@@ -1663,10 +1663,10 @@ ja:
         approval_result: 見計らい結果(最終)
         reason: 収録不可理由 
         approval_end_at: 見計らい完了日 
-        donate_request_at: 寄付依頼日 
-        donate_request_replay_at: 寄付依頼返信日 
+        donate_request_at: 寄贈依頼日 
+        donate_request_replay_at: 寄贈依頼返信日 
         refuse_at: 断り状送付日 
-        donate_request_result: 寄付依頼結果 
+        donate_request_result: 寄贈依頼結果 
         all_process_end_at: 全工程完了日 
         reception_agent_id: 担当窓口コード 
         approval_extexts: 見計らいメモ
@@ -1677,8 +1677,8 @@ ja:
           sample_arrival: サンプル誌到着
           group_approved: グループ見計らい済
           end_approved: 最終見計らい済
-          donate_requested: 寄付依頼送付済
-          replied_donate_request: 寄付依頼返信済
+          donate_requested: 寄贈依頼送付済
+          replied_donate_request: 寄贈依頼返信済
           all_process_end: 全工程完了
         donation_postcard: 寄贈はがき
         approval_report: 見計らい伝票
