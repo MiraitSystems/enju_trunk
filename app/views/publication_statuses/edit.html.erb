@@ -1,0 +1,14 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.editing', :model => t('activerecord.models.publication_status')) -%></h1>
+<div id="content_list">
+  <%= render 'form' %>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.show'), @publication_status -%></li>
+    <li><%= link_to t('page.back'), publication_statuses_path -%></li>
+  </ul>
+</div>
+

@@ -1,0 +1,30 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.publication_status')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.publication_status.name') %>:</strong>
+  <%= @publication_status.name %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.publication_status.display_name') %>:</strong>
+  <%= @publication_status.display_name %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.publication_status.note') %>:</strong>
+  <%= @publication_status.note %>
+</p>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_publication_status_path(@publication_status) -%></li>
+    <li><%= link_to t('page.back'), publication_statuses_path -%></li>
+  </ul>
+</div>
+
