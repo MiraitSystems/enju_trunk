@@ -1,6 +1,6 @@
 EnjuLeaf::Application.routes.draw do
   resources :sequence_patterns
-  resources :public_statuses
+  resources :publication_statuses
   resources :claim_types
   resources :language_types
   resources :output_column_lists

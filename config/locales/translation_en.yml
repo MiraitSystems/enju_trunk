@@ -210,7 +210,7 @@ en:
       item_has_operator: ItemHasOperator
       claim_type: Claim type
       output_column_list: Setting of output column
-      public_status: Public status
+      publication_status: Publication status
       sequence_pattern: Sequence Pattern
 
     attributes:
@@ -1764,7 +1764,7 @@ en:
         note: Note
       output_column_list:
         name: Name
-      public_status:
+      publication_status:
         name: Name
         display_name: Display name
         note: Note

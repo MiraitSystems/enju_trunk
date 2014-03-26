@@ -294,6 +294,7 @@ class SeriesStatementsController < ApplicationController
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @use_licenses = UseLicense.all
     @sequence_patterns = SequencePattern.all
+    @publication_statuses = PublicationStatus.all
     @creates = [] if @creates.blank?
     @realizes = [] if @realizes.blank?
     @produces = [] if @produces.blank?

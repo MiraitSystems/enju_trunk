@@ -48,6 +48,11 @@
 <%- end -%>
 
 <p>
+  <strong><%= t('activerecord.models.publication_status') %></strong>
+  <%= @series_statement.publication_status.display_name if @series_statement.publication_status %>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.series_statement.note') -%>:</strong>
   <%= raw simple_format(h(@series_statement.note)) -%>
 </p>

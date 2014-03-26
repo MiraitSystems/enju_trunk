@@ -3,13 +3,15 @@ class SeriesStatement < ActiveRecord::Base
   attr_accessible :original_title, :numbering, :title_subseries,
     :numbering_subseries, :title_transcription, :title_alternative,
     :series_statement_identifier, :issn, :periodical, :note,
-    :title_subseries_transcription, :relationship_family_id, :nacsis_series_statementid, :sequence_pattern_id
+    :title_subseries_transcription, :relationship_family_id, :nacsis_series_statementid, :sequence_pattern_id,
+    :publication_status_id
 
   has_many :series_has_manifestations
   has_many :manifestations, :through => :series_has_manifestations
   belongs_to :sequence_pattern
   belongs_to :root_manifestation, :foreign_key => :root_manifestation_id, :class_name => 'Manifestation'
   belongs_to :relationship_family
+  belongs_to :publication_status
   validates_presence_of :original_title
   validate :check_issn
   #after_create :create_initial_manifestation
