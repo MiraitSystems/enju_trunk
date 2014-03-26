@@ -338,6 +338,8 @@ defaults: &defaults
 
   bookbinding_card_pdf:
     filename: "製本カード.pdf"
+  item_label_pdf:
+    filename: "資料ラベル.pdf"
 
   # 資料の詳細画面に過去の貸出回数を表示
   manifestation:
