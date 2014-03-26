@@ -145,7 +145,11 @@
         </tr>
         <tr>
           <td><%= t('activerecord.attributes.manifestation.jpn_or_foreign') %>:</td>
-          <td><%= Manifestation::JPN_OR_FOREIGN.invert[manifestation.jpn_or_foreign] %></td>
+          <td>
+            <% Manifestation::JPN_OR_FOREIGN.each do |jpn_or_foreign| %>
+              <%= jpn_or_foreign.name if jpn_or_foreign.id == manifestation.jpn_or_foreign %>
+            <% end %>
+          </td>
         </tr>
         <tr>
           <td><%= t('activerecord.models.language') -%>:</td>

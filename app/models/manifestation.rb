@@ -46,7 +46,12 @@ class Manifestation < ActiveRecord::Base
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
   scope :without_master, where(:periodical_master => false)
-  JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
+  # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
+  SELECT2_OBJ = Struct.new(:id, :name)
+  JPN_OR_FOREIGN = [ 
+    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn')), 
+    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign')) 
+  ]
 
   SUNSPOT_EAGER_LOADING = {
     include: [
@@ -996,6 +1001,7 @@ class Manifestation < ActiveRecord::Base
     end
     return @struct_theme_array
   end
+
 
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
