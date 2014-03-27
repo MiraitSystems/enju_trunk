@@ -102,7 +102,6 @@ class SeriesStatementsController < ApplicationController
     @creates = @series_statement.root_manifestation.creates.order(:position)
     @realizes = @series_statement.root_manifestation.realizes.order(:position)
     @produces = @series_statement.root_manifestation.produces.order(:position)
-    new_work_has_title
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -124,17 +123,23 @@ class SeriesStatementsController < ApplicationController
       manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if manifestation.manifestation_exinfos
       manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if manifestation.manifestation_extexts
     end
-    new_work_has_title
   end
 
   # POST /series_statements
   # POST /series_statements.json
   def create
-    create_titles
     set_agent_instance_from_params # Implemented in application_controller.rb
     @series_statement = SeriesStatement.new(params[:series_statement])
     @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
     @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
+
+    if SystemConfiguration.get('manifestation.use_titles')
+      titles = params[:manifestation][:work_has_titles_attributes]
+      titles.each do |key, value|
+        @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+      end
+    end
+
     SeriesStatement.transaction do
       if @series_statement.periodical
         @series_statement.root_manifestation.original_title = params[:series_statement][:original_title] if  params[:series_statement][:original_title]
@@ -153,6 +158,7 @@ class SeriesStatementsController < ApplicationController
         @series_statement.root_manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
         @series_statement.manifestations << @series_statement.root_manifestation
       end
+
       @series_statement.save!
 
       if @series_statement.periodical
@@ -171,7 +177,6 @@ class SeriesStatementsController < ApplicationController
     rescue Exception => e
       logger.error "Failed to create: #{e}"
       prepare_options
-      new_work_has_title
       respond_to do |format|
         format.html { render :action => "new" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
@@ -185,7 +190,6 @@ class SeriesStatementsController < ApplicationController
       move_position(@series_statement, params[:move])
       return
     end
-    create_titles
     set_agent_instance_from_params # Implemented in application_controller.rb
     @series_statement.assign_attributes(params[:series_statement])
     @series_statement.root_manifestation = @series_statement.root_manifestation if @series_statement.root_manifestation
@@ -208,6 +212,14 @@ class SeriesStatementsController < ApplicationController
               @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
               @series_statement.root_manifestation.periodical_master = true
             end
+
+            if SystemConfiguration.get('manifestation.use_titles')
+              titles = params[:manifestation][:work_has_titles_attributes]
+              titles.each do |key, value|
+                @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+              end
+            end
+
             #TODO update position to edit agents without destroy
             @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
             if params[:exinfos]
@@ -231,6 +243,7 @@ class SeriesStatementsController < ApplicationController
             end
             @series_statement.periodical = false
           end
+
           @series_statement.save!
           @series_statement.manifestations.map { |manifestation| manifestation.index } if @series_statement.manifestations
           format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
@@ -240,7 +253,6 @@ class SeriesStatementsController < ApplicationController
         logger.error "Failed to update: #{e}"
         @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
         prepare_options
-        new_work_has_title
         format.html { render :action => "edit" }
         format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
       end
@@ -292,6 +304,11 @@ class SeriesStatementsController < ApplicationController
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.where(:numbering_type => 'manifestation')
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @work_manifestation = Manifestation.new
+    @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
+    @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.empty?
+    @count_titles = @work_manifestation.work_has_titles.size
+
     @use_licenses = UseLicense.all
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
@@ -304,43 +321,6 @@ class SeriesStatementsController < ApplicationController
     @add_creators = [{}] if @add_creators.blank?
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
-  end
-
-  def create_titles
-
-    return unless SystemConfiguration.get('manifestation.use_titles')
-
-    if params[:manifestation][:work_has_titles_attributes]
-      @work_has_titles = params[:manifestation][:work_has_titles_attributes]
-      @work_has_titles.each do |key, value|
-        if value[:title_id] != ""
-          @title = Title.find(value[:title_id])
-          @title.title = params[:manifestation_title][key]
-          @title.save
-        else
-          @title = Title.new(:title => params[:manifestation_title][key])
-          @title.save
-          value[:title_id] = @title.id
-        end
-      end
-    end
-  end
-
-  def new_work_has_title
-
-    @count_titles = 0
-    if SystemConfiguration.get('manifestation.use_titles')
-
-      manifestation = @series_statement.root_manifestation
-
-      @count_titles = manifestation.work_has_titles.size
-      if manifestation.work_has_titles.empty?
-        @workhastitle = WorkHasTitle.new(:title_id => 1, :title_type_id => 1, :position => 0)
-        manifestation.work_has_titles << @workhastitle
-        manifestation.work_has_titles[0].title_id = nil
-        @count_titles = 1
-      end
-    end
   end
 
 end

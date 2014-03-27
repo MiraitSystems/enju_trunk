@@ -1515,6 +1515,11 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
+  def set_title(index, title)
+    @title_list = {} if @title_list == nil
+    @title_list[index] = title
+  end
+
   private
 
     INTERNAL_ITEM_ATTR_CACHE = {}
@@ -1622,10 +1627,19 @@ class Manifestation < ActiveRecord::Base
     end
 
     def mark_destroy_manifestaion_titile
-      work_has_titles.each do |title|
-        if title.manifestation_title.title.blank?
-          Title.destroy([title.title_id])
-          title.mark_for_destruction
+      return unless SystemConfiguration.get('manifestation.use_titles')
+
+      work_has_titles.each_with_index do |work_has_title,index|
+        if @title_list[index.to_s].blank?
+          work_has_title.mark_for_destruction 
+        else
+          if work_has_title.title_id
+            work_has_title.manifestation_title.title = @title_list[index.to_s]
+          else
+            title = Title.new(:title => @title_list[index.to_s])
+            title.save
+            work_has_title.title_id = title.id
+          end        
         end
       end
     end
