@@ -15,26 +15,48 @@ class Realize < ActiveRecord::Base
     expression.try(:index)
   end
 
-  def self.add_realizes(manifestation_id, agent_id, type_id=[], delflg = [], newflg = false)
-    if manifestation_id.blank? or agent_id.blank?
-      return nil
+  def self.new_from_instance(realizes, del_contributors, add_contributors)
+    editing_realizes = realizes.dup
+    editing_realizes.reject!{|c| del_contributors.include?(c.agent_id.to_s)}
+    if SystemConfiguration.get("add_only_exist_agent")
+      editing_realizes += self.new_attrs_with_agent(add_contributors)
+    else
+      editing_realizes += self.new_attrs_with_agent(add_contributors)
     end
-    agent_id.each_with_index do |p_id, i|
-      next if delflg[i] and newflg
-      sel_clm = self.find(:first, :conditions => ["expression_id=? and agent_id=?", manifestation_id, p_id]) if p_id
-      if sel_clm
-         if delflg[i]
-            sel_clm.destroy
-         else
-           if type_id[i].present? && sel_clm.realize_type_id != type_id[i]
-              sel_clm.realize_type_id = type_id[i]
-              sel_clm.save
-           end
-         end
-      else
-         self.create(:expression_id => manifestation_id, :agent_id => p_id, :realize_type_id => type_id[i])
+    editing_realizes.uniq{|r| r.agent_id}
+  end
+
+  def self.new_attrs(agent_ids, type_ids)
+    return [] if agent_ids.blank?
+    lists = []
+    agent_ids.zip(type_ids).each do |agent_id ,type_id|
+      realize = {}
+      realize[:agent_id] = agent_id
+      realize[:realize_type_id] = type_id
+      lists << new(realize)
+    end
+    lists
+  end
+
+  def self.new_attrs_with_agent(agent_infos)
+    lists = []
+    agent_infos.each do |agent_info|
+      unless agent_info[:agent_id]
+        if agent_info[:full_name]
+          agent = Agent.add_agent(agent_info[:full_name], agent_info[:full_name_transcription])
+        else
+          agent = {}
+        end
+        agent_info[:agent_id] = agent[:id]
+      end
+      if agent_info[:agent_id]
+        realize = new
+        realize.agent_id = agent_info[:agent_id]
+        realize.realize_type_id = agent_info[:type_id] ? agent_info[:type_id] : 1
+        lists << realize
       end
     end
+    lists
   end
 end
 

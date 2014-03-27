@@ -1,0 +1,12 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.edit', :model => t('activerecord.models.output_column_lists')) -%></h1>
+  <div id="content_list">
+    <%= render 'form' %>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.back'), output_column_lists_path -%></li>
+  </ul>
+</div>

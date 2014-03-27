@@ -209,6 +209,9 @@ en:
       identifier: Identifier
       item_has_operator: ItemHasOperator
       claim_type: Claim type
+      output_column_list: Setting of output column
+      publication_status: Publication status
+      sequence_pattern: Sequence Pattern
 
     attributes:
       use_license:
@@ -763,7 +766,6 @@ en:
         deliver_place_code_1: Deliver place code 1
         deliver_place_code_2: Deliver place code 2
         deliver_place_code_3: Deliver place code 3
-        deliver_place_code_4: Deliver place code 4
         reference_code_id: Reference Code
         application_form_code_1: Application form code 1
         application_form_code_2: Application form code 2
@@ -780,16 +782,15 @@ en:
         bookstore_code: Bookstore code
         currency_id: Currency
         currency_rate: Currency rate
-        discount_commision: Discount commision
+        margin_ratio: Margin ratio
         reason_for_settlements_of_account_code: Reason for settlements of account code
-        prepayment_principal: Prepayment principal
-        yen_imprest: Yen imprest
+        original_price: Original price
+        cost: Cost
         unit_price: Unit price
         order_organization_id: Order organization id
         note: Note
         group: Group
         pair_manifestation_id: Pair manifestation id 
-        contract_id: Contract id
         auto_calculation_flag: Auto calculation flag
         manifestation_identifier: Manifestation identifier
         taxable_amount: Taxable amount
@@ -946,6 +947,8 @@ en:
         external_catalog: Cataloging Authority
         jpn_or_foreign: Japan or foreign
         manifestation_identifier: manifestation_identifier
+        titles: Titles
+        use_license_id: UseLicense
       user_group:
         name: Name
         display_name: Display name
@@ -1316,6 +1319,7 @@ en:
         title_transcription: Title transcription
         id: ID
         note: Note
+        sequence_pattern: Sequence Pattern
       series_statement_relationship:
         seq: SEQ
         before_series_statement_relationship: Before series statement relationship 
@@ -1719,7 +1723,7 @@ en:
         manifestation_id: Manifestation id
         currency_id: Currency
         currency_rate: Currency rate
-        discount_commision: Discount commision
+        margin_ratio: Margin ratio
         before_conv_amount_of_payment: Before conv amount of payment
         amount_of_payment: Amount of payment
         number_of_payment: Number of payment
@@ -1758,6 +1762,17 @@ en:
       claim:
         claim_type_id: Claim type
         note: Note
+      output_column_list:
+        name: Name
+      publication_status:
+        name: Name
+        display_name: Display name
+        note: Note
+      sequence_pattern:
+        name: Name
+        volume_param: Volume Number Param
+        issue_param: Issue Number Param
+        sequence_type: Issue Number Type
 
   page:
     user_title: Welcome %{login_name}
@@ -1934,6 +1949,9 @@ en:
     output_layout: Output layout
     output_request: Request
     output_label: Label
+    output_list: Output template list
+    output_select_all: Select all
+    output_cansel_all: Cancel all
     batch_change: "Batch Change"
     batch_change_dialog: "Select action"
     batch_change_description: "Update the information contained in the basket. <br />Please select the action you want to."
@@ -2269,6 +2287,7 @@ en:
     publisher_transcription: Publiher transcription
     subject_transcription: Subeject transcription
     same_manifestation_already_exist: Same %{attribute} already exist
+    no_item: No item
   item:
     current_checkout: Current checkout
     donor: Donors
@@ -3085,6 +3104,10 @@ en:
     output_job_error_body: ! 'job ID: %{job_name}縲絞s failed beacuse of following reason.
 
       %{message}'
+  sequence_pattern:
+    cardinal: Cardinal
+    ordinal: Ordinal
+    month: Month
   opac:
     finish: Finish
     push_touchpanel: 笆ｼ Select menu
@@ -3225,7 +3248,13 @@ en:
     no_create_subsequent_year_orders: "No create subsequent year orders."
     create_payment_to_advance_payment: "<br />Create payment to advance payment"
     copy: Copy and create new order
-    
+    document_application: Document application
+    list_of_order: List of ordering
+    list_of_deferred_payment_acceptance: List of deferred payment acceptance
+    list_of_acceptance_situation: List of acceptance situation
+    list_of_payment: List of payment
+    list_of_acceptance_after_payment: List of acceptance after payment
+    select_document: Select Document
   payment:
     system_menu_title: Payment search
     switch_manual_entry: "Use auto calculate the amount"
@@ -3241,3 +3270,45 @@ en:
   approval:
     no_matches_found_manifestation: "no matches found to manifestation"
     no_blank_identifier: "can't be blank"
+  order_output_csv:
+    number: "No."
+    full_name: "Contracting agency"
+    zip_code_1: "Zip code"
+    address_1: "Address"
+    country_of_publication_id: "Country of publication"
+    date_of_publication: "Date of publication"
+    bookstore_code: "Bookstore"
+    collection_status_code: "Collection status code"
+    currency_id: "Currency"
+    edition: "Edition"
+    frequency_id: "Frequency"
+    currency_rate: "Currency rate"
+    discount_commision: "Discount commision"
+    group: "Group"
+    order_note: "Order note"
+    prepayment_principal_rate: "Prepayment principal rate"
+    number_of_acceptance: "Number of acceptance"
+    number_of_acceptance_schedule: "Number of acceptance schedule"
+    identifier: "Identifier"
+    issn: "ISSN"
+    number_of_missing: "Number of missing"
+    order_identifier: "Order identifier"
+    pair_manifestation_id: "Pair manifestation"
+    issue_number_string: "Issue Number"
+    report_number_string: "Report Number"
+    original_title: "Original title"
+    publishers: "Publisher"
+    volume_number_string: "Volume Number"
+    report_volume_number_string: "Report pattern"
+    acquired_at: "Acquired at"
+    quantity: "Quantity"
+    payment_form_code: "Payment"
+    prepayment_principal: "Prepayment principal"
+    publication_year: "Publication year"
+    tax_exempt_amount: "Tax exempt amount"
+    taxable_amount: "Taxable amount"
+    item_note: "Item note"
+    transportation_route_code: "Transportation route"
+    yen_imprest: "Yen imprest"
+    deduction_quantity: "Deduction quantity"
+    delayed_quantity: "Delayed quantity"

@@ -1,7 +1,9 @@
 body{
-  margin-left: 5px;
-  margin-right: 5px;
+  //margin-left: 5px;
+  //margin-right: 5px;
   text-align: left;
+  margin-left: 100px;
+  margin-right: 100px;
 }
 
 pre {
@@ -54,6 +56,8 @@ div#content{
   padding-left: 4px;
   padding-right: 4px;
   clear: both;
+  margin-right: 210px;
+  min-width: 500px;
 }
 
 div.header_and_footer{
@@ -109,8 +113,8 @@ div#header_select_locale{
 }
 
 div#header_right{
-  width: 250px;
-  float: left;
+  width: auto;
+  float: right;
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 0.5em;
@@ -126,25 +130,32 @@ div#search_footer{
 }
 
 div#submenu_block{
-  float: left;
+  float: right;
+  margin-left: -100%;
+  margin-right: -200px;
+  width: 190px;
+}
+
+div.submenu_block_inner{
+  width: 190px;
+  padding: 5px;
+  border: 1px solid #5970B2;
 }
 
 div#submenu{
-  margin-left: 10px;
+  //margin-left: 10px;
   width: 190px;
   padding: 5px;
-  float: left;
+  //float: left;
   border: 1px solid #5970B2;
+  margin-left: -100%;
+  margin-right: -210px;
+  float: right;
 }
 
 div#social_bookmark{
   margin-top: 5px;
-  margin-left: 10px;
-  width: 190px;
-  padding: 5px;
   clear: left;
-  float: left;
-  border: 1px solid #5970B2;
 }
 
 div#submenu_2{
@@ -183,10 +194,12 @@ div#manifestation_bookmark_buttons{
 }
 
 div#content_detail{
-  width: 700px;
+  //width: 700px;
   float: left;
   margin-bottom: 5px;
   border: 1px solid #5970B2;
+  width: 100%;
+  min-width: 500px;
 }
 
 div#content_list{
@@ -600,9 +613,7 @@ tr{
 }
 .active{
     /* 線 */
-    border-color:#993333; 
-    border-style:ridge; 
-    border-width:5px;
+    border-left: solid 2px red; 
     /* 色 */
     /* background-color:yellow !important; */
 }

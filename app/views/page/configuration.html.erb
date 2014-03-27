@@ -1,3 +1,5 @@
+<div id='column_wide_wrapper'>
+<div id='column_wide'>
 <div class="column" id="col1">
   <div class="portlet" id="library">
     <h2 class="title"><%= t('activerecord.models.library') -%></h2>
@@ -62,6 +64,8 @@
         <li><%= link_to t('activerecord.models.title_type'), title_types_path -%></li>
         <li><%= link_to t('order.system_menu_title'), orders_path %></li>
         <li><%= link_to t('payment.system_menu_title'), payments_path %></li>
+        <li><%= link_to t('activerecord.models.publication_status'), publication_statuses_path %></li>
+        <li><%= link_to t('activerecord.models.sequence_pattern'), sequence_patterns_path %></li>
       </ul>
     </div>
   </div>
@@ -126,7 +130,10 @@
         <li><%= link_to t('activerecord.models.currency'), currencies_path -%></li>
         <li><%= link_to t('activerecord.models.exchange_rate'), exchange_rates_path -%></li>
         <li><%= link_to t('activerecord.models.keycode'), keycodes_path -%></li>
+        <li><%= link_to t('activerecord.models.output_column_list'), output_column_lists_path -%></li>
       </ul>
     </div>
   </div>
+</div>
+</div>
 </div>

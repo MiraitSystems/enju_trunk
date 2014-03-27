@@ -6,7 +6,7 @@ require 'rake'
 begin
   require 'ci/reporter/rake/rspec'
 rescue LoadError
-  puts "not find ci_reporter"
+  #puts "not find ci_reporter"
 end
 
 EnjuLeaf::Application.load_tasks

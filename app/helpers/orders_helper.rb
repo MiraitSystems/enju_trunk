@@ -33,7 +33,7 @@ module OrdersHelper
   end
 
   def payment_form_codes
-    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_payment_form_code_key, Time.zone.now) rescue nil
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_payment_form_code_key, Time.zone.now) rescue []
   end
 
   def budget_subject_codes
@@ -45,7 +45,7 @@ module OrdersHelper
   end
 
   def bookstore_codes
-    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_bookstore_code_key, Time.zone.now) rescue nil
+    return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", use_bookstore_code_key, Time.zone.now) rescue []
   end
 
   def reference_codes

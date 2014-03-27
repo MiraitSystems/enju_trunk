@@ -1,0 +1,36 @@
+---
+function_class_00001:
+  id: 1
+  name: admin
+  display_name: "システム管理者"
+  position: 1
+function_class_00002:
+  id: 2
+  name: jst
+  display_name: "JST"
+  position: 2
+function_class_00003:
+  id: 3
+  name: biblio
+  display_name: "業者A(資料収集)"
+  position: 3
+function_class_00004:
+  id: 4
+  name: ndl_west
+  display_name: "業者B(国立国会図書館関西館書誌作成)"
+  position: 4
+function_class_00005:
+  id: 5
+  name: jst_library
+  display_name: "業者C(JST情報資料館)"
+  position: 5
+function_class_00006:
+  id: 6
+  name: demo
+  display_name: "参照専用"
+  position: 6
+function_class_00007:
+  id: 7
+  name: nobody
+  display_name: "ゲスト"
+  position: 7

@@ -1,11 +1,11 @@
 <%- unless manifestation.creators.readable_by(current_user).empty? -%>
   <%- if params[:mode] == 'show_all_creators' -%>
-    <%= t('agent.creator') -%>:<%= agents_list(manifestation.creators_order_type.readable_by(current_user), {}, manifestation.id, 'create') %>
+    <%= t('agent.creator') -%>:<%= agents_list(manifestation.creators.except(:order).order(order_str('create')).readable_by(current_user), {}, manifestation.id, 'create') %>
     <%- if manifestation.creators.readable_by(current_user).size > 5 -%>
       (<a href="#" onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#creator_list_<%= manifestation.id %>').html(request);}, type:'get', url:'<%= manifestation_path(manifestation, :index_num => manifestation.id, :mode => 'show_creators') %>'}); return false;"><%= t('page.hide') %></a>)
     <%- end -%>
   <%- else -%>
-    <%= t('agent.creator') -%>:<%= agents_list(manifestation.creators_order_type.readable_by(current_user)[0..2], {}, manifestation.id, 'create') %>
+    <%= t('agent.creator') -%>:<%= agents_list(manifestation.creators.except(:order).order(order_str('create')).readable_by(current_user)[0..2], {}, manifestation.id, 'create') %>
     <%- if manifestation.creators.readable_by(current_user).size > 5 -%>
       (<a href="#" onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#creator_list_<%= manifestation.id %>').html(request);}, type:'get', url:'<%= manifestation_path(manifestation, :index_num => manifestation.id, :mode => 'show_all_creators') %>'}); return false;"><%= t('page.show_all') %></a>)
     <%- end -%>
@@ -13,11 +13,11 @@
 <%- end -%>
 
 <%- unless manifestation.contributors.readable_by(current_user).empty? -%>
-  <%= t('agent.contributor') -%>:<%= agents_list(manifestation.contributors_order_type.readable_by(current_user), {}, manifestation.id, 'realize') %>
+  <%= t('agent.contributor') -%>:<%= agents_list(manifestation.contributors.except(:order).order(order_str('realize')).readable_by(current_user), {}, manifestation.id, 'realize') %>
 <%- end -%>
 
 <%- unless manifestation.publishers.readable_by(current_user).empty? -%>
-  <%= t('agent.publisher') -%>:<%= agents_list(manifestation.publishers_order_type.readable_by(current_user), {}, manifestation.id, 'produce') %>
+  <%= t('agent.publisher') -%>:<%= agents_list(manifestation.publishers.except(:order).order(order_str('produce')).readable_by(current_user), {}, manifestation.id, 'produce') %>
 <%- end -%>
 
 <%- if manifestation.pub_date.present? -%>

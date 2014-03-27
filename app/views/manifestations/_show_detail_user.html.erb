@@ -32,7 +32,7 @@
         <% end %>
         <% manifestation.work_has_titles.each do |title| %>
           <tr> 
-            <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name %>:</td>
+            <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name  if title.title_type %>:</td>
             <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
           </tr>
         <% end %>
@@ -73,7 +73,11 @@
         </tr>
         <tr>
           <td><%= t('activerecord.attributes.manifestation.jpn_or_foreign') %>:</td>
-          <td><%= Manifestation::JPN_OR_FOREIGN.invert[manifestation.jpn_or_foreign] %></td>
+          <td>
+            <% Manifestation::JPN_OR_FOREIGN.each do |jpn_or_foreign| %>
+              <%= jpn_or_foreign.name if jpn_or_foreign.id == manifestation.jpn_or_foreign %>
+            <% end %>
+          </td>
         </tr>
         <tr>
           <td><%= t('activerecord.models.language') -%>:</td>

@@ -9,42 +9,47 @@ jQuery(function(){
     displayArticleTitle(article_title);
   });
 
-  // look for manifestations with the same title
-  <% unless @manifestation.new_record? %>
-    search_manifestation();
+  <% if SystemConfiguration.get('manifestation.check_duplicate_title') %>
+    // look for manifestations with the same title
+    <% unless @manifestation.new_record? %>
+      search_manifestation();
+    <% end %>
+    $("#manifestation_original_title").change(function(){
+       search_manifestation();
+    });
   <% end %>
-  $("#manifestation_original_title").change(function(){
-     search_manifestation();
-  });
 })
 
-function search_manifestation() {
-  //var user_id = $("#manifestation_original_title").val();
-  $.ajax({
-    type: "GET",
-    url: "/manifestations/search_manifestation",
-    data: { 
-      "original_title": $("#manifestation_original_title").val(),
-      "manifestation_id": "<%= @manifestation.try(:id) %>"
-    },
-    success: function(obj) {
-      $('#search_manifestation > li').remove();
-      $('#search_manifestation').hide();
-      if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
-        $('#search_manifestation').show();
-        var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
-        data += "<ui>";
-        jQuery.each(obj["manifestation_urls"], function(index, value) {  
-          data += "<li>";
-          data += value;
-          data += "</li>";
-        });
-        data += "</ui>";
-        $('#search_manifestation').html(data);
-      } 
-    }
-  });
-}
+<% if SystemConfiguration.get('manifestation.check_duplicate_title') %>
+  // look for manifestations with the same title
+  function search_manifestation() {
+    //var user_id = $("#manifestation_original_title").val();
+    $.ajax({
+      type: "GET",
+      url: "/manifestations/search_manifestation",
+      data: { 
+        "original_title": $("#manifestation_original_title").val(),
+        "manifestation_id": "<%= @manifestation.try(:id) %>"
+      },
+      success: function(obj) {
+        $('#search_manifestation > li').remove();
+        $('#search_manifestation').hide();
+        if(obj["manifestation_urls"] && obj["manifestation_urls"].length > 0) {
+          $('#search_manifestation').show();
+          var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
+          data += "<ui>";
+          jQuery.each(obj["manifestation_urls"], function(index, value) {  
+            data += "<li>";
+            data += value;
+            data += "</li>";
+          });
+          data += "</ui>";
+          $('#search_manifestation').html(data);
+        } 
+      }
+   });
+ } 
+<% end %>
 
 function displayArticleTitle(article_title) {
   var manifestation_type = $('#manifestation_manifestation_type_id').val();
@@ -313,7 +318,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.carrier_type') -%>
     <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "carrier_type_id" %>
-    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250) %>
+    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250, false) %>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
@@ -321,12 +326,14 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
     <%= select2_script "manifestation_type_id" %>
-    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300) %>
+    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300, false) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%= f.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%#= f.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%= select2_script "jpn_or_foreign" %>
+    <%= make_select2_struct(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, 200, true, false) %>
   </div>
 
   <div class="field" id="frequency_field">
@@ -343,7 +350,7 @@ $(document).keydown(function(e) {
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
     <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
     <%= select2_script "country_of_publication_id" %>
-    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false) %>
+    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false, false) %>
   </div>
 
   <div class="field">
@@ -466,7 +473,7 @@ $(document).keydown(function(e) {
     <%= f.label t('role.required_role') -%>
     <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
     <%= select2_script "required_role_id"%>
-    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false) %>
+    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false, false) %>
   </div>
 
   <div class="field">
@@ -505,7 +512,9 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
-    <%= f.select :missing_issue, missing_issue_statuses, :include_blank => true -%>
+    <%#= f.select :missing_issue, missing_issue_statuses, :include_blank => true -%>
+    <%= select2_script "missing_issue" %>
+    <%= make_select2_struct(:missing_issue, "manifestation[missing_issue]", missing_issue_statuses, @manifestation.missing_issue, 200, true, false) %>
   </div>
 
   <div class="field">
@@ -561,6 +570,22 @@ $(document).keydown(function(e) {
     <%= f.text_field :exinfo_8, :class => "resource_integer" %>
   </div>
 -->
+
+  <div class="field">
+    <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
+    <%= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+    <%# TODO make_select2 内の分岐がうまくできない %>
+    <%#= select2_script "use_license_id" %>
+    <%#= test_select2(
+      :use_license_id, 
+      "manifestation[use_license_id]", 
+      @use_licenses, 
+      @manifestation.use_license_id, 
+      250, 
+      true, 
+      false
+    ) %>
+  </div>
 
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>

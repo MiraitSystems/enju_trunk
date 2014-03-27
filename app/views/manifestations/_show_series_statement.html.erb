@@ -15,6 +15,14 @@
     <td><%= t('activerecord.attributes.series_statement.series_statement_identifier') -%></td>
     <td><%= @series_statement.series_statement_identifier %></td>
   </tr>
+  <tr class="line<%= cycle("0", "1") %>">
+    <td><%= t('activerecord.attributes.series_statement.sequence_pattern') -%></td>
+    <td><%= @series_statement.try(:sequence_pattern).try(:name) %></td>
+  </tr>
+  <tr class="line<%= cycle("0", "1") %>">
+    <td><%= t('activerecord.models.publication_status') -%></td>
+    <td><%= @series_statement.try(:publication_status).try(:display_name) %></td>
+  </tr>
   <%- if current_user && current_user.has_role?('Librarian') -%>  
     <tr class="line<%= cycle("0", "1") %>">
       <td><%= t('activerecord.attributes.series_statement.note') -%></td>

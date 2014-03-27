@@ -9,6 +9,8 @@ class FunctionClass < ActiveRecord::Base
   validates :name, presence: true
   validates :display_name, presence: true
 
+  validates_uniqueness_of :name
+
   def self.noclass_id
     where(name: 'noclass').first.try(:id)
   end

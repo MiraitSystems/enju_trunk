@@ -4,13 +4,10 @@ require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation')
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
-  include Manifestation::OutputColumns
+  include OutputColumns
   has_many :creators, :through => :creates, :source => :agent, :order => :position
-  has_many :creators_order_type, :through => :creates, :source => :agent, :order => 'create_type_id, position'
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
-  has_many :contributors_order_type, :through => :realizes, :source => :agent, :order => 'realize_type_id, position'
   has_many :publishers, :through => :produces, :source => :agent, :order => :position
-  has_many :publishers_order_type, :through => :produces, :source => :agent, :order => 'produce_type_id, position'
   has_many :work_has_subjects, :foreign_key => 'work_id', :dependent => :destroy
   has_many :subjects, :through => :work_has_subjects, :order => :position
   has_many :reserves, :foreign_key => :manifestation_id, :order => :position
@@ -46,8 +43,15 @@ class Manifestation < ActiveRecord::Base
   has_many :orders
   has_many :payments
 
+  belongs_to :use_license, :foreign_key => 'use_license_id'
+
   scope :without_master, where(:periodical_master => false)
-  JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
+  # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
+  SELECT2_OBJ = Struct.new(:id, :name)
+  JPN_OR_FOREIGN = [ 
+    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn')), 
+    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign')) 
+  ]
 
   SUNSPOT_EAGER_LOADING = {
     include: [
@@ -468,18 +472,11 @@ class Manifestation < ActiveRecord::Base
     boolean :circulation_status_in_factory do
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
-
-    # 2014
-    string :manifestation_identifier, :multiple => true do
-      if root_of_series? # 雑誌の場合
-        # 同じ雑誌の全号の蔵書の蔵書情報IDのリストを取得する
-        series_manifestations.
-          map(&:manifestation_identifier).compact
-      else
-        manifestation_identifier
+    boolean :no_item do
+      unless root_of_series?
+        true if items.blank?
       end
     end
-
 
   end
 
@@ -499,6 +496,7 @@ class Manifestation < ActiveRecord::Base
 
   validates_presence_of :carrier_type, :manifestation_type, :country_of_publication
   validates_associated :carrier_type, :languages, :manifestation_type, :country_of_publication
+  validates_associated :use_license, :allow_nil => true
   validates_numericality_of :acceptance_number, :allow_nil => true
   validates_uniqueness_of :nacsis_identifier, :allow_nil => true
   validate :check_rank
@@ -1003,6 +1001,7 @@ class Manifestation < ActiveRecord::Base
     end
     return @struct_theme_array
   end
+
 
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)

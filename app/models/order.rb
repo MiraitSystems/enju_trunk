@@ -1,7 +1,6 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :deliver_place_code_4, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :discount_commision, :prepayment_principal, :yen_imprest, :order_organization_id, :note, :group, :pair_manifestation_id, :contract_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment,
-                  :ordered_at, :order_year, :reference_code_id, :publisher_type_id
+  attr_accessible :order_identifier, :manifestation_id, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :margin_ratio, :original_price, :cost, :order_organization_id, :note, :group, :pair_manifestation_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment,:ordered_at, :order_year, :reference_code_id, :publisher_type_id
 
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
@@ -13,7 +12,6 @@ class Order < ActiveRecord::Base
   belongs_to :deliver_place_1, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_1'
   belongs_to :deliver_place_2, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_2'
   belongs_to :deliver_place_3, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_3'
-  belongs_to :deliver_place_4, :class_name => 'Keycode', :foreign_key => 'deliver_place_code_4'
   belongs_to :application_form_1, :class_name => 'Keycode', :foreign_key => 'application_form_code_1'
   belongs_to :application_form_2, :class_name => 'Keycode', :foreign_key => 'application_form_code_2'
 
@@ -25,7 +23,6 @@ class Order < ActiveRecord::Base
   belongs_to :budget_subject, :class_name => 'Keycode', :foreign_key => 'budget_subject_code'
   belongs_to :transportation_route, :class_name => 'Keycode', :foreign_key => 'transportation_route_code'
   belongs_to :bookstore, :class_name => 'Keycode', :foreign_key => 'bookstore_code'
-
   belongs_to :reference_code, :class_name => 'Keycode', :foreign_key => 'reference_code_id'
   belongs_to :publisher_type, :class_name => 'Keycode', :foreign_key => 'publisher_type_id'
 
@@ -45,9 +42,9 @@ class Order < ActiveRecord::Base
   validates :meeting_holding_month_2, :numericality => true, :allow_blank => true
   validates :number_of_missing, :numericality => true
   validates :currency_rate, :numericality => true
-  validates_numericality_of :discount_commision, :greater_than => 0
-  validates :prepayment_principal, :numericality => true, :allow_blank => true
-  validates :yen_imprest, :numericality => true
+  validates_numericality_of :margin_ratio, :greater_than => 0
+  validates :original_price, :numericality => true, :allow_blank => true
+  validates :cost, :numericality => true
 
   validates :collection_form_code, :presence => true
   validates :collection_status_code, :presence => true
@@ -61,7 +58,7 @@ class Order < ActiveRecord::Base
 
     self.number_of_acceptance_schedule = 0 if self.number_of_acceptance_schedule.blank?
     self.number_of_missing = 0 if self.number_of_missing.blank?
-    self.prepayment_principal = 0.0 if self.prepayment_principal.blank?
+    self.original_price = 0.0 if self.original_price.blank?
 
     if self.currency_rate.blank?
       self.currency_rate = 0.0
@@ -69,13 +66,13 @@ class Order < ActiveRecord::Base
       self.currency_rate = BigDecimal("#{self.currency_rate}").floor(2)
     end
 
-    if self.discount_commision.blank?
-      self.discount_commision = 1.00
+    if self.margin_ratio.blank?
+      self.margin_ratio = 1.00
     else
-      self.discount_commision = BigDecimal("#{self.discount_commision}").floor(3)
+      self.margin_ratio = BigDecimal("#{self.margin_ratio}").floor(3)
     end
 
-    self.yen_imprest = 0 if self.yen_imprest.blank?
+    self.cost = 0 if self.cost.blank?
     self.taxable_amount = 0 if self.taxable_amount.blank?
     self.tax_exempt_amount = 0 if self.tax_exempt_amount.blank?
   end
@@ -92,7 +89,7 @@ class Order < ActiveRecord::Base
     return @struct_agent_array
   end
 
-  def set_yen_imprest
+  def set_cost
       exchangerate = ExchangeRate.find(:first, :order => "started_at DESC", :conditions => ["currency_id = ? and started_at <= ?", self.currency_id, self.ordered_at])
 
       if exchangerate
@@ -103,9 +100,9 @@ class Order < ActiveRecord::Base
 
       if self.currency_id == 28
         self.currency_rate = 1 if self.currency_rate == 0
-        self.yen_imprest = (self.currency_rate * self.discount_commision * self.prepayment_principal).to_i
+        self.cost = (self.currency_rate * self.margin_ratio * self.original_price).to_i
       else
-        self.yen_imprest = (((self.currency_rate * self.discount_commision * 100).to_i / 100.0) * self.prepayment_principal).to_i
+        self.cost = (((self.currency_rate * self.margin_ratio * 100).to_i / 100.0) * self.original_price).to_i
       end
   end
 
@@ -120,7 +117,7 @@ class Order < ActiveRecord::Base
       self.unit_price = 0
     else
       begin
-        self.unit_price = (self.yen_imprest / self.number_of_acceptance_schedule).to_i
+        self.unit_price = (self.cost / self.number_of_acceptance_schedule).to_i
       rescue
         self.unit_price = 0
       end

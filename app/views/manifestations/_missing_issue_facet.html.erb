@@ -7,8 +7,15 @@
         <%= missing_status_facet(facet.value, current_status, facet) %>
       </li>
     <%- end -%>
+    <%- @no_item_facet.each do |facet| %>
+      <% next unless facet.value %>
+      <li><%= no_item_facet('no_item', facet) %></li>
+    <% end %>
     <%- if params[:missing_issue] -%>
       <li><%= link_to t('page.remove_this_facet'), url_for(params.merge(:missing_issue => nil, :page => nil, :view => nil)) -%></li>
+    <%- end -%>
+    <%- if params[:no_item] -%>
+      <li><%= link_to t('page.remove_this_facet'), url_for(params.merge(:no_item => nil, :page => nil, :view => nil)) -%></li>
     <%- end -%>
   </ul>
 <%- end %>

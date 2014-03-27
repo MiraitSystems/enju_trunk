@@ -1,6 +1,9 @@
 EnjuLeaf::Application.routes.draw do
+  resources :sequence_patterns
+  resources :publication_statuses
   resources :claim_types
   resources :language_types
+  resources :output_column_lists
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection
@@ -275,7 +278,8 @@ EnjuLeaf::Application.routes.draw do
     resources :payments
     get :paid, :on => :member
     get :search, :on => :collection
-    get :create_subsequent_year_orders, :on => :collection 
+    get :create_subsequent_year_orders, :on => :collection
+    post :output_csv, :on => :collection
   end
   match 'payments/search', :to => 'payments#search'
   resources :payments
