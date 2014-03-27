@@ -35,9 +35,10 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
             manifestation_type = get_manifestation_type_from_data(extraparams["manifestation_type"].first)
             auto_numbering     = extraparams["auto_numbering"].first
             numbering          = ResourceImport.set_numbering(extraparams["numbering"].first, manifestation_type)
+            external_resource  = extraparams["external_resource"]
             file = Tsvfile_Adapter.new.open_import_file(filename)
             field, datas = Tsvfile_Adapter.new.set_datas(file)
-            read_data(field, manifestation_type, resource_import_textfile, numbering, auto_numbering, import_textresult, { datas: datas })
+            read_data(field, manifestation_type, resource_import_textfile, numbering, auto_numbering, external_resource, import_textresult, { datas: datas })
           rescue => e
             logger.info e.message
             import_textresult.error_msg = e.message
@@ -60,11 +61,12 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
               manifestation_type = get_manifestation_type_from_data(extraparams["manifestation_type"][i].to_i)
               auto_numbering     = extraparams["auto_numbering"][i]
               numbering          = ResourceImport.set_numbering(extraparams["numbering"][i], manifestation_type)
+              external_resource  = extraparams["external_resource"]
               logger.info "manifestation_type: #{manifestation_type.display_name}" if manifestation_type
 
               field_row_num = READ_ARTICLE.call(manifestation_type) ? ARTICLE_HEADER_ROW : BOOK_HEADER_ROW
               field = Excelfile_Adapter.new.set_field(oo, sheet, manifestation_type, field_row_num)
-              read_data(field, manifestation_type, resource_import_textfile, numbering, auto_numbering, import_textresult, { oo: oo })
+              read_data(field, manifestation_type, resource_import_textfile, numbering, auto_numbering, external_resource, import_textresult, { oo: oo })
             rescue => e
               logger.info e.message
               import_textresult.error_msg   =  I18n.t('resource_import_textfile.error.failed_to_read_sheet', :sheet => sheet)
@@ -143,7 +145,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
     return true
   end
 
-  def read_data(field, manifestation_type, textfile, numbering, auto_numbering, import_textresult, options = { oo: nil, datas: nil })
+  def read_data(field, manifestation_type, textfile, numbering, auto_numbering, external_resource, import_textresult, options = { oo: nil, datas: nil })
     default_sheet = options[:oo] ? options[:oo].default_sheet : nil
     check_sheet_can_import(field, manifestation_type, { oo: options[:oo], datas: options[:datas] })
 
@@ -166,14 +168,14 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
         options[:oo].first_column.upto(options[:oo].last_column) do |column|
           origin_datas.store(column, fix_data(options[:oo].cell(row_num, column).to_s.strip))
         end
-        num = import_datas(field, origin_datas, row_num, textfile, num, manifestation_type, numbering, auto_numbering, { sheet: options[:oo].default_sheet } )
+        num = import_datas(field, origin_datas, row_num, textfile, num, manifestation_type, numbering, auto_numbering, external_resource, { sheet: options[:oo].default_sheet } )
       end
     else
       options[:datas].each_with_index do |row, row_num|
         origin_datas = Hash::new
         row.each_with_index { |column, c| origin_datas.store(c, fix_data(column.to_s.strip)) }
         # 2行目からデータ行なので row_num を +2 する
-        num = import_datas(field, origin_datas, row_num + 2, textfile, num, manifestation_type, numbering, auto_numbering) 
+        num = import_datas(field, origin_datas, row_num + 2, textfile, num, manifestation_type, numbering, auto_numbering, external_resource) 
       end
     end
     Sunspot.commit
@@ -183,7 +185,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
     create_import_end_message(num, textfile, default_sheet)
   end
 
-  def import_datas(field, origin_datas, row_num, textfile, num, manifestation_type, numbering, auto_numbering, options = { sheet: nil })
+  def import_datas(field, origin_datas, row_num, textfile, num, manifestation_type, numbering, auto_numbering, external_resource, options = { sheet: nil })
     logger.info "import start row_num=#{row_num}"
     import_textresult = ResourceImportTextresult.new(resource_import_textfile_id: textfile.id, body: origin_datas.values.join("\t"))
     import_textresult.extraparams = "{'sheet'=>'#{options[:sheet]}'}" if options[:sheet]
@@ -194,7 +196,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
         if READ_ARTICLE.call(manifestation_type)
           import_article_data(import_textresult, field, origin_datas, manifestation_type, textfile, numbering, num)
         else
-          import_book_data(import_textresult, field, origin_datas, manifestation_type, textfile, numbering, auto_numbering, num, { seet: options[:sheet] })
+          import_book_data(import_textresult, field, origin_datas, manifestation_type, textfile, numbering, auto_numbering, external_resource, num, { seet: options[:sheet] })
         end
         #TODO do refactring -- end --
       end
