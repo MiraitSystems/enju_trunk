@@ -1,3 +1,5 @@
+<div id='column_wide_wrapper'>
+<div id='column_wide'>
 <div class="column" id="col1">
   <div class="portlet" id="library">
     <h2 class="title"><%= t('activerecord.models.library') -%></h2>
@@ -62,6 +64,8 @@
         <li><%= link_to t('activerecord.models.title_type'), title_types_path -%></li>
         <li><%= link_to t('order.system_menu_title'), orders_path %></li>
         <li><%= link_to t('payment.system_menu_title'), payments_path %></li>
+        <li><%= link_to t('activerecord.models.publication_status'), publication_statuses_path %></li>
+        <li><%= link_to t('activerecord.models.sequence_pattern'), sequence_patterns_path %></li>
       </ul>
     </div>
   </div>
@@ -97,6 +101,7 @@
         <li><%= link_to t('activerecord.models.remove_reason'), remove_reasons_path -%></li>
         <li><%= link_to t('activerecord.models.agent_type'), agent_types_path -%></li>
         <li><%= link_to t('activerecord.models.language'), languages_path -%></li>
+        <li><%= link_to t('activerecord.models.language_type'), language_types_path -%></li>
         <li><%= link_to t('activerecord.models.country'), countries_path -%></li>
         <li><%= link_to t('activerecord.models.use_restriction'), use_restrictions_path -%></li>
         <li><%= link_to t('activerecord.models.frequency'), frequencies_path -%></li>
@@ -106,6 +111,7 @@
         <li><%= link_to t('activerecord.models.realize_type'), realize_types_path -%></li>
         <li><%= link_to t('activerecord.models.produce_type'), produce_types_path -%></li>
         <li><%= link_to t('activerecord.models.license'), licenses_path -%></li>
+        <li><%= link_to t('activerecord.models.claim_type'), claim_types_path -%></li>
       </ul>
     </div>
   </div>
@@ -124,7 +130,10 @@
         <li><%= link_to t('activerecord.models.currency'), currencies_path -%></li>
         <li><%= link_to t('activerecord.models.exchange_rate'), exchange_rates_path -%></li>
         <li><%= link_to t('activerecord.models.keycode'), keycodes_path -%></li>
+        <li><%= link_to t('activerecord.models.output_column_list'), output_column_lists_path -%></li>
       </ul>
     </div>
   </div>
+</div>
+</div>
 </div>

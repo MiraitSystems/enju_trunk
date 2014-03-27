@@ -1,3 +1,119 @@
+<script>
+<!--
+  var document_application_columns = <%= raw @document_application_columns.to_json %>;
+  var list_of_order_columns = <%= raw @list_of_order_columns.to_json %>;
+  var list_of_deferred_payment_acceptance_columns = <%= raw @list_of_deferred_payment_acceptance_columns.to_json %>;
+  var list_of_acceptance_situation_columns = <%= raw @list_of_acceptance_situation_columns.to_json %>;
+  var list_of_payment_columns = <%= raw @list_of_payment_columns.to_json %>;
+  var list_of_acceptance_after_payment_columns = <%= raw @list_of_acceptance_after_payment_columns.to_json %>;
+  $(function(){
+    $('#document_application').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(document_application_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#list_of_order').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(list_of_order_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#list_of_deferred_payment_acceptance').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(list_of_deferred_payment_acceptance_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#list_of_payment').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(list_of_payment_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#list_of_acceptance_situation').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(list_of_acceptance_situation_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#list_of_acceptance_after_payment').click(function() {
+      $('#output-form input:checkbox').prop('checked', false);
+      $(list_of_acceptance_after_payment_columns).each(function(){
+        $('#output-form [value="' + this + '"]').prop('checked', true)
+      });
+      return false;
+    });
+
+    $('#excelx_book_dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: Math.floor($(window).width() * 0.60),
+    });
+    // function to open the dialog
+    $('#excelx_book_dialog_opener').click( function() {
+      $('#excelx_book_dialog').dialog('open');
+      return false;
+    });
+    $('#excelx_book_trigger').click( function() {
+      $('#output-form [name="order_identifier"]').val($('#search-form [name="order_identifier"]').val());
+      $('#output-form [name="publication_year"]').val($('#search-form [name="publication_year"]').val());
+      $('#output-form [name="identifier"]').val($('#search-form [name="identifier"]').val());
+      $('#search-form [name="bookstore_code[]"]').each(function(index){
+        if($(this).prop('checked') == true){
+          $('#output-form [name="bookstore_code[]"]').eq(index).val($(this).val());
+        }
+        else{
+          $('#output-form [name="bookstore_code[]"]').eq(index).val('');
+        }
+      });
+      $('#search-form [name="order_organization_id[]"]').each(function(index){
+        if($(this).prop('checked') == true){
+          $('#output-form [name="order_organization_id[]"]').eq(index).val($(this).val());
+        }
+        else{
+          $('#output-form [name="order_organization_id[]"]').eq(index).val('');
+        }
+      });
+      $('#search-form [name="payment_form_code[]"]').each(function(index){
+        if($(this).prop('checked') == true){
+          $('#output-form [name="payment_form_code[]"]').eq(index).val($(this).val());
+        }
+        else{
+          $('#output-form [name="payment_form_code[]"]').eq(index).val('');
+        }
+      });
+      
+      $('#output-form').submit();
+      $('#excelx_book_dialog').dialog('close');
+      return false;
+    });
+    $('#check_all_bookstore_code').click(function() {
+      $('input.bookstore_code:checkbox').prop('checked', $(this).is(':checked'));  
+    });
+    $('#check_all_order_organization_id').click(function() {
+      $('input.order_organization_id:checkbox').prop('checked', $(this).is(':checked'));  
+    });
+    $('#check_all_payment_form_code').click(function() {
+      $('input.payment_form_code:checkbox').prop('checked', $(this).is(':checked'));  
+    });
+    
+  });
+// -->
+</script>
+<% content_for :javascript do %>
+<% end %>
+
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.order')) -%></h1>
 <div id="content_list">
@@ -13,31 +129,112 @@
     <%= t('activerecord.attributes.order.order_identifier') %>
     <%= text_field :order, :order_identifier, {:disabled => true} %>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}, :disabled => "") %><br />
+    <%= t('activerecord.attributes.order.order_year') %>:
+    <%= select('', :order_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}, :disabled => "") %><br />
   </p>
 
 <% else %>
-  <%= form_tag({:action => "search"},  {:method => "get"}) do %>
+  <%= form_tag({:action => "search"},  {:method => "get", :id => "search-form"}) do %>
     <% if @selected_title %>
       <p>
       <%= t('activerecord.attributes.manifestation.original_title') -%>:
       <%= @selected_title %>
       </p>
     <% end %>
-
+    
     <p>
-    <%= t('activerecord.attributes.order.order_identifier') -%>:
-    <%= text_field_tag :order_identifier, @selected_order %>
+      <%= t('activerecord.attributes.order.order_identifier') -%>:
+      <%= text_field_tag :order_identifier, @selected_order %>
 
-    <%= t('activerecord.attributes.order.publication_year') %>:
-    <%= select('', :publication_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
+      <%= t('activerecord.attributes.order.order_year') %>:
+      <%= select('', :order_year, @select_years, {:selected => @selected_year, :prompt => t('page.all_search_term')}) %>
     </p>
+    <p>
+      <%= t('activerecord.attributes.manifestation.identifier') -%>:
+      <%= text_field_tag :identifier, @selected_identifier %>
+    </p>
+    <p>
+      <%= t('activerecord.attributes.order.bookstore_code') %>:<input type="checkbox" id="check_all_bookstore_code"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.bookstore_code')) %>
+    </p>
+    <ul>
+      <% bookstore_codes.each_with_index do |bookstore_code, index| %>
+        <li style="list-style: none; width: 30%; float: left;">
+          <%= check_box_tag "bookstore_code[]", bookstore_code.id, @selected_bookstore_code.include?(bookstore_code.id.to_s), :class => "bookstore_code" %><%= bookstore_code.keyname.localize %>
+        </li>
+      <% end %>
+    </ul>
+    <p style="clear:left;">
+      <%= t('activerecord.attributes.order.order_organization_id') %>:<input type="checkbox" id="check_all_order_organization_id"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.order_organization_id')) %>
+    </p>
+    <ul>
+      <% @agents.each do |agent| %>
+        <li style="list-style: none; width: 30%; float: left;">
+          <%= check_box_tag "order_organization_id[]", agent.id, @selected_order_organization_id.include?(agent.id.to_s), :class => "order_organization_id" %><%= agent.full_name %>
+        </li>
+      <% end %>
+    </ul>
+    <p style="clear:left;">
+      <%= t('activerecord.attributes.order.payment_form_code') %>:<input type="checkbox" id="check_all_payment_form_code"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.payment_form_code')) %>
+    </p>
+    <ul>
+      <% payment_form_codes.each do |payment_form_code| %>
+        <li style="list-style: none; width: 30%; float: left;">
+          <%= check_box_tag "payment_form_code[]", payment_form_code.id, @selected_payment_form_code.include?(payment_form_code.id.to_s), :class => "payment_form_code" %><%= payment_form_code.keyname.localize %>
+        </li>
+      <% end %>
+    </ul>
 
-
+    <br style="clear: left;" />
     <%= submit_tag t('page.search') %>
+    <button id="excelx_book_dialog_opener" type="button">
+      <%= t('page.output', :model => t('page.search_result')) %>
+    </button>
 
   <% end %>
+
+    <div id="excelx_book_dialog" title="<%= t('page.output', :model => t('page.search_result')) %>" style="display:none;">
+      <%= form_tag({:action => "output_csv"},  {:method => "post", :id => "output-form"}) do %>
+        <%= hidden_field_tag "order_identifier" %>
+        <%= hidden_field_tag "publication_year" %>
+        <%= hidden_field_tag "identifier" %>
+        <% bookstore_codes.each do |bookstore_code| %>
+          <%= hidden_field_tag "bookstore_code[]" %>
+        <% end %>
+        <% @agents.each do |agent| %>
+          <%= hidden_field_tag "order_organization_id[]" %>
+        <% end %>
+        <% payment_form_codes.each do |payment_form_code| %>
+          <%= hidden_field_tag "payment_form_code[]" %>
+        <% end %>
+        <div id='check_cols_book'>
+          <br />
+          <strong><%= t('order.select_document') %></strong>
+          <ul>
+            <li><%= link_to t('order.document_application'), "", {:id => "document_application"} %></li>
+            <li><%= link_to t('order.list_of_order'), "", {:id => "list_of_order"} %></li>
+            <li><%= link_to t('order.list_of_deferred_payment_acceptance'), "", {:id => "list_of_deferred_payment_acceptance"} %></li>
+            <li><%= link_to t('order.list_of_acceptance_situation'), "", {:id => "list_of_acceptance_situation"} %></li>
+            <li><%= link_to t('order.list_of_payment'), "", {:id => "list_of_payment"} %></li>
+            <li><%= link_to t('order.list_of_acceptance_after_payment'), "", {:id => "list_of_acceptance_after_payment"} %></li>
+          </ul>
+          <br />
+          <strong><%= t('page.output_excelx_dialog') %></strong><br />
+          <ul>
+            <% @ouput_columns.each_with_index do |ouput_column, index| %>
+              <li style="list-style: none; width: 30%; float: left;">
+                <%= check_box_tag "ouput_column[]", ouput_column[:name] %>
+                <%= t("order_output_csv.#{ouput_column[:name]}") -%>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+        <br style='clear: both' />
+        <div>
+          <br /><button id="excelx_book_trigger"><%= t('page.output_excelx_detail') %></button>
+        </div>
+      <% end %>
+    </div>
+
 <% end %>
 
 <div style="color: red"><%= raw flash[:message].to_s -%></div>
@@ -45,23 +242,23 @@
 
 <table class="index">
   <tr>
-    <th><%= t('activerecord.attributes.order.publication_year') -%></th>
+    <th><%= t('activerecord.attributes.order.order_year') -%></th>
     <th><%= t('activerecord.attributes.order.order_identifier') -%>/</br>
     <%= t('activerecord.attributes.manifestation.identifier') -%></th>
-    <th><%= t('activerecord.attributes.order.yen_imprest') -%></th>
+    <th><%= t('activerecord.attributes.order.cost') -%></th>
     <th><%= t('activerecord.attributes.order.payment_sum') -%></th>
     <th><%= t('activerecord.attributes.order.adption_code') %>/</br>
     <%= t('activerecord.attributes.order.bookstore_code') %></th>
     <th><%= t('activerecord.attributes.order.payment_form_code') %>/</br>
     <%= t('activerecord.attributes.order.collection_status_code') %></th>
     <th><%= t('activerecord.attributes.order.deliver_place_code_1') %>/</br>
-    <%= t('activerecord.attributes.order.deliver_place_code_5') %></th>
+    <%= t('activerecord.attributes.order.reference_code_id') %></th>
     <th></th>
   </tr>
 
 <%- @orders.each do |order| -%>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= order.publication_year %></td>
+    <td><%= order.order_year %></td>
     <% if @manifestation %>
       <td><%= link_to order.order_identifier, order_path(order, :return_index => true) %></br>
     <% else %>
@@ -69,14 +266,14 @@
     <% end %>
     <%= link_to order.manifestation.identifier, order.manifestation, {:href =>manifestation_path(order.manifestation, :all_manifestations => true)} %></td>
 
-    <td><%= order.yen_imprest %></td>
+    <td><%= order.cost %></td>
     <td><%= order.total_payment %></td> 
     <td><%= order.adption.keyname if order.adption -%></br>
     <%= order.bookstore.keyname if order.bookstore -%></td>
     <td><%= order.payment_form.keyname if order.payment_form -%></br>
     <%= order.collection_status.keyname if order.collection_status -%></td>
     <td><%= order.deliver_place_1.keyname if order.deliver_place_1 -%></br>
-    <%= order.deliver_place_5.keyname if order.deliver_place_5 -%></td>
+    <%= order.reference_code.keyname if order.reference_code -%></td>
 
     <td>
         <% if @manifestation %>

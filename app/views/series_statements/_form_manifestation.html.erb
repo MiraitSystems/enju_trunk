@@ -34,10 +34,13 @@ function displayArticleTitle(article_title) {
 }
 
 var ItemField_language = {
-  currentNumber : <%= raw @series_statement_languages_count.to_json %>,
+  currentNumber : <%= raw (@series_work_has_languages.blank? ? 1 : @series_work_has_languages.size).to_json %>,
   itemTemplate : ''
     + '<select id="language_id___count__" name="language_id[__count__]">'
-    + <%= raw @languages.collect{ |language| ["<option value='" + language.id.to_s + "'>" + language.display_name.localize + "</option>"] }.join().to_json %>
+    + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
+    + '</select>&#10'
+    + '<select id="language_type___count__" name="language_type[__count__]">'
+    + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
     + '</select>&#10'
     + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
     + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
@@ -56,6 +59,55 @@ var ItemField_language = {
   }
 }
 </script>
+<script id="script_add_title">
+  var ItemField_title = {
+    currentNumber :<%= @count_titles-1 -%>,
+    itemTemplate : ''
+                 + '<input id="manifestation_title___count__" name="manifestation_title[__count__]"  placeholder=<%= t('activerecord.models.title') %> type="text" value="" class="resource_title" /> '
+                 + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
+                 <% @title_types.collect do |m| %>
+                   + '<option value="<%= m.id %>"><%= m.display_name %></option>'
+                 <% end %>
+
+                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> ' 
+
+                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
+
+                 + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
+                 + '<input type="button" value="-" onClick="ItemField_title.remove();" /> ',
+    add : function () {
+
+      this.currentNumber++;
+      var field = document.getElementById('VF' + this.currentNumber);
+
+      if (field.style.display == "none"){
+        field.style.display = "block";
+      }else{
+        var replaceCount = this.currentNumber;
+        var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+        field.innerHTML = newItem;
+        var nextNumber = this.currentNumber + 1;
+        var new_area = document.createElement("div");
+        new_area.setAttribute("id", "VF" + nextNumber);
+        new_area.setAttribute("class", "field");
+        field.appendChild(new_area);
+      }
+    },
+    remove : function () {
+
+      if ( this.currentNumber == 0) { return; }
+
+      var field = document.getElementById('VF' + this.currentNumber);
+      input_value = document.getElementById('manifestation_title_' + this.currentNumber);
+      input_value.value = "";
+      var select_state = document.getElementById('manifestation_work_has_titles_attributes_' + this.currentNumber + '_title_type_id').getElementsByTagName('option');
+      select_state[0].selected = true;
+      field.style.display="none";
+      this.currentNumber--;
+
+    }
+  };
+</script>
 
   <%= render 'manifestations/observe_field' %>
 
@@ -64,13 +116,43 @@ var ItemField_language = {
     <%= f_m.text_field :article_title, :class => 'resource_title' %>
   </div>
 
+  <% if SystemConfiguration.get('manifestation.use_titles') %>
+    <div class="field">
+      <label><%= t('activerecord.attributes.manifestation.titles') %></label>
+      <% i = 0 %>
+      <%= f_m.fields_for :work_has_titles, @series_statement.root_manifestation.work_has_titles do |title| %>
+        <div id="VF<%= i %>">
+          <% if title.object.manifestation_title %>
+           <%= text_field_tag "manifestation_title[#{i}]",
+                title.object.manifestation_title.title,
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
+          <% else %>
+            <%= text_field_tag "manifestation_title[#{i}]",
+                "",
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
+          <% end %>
+          <%= title.select :title_type_id, @title_types.collect{ |m| [m.display_name,m.id] } %>
+          <%= title.hidden_field :title_id  %>
+          <%= title.hidden_field :position %>
+          <%= button_to_function '+', 'ItemField_title.add()' -%>
+          <%= button_to_function '-', 'ItemField_title.remove()' if i > 0 %>
+          <br />
+        </div>
+        <% i +=1 %>
+      <% end %>
+      <div id="VF<%= i %>" class="field"></div>
+    </div>
+  <% end %>
+
   <div class="field">
     <%= f_m.label :identifier %><br />
     <%= f_m.text_field :identifier %>
     <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
- 
+
   <%= render 'manifestations/form_agent_field' %>
 
   <div class="field">
@@ -119,19 +201,24 @@ var ItemField_language = {
 
   <div class="field" id="language">
     <%= f_m.label t('activerecord.models.language') -%>
-    <% if @series_statement_languages.blank? %>
+    <% if @series_work_has_languages.blank? %>
       <div id="LANG0">
         <%= select_tag 'language_id[0]',
-            options_for_select(@languages.collect{|language| [language.display_name.localize, language.id]},
+            options_for_select(@languages.collect{|l| [l.display_name.localize, l.id]},
             :selected => @default_language.id ) %>
+        <%= select_tag 'language_type[0]',
+            options_for_select(@language_types.collect{|t| [t.display_name.localize, t.id]}) %>
         <%= button_to_function '+', 'ItemField_language.add()' -%>
       </div>
     <% else %>
-      <% @series_statement_languages.each_with_index do |language, i| %>
+      <% @series_work_has_languages.each_with_index do |whl, i| %>
         <div id="LANG<%= i.to_s %>">
           <%= select_tag 'language_id[' + i.to_s + ']',
-              options_for_select(@languages.collect{|language| [language.display_name.localize, language.id]},
-              :selected => language ) %>
+              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id]},
+              :selected => whl[:language_id] ) %>
+          <%= select_tag 'language_type[' + i.to_s + ']',
+              options_for_select(@language_types.collect{|t| [t.display_name.localize, t.id]},
+              :selected => whl[:language_type_id] ) %>
           <%= button_to_function '+', 'ItemField_language.add()' -%>
           <%= button_to_function '-', 'ItemField_language.remove(' + i.to_s + ')' if i > 0 -%>
         </div>
@@ -228,7 +315,14 @@ var ItemField_language = {
     <%= f_m.label t('root_manifestation.exinfo_8') %>
     <%= f_m.text_field :exinfo_8, :class => "resource_integer" %>
   </div>
---> 
+-->
+
+
+  <div class="field">
+    <%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %><br />
+    <%= f_m.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+  </div>
+
 
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>

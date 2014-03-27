@@ -1,7 +1,7 @@
 class Identifier < ActiveRecord::Base
-  attr_accessible :body, :identifier_type_id, :manifestation_id, :primary, :position
+  default_scope :order => 'position'
+  attr_accessible :body, :identifier_type_id, :manifestation_id, :primary, :position, :_delete
   belongs_to :identifier_type
-  belongs_to :manifestation, :dependent => :destroy
 
   validates_presence_of :body
   validates_uniqueness_of :body, :scope => [:identifier_type_id, :manifestation_id]

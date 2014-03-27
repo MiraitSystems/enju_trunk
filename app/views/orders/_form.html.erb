@@ -13,7 +13,7 @@
 
 <script>
 $(function(){
-  $('#order_order_day').setCalendar({src:'/assets/calendar.png'});
+  $('#order_ordered_at').setCalendar({src:'/assets/calendar.png'});
   $('#order_collection_stop_day').setCalendar({src:'/assets/calendar.png'});
 });
 </script>
@@ -61,24 +61,23 @@ multiple: false,
 
   <div class="field">
     <%= f.label :order_identifier %><br />
-    <%= @order.order_identifier %>
-    <%= f.hidden_field :order_identifier %>
+    <%= f.text_field :order_identifier %>
   </div>
 
   <%= f.hidden_field :manifestation_id %>
 
   <div class="field">
-    <%= f.label :order_day %><br />
-    <% if @order.order_day %>
-      <%= f.text_field :order_day, :value => @order.order_day.to_date %>
+    <%= f.label :ordered_at %><br />
+    <% if @order.ordered_at %>
+      <%= f.text_field :ordered_at, :value => @order.ordered_at.to_date %>
     <% else %>
-      <%= f.text_field :order_day %>
+      <%= f.text_field :ordered_at %>
     <% end %>
   </div>
 
   <div class="field">
-    <%= f.label :publication_year %><br />
-    <%= f.text_field :publication_year %>
+    <%= f.label :order_year %><br />
+    <%= f.text_field :order_year %>
   </div>
 
   <div class="field">
@@ -139,14 +138,12 @@ multiple: false,
       <%= f.select :deliver_place_code_3, @deliver_place_codes, :include_blank => true %>
     </div>
 
-    <div class="field">
-      <%= f.label :deliver_place_code_4 %><br />
-      <%= f.select :deliver_place_code_4, @deliver_place_codes, :include_blank => true %>
-    </div>
+  <% end %>
 
+  <% if reference_codes %>
     <div class="field">
-      <%= f.label :deliver_place_code_5 %><br />
-      <%= f.select :deliver_place_code_5, @deliver_place_codes, :include_blank => true %>
+      <%= f.label :reference_code_id %><br />
+      <%= f.select :reference_code_id, reference_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
     </div>
   <% end %>
 
@@ -251,20 +248,20 @@ multiple: false,
   </div>
 
   <div class="field">
-    <%= f.label :discount_commision %><br />
-    <%= f.text_field :discount_commision %>
+    <%= f.label :margin_ratio %><br />
+    <%= f.text_field :margin_ratio %>
   </div>
 
-  <% if reason_for_settlements_of_account_codes %>
+  <% if publisher_types %>
     <div class="field">
-      <%= f.label :reason_for_settlements_of_account_code %><br />
-      <%= f.select :reason_for_settlements_of_account_code, reason_for_settlements_of_account_codes.collect{|p| [p.keyname.localize, p.id]} %>
+      <%= f.label :publisher_type_id %><br />
+      <%= f.select :publisher_type_id, publisher_types.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
     </div>
   <% end %>
 
   <div class="field">
-    <%= f.label :prepayment_principal %><br />
-    <%= f.text_field :prepayment_principal %>
+    <%= f.label :original_price %><br />
+    <%= f.text_field :original_price %>
   </div>
 
   <div class="filed">
@@ -283,8 +280,8 @@ multiple: false,
     </div>
 
     <div class="field">
-      <%= f.label :yen_imprest %><br />
-      <%= f.text_field :yen_imprest %>
+      <%= f.label :cost %><br />
+      <%= f.text_field :cost %>
     </div>
   </div>  
 
@@ -316,11 +313,6 @@ multiple: false,
   <div class="field">
     <%= f.label :pair_manifestation_id %><br />
     <%= f.text_field :pair_manifestation_id %>
-  </div>
-
-  <div class="field">
-    <%= f.label :contract_id %><br />
-    <%= f.text_field :contract_id %>
   </div>
 
   <%= hidden_field_tag :return_index, @return_index  if @return_index %>

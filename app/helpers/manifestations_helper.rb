@@ -129,14 +129,14 @@ module ManifestationsHelper
       languages << language.name
     end
     languages = nil if languages.blank?
-    params.merge!(:page => nil, :language => languages, :carrier_type => nil, :view => nil)
+    lang_p = params.merge(:page => nil, :language => languages, :carrier_type => nil, :view => nil)
     if current
       string << "<strong>"
       string << "#{language.display_name.localize} (" + facet.count.to_s + ") &nbsp"
-      string << link_to(t('page.remove_facet'), url_for(params))
+      string << link_to(t('page.remove_facet'), url_for(lang_p))
       string << "</strong>" if current
     else
-      string << link_to("#{language.display_name.localize} (" + facet.count.to_s + ")", url_for(params))
+      string << link_to("#{language.display_name.localize} (" + facet.count.to_s + ")", url_for(lang_p))
     end
     string.html_safe
   end
@@ -256,9 +256,21 @@ module ManifestationsHelper
   end
 
   def missing_issue_statuses
+=begin
+    SELECT2_OBJ = Struct.new(:id, :name)
+    MISSING_ISSUE_STATUSES = [
+      SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
+      SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
+      SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))
+    ]
+
     list = [[I18n.t('missing_issue.no_request'), 1],
             [I18n.t('missing_issue.requested'), 2],
             [I18n.t('missing_issue.received'), 3]]
+=end
+    list = [Manifestation::SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
+            Manifestation::SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
+            Manifestation::SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))]
   end
 
   def missing_status_facet(status, current_status, facet)
@@ -266,6 +278,15 @@ module ManifestationsHelper
     current = missing_status(current_status)
     string << "<strong>" if current
     string << link_to("#{missing_status(status)}(" + facet.count.to_s + ")", url_for(params.merge(:page => nil, :missing_issue => status, :carrier_type => nil, :view => nil)))
+    string << "</strong>" if current
+    string.html_safe
+  end
+
+  def no_item_facet(status, facet)
+    current = params[:no_item] ? true : false
+    string = ''
+    string << "<strong>" if current
+    string << link_to("#{t('manifestation.no_item')}(" + facet.count.to_s + ")", url_for(params.merge(:page => nil, :no_item => true, :carrier_type => nil, :view => nil)))
     string << "</strong>" if current
     string.html_safe
   end
@@ -320,6 +341,7 @@ module ManifestationsHelper
             :missing_issue => nil,
             :circulation_status_in_process => nil,
             :circulation_status_in_factory => nil,
+            :no_item => nil,
             :page => nil,
             :view => nil
           )
@@ -378,4 +400,26 @@ module ManifestationsHelper
     end
   end
 
+  def display_work_has_languages(manifestation)
+    return nil if manifestation.nil? || manifestation.work_has_languages.blank?
+    list = []
+    manifestation.work_has_languages.each do |whl|
+      str = ''
+      if whl.language
+        str << whl.language.display_name.localize
+        str << "(#{whl.language_type.display_name.localize})" if whl.language_type
+      end
+      list << str
+    end
+    list.join(", ").html_safe
+  end
+
+  def order_str(type_str)
+    if SystemConfiguration.get("use_agent_type")
+      order_str = "#{type_str}s.#{type_str}_type_id, #{type_str}s.position"
+    else
+      order_str = "#{type_str}s.position"
+    end
+    order_str
+  end
 end

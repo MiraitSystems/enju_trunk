@@ -90,7 +90,7 @@ $(function(){
 </div>
 
 <div id="submenu_block">
-  <div id="submenu" class="ui-corner-all">
+  <div class="ui-corner-all submenu_block_inner">
     <%= render 'manifestations/book_jacket', :manifestation => @manifestation -%>
     <ul>
       <%- if @manifestation.picture_files.exists? -%>
@@ -217,7 +217,7 @@ $(function(){
   </div>
   <div>
     <% if SystemConfiguration.get('manifestation.social_bookmark') %>
-      <div id="social_bookmark" class="ui-corner-all">
+      <div id="social_bookmark" class="ui-corner-all submenu_block_inner">
         <ul>
           <li><%= render :text => t('social_bookmark.bookmark.title') -%></li>
           <ul>

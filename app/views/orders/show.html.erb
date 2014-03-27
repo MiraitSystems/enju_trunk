@@ -21,13 +21,13 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.order_day') -%>:</strong>
-  <%= l(@order.order_day, :format => :only_date) if @order.order_day -%>
+  <strong><%= t('activerecord.attributes.order.ordered_at') -%>:</strong>
+  <%= l(@order.ordered_at, :format => :only_date) if @order.ordered_at -%>
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.publication_year') -%>:</strong>
-  <%= @order.publication_year -%>
+  <strong><%= t('activerecord.attributes.order.order_year') -%>:</strong>
+  <%= @order.order_year -%>
 </p>
 
 <p>
@@ -81,13 +81,8 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.deliver_place_code_4') -%>:</strong>
-  <%= @order.deliver_place_4.keyname if @order.deliver_place_4 -%>
-</p>
-
-<p>
-  <strong><%= t('activerecord.attributes.order.deliver_place_code_5') -%>:</strong>
-  <%= @order.deliver_place_5.keyname if @order.deliver_place_5-%>
+  <strong><%= t('activerecord.attributes.order.reference_code_id') -%>:</strong>
+  <%= @order.reference_code.keyname if @order.reference_code -%>
 </p>
 
 <p>
@@ -166,23 +161,23 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.discount_commision') -%>:</strong>
-  <%= @order.discount_commision -%>
+  <strong><%= t('activerecord.attributes.order.margin_ratio') -%>:</strong>
+  <%= @order.margin_ratio -%>
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.reason_for_settlements_of_account_code') -%>:</strong>
-  <%= @order.reason_for_settlements_of_account.keyname if @order.reason_for_settlements_of_account -%>
+  <strong><%= t('activerecord.attributes.order.publisher_type_id') -%>:</strong>
+  <%= @order. publisher_type.keyname if @order. publisher_type -%>
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.prepayment_principal') -%>:</strong>
-  <%= @order.prepayment_principal -%>
+  <strong><%= t('activerecord.attributes.order.original_price') -%>:</strong>
+  <%= @order.original_price -%>
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.order.yen_imprest') -%>:</strong>
-  <%= @order.yen_imprest -%>
+  <strong><%= t('activerecord.attributes.order.cost') -%>:</strong>
+  <%= @order.cost -%>
 </p>
 
 <p>
@@ -218,11 +213,6 @@
 <p>
   <strong><%= t('activerecord.attributes.order.pair_manifestation_id') -%>:</strong>
   <%= @order.pair_manifestation_id -%>
-</p>
-
-<p>
-  <strong><%= t('activerecord.attributes.order.contract_id') -%>:</strong>
-  <%= @order.contract_id -%>
 </p>
 
 </div>

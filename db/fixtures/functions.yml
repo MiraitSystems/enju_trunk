@@ -13,8 +13,8 @@ function_user:
   display_name: "利用者管理"
   controller_name: UsersController
   action_names: |
-                read:index,show,search_family
-                update:new,create,edit,update
+                read:index,show,search_family,output_password,output_user_notice
+                update:new,create,edit,update,edit_user_number,update_user_number,search_family,get_user_info,get_user_rent
                 delete:destroy
   position: 2
 function_approval:
@@ -41,7 +41,7 @@ function_00005:
   controller_name: ItemsController
   action_names:  |
                  read:index,show
-                 update:new,create,edit,update,numbering
+                 update:new,create,edit,update,numbering,remove,restore
                  delete:destroy
   position: 5
 function_00006:

@@ -1206,3 +1206,24 @@ system_configuration_00171:
   typename: Boolean
   description: "受入作業者テーブルテーブルを利用する"
   category: 'manifestation'
+system_configuration_00172:
+  id: 172
+  keyname: copy_request.avalable_for_anyone
+  v: "false"
+  typename: Boolean
+  description: "文献複写依頼を未ログインで申請できる"
+  category: 'copy_request'
+system_configuration_00173:
+  id: 173
+  keyname: manifestation.use_identifiers
+  v: "false"
+  typename: Boolean
+  description: "その他の識別子を利用する"
+  category: 'manifestation'
+system_configuration_00174:
+  id: 174
+  keyname: manifestation.check_duplicate_title
+  v: "false"
+  typename: Boolean
+  description: "資料の登録画面にに同一タイトルチェック機能を表示する"
+  category: 'manifestation'

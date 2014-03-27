@@ -1,0 +1,116 @@
+require 'net/ldap'
+require 'devise/strategies/authenticatable'
+
+module Devise
+  module Strategies
+    class LdapAuthenticatable < Authenticatable
+      def authenticate!
+        Rails.logger.info "ldap auth : in LDAP Auth method"
+
+        if params[:user]
+          Rails.logger.info "ldap auth : username=#{username}"
+
+          if username == "admin"
+            # bypass ldap auth if user is admin
+            Rails.logger.info "ldap auth : bypass ldap auth"
+
+            resource = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
+
+            if validate(resource){ resource.valid_password?(password) }
+              resource.after_database_authentication
+              success!(resource)
+            elsif !halted?
+              fail(:invalid)
+            end
+
+            return
+          end
+
+          Rails.logger.info "ldap (1) : start."
+          ldap_server_config = {
+            host: SystemConfiguration.get("ldap.host"),
+            port: SystemConfiguration.get("ldap.port"),
+          }
+          ldap = Net::LDAP.new(ldap_server_config)
+          attrs = ["mail", "cn", "sn", "uid"]
+          columns = SystemConfiguration.get("ldap.bind_column")
+
+          if SystemConfiguration.get("ldap.type") == "ldapbind"
+            Rails.logger.info "ldap bind (2) : auth try."
+            ldap.auth username, password
+
+            Rails.logger.info "ldap bind (3) : ldap bind try."
+            if ldap.bind
+              Rails.logger.info "ldap bind (4) : ldap bind success."
+              user = User.where(username: username).first
+              unless user
+                # createuser
+                filter = Net::LDAP::Filter.eq(SystemConfiguration.get("ldap.column.username"), username)
+                base = SystemConfiguration.get("ldap.basedn")
+                ldap_users = ldap.search :base => base, :attribues => attrs, :return_result => true, :filter => filter
+                unless ldap_user
+                  fail(:invalid_login)
+                else
+                  user = create_user_and_agent!(ldap_users.first)
+                end
+              end
+              success!(user)
+            else
+              fail(:invalid_login)
+            end
+          else
+            Rails.logger.info "ldap search (2) : auth try"
+            bind_user = SystemConfiguration.get("ldap.account")
+            bind_password = SystemConfiguration.get("ldap.password")
+
+            ldap.auth bind_user, bind_password
+            if ldap.bind
+              filter = Net::LDAP::Filter.eq(SystemConfiguration.get("ldap.column.username"), username)
+              basedn = SystemConfiguration.get("ldap.basedn")
+              ldap_users = ldap.search :base => basedn, :attribues => attrs, :return_result => true, :filter => filter
+              unless ldap_user
+                fail(:invalid_login)
+              else
+                user = User.where(username: username).first
+                unless user
+                  user = create_user_and_agent!(ldap_users.first)
+                end
+              end
+              success!(user)
+            else
+              fail(:invalid_login)
+            end
+          end
+        end
+      end
+
+      def create_user_and_agent(ldap_user)
+        full_name_column = columns["full_name"]
+        agent_data = {full_name: ldap_user[full_name_column]}
+        user = User.create!(user_data)
+        agent = Agent.create!(agent_data)
+        user.agent = agent
+        user.save!
+      end
+
+      def username
+        params[:user][:username]
+      end
+
+      def password
+        params[:user][:password]
+      end
+
+      def user_data
+        {:username => username, :password => password, :password_confirmation => password}
+      end
+
+      def authentication_hash
+        {:username => params[:user][:username]}
+      end
+    end
+  end
+end
+
+Warden::Strategies.add(:ldap_authenticatable, Devise::Strategies::LdapAuthenticatable)
+

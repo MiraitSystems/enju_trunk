@@ -318,6 +318,7 @@ class NacsisCat
         #子書誌情報の登録
         child_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
         child_manifestation.save!
+        child_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
         created_manifestations << child_manifestation
 
         #親書誌情報の登録
@@ -342,6 +343,7 @@ class NacsisCat
             else
               parent_manifestation = new_manifestation_from_nacsis_cat(parent_result[:book].first, book_types)
               parent_manifestation.save!
+              parent_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(parent_result[:book].first)
               created_manifestations << parent_manifestation
             end
           end
@@ -380,19 +382,18 @@ class NacsisCat
           attrs[:country_of_publication] = Country.where(:name => 'unknown').first
         end
 
-        # 和書または洋書を設定し、同時に言語も設定する。
-        # テキストの言語がnilの場合、未分類、不明を設定する。
-        attrs[:languages] = []
-        if nacsis_info[:text_language]
-          if nacsis_info[:text_language].name == 'Japanese'
+        # テキストの言語により、和書または洋書を設定する。
+        if nacsis_info[:text_language].present?
+          if nacsis_info[:text_language].first.name == 'Japanese'
             attrs[:manifestation_type] = book_types.detect {|bt| /japanese/io =~ bt.name }
+            attrs[:jpn_or_foreign] = 0
           else
             attrs[:manifestation_type] = book_types.detect {|bt| /foreign/io =~ bt.name }
+            attrs[:jpn_or_foreign] = 1
           end
-          attrs[:languages] << nacsis_info[:text_language]
         else
           attrs[:manifestation_type] = book_types.detect {|bt| "unknown" == bt.name }
-          attrs[:languages] << Language.where(:iso_639_3 => 'unknown').first
+          attrs[:jpn_or_foreign] = nil
         end
 
         # 関連テーブル：著者の設定
@@ -505,6 +506,7 @@ class NacsisCat
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
           root_manifestation.periodical_master = true
           root_manifestation.save!
+          root_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
           series_statement.root_manifestation = root_manifestation
           series_statement.manifestations << series_statement.root_manifestation
           series_statement.save!
@@ -524,6 +526,21 @@ class NacsisCat
         attrs[:issn] = nacsis_info[:issn]
         attrs[:note] = nacsis_info[:note]
         SeriesStatement.new(attrs)
+      end
+
+      def new_work_has_languages_from_nacsis_cat(nacsis_cat)
+        return [] if nacsis_cat.blank?
+        nacsis_info = nacsis_cat.detail
+        whl_ary = []
+        {:title_language => 'title', :text_language => 'body', :original_language => 'original'}.each do |lang, type|
+          nacsis_info[lang].each do |language|
+            whl = WorkHasLanguage.new
+            whl.language = language
+            whl.language_type = LanguageType.find_by_name(type)
+            whl_ary << whl
+          end
+        end
+        whl_ary
       end
 
       def create_family_from_fid(fid)
@@ -678,8 +695,9 @@ class NacsisCat
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
       :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
-      :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
-      :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
+      :title_language => get_languages(@record['TTLL']),
+      :text_language => get_languages(@record['TXTL']),
+      :original_language => get_languages(@record['ORGL']),
       :author_heading => map_attrs(@record['AL']) do |al|
         if al['AHDNG'].blank? && al['AHDNGR'].blank?
           nil
@@ -731,8 +749,8 @@ class NacsisCat
         end,
       :isbn => isbn.try(:join, ','),
       :pub_country => @record['CNTRY'], # :pub_country => @record['CNTRY'].try {|cntry| Country.where(:alpha_2 => cntry.upcase).first }, # XXX: 国コード体系がCountryとは異なる: http://www.loc.gov/marc/countries/countries_code.html
-      :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_3 => lang).first },
-      :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_3 => lang).first },
+      :title_language => @record['TTLL'].try {|lang| Language.where(:iso_639_2 => lang).first },
+      :text_language => @record['TXTL'].try {|lang| Language.where(:iso_639_2 => lang).first },
       :classmark => if book?
           map_attrs(@record['CLS']) {|cl| join_attrs(cl, ['CLSK', 'CLSD'], ':') }.join(';')
         else
@@ -787,5 +805,19 @@ class NacsisCat
       else
         [obj]
       end
+    end
+
+    def get_languages(lang_str)
+      languages = []
+      if lang_str.is_a?(String)
+        lang_str.each_char.each_slice(3).map{|a| a.join}.each do |lang|
+          #if lang == 'und'
+          #  languages << Language.where(:iso_639_2 => 'unknown').first
+          #else
+            languages << Language.where(:iso_639_2 => lang).first
+          #end
+        end
+      end
+      languages.compact
     end
 end

@@ -33,7 +33,7 @@ class AgentImportFilesController < ApplicationController
         if Setting.uploaded_file.storage == :s3
           redirect_to @agent_import_file.agent_import.expiring_url(10)
         else
-          send_file file, :filename => @agent_import_file.agent_import_file_name, :type => 'application/octet-stream'
+          send_file file, :filename => @agent_import_file.agent_import_file_name.encode("cp932"), :type => 'application/octet-stream'
         end
       }
     end

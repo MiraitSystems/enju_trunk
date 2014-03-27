@@ -11,7 +11,7 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable,
                   :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo
+                  :non_searchable, :item_exinfo, :claim_attributes 
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -82,6 +82,8 @@ class Item < ActiveRecord::Base
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators
   has_many :item_exinfos, :dependent => :destroy
+  belongs_to :claim, :dependent => :destroy
+  accepts_nested_attributes_for :claim
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
@@ -378,6 +380,13 @@ class Item < ActiveRecord::Base
     else
       return false
     end
+  end
+
+  def self.numbering_item_identifier(numbering_name, options = {}) 
+    begin
+      item_identifier = Numbering.do_numbering(numbering_name, true, options)
+    end while Item.where(:item_identifier => item_identifier).first
+    return item_identifier
   end
 
   # XLSX形式でのエクスポートのための値を生成する

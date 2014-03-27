@@ -8,7 +8,6 @@ class ApprovalsController < ApplicationController
   end
 
   def new
-
     @approval = Approval.new
     @approval.manifestation_id = params[:manifestation_id]
     @approval.created_by = current_user.id
@@ -27,15 +26,20 @@ class ApprovalsController < ApplicationController
 
     @approval = Approval.new(params[:approval])
     @approval.check_status
-    
+    @approval.identifier = params[:identifier] if params[:identifier]
+
     respond_to do |format|
       if @approval.save
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.approval'))
         format.html { redirect_to @approval }
       else
-        @manifestation = Manifestation.find(@approval.manifestation_id)
+        if @approval.manifestation_id
+          @manifestation = Manifestation.find(@approval.manifestation_id)
+        end
         @select_user_tags = Approval.struct_user_selects
         @select_agent_tags = Approval.struct_agent_selects
+        @identifier = params[:identifier]
+        @maxposition = 0
 
         format.html { render :action => "new" }
       end
@@ -67,7 +71,7 @@ class ApprovalsController < ApplicationController
       if @approval.update_attributes(params[:approval])
          @approval.check_status
 
-        format.html { redirect_to(@approval) }
+        format.html { redirect_to @approval, :notice => t('controller.successfully_updated', :model => t('activerecord.models.approval')) }
       else
 
         @manifestation = Manifestation.find(@approval.manifestation_id)

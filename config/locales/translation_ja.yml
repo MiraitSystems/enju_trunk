@@ -24,6 +24,7 @@ ja:
       subject_has_classification: 件名と分類の関係
       expression: 協力した資料
       language: 言語
+      language_type: 言語の種類
       agent_merge_list: 人物・団体の統合リスト
       user: 利用者
       work_has_subject: 資料と件名の関係
@@ -208,7 +209,12 @@ ja:
       function_class_ability: 機能許可
       title_type: 書名種類
       title: 書名
+      identifier: その他の識別子
       item_has_operator: 受入作業者
+      claim_type: クレーム
+      output_column_list: 出力項目設定
+      publication_status: 出版状況
+      sequence_pattern: 刊行パターン
 
     attributes:
       use_license:
@@ -442,6 +448,7 @@ ja:
         keyperson_1: キーパーソン1
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
+        grade: 学年
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -502,6 +509,11 @@ ja:
         iso_639_1: ISO 639-1
         iso_639_2: ISO 639-2
         iso_639_3: ISO 639-3
+        note: 注記
+        position: 位置
+      language_type:
+        name: 名前
+        display_name: 表示名
         note: 注記
         position: 位置
       agent_merge_list:
@@ -822,8 +834,8 @@ ja:
       order:
         order_identifier: 発注番号
         manifestation: 資料
-        order_day: 発注年月日
-        publication_year: 雑誌刊行年
+        ordered_at: 発注年月日
+        order_year: 発注年
         buying_payment_year: 購入費支払年
         prepayment_settlements_of_account_year: 前払資料精算年 
         paid_flag: 精算済フラグ
@@ -834,8 +846,7 @@ ja:
         deliver_place_code_1: 回付先1
         deliver_place_code_2: 回付先2
         deliver_place_code_3: 回付先3
-        deliver_place_code_4: 回付先4
-        deliver_place_code_5: 回付先5
+        reference_code_id: 引用情報
         application_form_code_1: 申込書指定1
         application_form_code_2: 申込書指定2
         number_of_acceptance: 受入冊数
@@ -851,16 +862,15 @@ ja:
         bookstore_code: 書店
         currency_id: 通貨単位
         currency_rate: 通貨レート
-        discount_commision: 割引手数料
-        reason_for_settlements_of_account_code: 精算理由
-        prepayment_principal: 換算前発注金額
-        yen_imprest: 発注金額
+        margin_ratio: 割引手数料
+        publisher_type_id: メタデータ発行元種別
+        original_price: 換算前発注金額
+        cost: 発注金額
         unit_price: 単価
         order_organization_id: 発注機関番号
         note: 注記内容
         group: グループ
         pair_manifestation_id: コンビ資料番号
-        contract_id: 契約番号
         auto_calculation_flag: 金額自動計算フラグ
         manifestation_identifier: 資料番号
         taxable_amount: 課税対象金額
@@ -1012,6 +1022,8 @@ ja:
         hold_rgtn: 資料番号
         jpn_or_foreign: 和洋区分
         manifestation_identifier: 資料番号
+        titles: その他の書名
+        use_license_id: 著者抄録許諾(許諾機関名称)
       user_group:
         name: 名前
         display_name: 表示名
@@ -1395,7 +1407,8 @@ ja:
         issn: ISSN
         periodical: 定期刊行物
         title_transcription: シリーズ名（ヨミ）
-        note: 注記
+        note: 注記名
+        sequence_pattern: 刊行パターン
       series_statement_relationship:
         seq: シーケンシャル番号	 
         before_series_statement_relationship: 前誌
@@ -1542,6 +1555,7 @@ ja:
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
+        original_language: 原本言語
         author_heading: 著者情報
         subject: 件名
         ncid: NCID
@@ -1616,6 +1630,7 @@ ja:
         display_name: 表示名 
       exchange_rate:
         currency: 通貨単位
+        currency_id: 通貨単位
         rate: レート
         started_at: 利用開始年月日
       keycode:
@@ -1648,10 +1663,10 @@ ja:
         approval_result: 見計らい結果(最終)
         reason: 収録不可理由 
         approval_end_at: 見計らい完了日 
-        donate_request_at: 寄付依頼日 
-        donate_request_replay_at: 寄付依頼返信日 
+        donate_request_at: 寄贈依頼日 
+        donate_request_replay_at: 寄贈依頼返信日 
         refuse_at: 断り状送付日 
-        donate_request_result: 寄付依頼結果 
+        donate_request_result: 寄贈依頼結果 
         all_process_end_at: 全工程完了日 
         reception_agent_id: 担当窓口コード 
         approval_extexts: 見計らいメモ
@@ -1662,8 +1677,8 @@ ja:
           sample_arrival: サンプル誌到着
           group_approved: グループ見計らい済
           end_approved: 最終見計らい済
-          donate_requested: 寄付依頼送付済
-          replied_donate_request: 寄付依頼返信済
+          donate_requested: 寄贈依頼送付済
+          replied_donate_request: 寄贈依頼返信済
           all_process_end: 全工程完了
         donation_postcard: 寄贈はがき
         approval_report: 見計らい伝票
@@ -1672,6 +1687,15 @@ ja:
         donation_request_sample: 寄贈依頼状（サンプル）
         donation_request_collection: 寄贈依頼状（収集）
         refusal_latter: 断り状
+        approval_identifier: 見計らい識別子
+        thrsis_review_flg: 論文審査有無
+        ja_text_author_summary_flg: 和文著者抄録有無
+        en_text_author_summary_flg: 英文著者抄録有無
+        proceedings_number_of_year: 年間件数（予稿集以外）
+        excepting_number_of_year: 年間件数（予稿集）
+        four_priority_areas: 重点４分野
+        document_classification_1: 資料分類１
+        document_classification_2: 資料分類２
       approval_extext:
         value: メモ
         created_by: 記入者
@@ -1688,7 +1712,7 @@ ja:
         manifestation_id: 資料番号
         currency_id: 通貨単位
         currency_rate: 通貨レート
-        discount_commision: 割引手数料
+        margin_ratio: 割引手数料
         before_conv_amount_of_payment: 換算前支払金額
         amount_of_payment: 支払金額
         number_of_payment: 支払冊数
@@ -1721,6 +1745,23 @@ ja:
         note: メモ
       item_has_operators:
         user: 作業者
+      claim_type:
+        name: 名前
+        display_name: 表示名
+      claim:
+        claim_type_id: クレームタイプ
+        note: クレーム注記
+      output_column_list:
+        name: 設定名
+      publication_status:
+        name: 名前
+        display_name: 表示名
+        note: 注記
+      sequence_pattern:
+        name: 名前
+        volume_param: 巻が増える号数
+        issue_param: 号の増加数
+        sequence_type: 号の種類
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1899,6 +1940,9 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
+    output_list: 出力リスト
+    output_select_all: すべて選択
+    output_cancel_all: すべて解除
     batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"
@@ -2215,6 +2259,7 @@ ja:
     binding_status: "製本雑誌"
     undo_binding: "製本解除"
     missing: "[欠号]"
+    periodical: "[定期刊行物]"
     output_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
     output_job_success_subject: "ファイル出力が完了しました [ID: %{job_name}]"
     output_job_success_body: "お知らせID「%{job_name}」のファイル出力が完了しました。次のアドレスからファイルを取得してください。\n%{url}"
@@ -2229,6 +2274,7 @@ ja:
     publisher_transcription: 出版者(ヨミ)
     subject_transcription: 件名(ヨミ)
     same_manifestation_already_exist: 同じ%{attribute}の資料が既に存在しています。
+    no_item: 所蔵情報なし
   missing_issue:
     no_request: 未請求
     requested: 請求済
@@ -3027,7 +3073,10 @@ ja:
     output_job_success_body: "お知らせID「%{job_name}」のファイル出力が完了しました。次のアドレスからファイルを取得してください。\n%{url}"
     output_job_error_subject: "ファイル出力できませんでした [ID: %{job_name}]"
     output_job_error_body: "お知らせID「%{job_name}」のファイル出力を完了できませんでした。理由は次の通りです。\n%{message}"
-
+  sequence_pattern:
+    cardinal: 基数
+    ordinal: 序数
+    month: 月
 
   opac:
     finish: 終わる
@@ -3168,6 +3217,13 @@ ja:
     no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
     create_payment_to_advance_payment: "<br />発注に対応する支払を作成しました。"
     copy: コピーして新規作成
+    document_application: "資料申込書"
+    list_of_order: "発注リスト"
+    list_of_deferred_payment_acceptance: "後払い受入リスト"
+    list_of_acceptance_situation: "受入状況リスト"
+    list_of_payment: "精算リスト"
+    list_of_acceptance_after_payment: "精算後受入リスト"
+    select_document: "帳票を選択"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"
@@ -3180,3 +3236,48 @@ ja:
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
   item_has_operators:
     no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"
+  approval:
+    no_matches_found_manifestation: "に該当する資料が見つかりませんでした。"
+    no_blank_identifier: "を入力してください。"
+  order_output_csv:
+    number: "No."
+    full_name: "発注機関"
+    zip_code_1: "郵便番号"
+    address_1: "住所"
+    country_of_publication_id: "出版国"
+    date_of_publication: "出版日"
+    bookstore_code: "書店"
+    collection_status_code: "収集ステータス"
+    currency_id: "通貨単位"
+    edition: "版（数字）"
+    frequency_id: "発行頻度"
+    currency_rate: "通貨レート"
+    discount_commision: "割引手数料"
+    group: "グループ"
+    order_note: "発注注記"
+    prepayment_principal_rate: "前払版元円価"
+    number_of_acceptance: "受入冊数"
+    number_of_acceptance_schedule: "受入予定冊数"
+    identifier: "識別子"
+    issn: "ISSN"
+    number_of_missing: "欠号数"
+    order_identifier: "発注番号"
+    pair_manifestation_id: "コンビ資料番号"
+    issue_number_string: "資料号"
+    report_number_string: "レポート番号"
+    original_title: "タイトル"
+    publishers: "出版者"
+    volume_number_string: "資料巻"
+    report_volume_number_string: "レポートパターン"
+    acquired_at: "資料受入日"
+    quantity: "数量"
+    payment_form_code: "支払形式"
+    prepayment_principal: "換算前発注金額"
+    publication_year: "雑誌刊行年"
+    tax_exempt_amount: "非課税対象金額"
+    taxable_amount: "課税対象金額"
+    item_note: "受入注記"
+    transportation_route_code: "輸送経路"
+    yen_imprest: "発注金額"
+    deduction_quantity: "精算対象外差引数"
+    delayed_quantity: "延着数"
