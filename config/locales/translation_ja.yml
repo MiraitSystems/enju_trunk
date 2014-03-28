@@ -83,7 +83,7 @@ ja:
       create_type: 著作の関係
       carrier_type: 資料の形態
       retention_period: 保存種別
-      manifestation_type: 資料区分
+      manifestation_type: 書誌タイプ
       manifestation: 資料
       user_group: 利用者グループ
       resource_import_file: 資料のインポート用ファイル
@@ -2695,7 +2695,7 @@ ja:
         series_statement_identifier: シリーズ識別子
         note: 雑誌注記
       book:
-        manifestation_type: 資料区分
+        manifestation_type: 書誌タイプ
         original_title: タイトル
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
