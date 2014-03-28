@@ -680,7 +680,7 @@ class Ability
       end
     end
 
-    if defined?(EnjuTrunk)
+    if defined?(EnjuTrunkTheme)
       case user.try(:role).try(:name)
       when 'Administrator' then can :manage, [Theme]
       when 'Librarian'     then can :manage, [Theme]
