@@ -1,6 +1,5 @@
 class WorkHasTitle < ActiveRecord::Base
-  attr_accessible :created_at, :id, :position, :title_id, :title_type_id, :updated_at, :work_id,
-  :manifestation_title
+  attr_accessible :created_at, :id, :position, :title_id, :title_type_id, :updated_at, :work_id
 
   belongs_to :manifestation_title, :class_name => 'Title', :foreign_key => 'title_id'
 

@@ -1733,6 +1733,7 @@ en:
         payment_type: Payment type
         taxable_amount: Taxable amount
         tax_exempt_amount: Tax exempt amount
+        discount_commision: Discount commision
       function:
         controller_name: Controller name
         display_name: Display name
@@ -2674,6 +2675,8 @@ en:
     excel:
       series:
         issn: ISSN
+        ncid: NCID
+        nbn: NBN
         original_title: Series name
         title_transcription: Series name（transcription）
         periodical: Periodical
@@ -2684,6 +2687,8 @@ en:
         original_title: Title
         title_transcription: Title（transcription）
         title_alternative: Alternative title
+        ncid: NCID
+        nbn: NBN
         isbn: ISBN
         lccn: LCCN
         marc_number: MARC number

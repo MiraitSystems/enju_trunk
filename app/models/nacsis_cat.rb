@@ -70,7 +70,7 @@ class NacsisCat
       options = args.extract_options!
       options.assert_valid_keys(
         :dbs, :opts,
-        :id, :isbn, :issn,
+        :id, :isbn, :issn, :nbn,
         :query, :title, :author, :publisher, :subject, :except)
       if options[:except]
         options[:except].assert_valid_keys(
@@ -146,6 +146,46 @@ class NacsisCat
         end
       end
     end
+
+    # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からManifestationを作成する
+    def create_manifestation_from_nbn(nbn, book_types = ManifestationType.book.all, nacsis_cat = nil)
+      raise ArgumentError if nbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:book], nbn: nbn)
+        nacsis_cat = result[:book].first
+      end
+      create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+    end
+
+    # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からSeriesStatementを作成する。
+    def create_series_statement_from_nbn(nbn, book_types = ManifestationType.series.all, nacsis_cat = nil)
+      raise ArgumentError if nbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:serial], nbn: nbn)
+        nacsis_cat = result[:serial].first
+      end
+      create_series_with_relation_from_nacsis_cat(nacsis_cat, book_types)
+    end
+
+    # 指定されたISBNによりNACSIS-CAT検索を行い、得られた情報からManifestationを作成する
+    def create_manifestation_from_isbn(isbn, book_types = ManifestationType.book.all, nacsis_cat = nil)
+      raise ArgumentError if isbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:book], isbn: isbn) #複数あるかも
+        nacsis_cat = result[:book].first
+      end
+      create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+    end
+    # 指定されたISBNによりNACSIS-CAT検索を行い、得られた情報からSeriesStatementを作成する。
+    def create_series_statement_from_isbn(isbn, book_types = ManifestationType.series.all, nacsis_cat = nil)
+      raise ArgumentError if isbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(dbs: [:serial], isbn: isbn) #複数あるかも
+        nacsis_cat = result[:serial].first
+      end
+      create_series_with_relation_from_nacsis_cat(nacsis_cat, book_types)
+    end
+
 
     private
 

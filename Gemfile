@@ -92,8 +92,7 @@ gem 'mobile-fu', '1.2.2'
 gem 'attribute_normalizer', '~> 1.1'
 gem 'barby', '~> 0.5'
 gem 'chunky_png', '1.2.5'
-#gem 'rghost', :branch => 'patch-ruby20', :git => 'git://github.com/nakamura-akifumi/rghost.git'
-gem 'rghost'
+gem 'rghost', '0.9.3'
 gem 'rghost_barcode'
 gem 'rqrcode'
 gem 'event-calendar', :require => 'event_calendar'
@@ -114,6 +113,8 @@ gem "rmagick", :require => false
 gem "rails_autolink"
 gem 'parallel'
 #gem 'oink', '>= 0.9.3'
+
+#gem 'net-ldap'
 
 group :development do
   gem 'parallel_tests'

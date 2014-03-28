@@ -20,7 +20,7 @@ class Shelf < ActiveRecord::Base
 
   searchable do
     string :library do
-      library.name
+      library.name if library
     end
     integer :open_access
   end
@@ -71,7 +71,7 @@ class Shelf < ActiveRecord::Base
     rescue Exception => e
       logger.error "failed #{e}"
       return false
-    end    
+    end
   end
 end
 

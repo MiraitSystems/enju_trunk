@@ -849,7 +849,6 @@ class ManifestationsController < ApplicationController
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
-    new_work_has_title
     @manifestation.identifiers << Identifier.new
 
     respond_to do |format|
@@ -884,13 +883,11 @@ class ManifestationsController < ApplicationController
     end
     @select_theme_tags = Manifestation.struct_theme_selects
     @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
-    new_work_has_title
   end
 
   # POST /manifestations
   # POST /manifestations.json
   def create
-    create_titles
     set_agent_instance_from_params # Implemented in application_controller.rb
     @manifestation = Manifestation.new(params[:manifestation])
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
@@ -910,6 +907,13 @@ class ManifestationsController < ApplicationController
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+
+    if SystemConfiguration.get('manifestation.use_titles')
+      titles = params[:manifestation][:work_has_titles_attributes]
+      titles.each do |key, value|
+        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+      end
+    end
 
     respond_to do |format|
       if @manifestation.save
@@ -934,7 +938,6 @@ class ManifestationsController < ApplicationController
         format.json { render :json => @manifestation, :status => :created, :location => @manifestation }
       else
         prepare_options
-        new_work_has_title
 
         format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
@@ -952,7 +955,6 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
-    create_titles
     set_agent_instance_from_params # Implemented in application_controller.rb
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
@@ -960,6 +962,13 @@ class ManifestationsController < ApplicationController
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+
+    if SystemConfiguration.get('manifestation.use_titles')
+      titles = params[:manifestation][:work_has_titles_attributes]
+      titles.each do |key, value|
+        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+      end
+    end
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
@@ -985,7 +994,6 @@ class ManifestationsController < ApplicationController
         format.json { head :no_content }
       else
         prepare_options
-        new_work_has_title
 
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
@@ -1449,6 +1457,11 @@ class ManifestationsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @work_manifestation = Manifestation.new
+    @work_manifestation.work_has_titles = @manifestation.work_has_titles
+    @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @manifestation.work_has_titles.empty?
+    @count_titles = @work_manifestation.work_has_titles.size
+
     @numberings = Numbering.where(:numbering_type => 'manifestation')
     if SystemConfiguration.get('manifestation.use_identifiers')
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
@@ -1797,41 +1810,6 @@ class ManifestationsController < ApplicationController
     #session[:manifestation_ids] = nil
 
     true
-  end
-
-  def create_titles
-
-    return unless SystemConfiguration.get('manifestation.use_titles')
-
-    if params[:manifestation][:work_has_titles_attributes]
-      @work_has_titles = params[:manifestation][:work_has_titles_attributes]
-      @work_has_titles.each do |key, value|
-        if value[:title_id] != "" 
-          @title = Title.find(value[:title_id])
-          @title.title = params[:manifestation_title][key]
-          @title.save
-        else
-          @title = Title.new(:title => params[:manifestation_title][key])
-          @title.save
-          value[:title_id] = @title.id
-        end
-      end
-    end
-  end
-
-  def new_work_has_title
-
-    @count_titles = 0
-    if SystemConfiguration.get('manifestation.use_titles')
-
-      @count_titles = @manifestation.work_has_titles.size
-      if @manifestation.work_has_titles.empty?
-        @workhastitle = WorkHasTitle.new(:title_id => 1, :title_type_id => 1, :position => 0)
-        @manifestation.work_has_titles << @workhastitle
-        @manifestation.work_has_titles[0].title_id = nil
-        @count_titles = 1
-      end
-    end
   end
 
 end

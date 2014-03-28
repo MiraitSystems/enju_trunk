@@ -117,6 +117,12 @@ class Item < ActiveRecord::Base
         operator.delete_flg = true
         operator.destroy 
       end
+
+      if operator.user_number.blank? && operator.operated_at.blank?
+        operator.delete_flg = true
+        operator.destroy
+      end
+
     end
   end
 
