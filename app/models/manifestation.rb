@@ -24,8 +24,6 @@ class Manifestation < ActiveRecord::Base
   has_many :purchase_requests
   has_many :table_of_contents
   has_many :checked_manifestations
-  has_many :theme_has_manifestations, :dependent => :destroy
-  has_many :themes, :through => :theme_has_manifestations
   has_many :identifiers
   has_many :manifestation_exinfos, :dependent => :destroy
   has_many :manifestation_extexts, :dependent => :destroy
@@ -507,7 +505,8 @@ class Manifestation < ActiveRecord::Base
 
   after_save :index_series_statement
   after_destroy :index_series_statement
-  attr_accessor :during_import, :creator, :contributor, :publisher, :subject, :theme, :manifestation_exinfo, :creator_transcription, :publisher_transcription, :contributor_transcription, :subject_transcription
+
+  attr_accessor :during_import, :creator, :contributor, :publisher, :subject, :manifestation_exinfo, :creator_transcription, :publisher_transcription, :contributor_transcription, :subject_transcription
 
   paginates_per 10
 
@@ -991,17 +990,6 @@ class Manifestation < ActiveRecord::Base
     end
     block.call(output)
   end
-
-  def self.struct_theme_selects
-    struct_theme = Struct.new(:id, :text)
-    @struct_theme_array = []
-    struct_select = Theme.all
-    struct_select.each do |theme|
-      @struct_theme_array << struct_theme.new(theme.id, theme.name)
-    end
-    return @struct_theme_array
-  end
-
 
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)

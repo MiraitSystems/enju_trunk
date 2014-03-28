@@ -83,7 +83,6 @@ class Ability
       can :destroy, UserGroup do |user_group|
         user_group.users.empty?
       end
-      can :show, Theme
       can :manage, [
         Abbreviation,
         AccessLog,
@@ -166,7 +165,6 @@ class Ability
         Subscription,
         SystemConfiguration,
         Term,
-        Theme,
         Title,
         TitleType,
         EnjuTerminal,
@@ -344,7 +342,6 @@ class Ability
         Subscription,
         SystemConfiguration,
         Term,
-        Theme,
         Title,
         TitleType,
         UseLicense,
@@ -506,7 +503,6 @@ class Ability
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,
-        Theme,
         EnjuTerminal,
         UserCheckoutStat,
         UserReserveStat,
@@ -564,7 +560,6 @@ class Ability
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,
-        Theme,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,
@@ -682,6 +677,15 @@ class Ability
         can [:read, :update], NiiType
       else
         can :read, NiiType
+      end
+    end
+
+    if defined?(EnjuTrunk)
+      case user.try(:role).try(:name)
+      when 'Administrator' then can :manage, [Theme]
+      when 'Librarian'     then can :manage, [Theme]
+      when 'User'          then can :read,   [Theme]
+      else                      can :read,   [Theme]
       end
     end
 
