@@ -1,4 +1,4 @@
-<div id="content_detail" class="ui-corner-all">
+div id="content_detail" class="ui-corner-all">
   <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.claim_type')) %></h1>
   <div id="content_list">
 
@@ -18,7 +18,7 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <% if can? :create, Theme %>
+    <% if can? :create, ClaimType %>
       <li><%= link_to t('page.edit'), edit_claim_type_path(@claim_type) %>
     <% end %>
     <li><%= link_to t('page.back'), claim_types_path %>
