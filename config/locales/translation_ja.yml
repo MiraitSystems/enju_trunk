@@ -2666,6 +2666,9 @@ ja:
   bookstore:
     not_found: "一致する寄贈・購入先が存在しませんでした。"
   resource_import_textfile:
+    external_resource_from: "資料情報の取込み元"
+    priority_ndl: "(優先順：JPNO > ISBN)"
+    priority_nacsis: "(優先順：NCID > NBN > ISBN)"
     template_download: "テンプレートをダウンロード"
     import_request: "すぐにインポート"
     start_importing: "インポートを開始しました。"
@@ -2685,6 +2688,7 @@ ja:
         issn: ISSN
         ncid: NCID
         nbn: NBN
+        jpno: JPNO
         original_title: シリーズ名
         title_transcription: シリーズ名（ヨミ）
         periodical: 定期刊行物
@@ -2698,6 +2702,7 @@ ja:
         ncid: NCID
         nbn: NBN
         isbn: ISBN
+        jpno: JPNO
         lccn: LCCN
         marc_number: MARC番号
         ndc: NDC
