@@ -60,7 +60,7 @@ ja:
       realize: 表現関係
       reify: 具体化
       subject_as_concept: 件名概念として
-      frequency: 発行頻度
+      frequency: 刊行頻度
       expression_merge_list: 協力した資料の統合リスト
       use_restriction: 利用制限
       subject: 件名
@@ -181,7 +181,7 @@ ja:
       reminder_list: 督促
       expense: 購入情報
       budget_and_results_managements: 予算実績対比 
-      manifestation_type: 資料区分
+      manifestation_type: 書誌タイプ
       access_log: アクセス件数
       keyword_count: 検索キーワード
       numbering: 採番
@@ -2703,7 +2703,7 @@ ja:
         ndc: NDC
         carrier_type: 資料の形態
         jpn_or_foreign: 和洋区分
-        frequency: 発行頻度
+        frequency: 刊行頻度
         pub_date: 出版日
         country_of_publication: 出版国
         place_of_publication: 出版地
