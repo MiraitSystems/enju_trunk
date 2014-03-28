@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 module EnjuTrunk
   module ImportBook
-    SERIES_REQUIRE_COLUMNS = %w(original_title issn ncid nbn)
-    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn ncid nbn)
+    SERIES_REQUIRE_COLUMNS = %w(original_title issn ncid nbn jpno)
+    BOOK_REQUIRE_COLUMNS   = %w(original_title isbn ncid nbn jpno)
     BOOK_HEADER_ROW        = 1
     BOOK_DATA_ROW          = 2
 
@@ -151,11 +151,12 @@ module EnjuTrunk
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
       manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
+      jpno = datas[field[I18n.t('resource_import_textfile.excel.book.jpno')]].to_s
       if external_resource == "nacsis"
         ncid = datas[field[I18n.t('resource_import_textfile.excel.book.ncid')]].to_s
         nbn = datas[field[I18n.t('resource_import_textfile.excel.book.nbn')]].to_s
       end
-      manifestation = import_from_external_resource(isbn, ncid, nbn, external_resource) unless manifestation
+      manifestation = import_from_external_resource(isbn, ncid, nbn, jpno, external_resource) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
       manifestation = Manifestation.new unless manifestation
       manifestation.series_statement = series_statement if series_statement
@@ -394,13 +395,15 @@ module EnjuTrunk
       return manifestation, mode, nil, error_msg
     end
 
-    def import_from_external_resource(isbn, ncid, nbn, external_resource)
+    def import_from_external_resource(isbn, ncid, nbn, jpno, external_resource)
       manifestation = nil
 
       if ncid.present?
         manifestation = NacsisCat.create_manifestation_from_ncid(ncid)
       elsif nbn.present?
         manifestation = NacsisCat.create_manifestation_from_nbn(nbn)
+      elsif jpno.present?
+        manifestation = Manifestation.import_from_ndl_search(:jpno => jpno)
       elsif isbn.present?
         begin
           isbn = Lisbn.new(isbn)
