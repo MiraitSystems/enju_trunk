@@ -2643,6 +2643,9 @@ en:
     specify_id: Specify %{model} ID.
     not_found: There is no registration to this list now.
   resource_import_textfile:
+    external_resource_from: external resource from
+    priority_ndl: "(priority：JPNO > ISBN)"
+    priority_nacsis: "(priority：NCID > NBN > ISBN)" 
     wrong_file: can not be imported.
     wrong_extention: "files with xlsx extension or %{split_type} can be imported."
     importing_please_wait: Now importing Excel file. Please wait...
@@ -2662,6 +2665,7 @@ en:
         issn: ISSN
         ncid: NCID
         nbn: NBN
+        jpno: JPNO
         original_title: Series name
         title_transcription: Series name（transcription）
         periodical: Periodical
@@ -2675,6 +2679,7 @@ en:
         ncid: NCID
         nbn: NBN
         isbn: ISBN
+        jpno: JPNO
         lccn: LCCN
         marc_number: MARC number
         ndc: NDC
