@@ -1722,6 +1722,7 @@ ja:
         payment_type: 支払区分
         taxable_amount: 課税対象金額
         tax_exempt_amount: 非課税対象金額
+        discount_commision: 割引手数料
       function:
         controller_name: コントローラ名
         display_name: 表示名

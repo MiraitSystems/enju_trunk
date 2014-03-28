@@ -1733,6 +1733,7 @@ en:
         payment_type: Payment type
         taxable_amount: Taxable amount
         tax_exempt_amount: Tax exempt amount
+        discount_commision: Discount commision
       function:
         controller_name: Controller name
         display_name: Display name
