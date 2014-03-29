@@ -67,8 +67,13 @@
     <%= form_for(@resource_import_textfile, :html => { :multipart => true }, :remote => true ) do |f| %>
 
       <% if SystemConfiguration.get('nacsis.can_use') %>
-        <%= radio_button_tag 'extraparams[external_resource]', 'ndl', true %><b>NDL</b>
-        <%= radio_button_tag 'extraparams[external_resource]', 'nacsis' %><b>NACSIS</b><br />
+        <%= label_tag 'external_resource_from', t('resource_import_textfile.external_resource_from') %><br />
+        <%= radio_button_tag 'extraparams[external_resource]', 'ndl', true %>
+        <%= label_tag 'extraparams[external_resource]_ndl', t('page.external_catalog.ndl') %>
+        <%= t('resource_import_textfile.priority_ndl') %>
+        <%= radio_button_tag 'extraparams[external_resource]', 'nacsis' %>
+        <%= label_tag 'extraparams[external_resource]_nacsis', t('page.external_catalog.nacsis') %>
+        <%= t('resource_import_textfile.priority_nacsis') %><br />
         <br />
       <% else %>
         <%= hidden_field_tag 'extraparams[external_resource]', 'ndl' %>
