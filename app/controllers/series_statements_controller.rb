@@ -302,7 +302,7 @@ class SeriesStatementsController < ApplicationController
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
-    @numberings = Numbering.where(:numbering_type => 'manifestation')
+    @numberings = Numbering.get_manifestation_numbering('series_statement')
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation

@@ -1461,8 +1461,7 @@ class ManifestationsController < ApplicationController
     @work_manifestation.work_has_titles = @manifestation.work_has_titles
     @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @manifestation.work_has_titles.empty?
     @count_titles = @work_manifestation.work_has_titles.size
-
-    @numberings = Numbering.where(:numbering_type => 'manifestation')
+    @numberings = Numbering.get_manifestation_numbering
     if SystemConfiguration.get('manifestation.use_identifiers')
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
       @manifestation.identifiers << Identifier.new if @manifestation.identifiers.blank?
