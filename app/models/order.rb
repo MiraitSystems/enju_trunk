@@ -124,23 +124,12 @@ class Order < ActiveRecord::Base
     end
   end
 
-  before_create :set_order_identifier
-  def set_order_identifier
-    identifier = Numbering.do_numbering('order')
-
-    if self.order_identifier != identifier
-      identifier.slice!(0,4)
-      self.order_identifier = self.order_identifier[0,4] + identifier
-    end
-  end
-
-  def set_probisional_identifier(year = Date.today.year)
-
-    @numbering = Numbering.find(:first, :conditions => {:numbering_type => 'order'})
-    if @numbering
-      number = (((@numbering.last_number).to_i + 1).to_s).rjust(@numbering.padding_number,@numbering.padding_character.to_s) rescue nil
-      self.order_identifier = year.to_s + number if number
-    end
+  def self.set_order_identifier(numbering_name = 'order')
+    #numbering_name = "order_#{order_year}"
+    begin
+      identifier = Numbering.do_numbering(numbering_name)
+    end while Order.where(:order_identifier => identifier).first
+    return identifier
   end
 
   def create_payment_to_advance_payment

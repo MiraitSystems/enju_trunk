@@ -264,15 +264,15 @@ class OrdersController < ApplicationController
     original_order = Order.where(:id => params[:order_id]).first
     if original_order
       @order = original_order.dup
-      @order.set_probisional_identifier(Date.today.year.to_i + 1)
-      @order.ordered_at = Date.new((Date.today + 1.years).year, original_order.ordered_at.month, original_order.ordered_at.day)
-      @order.order_year = Date.today.year.to_i + 1
+      @order.order_identifier = Order.set_order_identifier
+      @order.ordered_at = Date.new(original_order.ordered_at.year, original_order.ordered_at.month, original_order.ordered_at.day)
+      @order.order_year = original_order.order_year
       @order.paid_flag = 0
       @order.buying_payment_year = nil
       @order.prepayment_settlements_of_account_year = nil
     else
       @order.ordered_at = Date.today
-      @order.set_probisional_identifier
+      @order.order_identifier = Order.set_order_identifier
       if params[:manifestation_id]
         @order.manifestation_id = params[:manifestation_id].to_i
       end 
@@ -282,10 +282,11 @@ class OrdersController < ApplicationController
     @currencies = Currency.all
     @return_index = params[:return_index]
 
-      if params[:manifestation_id]
-        @order.manifestation_id = params[:manifestation_id].to_i
-        @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
-      end 
+    if params[:manifestation_id]
+      @order.manifestation_id = params[:manifestation_id].to_i
+      @order.manifestation = Manifestation.find(params[:manifestation_id].to_i)
+    end
+ 
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @order }
@@ -306,7 +307,6 @@ class OrdersController < ApplicationController
     @order = Order.new(params[:order])
     @auto_calculation_flag = params[:order_auto_calculation][:flag] == '1' ? true : false
     @return_index = params[:return_index]
-    
     respond_to do |format|
       if @order.save
         @order.set_cost if params[:order_auto_calculation][:flag] == '1'

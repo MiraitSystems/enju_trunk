@@ -1,0 +1,18 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.license')) -%></h1>
+<div id="content_list">
+
+  <%= form_tag('/system_maintenance/execute') do %>
+    例外メールの送信：
+    <%= button_tag("send exception", id: "exception", name: 'execute_exception') %>
+
+  <% end %>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+<%- if false -%>
+  <ul>
+  </ul>
+<%- end -%>
+</div>
