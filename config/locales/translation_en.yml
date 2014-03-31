@@ -2089,6 +2089,7 @@ en:
     select_use_titles: Use titles table
     imported: Imported
     copy: Copy new create
+    print: Print this page
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
