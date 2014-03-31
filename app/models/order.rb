@@ -1,7 +1,8 @@
 class Order < ActiveRecord::Base
 
-  attr_accessible :order_identifier, :manifestation_id, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :margin_ratio, :original_price, :cost, :order_organization_id, :note, :group, :pair_manifestation_id, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment,:ordered_at, :order_year, :reference_code_id, :publisher_type_id
+  attr_accessible :order_identifier, :manifestation_id, :buying_payment_year, :prepayment_settlements_of_account_year, :paid_flag, :number_of_acceptance_schedule, :meeting_holding_month_1, :meeting_holding_month_2, :adption_code, :deliver_place_code_1, :deliver_place_code_2, :deliver_place_code_3, :application_form_code_1, :application_form_code_2, :number_of_acceptance, :number_of_missing, :collection_status_code, :reason_for_collection_stop_code, :collection_stop_day, :order_form_code, :collection_form_code, :payment_form_code, :budget_subject_code, :transportation_route_code, :bookstore_code, :currency_id, :currency_rate, :margin_ratio, :original_price, :cost, :order_organization_id, :note, :group, :pair_manifestation_identifier, :unit_price, :taxable_amount, :tax_exempt_amount, :total_payment,:ordered_at, :order_year, :reference_code_id, :publisher_type_id
 
+  attr_accessor :pair_manifestation_identifier
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
   belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
@@ -52,6 +53,8 @@ class Order < ActiveRecord::Base
   validates :taxable_amount, :numericality => true
   validates :tax_exempt_amount, :numericality => true
   validates :order_identifier, :presence => true, :uniqueness => true
+  before_validation :set_pair_manifestation
+  validates_presence_of :pair_manifestation_id, :unless => proc{self.pair_manifestation_identifier.blank?}, :message => I18n.t('activerecord.errors.attributes.order.pair_manifestation_identifier.not_found') 
 
   before_validation :set_default
   def set_default
@@ -77,6 +80,12 @@ class Order < ActiveRecord::Base
     self.tax_exempt_amount = 0 if self.tax_exempt_amount.blank?
   end
 
+  def set_pair_manifestation
+    return if self.pair_manifestation_identifier.blank?
+    if manifestation = Manifestation.where(:identifier => self.pair_manifestation_identifier).try(:first)
+      self.pair_manifestation = manifestation
+    end
+  end
 
   def self.struct_agent_selects
     struct_agent = Struct.new(:id, :text)
