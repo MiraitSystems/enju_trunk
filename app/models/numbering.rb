@@ -57,14 +57,8 @@ class Numbering < ActiveRecord::Base
       #pp number
     end
 
-    case n.numbering_type
-      when 'order'
-        prefix = Date.today.year
-        suffix = ""
-      else
-        prefix = (n.prefix.blank?)?(""):(n.prefix)
-        suffix = (n.suffix.blank?)?(""):(n.suffix)
-      end
+    prefix = (n.prefix.blank?)?(""):(n.prefix)
+    suffix = (n.suffix.blank?)?(""):(n.suffix)
 
     if n.padding?
       padding_character = n.padding_character ? (n.padding_character.to_s):('')
@@ -96,6 +90,11 @@ class Numbering < ActiveRecord::Base
     r = "#{prefix}#{nstr}#{suffix}#{checkdigitstr}"
     #puts "r=#{r}"
     return r
+  end
+
+  def self.get_manifestation_numbering(numbering_type = 'manifestation')
+    numbering = Numbering.where(:numbering_type => 'manifestation')
+    return numbering
   end
 
 end

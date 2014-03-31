@@ -67,8 +67,8 @@ class ApplicationController < ActionController::Base
 
   def render_404
     return if performed?
-		logger.warn $@
-		logger.warn $!
+    logger.warn $@
+    logger.warn $!
 
     respond_to do |format|
       format.html {render :template => 'page/404', :status => 404}
@@ -85,8 +85,8 @@ class ApplicationController < ActionController::Base
 
   def render_500
     return if performed?
-		logger.warn $@
-		logger.warn $!
+    logger.warn $@
+    logger.warn $!
 
     #flash[:notice] = t('page.connection_failed')
     respond_to do |format|
@@ -99,8 +99,8 @@ class ApplicationController < ActionController::Base
     return if performed?
     #flash[:notice] = t('page.connection_failed')
 
-		logger.warn $@
-		logger.warn $!
+    logger.warn $@
+    logger.warn $!
 
     respond_to do |format|
       format.html {render :template => 'page/500', :status => 500}
@@ -299,7 +299,7 @@ class ApplicationController < ActionController::Base
   def get_bookbinding
     @bookbinding = Bookbinding.find(params[:bookbinding_id]) if params[:bookbinding_id]
   end
- 
+
   def get_current_basket
     @current_basket = current_user.current_basket if current_user
   end
@@ -369,6 +369,10 @@ class ApplicationController < ActionController::Base
     access_denied unless current_user && current_user.has_role?('Librarian')
   end
 
+  def check_admin
+    access_denied unless current_user && current_user.has_role?('Admin')
+  end
+
   def set_role_query(user, search)
     role = user.try(:role) || Role.default_role
     search.build do
@@ -436,8 +440,8 @@ class ApplicationController < ActionController::Base
   end
 
   def get_index_agent
-    agent = {} 
-    case 
+    agent = {}
+    case
     when params[:agent_id]
       agent[:agent] = Agent.find(params[:agent_id])
     when params[:creator_id]
@@ -446,9 +450,9 @@ class ApplicationController < ActionController::Base
       agent[:contributor] = Agent.find(params[:contributor_id])
     when params[:publisher_id]
       agent[:publisher] = Agent.find(params[:publisher_id])
-    end  
+    end
     agent
-  end  
+  end
 
   def self.authorize_function
     before_filter :authorize_function!

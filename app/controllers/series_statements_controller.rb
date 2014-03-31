@@ -170,7 +170,7 @@ class SeriesStatementsController < ApplicationController
       end
 
       respond_to do |format|
-        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
+        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_created', :model => t('activerecord.models.series_statement')) }
         format.json { render :json => @series_statement, :status => :created, :location => @series_statement }
       end
     end
@@ -302,7 +302,7 @@ class SeriesStatementsController < ApplicationController
     @realize_types = RealizeType.find(:all, :select => "id, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
-    @numberings = Numbering.where(:numbering_type => 'manifestation')
+    @numberings = Numbering.get_manifestation_numbering('series_statement')
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
