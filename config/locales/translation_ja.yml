@@ -2686,7 +2686,7 @@ ja:
     excel:
       series:
         issn: ISSN
-        ncid: NCID
+        nacsis_identifier: NCID
         nbn: NBN
         jpno: JPNO
         original_title: シリーズ名
@@ -2699,10 +2699,9 @@ ja:
         original_title: タイトル
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
-        ncid: NCID
+        nacsis_identifier: NCID
         nbn: NBN
         isbn: ISBN
-        jpno: JPNO
         lccn: LCCN
         marc_number: MARC番号
         ndc: NDC
