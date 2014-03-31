@@ -381,7 +381,7 @@ function BoxChecked(check){
 <% end %>
 <!-- end dialog for selecting excel columns -->
 
-<%- if current_user -%>
+<%- if current_user && !(params[:index] && params[:index] == 'nacsis') -%>
   <div style="float: right">
     <%= render 'baskets/menu', :is_list => false %>
   </div>
