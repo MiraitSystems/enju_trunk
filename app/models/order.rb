@@ -4,7 +4,7 @@ class Order < ActiveRecord::Base
 
 
   belongs_to :manifestation, :foreign_key => 'manifestation_id'
-  belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id'
+  belongs_to :pair_manifestation,:class_name => 'Manifestation', :foreign_key => 'pair_manifestation_id', :primary_key => "identifier"
   belongs_to :collection_status, :class_name => 'Keycode', :foreign_key => 'collection_status_code'
   belongs_to :collection_form, :class_name => 'Keycode', :foreign_key => 'collection_form_code'
 
