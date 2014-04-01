@@ -23,3 +23,13 @@ if defined?(EnjuCustomize)
     # NO CUSTOM VALIDATOR
   end
 end
+
+# theme
+if defined?(EnjuTrunkTheme)
+  begin
+    Dir[EnjuTrunkTheme::Engine.root.to_s + EnjuTrunkTheme::class_evals_dir + "*.rb"].each { |file| require file }
+  rescue => e
+    puts e.message 
+    # NO CUSTOM VALIDATOR
+  end
+end

@@ -122,16 +122,18 @@
             </td>
           </tr>
         <%- end -%>
+
+        <% if defined?(EnjuTrunkTheme) %>
           <tr>
-            <td><%= t('activerecord.models.theme') -%>:</td>
+            <td><%= t('activerecord.models.theme') %>:</td>
             <td>
-              <%- manifestation.themes.each do |theme| -%>
-                <% if(theme.publish == 0) %>
-                  <%= theme.name -%>
-                <% end %>
-              <%- end -%>
+              <% manifestation.themes.each do |theme| %>
+                <%= theme.name if theme.publish == 0 %>
+              <% end %>
             </td>
           </tr>
+        <% end %>
+
         <% if defined?(EnjuBookmark) %>
           <tr>
             <td><%= t('activerecord.models.tag') -%>:</td>
