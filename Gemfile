@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 #ruby "1.9.3"
 
-gem 'rails', '3.2.16'
+gem 'rails', '3.2.17'
 
 gem 'cocaine', '0.4.2'
 #gem 'enju_amazon', :git => 'git://github.com/nabeta/enju_amazon.git'
@@ -70,6 +70,7 @@ gem 'ri_cal'
 gem 'file_wrapper'
 gem 'paper_trail', '~> 2.6'
 #gem 'RedCloth', '>= 4.2.9'
+gem 'redcarpet', '~> 3.1.1'
 gem 'lisbn'
 gem 'nori', '~> 2.0'
 gem 'cancan', '>= 1.6.7'
