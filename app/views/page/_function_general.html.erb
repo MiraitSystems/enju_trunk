@@ -79,3 +79,4 @@
    <% end %>
    // -->
  </script>
+<%= button_tag(t('page.print'), :type => 'button', :onclick => 'window.print();') if SystemConfiguration.get("view_print_button") %>

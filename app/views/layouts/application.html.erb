@@ -37,7 +37,6 @@
 </div>
 
 <%= render 'page/function_general' %>
-<%= button_tag(t('page.print'), :type => 'button', :onclick => 'window.print();') if SystemConfiguration.get("view_print_button") %>
 <% unless SystemConfiguration.get("not_use_footer") %>
   <%= render 'page/footer' %>
 <% end %>
