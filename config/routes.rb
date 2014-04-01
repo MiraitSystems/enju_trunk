@@ -24,8 +24,6 @@ EnjuLeaf::Application.routes.draw do
   resources :abbreviations
 
   resources :series_statement_relationship_types
-  match 'themes/update_all', :to => 'themes#update_all'
-  resources :themes
   resources :barcode_registrations, :only => [:index] do
     post :output, :on => :collection
   end

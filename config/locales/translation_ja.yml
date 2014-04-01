@@ -198,7 +198,6 @@ ja:
       exchange_manifestation: 所蔵付け替え
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
-      theme: テーマ
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
@@ -1619,12 +1618,6 @@ ja:
         display_name: 表示名
         typeid: タイプID
         note: 注記
-      theme:
-        name: 名前
-        description: 説明
-        publish: 公開範囲
-        note: 注記
-        position: 優先度
       currency:
         name: 名前
         display_name: 表示名 
@@ -1947,9 +1940,6 @@ ja:
     batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"
-    batch_change_theme: "テーマを追加"
-    batch_change_theme_added: " %{title} をテーマに設定しました。"
-    batch_change_theme_failed: "テーマ追加に失敗しました。"
     batch_change_series_statement: "シリーズ情報を設定" 
     batch_change_series_statement_updated: "シリーズ情報を %{title} に設定しました。"
     batch_change_series_statement_failed: "シリーズ情報の設定に失敗しました。"
@@ -2047,11 +2037,6 @@ ja:
       invalid_input_date: "入力年月日が正しくありません。"
       over_end_date: "検索終了日は検索開始日以降を指定してください。"
     get_manual: 利用マニュアルをダウンロード
-    theme:
-      theme_list: テーマ一覧
-      no_matches_found: テーマが見つかりません
-      hot_topic: 話題のテーマ
-      related_manifestation: 関連する資料
     add_line: "+"
     del_line: "-"
     user_notice: 利用者通知書

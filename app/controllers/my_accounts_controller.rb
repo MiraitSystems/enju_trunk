@@ -14,8 +14,6 @@ class MyAccountsController < ApplicationController
       redirect_to new_user_agent_url(@user); return
     end
 
-    @themes = Theme.where(publish: 0).order('position ASC').limit(10)
-
     #TODO
     if defined?(EnjuBookmark) 
       @tags = @user.bookmarks.tag_counts.sort{|a,b| a.count <=> b.count}.reverse

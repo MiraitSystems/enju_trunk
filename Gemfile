@@ -21,7 +21,7 @@ gem 'activerecord-import'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/MiraitSystems/enju_bookmark.git'
 gem 'enju_subject', '0.1.0.pre5'
-
+#gem 'enju_trunk_theme', :git => 'git://github.com/MiraitSystems/enju_trunk_theme.git'
 gem "jpp_customercode_transfer", "~> 0.0.2"
 
 # special gem here.

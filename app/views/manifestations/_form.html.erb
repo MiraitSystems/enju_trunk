@@ -85,18 +85,22 @@ $(document).keydown(function(e) {
   });
 });
 </script>
-<script id="script_theme">
-  $(document).ready(function() { 
-    $("#manifestation_theme").select2({
-      multiple: true, 
-      data: <%= raw @select_theme_tags.to_json -%>, 
-      formatNoMatches: function(term) {
-        return <%= raw t("page.theme.no_matches_found").to_json %>;
-      },
-      width: "300px",
-    }); 
-  });
-</script>
+
+<% if defined?(EnjuTrunkTheme) %>
+  <script id="script_theme">
+    $(document).ready(function() { 
+      $("#manifestation_theme").select2({
+        multiple: true, 
+        data: <%= raw @select_theme_tags.to_json -%>, 
+        formatNoMatches: function(term) {
+          return <%= raw t("page.theme.no_matches_found").to_json %>;
+        },
+        width: "300px",
+      }); 
+    });
+  </script>
+<% end %>
+
 <script>
   var ItemField_language = {
     currentNumber : <%= raw (@work_has_languages.blank? ? 1 : @work_has_languages.size).to_json %>,
@@ -506,10 +510,12 @@ $(document).keydown(function(e) {
     <%= f.text_field :subject_transcription, :value => @subject_transcription, :class => 'resource_url' -%>
   </div>
 
-  <div class="field">
-    <strong><%= t('activerecord.models.theme') -%></strong><br />
-    <%= f.text_field :theme, :id => 'manifestation_theme', :value => @keep_themes %>
-  </div>
+  <% if defined?(EnjuTrunkTheme) %>
+    <div class="field">
+      <strong><%= t('activerecord.models.theme') %></strong><br />
+      <%= f.text_field :theme, :id => 'manifestation_theme', :value => @keep_themes %>
+    </div>
+  <% end %>
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
