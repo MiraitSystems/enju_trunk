@@ -168,10 +168,6 @@ class ItemsController < ApplicationController
     @item = Item.new(params[:item])
 
     @manifestation = Manifestation.find(@item.manifestation_id)
-    if SystemConfiguration.get('manifestation.use_item_has_operator')
-      @countoperators = @item.item_has_operators.size
-      set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
-    end
 
     respond_to do |format|
       if @item.valid?
@@ -210,7 +206,6 @@ class ItemsController < ApplicationController
   # PUT /items/1
   # PUT /items/1.json
   def update
-    set_operator_user_number if SystemConfiguration.get('manifestation.use_item_has_operator')
     if params[:item][:claim_attributes]
       if params[:item][:claim_attributes][:claim_type_id].blank?
         params[:item].delete("claim_attributes")
@@ -343,13 +338,6 @@ class ItemsController < ApplicationController
       redirect_to item_url(@item)
     end
     return true
-  end
-
-  def set_operator_user_number
-    operators = params[:item][:item_has_operators_attributes]
-    operators.each do |key, value|
-      @item.set_user_number(key,params["item_has_operators_attributes_#{key}_user_number"])
-    end
   end
 
 end

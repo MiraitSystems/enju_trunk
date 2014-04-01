@@ -2043,6 +2043,7 @@ ja:
     select_use_titles: 書名テーブルを利用する
     imported: インポート済み
     copy: コピーして新規作成
+    print: このページを印刷
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2671,7 +2672,7 @@ ja:
     excel:
       series:
         issn: ISSN
-        ncid: NCID
+        nacsis_identifier: NCID
         nbn: NBN
         jpno: JPNO
         original_title: シリーズ名
@@ -2684,10 +2685,9 @@ ja:
         original_title: タイトル
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
-        ncid: NCID
+        nacsis_identifier: NCID
         nbn: NBN
         isbn: ISBN
-        jpno: JPNO
         lccn: LCCN
         marc_number: MARC番号
         ndc: NDC

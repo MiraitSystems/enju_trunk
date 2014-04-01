@@ -1204,7 +1204,7 @@ system_configuration_00171:
   keyname: manifestation.use_item_has_operator
   v: "false"
   typename: Boolean
-  description: "受入作業者テーブルテーブルを利用する"
+  description: "受入作業者テーブルを利用する"
   category: 'manifestation'
 system_configuration_00172:
   id: 172
@@ -1227,3 +1227,10 @@ system_configuration_00174:
   typename: Boolean
   description: "資料の登録画面にに同一タイトルチェック機能を表示する"
   category: 'manifestation'
+system_configuration_00175:
+  id: 175
+  keyname: view_print_button
+  v: "true"
+  typename: Boolean
+  description: "「このページを印刷」ボタンを表示する"
+  category: 'general'

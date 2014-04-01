@@ -234,7 +234,7 @@
 </div>
 
 <div id="submenu_block">
-  <div id="submenu" class="ui-corner-all">
+  <div class="ui-corner-all submenu_block_inner">
     <ul>
       <li><%= link_to t('page.edit'), edit_approval_path(@approval) %></li>
       <li><%= link_to t('page.back'), approvals_path %></li>
@@ -243,7 +243,7 @@
 
   <% if Object.const_get('ReportExport') && ReportExport.try(:respond_to?, 'get_approval_report_pdf') == true %>
 
-  <div id ="submenu_2" class="ui-corner-all">
+  <div id ="submenu_2" class="ui-corner-all submenu_block_inner">
     <ul>
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.approval_report')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'report' %></li>
       <li><%= link_to t('page.output', :model => t('activerecord.attributes.approval.donation_postcard')), :controller => :approvals ,:action => :get_approval_report, :param => @approval, :output => 'postcard' %>

@@ -31,3 +31,7 @@ en:
           attributes:
             state:
               invalid_transition: Invalid transaction
+      attributes:
+        order:
+          pair_manifestation_identifier:
+            not_found: is not found.

@@ -8,6 +8,11 @@ class ItemHasOperator < ActiveRecord::Base
 
   validates_presence_of :user, :if => :check_number_empty
   validates_presence_of :item
+  before_validation :set_user
+
+  def set_user
+    self.user = User.where(:user_number => self.user_number).first
+  end
 
   def check_number_empty
      self.user_number.empty?

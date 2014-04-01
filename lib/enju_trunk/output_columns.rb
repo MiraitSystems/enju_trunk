@@ -4,7 +4,7 @@ module OutputColumns
     BOOK_COLUMNS = lambda { 
       %W(
         #{ 'manifestation_type' unless SystemConfiguration.get('manifestations.split_by_type') }
-        isbn 
+        isbn
         original_title 
         title_transcription 
         title_alternative 
@@ -40,6 +40,8 @@ module OutputColumns
         contributor 
         publisher
         subject 
+        nacsis_identifier
+        nbn
         accept_type 
         acquired_at_string 
         bookstore 

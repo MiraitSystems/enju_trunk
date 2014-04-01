@@ -113,24 +113,12 @@ class Item < ActiveRecord::Base
   before_validation :check_destroy_operator
   def check_destroy_operator
     item_has_operators.each do |operator|
-      if operator.operated_at.blank? && operator.library_id.blank?
+      if operator.user_number.blank? || operator.operated_at.blank? || operator.library_id.blank?
         operator.delete_flg = true
         operator.destroy 
       end
-
-      if operator.user_number.blank? && operator.operated_at.blank?
-        operator.delete_flg = true
-        operator.destroy
-      end
-
     end
   end
-
-  def set_user_number(index,number)
-    @user_number_list ={} if @user_number_list == nil
-    @user_number_list[index] = number
-  end
-
 
   #enju_union_catalog
   has_paper_trail

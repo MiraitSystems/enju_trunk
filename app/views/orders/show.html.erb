@@ -212,7 +212,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order.pair_manifestation_id') -%>:</strong>
-  <%= @order.pair_manifestation_id -%>
+  <%= link_to @order.pair_manifestation.identifier, @order.pair_manifestation if @order.pair_manifestation -%>
 </p>
 
 </div>
