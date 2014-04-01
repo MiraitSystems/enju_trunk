@@ -1,11 +1,11 @@
 <% if user_signed_in? && current_user.has_role?('Librarian') -%>
   <div id="shortcut">
-      <% 2.upto(9) do |num| %>
-        <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
-          <div class="function_key"><h4>F<%= num %>: <%= SystemConfiguration.get("f#{num}.display_name") %></h4></div>
-        <% end %>
+    <% 2.upto(9) do |num| %>
+      <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
+        <div class="function_key"><h4>F<%= num %>: <%= SystemConfiguration.get("f#{num}.display_name") %></h4></div>
       <% end %>
-      <br style="clear:both;">
+    <% end %>
+    <br style="clear:both;">
   </div>
 <% end %>
 
@@ -14,43 +14,42 @@
   <% if user_signed_in? && current_user.has_role?('Librarian') -%>
     $(document).FunctionKeys(
     {
-       <% 2.upto(9) do |num| %>
-         <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
-           F<%=num%> :function(obj,s,c,a){ 
-             // document.location = '<%= SystemConfiguration.get("f#{num}.path") %>'; 
-             var path = '<%= SystemConfiguration.get("f#{num}.path") %>';
-             var pathname_array = location.pathname.split('/');
-             if (pathname_array[1] && pathname_array[2]) { 
-               // set routes
-               switch (pathname_array[1]) {
-                 case 'manifestations': path += '?manifestation_id='; break;
-                 case 'users':          path += '?user=';          break;
-               }
-               if (pathname_array[2].match(/[0-9]/gi)) {
-                 // set num
-                 path += pathname_array[2];
-               } else { 
-                 switch (pathname_array[1]) {
-                   case 'users': path += pathname_array[2]; break;
-                 }
-               }
-             }
-             document.location = path;
-           }, 
-         <% end %>
-       <% end %>
-     });
+      <% 2.upto(9) do |num| %>
+        <% if SystemConfiguration.get("f#{num}.display_name").present? and SystemConfiguration.get("f#{num}.path").present? %>
+          F<%=num%> :function(obj,s,c,a){ 
+            // document.location = '<%= SystemConfiguration.get("f#{num}.path") %>'; 
+            var path = '<%= SystemConfiguration.get("f#{num}.path") %>';
+            var pathname_array = location.pathname.split('/');
+            if (pathname_array[1] && pathname_array[2]) { 
+              // set routes
+              switch (pathname_array[1]) {
+                case 'manifestations': path += '?manifestation_id='; break;
+                case 'users':          path += '?user=';          break;
+              }
+              if (pathname_array[2].match(/[0-9]/gi)) {
+                // set num
+                path += pathname_array[2];
+              } else { 
+                switch (pathname_array[1]) {
+                  case 'users': path += pathname_array[2]; break;
+                }
+              }
+            }
+            document.location = path;
+          }, 
+        <% end %>
+      <% end %>
+    });
   <% end %>
 
   <% unless SystemConfiguration.get("no_operation_counter").nil? || SystemConfiguration.get("no_operation_counter") == 0 -%>   
-   $(function(){
-
-    window.document.onmousedown = counter_clear;
-    window.document.onkeydown   = counter_clear;
-    window.document.onmousemove = counter_clear;
-    function counter_clear() {
-      nooperation_cnt = 0;
-    }
+    $(function(){
+      window.document.onmousedown = counter_clear;
+      window.document.onkeydown   = counter_clear;
+      window.document.onmousemove = counter_clear;
+      function counter_clear() {
+        nooperation_cnt = 0;
+      }
 
     var t = setInterval(keyborad_observer, 1000);
     function keyborad_observer(){
@@ -75,7 +74,11 @@
       <% end %>
       }
     }
-   });
-   <% end %>
-   // -->
- </script>
+  });
+  <% end %>
+  // -->
+</script>
+
+<div id="footer">
+  <%= button_tag(t('page.print'), :type => 'button', :onclick => 'window.print();') if SystemConfiguration.get("view_print_button") %>
+</div>
