@@ -16,12 +16,12 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to copy_request.id, copy_request %></td>
     <td><nobr><%= link_to copy_request.user.username, copy_request.user -%></nobr></td>
-    <td><%= raw textilize(h copy_request.body) %></td>
+    <td><%= raw markdown(h copy_request.body) %></td>
     <td><nobr><%= copy_request.try(:created_at).try(:strftime, "%Y/%m/%d") -%></nobr></td>
     <td>
       <nobr><%= link_to t('page.edit'), edit_copy_request_path(copy_request) -%></nobr>
       <nobr><%= link_to t('page.destroy'), copy_request, :confirm => t('page.are_you_sure'), :method => :delete -%></nobr>
-    </td>    
+    </td>
   </tr>
 <%- end -%>
 </table>

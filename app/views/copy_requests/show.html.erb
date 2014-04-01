@@ -11,7 +11,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.copy_request.body') -%>:</strong>
-  <%= raw textilize(h @copy_request.body) -%>
+  <%= raw markdown(h @copy_request.body) -%>
 </p>
 
 <p>

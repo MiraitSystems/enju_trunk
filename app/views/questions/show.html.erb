@@ -10,7 +10,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.question.body') -%>:</strong>
-  <%= raw auto_link(textilize(h(@question.body))) -%>
+  <%= raw auto_link(markdown(h(@question.body))) -%>
 </p>
 
 <p>
@@ -35,7 +35,7 @@
   <%- @question.answers.public_answers.each do |answer| -%>
     <li><%= link_to answer.user.username, answer.user if answer.user -%>
     (<%=l answer.updated_at %>)<br />
-    <%= raw auto_link(textilize(h(answer.body))) -%><br />
+    <%= raw auto_link(markdown(h(answer.body))) -%><br />
     <% unless answer.items.empty? %>
       <ul>
         <% answer.items.each do |item| %>

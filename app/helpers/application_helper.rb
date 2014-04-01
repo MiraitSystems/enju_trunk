@@ -131,7 +131,7 @@ module ApplicationHelper
         end
       end
     end
-    agents_list << '...' if agents.size > 3 
+    agents_list << '...' if agents.size > 3
     agents_list.join(" ").html_safe
   end
 
@@ -292,7 +292,7 @@ module ApplicationHelper
     :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
     :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
     :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
-    :title_merge, :creator_merge, :query_merge, :manifestation_types 
+    :title_merge, :creator_merge, :query_merge, :manifestation_types
   ]
 
   ADVANCED_SEARCH_LABEL_IDS = {
@@ -529,8 +529,8 @@ module ApplicationHelper
     if user_signed_in?
       unless current_user.has_role?('Librarian')
         # ゲスト権限以上ユーザ権限未満でログイン時
-        return (can_use_purchase_request? or 
-          SystemConfiguration.get('use_copy_request') or 
+        return (can_use_purchase_request? or
+          SystemConfiguration.get('use_copy_request') or
           SystemConfiguration.get("user_show_questions")) ?
             'fg-4button' : 'fg-3button'
       end
@@ -576,8 +576,8 @@ module ApplicationHelper
         t('activerecord.attributes.reserve.email')
       when [2, 3, 4, 5, 6, 7], 2, 3, 4, 5, 6, 7
         t('activerecord.attributes.reserve.telephone')
-      end 
-    end 
+      end
+    end
   end
 
   def select2_script(selector_id)
@@ -674,4 +674,14 @@ module ApplicationHelper
     end
     html.concat( raw ("    </select>\n") )
   end
+
+  def markdown(text)
+    unless @markdown
+      renderer = Redcarpet::Render::HTML.new
+      @markdown = Redcarpet::Markdown.new(renderer, no_links: true, hard_wrap: true)
+    end
+
+    @markdown.render(text).html_safe
+  end
+
 end

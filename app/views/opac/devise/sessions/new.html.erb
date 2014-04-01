@@ -80,7 +80,7 @@ function make_special_keys_area(target) {
   <%= form_for(resource, :as => resource_name, :url => new_user_session_path(:opac => true)) do |f| %>
     <%= f.error_messages -%>
     <div>
-      <%= raw sanitize(textilize(h(@library_group.login_banner))) %>
+      <%= raw sanitize(markdown(h(@library_group.login_banner))) %>
     </div>
     <br />
     <p id="notice"><%= notice %></p>
