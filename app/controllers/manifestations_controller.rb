@@ -489,9 +489,11 @@ class ManifestationsController < ApplicationController
         @removed = true
       end
 
-      if params[:theme_id]
-        @theme = Theme.find(params[:theme_id]) rescue nil
-        @all_manifestations = params[:all_manifestations] = false
+      if defined?(EnjuTrunkTheme)
+        if params[:theme_id]
+          @theme = Theme.find(params[:theme_id]) rescue nil
+          @all_manifestations = params[:all_manifestations] = false
+        end
       end
 
       if params[:basket_id]
@@ -805,7 +807,7 @@ class ManifestationsController < ApplicationController
   # GET /manifestations/new.json
   def new
     @manifestation = Manifestation.new
-    @select_theme_tags = Manifestation.struct_theme_selects
+    @select_theme_tags = Manifestation.struct_theme_selects if defined?(EnjuTrunkTheme)
     @work_has_languages = []
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
@@ -817,7 +819,7 @@ class ManifestationsController < ApplicationController
       @subject_transcription = original_manifestation.subjects.collect(&:term_transcription).join(';')
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
-      @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',')
+      @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
       @work_has_languages = original_manifestation.work_has_languages
       if original_manifestation.manifestation_exinfos
         original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
@@ -881,8 +883,10 @@ class ManifestationsController < ApplicationController
       end
       store_location unless params[:mode] == 'tag_edit'
     end
-    @select_theme_tags = Manifestation.struct_theme_selects
-    @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
+    if defined?(EnjuTrunkTheme)
+      @select_theme_tags = Manifestation.struct_theme_selects
+      @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
+    end
   end
 
   # POST /manifestations
@@ -903,7 +907,7 @@ class ManifestationsController < ApplicationController
     end
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
-    @theme = params[:manifestation][:theme]
+    @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -928,7 +932,7 @@ class ManifestationsController < ApplicationController
           @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
-          @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank?
+          @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
@@ -941,8 +945,10 @@ class ManifestationsController < ApplicationController
 
         format.html { render :action => "new" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
-        @select_theme_tags = Manifestation.struct_theme_selects
-        @keep_themes = @theme
+        if defined?(EnjuTrunkTheme)
+          @select_theme_tags = Manifestation.struct_theme_selects
+          @keep_themes = @theme
+        end
       end
     end
   end
@@ -958,7 +964,7 @@ class ManifestationsController < ApplicationController
     set_agent_instance_from_params # Implemented in application_controller.rb
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
-    @theme = params[:manifestation][:theme]
+    @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -980,7 +986,7 @@ class ManifestationsController < ApplicationController
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
-        @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme)
+        @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme) if defined?(EnjuTrunkTheme)
         @manifestation.work_has_languages.destroy_all;
         @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
         if params[:exinfos]
@@ -997,8 +1003,10 @@ class ManifestationsController < ApplicationController
 
         format.html { render :action => "edit" }
         format.json { render :json => @manifestation.errors, :status => :unprocessable_entity }
-        @select_theme_tags = Manifestation.struct_theme_selects
-        @keep_themes = @theme
+        if defined?(EnjuTrunkTheme)
+          @select_theme_tags = Manifestation.struct_theme_selects
+          @keep_themes = @theme
+        end
       end
     end
   end
@@ -1370,8 +1378,10 @@ class ManifestationsController < ApplicationController
       end
     end
 
-    if @theme
-      with << [:id, :any_of, @theme.manifestations.collect(&:id)]
+    if defined?(EnjuTrunkTheme)
+      if @theme
+        with << [:id, :any_of, @theme.manifestations.collect(&:id)]
+      end
     end
 
     if @basket
