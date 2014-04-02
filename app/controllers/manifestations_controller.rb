@@ -986,7 +986,10 @@ class ManifestationsController < ApplicationController
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
         @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
-        @manifestation.themes.destroy_all; @manifestation.themes = Theme.add_themes(@theme) if defined?(EnjuTrunkTheme)
+        if defined?(EnjuTrunkTheme)
+          @manifestation.themes.destroy_all
+          @manifestation.themes = Theme.add_themes(@theme)
+        end
         @manifestation.work_has_languages.destroy_all;
         @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
         if params[:exinfos]

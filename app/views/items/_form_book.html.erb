@@ -128,6 +128,8 @@ $(function(){
     <%= f.label :item_identifier -%><br />
     <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]}, :include_blank => true %>
     <%#!-- TODO 記述法が異なる為、select2 は保留 --%>
+    <%#= select2_script "numbering" %>
+    <%#= test_select2(:numbering, "numbering[type]", @numberings, nil, 200, true) %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
     <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
   </div>
