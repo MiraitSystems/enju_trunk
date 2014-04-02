@@ -641,40 +641,6 @@ module ApplicationHelper
     html.concat( raw ("    </select>\n") )
   end
 
-  def test_select2(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
-    # @use_licenses テスト用
-    # name, display_name の取得
-    logger.error "EEEEEEEEEEE #{data}  EEEEEEEEEEEEE"
-    if data.attribute_present?(:name)
-      name = data.name
-      display_name = data.name
-    else
-      name = data.agency_name
-      display_name = data.agency_name
-    end
-    display_name = data.display_name.localize if data.attribute_present?(:display_name)
-
-    # フォームの HTML 生成
-    html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
-    if include_blank
-      html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
-    end
-    data.each do |data|
-      html.concat( raw ("      <option alt=\"#{ name }\", value=\"#{ data.id }\"") )
-      if obj_data == data.id
-        html.concat( raw (", selected=\"selected\"") )
-      end
-
-        html.concat( raw (">#{ display_name }") )
-
-      if alt_display
-        html.concat( raw (" (#{ name })") )
-      end
-      html.concat( raw ("</option>\n") )
-    end
-    html.concat( raw ("    </select>\n") )
-  end
-
   def markdown(text)
     unless @markdown
       renderer = Redcarpet::Render::HTML.new

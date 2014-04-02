@@ -422,4 +422,12 @@ module ManifestationsHelper
     end
     order_str
   end
+
+  def use_licenses
+    list = []
+    @use_licenses.each do |use_license|
+      list << Manifestation::SELECT2_OBJ.new(use_license.id, use_license.agency_name)
+    end
+    return list
+  end
 end

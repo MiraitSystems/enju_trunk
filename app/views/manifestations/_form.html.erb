@@ -580,13 +580,13 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
-    <%= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+    <%#= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
     <%# TODO make_select2 内の分岐がうまくできない %>
-    <%#= select2_script "use_license_id" %>
-    <%#= test_select2(
+    <%= select2_script "use_license_id" %>
+    <%= make_select2_struct(
       :use_license_id, 
       "manifestation[use_license_id]", 
-      @use_licenses, 
+      use_licenses, 
       @manifestation.use_license_id, 
       250, 
       true, 
