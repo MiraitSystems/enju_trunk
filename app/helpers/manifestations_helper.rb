@@ -257,20 +257,13 @@ module ManifestationsHelper
 
   def missing_issue_statuses
 =begin
-    SELECT2_OBJ = Struct.new(:id, :name)
-    MISSING_ISSUE_STATUSES = [
-      SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
-      SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
-      SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))
-    ]
-
     list = [[I18n.t('missing_issue.no_request'), 1],
             [I18n.t('missing_issue.requested'), 2],
             [I18n.t('missing_issue.received'), 3]]
 =end
-    list = [Manifestation::SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request')),
-            Manifestation::SELECT2_OBJ.new(2, I18n.t('missing_issue.requested')),
-            Manifestation::SELECT2_OBJ.new(3, I18n.t('missing_issue.received'))]
+    list = [Manifestation::SELECT2_OBJ.new(1, I18n.t('missing_issue.no_request'), I18n.t('missing_issue.no_request')),
+            Manifestation::SELECT2_OBJ.new(2, I18n.t('missing_issue.requested'), I18n.t('missing_issue.requested')),
+            Manifestation::SELECT2_OBJ.new(3, I18n.t('missing_issue.received'), I18n.t('missing_issue.received'))]
   end
 
   def missing_status_facet(status, current_status, facet)
@@ -426,7 +419,15 @@ module ManifestationsHelper
   def use_licenses
     list = []
     @use_licenses.each do |use_license|
-      list << Manifestation::SELECT2_OBJ.new(use_license.id, use_license.agency_name)
+      list << Manifestation::SELECT2_OBJ.new(use_license.id, use_license.agency_name, use_license.agency_name)
+    end
+    return list
+  end
+
+  def numberings
+    list = []
+    @numberings.each do |numbering|
+      list << Manifestation::SELECT2_OBJ.new(numbering.name, numbering.name, numbering.display_name)
     end
     return list
   end

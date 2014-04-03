@@ -45,10 +45,10 @@ class Manifestation < ActiveRecord::Base
 
   scope :without_master, where(:periodical_master => false)
   # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
-  SELECT2_OBJ = Struct.new(:id, :name)
+  SELECT2_OBJ = Struct.new(:value, :alt_name, :display_name)
   JPN_OR_FOREIGN = [ 
-    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn')), 
-    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign')) 
+    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn'), I18n.t('jpn_or_foreign.jpn')), 
+    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign'), I18n.t('jpn_or_foreign.foreign')) 
   ]
 
   SUNSPOT_EAGER_LOADING = {

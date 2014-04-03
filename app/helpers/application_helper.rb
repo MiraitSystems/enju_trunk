@@ -626,15 +626,15 @@ module ApplicationHelper
       html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
     end
     data.each do |data|
-      html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-      if obj_data == data.id
+      html.concat( raw ("      <option alt=\"#{ data.alt_name }\", value=\"#{ data.value }\"") )
+      if obj_data == data.value
         html.concat( raw (", selected=\"selected\"") )
       end
 
-      html.concat( raw (">#{ data.name }") )
+      html.concat( raw (">#{ data.display_name }") )
 
       if alt_display
-        html.concat( raw (" (#{ data.name })") )
+        html.concat( raw (" (#{ data.alt_name })") )
       end
       html.concat( raw ("</option>\n") )
     end
