@@ -150,10 +150,10 @@ class AgentsController < ApplicationController
        result = nil
        result = struct_agent.new(a.id, a.full_name)
     else
-       agents = Agent.where("full_name like '%#{params[:search_phrase]}%'").select("id, full_name").limit(10)
+       agents = Agent.where("full_name like '%#{params[:search_phrase]}%'").where(:user_id => nil).select("id, full_name").limit(10)
        result = []
        agents.each do |agent|
-         result << struct_agent.new(agent.id, agent.full_name)
+           result << struct_agent.new(agent.id, agent.full_name)
        end
     end
     respond_to do |format|
