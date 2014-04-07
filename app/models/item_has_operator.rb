@@ -6,8 +6,8 @@ class ItemHasOperator < ActiveRecord::Base
   belongs_to :item
   belongs_to :library
 
-  validates_presence_of :user, :if => :check_number_empty
-  validates_presence_of :item
+  validates_presence_of :user_id, :if => :check_number_empty
+  validates_presence_of :item_id
   before_validation :set_user
 
   def set_user
