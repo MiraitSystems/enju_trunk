@@ -64,7 +64,35 @@
 
 <p>
   <strong><%= t('activerecord.models.circulation_status') -%>:</strong>
-  <%= link_to @item.circulation_status.display_name.localize, @item.circulation_status -%>
+  <%#= link_to @item.circulation_status.display_name.localize, @item.circulation_status -%>
+  <% if @item.circulation_status.name != 'Available On Shelf' %>
+    <span class="not_rent_item">
+      <%= @item.circulation_status.display_name.localize if @item.circulation_status %>
+      <% if @item.use_restriction.name == 'Not For Loan' %>
+        (<%= t('activerecord.attributes.checkout.not_available') %>)
+      <% end %>
+    </span>
+  <% else %>
+    <% if @item.circulation_status %>
+      <% if @item.use_restriction.name != 'Not For Loan' %>
+        <%= @item.circulation_status.display_name.localize %>
+      <% else %>
+        <span class="not_rent_item"><%= t('activerecord.attributes.checkout.not_for_loan') %></span>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if @item.rent? %>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      (
+      <%= t('activerecord.attributes.checkout.due_date') %>:
+      <%= l(@item.checkouts.first.due_date, :format => :only_date) %>
+      <% if Time.zone.parse(@item.checkouts.first.due_date.to_s) < Time.now %>
+        <span class="not_rent_item"><%= t('activerecord.attributes.checkout.past_due') -%></span>
+      <% end %>
+      )
+    <% end %>
+  <% end %>
+
   <%- if @item.manifestation.series_statement && @item.manifestation.series_statement.last_issues.include?(@item.manifestation) -%>
     <%= t('item.new_serial') -%>
   <%- end -%>

@@ -637,6 +637,7 @@ en:
         non_searchable: Non Searchable
         price_string: Purchase Price
         items_number: Item number
+        exemplify: Item
       loss_item:
         user_id: User number
         item_id: Loss item
