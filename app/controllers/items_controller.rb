@@ -174,7 +174,7 @@ class ItemsController < ApplicationController
     respond_to do |format|
       begin
         Item.transaction do
-          @item.manifestation = @manifestation 
+          @item.manifestation = @manifestation
           @item.save!
           if @item.shelf
             @item.shelf.library.agent.items << @item
@@ -214,7 +214,7 @@ class ItemsController < ApplicationController
         params[:item].delete("claim_attributes")
         @item.claim.destroy unless @item.claim_id.blank? && @item.claim.blank?
         @item.claim_id = nil unless @item.claim_id.blank?
-      end  
+      end
     end
 
     respond_to do |format|
@@ -244,7 +244,7 @@ class ItemsController < ApplicationController
           @remove_id = CirculationStatus.where(:name => "Removed").first.id rescue nil
           flash[:notice] = t('item.update_failed')
           format.html { render :action => "remove" }
-        end 
+        end
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
       end
     end
@@ -295,7 +295,7 @@ class ItemsController < ApplicationController
       end
     end
   end
- 
+
   def numbering
     item_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil
     render :json => {:success => 1, :item_identifier => item_identifier}
@@ -304,7 +304,6 @@ class ItemsController < ApplicationController
   private
   def prepare_options
     @libraries = Library.real
-    @libraries << Library.web unless Library.web.blank?
     @libraries.delete_if {|l| l.shelves.empty?}
     if @item.new_record?
       @library = Library.real.first(:order => :position, :include => :shelves)

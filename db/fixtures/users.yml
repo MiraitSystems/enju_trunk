@@ -2,7 +2,7 @@ user_00001:
   id: 1
   username: admin
   email: admin@example.jp
-  library_id: 2
+  library_id: 1
   locale: ja
   required_role_id: 1
   user_number: 0
@@ -27,6 +27,6 @@ user_00004:
 user_00005:
   id: 5
   username: librarian4
-  library_id: 5
+  library_id: 4
   locale: ja
   required_role_id: 1

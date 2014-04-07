@@ -7,7 +7,8 @@ class Library < ActiveRecord::Base
 
   include MasterModel
   default_scope :order => 'libraries.position'
-  scope :real, where('id != 1')
+  #scope :real, where('id != 1')
+  scope :real, where('1 = 1')
   has_many :shelves, :order => 'shelves.position'
   belongs_to :library_group, :validate => true
   has_many :events, :include => :event_category
@@ -83,7 +84,7 @@ class Library < ActiveRecord::Base
 
   def create_shelf
     #Shelf.create!(:name => "#{self.name}_default", :library => self)
-    shelf_name = self.name 
+    shelf_name = self.name
     @shelf_default = Shelf.new(:name => "#{shelf_name}_default", :library_id => self.id)
     @shelf_in_process = Shelf.new(:name => "#{shelf_name}_in_process", :display_name => I18n.t('activerecord.attributes.shelf.in_process'), :open_access => 9,:library_id => self.id)
     @shelf_default.save!
