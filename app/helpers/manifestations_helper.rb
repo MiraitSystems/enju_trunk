@@ -424,10 +424,10 @@ module ManifestationsHelper
     return list
   end
 
-  def numberings
+  def libraries
     list = []
-    @numberings.each do |numbering|
-      list << Manifestation::SELECT2_OBJ.new(numbering.name, numbering.name, numbering.display_name)
+    @libraries.each do |library|
+      list << Manifestation::SELECT2_OBJ.new(library.id, library.name, library.display_name)
     end
     return list
   end

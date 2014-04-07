@@ -129,7 +129,6 @@ $(document).keydown(function(e) {
   }
 </script>
 
-<%# TODO %>
 <select id="languages_select2_hidden" style="display: none;">
   <%= raw @languages.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.display_name.localize + " (" + l.name + ")</option>"] } %>
 </select>
@@ -356,7 +355,9 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label :identifier %><br />
     <%= f.text_field :identifier %>
-    <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
+    <%#= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
+    <%= select2_script "numbering_type" %>
+    <%= make_select2_struct("numbering_type", "numbering[type]", numberings, nil, 250, false) %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 

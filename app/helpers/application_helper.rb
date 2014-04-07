@@ -650,4 +650,11 @@ module ApplicationHelper
     @markdown.render(text).html_safe
   end
 
+  def numberings
+    list = []
+    @numberings.each do |numbering|
+      list << Manifestation::SELECT2_OBJ.new(numbering.name, numbering.name, numbering.display_name)
+    end
+    return list
+  end
 end

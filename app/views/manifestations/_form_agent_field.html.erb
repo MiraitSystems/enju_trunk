@@ -45,6 +45,11 @@
   <% select2_str = '_select2' %>
   <%= text_field :select2_agent, :id, :id => 'select2_hidden', :style => 'display: none;' %>
 <% end %>
+<% if SystemConfiguration.get("use_agent_type") %>
+  <select id="creator_types_select2_hidden" style="display: none;">
+    <%= raw @create_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
+  </select>
+<% end %>
 <script>
   var ItemField_creator = {
     currentNumber : <%= raw (@add_creators.blank? ? 1 : @add_creators.size).to_json %>,
@@ -74,11 +79,11 @@
   var ItemField_creator_select2 = {
     currentNumber : <%= raw (@add_creators.blank? ? 1 : @add_creators.size).to_json %>,
     itemTemplate : ''
-      <% if SystemConfiguration.get("use_agent_type") %>
-        + '<td><select id="creator_type_ids___count__" name="creator_type_ids[__count__]">'
-        + <%= raw @create_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
-        + '</select></td>'
-      <% end %>
+//      <% if SystemConfiguration.get("use_agent_type") %>
+//        + '<td><select id="creator_type_ids___count__" name="creator_type_ids[__count__]">'
+//        + <%= raw @create_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
+//        + '</select></td>'
+//      <% end %>
       + '<td><input type="button" value="+" onClick="ItemField_creator_select2.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_creator_select2.remove(__count__);" /></td>',
     add : function () {
@@ -86,11 +91,18 @@
       $clone[0].id = 'select2_creator';
       $clone.show();
       $clone.attr('name','creator_ids[' + this.currentNumber + ']');
+      var $creator_types_clone = $("#creator_types_select2_hidden").clone();
+      $creator_types_clone[0].id = 'selector2_creator_types';
+      $creator_types_clone.show();
+      $creator_types_clone.attr('name', 'creator_type_ids[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "CF" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
       var $clone_field = $("<td/>");
       $clone_field.append($clone);
+      var $creator_types_clone_field = $("<td/>");
+      $creator_types_clone_field.append($creator_types_clone);
       $new_field.append($clone_field);
+      $new_field.append($creator_types_clone_field);
       $new_field.append(newItem);
       $("#creator_field > table > tbody").append($new_field);
       this.currentNumber += 1;
@@ -120,6 +132,13 @@
           },
         },
       });
+      $creator_types_clone.select2({
+        width: "200px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
     },
     remove : function (div_num) {
       var field = document.getElementById('CF' + div_num);
@@ -136,9 +155,17 @@
     <td><%= link_to create.agent.full_name, agent_path(create.agent_id), :target => ["_blank"] -%></td>
     <% if SystemConfiguration.get("use_agent_type") %>
       <td>
-        <%= select_tag "creates[#{create.agent_id}]",
+        <%#= select_tag "creates[#{create.agent_id}]",
             options_for_select(@create_types.collect{ |r| [r.display_name.localize, r.id] },
             :selected => create.create_type_id) %>
+        <%= select2_script "creates_#{ create.agent_id }" %>
+        <%= make_select2(
+          "creates_#{ create.agent_id }", 
+          "creates[#{ create.agent_id }]", 
+          @create_types,
+          create.create_type_id, 
+          200, 
+        ) %>
       </td>
     <% else %>
       <%= hidden_field_tag "creates[#{create.agent_id}]" %>
@@ -169,8 +196,16 @@
       <% end %>
       <% if SystemConfiguration.get("use_agent_type") %>
         <td>
-        <%= select_tag "creator_type_ids[#{i}]",
+        <%#= select_tag "creator_type_ids[#{i}]",
           options_for_select(@create_types.collect{ |r| [r.display_name.localize, r.id] }, :selected => creator[:type_id]) %>
+        <%= select2_script "creator_type_ids_#{i}" %>
+        <%= make_select2(
+          "creator_type_ids_#{i}", 
+          "creator_type_ids[#{i}]", 
+          @create_types,
+          creator[:type_id], 
+          200, 
+        ) %>
         </td>
       <% end %>
       <td><%= button_to_function t('page.add_line'), "ItemField_creator#{select2_str}.add()" -%></td>
