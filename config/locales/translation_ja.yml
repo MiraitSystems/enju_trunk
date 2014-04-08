@@ -1407,7 +1407,7 @@ ja:
         issn: ISSN
         periodical: 定期刊行物
         title_transcription: シリーズ名（ヨミ）
-        note: 注記名
+        note: 注記
         sequence_pattern: 刊行パターン
       series_statement_relationship:
         seq: シーケンシャル番号	 
