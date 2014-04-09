@@ -21,13 +21,11 @@ class DepartmentsController < ApplicationController
 
   def update
     @department = Department.find(params[:id])
-=begin
     if params[:move]
       move_position(@department, params[:move])
       return
     end
     update!
-=end
 
     respond_to do |format|
       if @department.update_attributes(params[:department])
