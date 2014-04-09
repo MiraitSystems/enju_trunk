@@ -59,55 +59,24 @@ var ItemField_language = {
   }
 }
 </script>
+
 <script id="script_add_title">
   var ItemField_title = {
-    currentNumber :<%= @count_titles-1 -%>,
-    itemTemplate : ''
-                 + '<div class="field">'
-                 + '<input id="work_has_titles_attributes___count___title_str" name="work_has_titles_attributes___count___title_str" placeholder=<%= t('activerecord.models.title') %> type="text" class="resource_title" /> '
-                 + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
-                 <% @title_types.collect do |m| %>
-                   + '<option value="<%= m.id %>"><%= m.display_name %></option>'
-                 <% end %>
-
-                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> ' 
-
-                 + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
-
-                 + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
-                 + '<input type="button" value="-" onClick="ItemField_title.remove();" /> '
-                 + '</div>',
-    add : function () {
-
-      this.currentNumber++;
-      var field = document.getElementById('VF' + this.currentNumber);
-
-      if (field.style.display == "none"){
-        field.style.display = "block";
-      }else{
-        var replaceCount = this.currentNumber;
-        var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-        field.innerHTML = newItem;
-        var nextNumber = this.currentNumber + 1;
-        var new_area = document.createElement("div");
-        new_area.setAttribute("id", "VF" + nextNumber);
-        new_area.setAttribute("class", "field");
-        field.appendChild(new_area);
-      }
-    },
-    remove : function () {
-
-      if ( this.currentNumber == 0) { return; }
-
-      var field = document.getElementById('VF' + this.currentNumber);
-      input_value = document.getElementById('work_has_titles_attributes_' + this.currentNumber + '_title_str');
-      input_value.value = "";
-      var select_state = document.getElementById('manifestation_work_has_titles_attributes_' + this.currentNumber + '_title_type_id').getElementsByTagName('option');
-      select_state[0].selected = true;
-      field.style.display="none";
-      this.currentNumber--;
-
-    }
+    currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
+    template : ''
+      + '<div class="field">'
+      + '<input id="work_has_titles_attributes___count___title_str" name="work_has_titles_attributes___count___title_str" placeholder=<%= t('activerecord.models.title') %> type="text" class="resource_title" /> '
+      + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
+      <% @title_types.collect do |m| %>
+        + '<option value="<%= m.id %>"><%= m.display_name %></option>'
+      <% end %>
+      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> '
+      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
+      + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
+      + '<input type="button" value="-" onClick="ItemField_title.remove(__count__);" /> '
+      + '</div>',
+    add : function () { add_field(this, 'titles', 'VF'); },
+    remove : function (div_num) { remove_field(div_num, 'VF'); }
   };
 </script>
 
@@ -119,27 +88,30 @@ var ItemField_language = {
   </div>
 
   <% if SystemConfiguration.get('manifestation.use_titles') %>
-    <div id="fields">
-      <% @work_manifestation.work_has_titles.each_with_index do |work_has_title, index| -%>
-        <%= f_m.fields_for :work_has_titles, work_has_title do |w_f| -%>
+    <div class="field" id='titles'>
+      <% @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.blank? %>
+      <% @work_manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
+        <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
           <div class="field" id="VF<%= index %>">
-
             <% if work_has_title.manifestation_title %>
-              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str", work_has_title.manifestation_title.title, :placeholder => t('activerecord.models.title'), :class => 'resource_title' %>
+              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str",
+                work_has_title.manifestation_title.title,
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
             <% else %>
-              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str", params["work_has_titles_attributes_#{index}_title_str"], :placeholder => t('activerecord.models.title'), :class => 'resource_title' %>
+              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str",
+                params["work_has_titles_attributes_#{index}_title_str"],
+                :placeholder => t('activerecord.models.title'),
+                :class => 'resource_title' %>
             <% end %>
             <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name,m.id]} %>
-
             <%= w_f.hidden_field :title_id -%>
             <%= w_f.hidden_field :position -%>
-
-            <%= button_to_function '+', 'ItemField_title.add()' -%>
-            <%= button_to_function '-', 'ItemField_title.remove()' if index > 0 -%>
+            <%= button_to_function '+', 'ItemField_title.add()' %>
+            <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
           </div>
-        <%- end -%>
-      <%- end -%>
-      <div id="VF<%= @work_manifestation.work_has_titles.size %>" class="field"></div>
+        <% end %>
+      <% end %>
     </div>
   <% end %>
 

@@ -306,9 +306,6 @@ class SeriesStatementsController < ApplicationController
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
-    @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.empty?
-    @count_titles = @work_manifestation.work_has_titles.size
-
     @use_licenses = UseLicense.all
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
