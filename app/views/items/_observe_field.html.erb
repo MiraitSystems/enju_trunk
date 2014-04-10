@@ -25,8 +25,17 @@
   function test() {
     var testValue2 = $("#item_library_id").val();
     $("#item_test").load('<%= shelves_path %>?mode=select&library_id=' + testValue2);
-    var displayName = "test";
-    document.getElementById("s2id_item_test.select2-chosen").innerHTML=displayName;
+//    var displayName = load('<%= shelves_path %>?mode=getName&library_id=' + testValue2);
+//    var elements = document.getElementById("s2id_item_test4dd").getElementByClassName("select2-chosen").innerHTML=displayName;
+//    document.getElementById("s2id_item_test").innerHTML=displayName;
+//    var elements = document.getElementsByClassName("select2-chosen").innerHTML=displayName;
+//    alert(elements.length+"個の要素を取得しました"); 
+//    $( "#s2id_item_test" + ".select2-chosen" ).html("test");
+//    $( "#s2id_item_test").find( ".select2-chosen" ).html("test");
+//    $( "#s2id_item_test span.select2-chosen" ).html("displayName");
+    var forms = document.getElementById("#item_shelf_id");
+    alert(forms.length+"個の要素を取得しました"); 
+    
   }
 
   $("#item_library_id").change(test);
