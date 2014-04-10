@@ -22,10 +22,12 @@
     });
   }
 
-  function testVals() {
-    var libraryValue = $("#item_library_id").val();
-    $("#item_test").load('<%= shelves_path %>?mode=select&library_id=' + libraryValue).trigger("change");
+  function test() {
+    var testValue2 = $("#item_library_id").val();
+    $("#item_test").load('<%= shelves_path %>?mode=select&library_id=' + testValue2);
+    var displayName = "test";
+    document.getElementById("s2id_item_test.select2-chosen").innerHTML=displayName;
   }
-  $("#item_library_id").ready(testVals);
-  $("#item_library_id").change(testVals);
+
+  $("#item_library_id").change(test);
 </script>

@@ -22,8 +22,10 @@
       <%#= make_select2("item_shelf_id", "item[shelf_id]", @shelves, @item.shelf_id, 250) %>
     <%- else -%>
       <%#= f.select :shelf_id, @shelves.map{|s| [s.display_name.localize, s.id]} %>
+      <br>
       <%= select2_script "item_shelf_id" %>
       <%= make_select2("item_shelf_id", "item[shelf_id]", @shelves, @item.shelf_id, 300) %>
+      <br>
       <%= select2_script "item_test" %>
       <%= make_select2("item_test", "item[test]", @shelves, @item.shelf_id, 300) %>
     <%- end -%>
