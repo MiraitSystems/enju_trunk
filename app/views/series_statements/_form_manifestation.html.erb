@@ -91,7 +91,7 @@ var ItemField_language = {
     <div class="field" id='titles'>
       <% @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.blank? %>
       <% @work_manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
-        <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
+        <%= f_m.fields_for :work_has_titles, work_has_title do |w_f| %>
           <div class="field" id="VF<%= index %>">
             <% if work_has_title.manifestation_title %>
               <%= text_field_tag "work_has_titles_attributes_#{index}_title_str",
