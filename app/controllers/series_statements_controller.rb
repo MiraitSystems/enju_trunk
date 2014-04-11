@@ -77,9 +77,8 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/new
   # GET /series_statements/new.json
   def new
-    @series_statement = SeriesStatement.new
-    original_series_statement = SeriesStatement.where(:id => params[:series_statement_id]).first if params[:series_statement_id]
-    if original_series_statement # GET /series_statements/new?series_statement_id=1
+    original_series_statement = SeriesStatement.find(params[:series_statement_id]) if params[:series_statement_id]
+    if original_series_statement
       @series_statement = original_series_statement.dup
       if @series_statement.root_manifestation
         @manifestation = @series_statement.root_manifestation
@@ -128,134 +127,61 @@ class SeriesStatementsController < ApplicationController
   # POST /series_statements
   # POST /series_statements.json
   def create
-    set_agent_instance_from_params # Implemented in application_controller.rb
-    @series_statement = SeriesStatement.new(params[:series_statement])
-    @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
-    @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
-
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-      end
-    end
-
     SeriesStatement.transaction do
-      if @series_statement.periodical
-        @series_statement.root_manifestation.original_title = params[:series_statement][:original_title] if  params[:series_statement][:original_title]
-        @series_statement.root_manifestation.title_transcription = params[:series_statement][:title_transcription] if params[:series_statement][:title_transcription]
-        @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
-        @series_statement.root_manifestation.periodical_master = true
-        params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-        params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-        @subject = params[:manifestation][:subject]
-        @subject_transcription = params[:manifestation][:subject_transcription]
-        @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
-        @series_statement.root_manifestation.save! # if @series_statement.periodical
-        @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
-        @series_statement.root_manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
-        @series_statement.root_manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-        @series_statement.root_manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-        @series_statement.manifestations << @series_statement.root_manifestation
-      end
+      @series_statement = SeriesStatement.new(params[:series_statement])
+      @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
 
+      # set class instance variables, and create root_manifestation
+      set_and_create_root_manifestation(params)
       @series_statement.save!
-
-      if @series_statement.periodical
-        # exinfos, extextsの追加
-        @series_statement.root_manifestation.
-          manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @series_statement.root_manifestation.id) if params[:exinfos] 
-        @series_statement.root_manifestation.
-          manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @series_statement.root_manifestation.id) if params[:extexts] 
-      end
-
+      @series_statement.manifestations << @series_statement.root_manifestation
       respond_to do |format|
-        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_created', :model => t('activerecord.models.series_statement')) }
+        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), 
+          :notice => t('controller.successfully_created', :model => t('activerecord.models.series_statement')) }
         format.json { render :json => @series_statement, :status => :created, :location => @series_statement }
       end
     end
-    rescue Exception => e
-      logger.error "Failed to create: #{e}"
-      prepare_options
-      respond_to do |format|
-        format.html { render :action => "new" }
-        format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
-      end
+  rescue Exception => e
+    logger.error "Failed to create: #{e}"
+    prepare_options
+    respond_to do |format|
+      format.html { render :action => "new" }
+      format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
+    end
   end
 
   # PUT /series_statements/1
-  # PUT /series_statements/1.json
   def update
-    if params[:move]
-      move_position(@series_statement, params[:move])
-      return
-    end
-    set_agent_instance_from_params # Implemented in application_controller.rb
-    @series_statement.assign_attributes(params[:series_statement])
-    @series_statement.root_manifestation = @series_statement.root_manifestation if @series_statement.root_manifestation
-    @series_work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
-
-    respond_to do |format|
-      begin
-        SeriesStatement.transaction do
-          @subject = params[:manifestation][:subject]
-          @subject_transcription = params[:manifestation][:subject_transcription]
-          params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-          params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-          if params[:series_statement][:periodical].to_s == "1"
-            if @series_statement.root_manifestation
-              @series_statement.root_manifestation.assign_attributes(params[:manifestation])
-            else
-              @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
-              @series_statement.root_manifestation.original_title = params[:series_statement][:original_title] if params[:series_statement][:original_title]
-              @series_statement.root_manifestation.title_transcription = params[:series_statement][:title_transcription] if params[:series_statement][:title_transcription]
-              @series_statement.root_manifestation.title_alternative = params[:series_statement][:title_alternative] if params[:series_statement][:title_alternative]
-              @series_statement.root_manifestation.periodical_master = true
-            end
-
-            if SystemConfiguration.get('manifestation.use_titles')
-              titles = params[:manifestation][:work_has_titles_attributes]
-              titles.each do |key, value|
-                @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-              end
-            end
-
-            #TODO update position to edit agents without destroy
-            @series_statement.root_manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
-            if params[:exinfos]
-              @series_statement.root_manifestation.
-                manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @series_statement.root_manifestation.id)
-            end
-            if params[:extexts]
-              @series_statement.root_manifestation.
-                manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @series_statement.root_manifestation.id)
-            end
-            @series_statement.root_manifestation.save!
-            @series_statement.root_manifestation.work_has_languages = WorkHasLanguage.new_objs(@series_work_has_languages.uniq)
-            @series_statement.root_manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
-            @series_statement.root_manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-            @series_statement.root_manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-            @series_statement.manifestations << @series_statement.root_manifestation unless @series_statement.manifestations.include?(@series_statement.root_manifestation)
-          else
-            if @series_statement.root_manifestation && @series_statement.valid?
-              @series_statement.root_manifestation.destroy
-              @series_statement.root_manifestation = nil
-            end
-            @series_statement.periodical = false
-          end
-
-          @series_statement.save!
-          @series_statement.manifestations.map { |manifestation| manifestation.index } if @series_statement.manifestations
-          format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
-          format.json { head :no_content }
-        end
-      rescue Exception => e
-        logger.error "Failed to update: #{e}"
-        @series_statement.root_manifestation = @series_statement.root_manifestation || Manifestation.new(params[:manifestation])
-        prepare_options
-        format.html { render :action => "edit" }
-        format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
+    SeriesStatement.transaction do
+      if params[:move]
+        move_position(@series_statement, params[:move])
+        return
       end
+
+      before_series_statement_periodical = @series_statement.periodical
+      @series_statement.assign_attributes(params[:series_statement])
+      @series_statement.root_manifestation.assign_attributes(params[:manifestation])
+
+      # set class instance variables, and update root_manifestation
+      set_and_create_root_manifestation(params)
+      @series_statement.save!
+      # reindex 
+      if before_series_statement_periodical != @series_statement.periodical
+        @series_statement.manifestations.update_all(periodical: @series_statement.periodical ? true : false)
+        @series_statement.manifestations.map { |manifestation| manifestation.index }
+      end
+      respond_to do |format|
+        format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), 
+          :notice => t('controller.successfully_updated', :model => t('activerecord.models.series_statement')) }
+        format.json { head :no_content }
+      end
+    end
+  rescue Exception => e
+    logger.error "Failed to update: #{e}"
+    prepare_options
+    respond_to do |format|
+      format.html { render :action => "edit" }
+      format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
     end
   end
 
@@ -320,4 +246,27 @@ class SeriesStatementsController < ApplicationController
     @add_publishers = [{}] if @add_publishers.blank?
   end
 
+  def set_and_create_root_manifestation(params)
+    # set class instance attributes
+    @subject = params[:manifestation][:subject]
+    @subject_transcription = params[:manifestation][:subject_transcription]
+    @series_work_has_languages = WorkHasLanguage.
+      create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
+    if SystemConfiguration.get('manifestation.use_titles')
+      titles = params[:manifestation][:work_has_titles_attributes]
+      titles.each do |key, value|
+        @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+       end
+    end
+    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+    set_agent_instance_from_params # Implemented in application_controller.rb
+    # create
+    @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
+      { subjects: @subject, subject_transcription: @subject_transcription,
+        creates:  @creates,  del_creators:     @del_creators,     add_creators: @add_creators,
+        realizes: @realizes, del_contributors: @del_contributors, add_contributors: @add_contributors,
+        produces: @produces, del_publishers:   @del_publishers,   add_publishers: @add_publishers,
+        exinfos: params[:exinfos], extexts: params[:extexts], series_work_has_languages: @series_work_has_languages })
+  end
 end
