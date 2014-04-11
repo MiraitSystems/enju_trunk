@@ -1,5 +1,5 @@
 class ItemHasOperator < ActiveRecord::Base
-  attr_accessible :created_at, :id, :item_id, :library_id, :note, :operated_at, :updated_at, :user_id
+  attr_accessible :created_at, :id, :item_id, :library_id, :note, :operated_at, :updated_at, :user_id, :user_number
   attr_accessor :user_number, :delete_flg
 
   belongs_to :user
@@ -29,4 +29,5 @@ class ItemHasOperator < ActiveRecord::Base
       end
     end
   end
+
 end
