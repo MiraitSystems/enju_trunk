@@ -46,7 +46,7 @@
   <%= text_field :select2_agent, :id, :id => 'select2_hidden', :style => 'display: none;' %>
 <% end %>
 <% if SystemConfiguration.get("use_agent_type") %>
-  <select id="creator_types_select2_hidden" style="display: none;">
+  <select id="select2_creator_types_hidden" style="display: none;">
     <%= raw @create_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
   </select>
 <% end %>
@@ -91,8 +91,8 @@
       $clone[0].id = 'select2_creator';
       $clone.show();
       $clone.attr('name','creator_ids[' + this.currentNumber + ']');
-      var $creator_types_clone = $("#creator_types_select2_hidden").clone();
-      $creator_types_clone[0].id = 'selector2_creator_types';
+      var $creator_types_clone = $("#select2_creator_types_hidden").clone();
+      $creator_types_clone[0].id = 'select2_creator_types';
       $creator_types_clone.show();
       $creator_types_clone.attr('name', 'creator_type_ids[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "CF" + this.currentNumber);
@@ -133,7 +133,7 @@
         },
       });
       $creator_types_clone.select2({
-        width: "200px",
+        width: "250px",
         matcher: function(term, text, opt) {
           return text.toUpperCase().indexOf(term.toUpperCase())==0
               || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
@@ -164,7 +164,7 @@
           "creates[#{ create.agent_id }]", 
           @create_types,
           create.create_type_id, 
-          200, 
+          250, 
         ) %>
       </td>
     <% else %>
@@ -204,7 +204,7 @@
           "creator_type_ids[#{i}]", 
           @create_types,
           creator[:type_id], 
-          200, 
+          250, 
         ) %>
         </td>
       <% end %>
@@ -215,6 +215,11 @@
   </table>
 </div>
 
+<% if SystemConfiguration.get("use_agent_type") %>
+  <select id="select2_contributor_types_hidden" style="display: none;">
+    <%= raw @realize_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
+  </select>
+<% end %>
 <script>
   var ItemField_contributor = {
     currentNumber : <%= raw (@add_contributors.blank? ? 1 : @add_contributors.size).to_json %>,
@@ -244,11 +249,11 @@
   var ItemField_contributor_select2 = {
     currentNumber : <%= raw (@add_contributors.blank? ? 1 : @add_contributors.size).to_json %>,
     itemTemplate : ''
-      <% if SystemConfiguration.get("use_agent_type") %>
-        + '<td><select id="contributor_type_ids___count__" name="contributor_type_ids[__count__]">'
-        + <%= raw @realize_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
-        + '</select></td>'
-      <% end %>
+//      <% if SystemConfiguration.get("use_agent_type") %>
+//        + '<td><select id="contributor_type_ids___count__" name="contributor_type_ids[__count__]">'
+//        + <%= raw @realize_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
+//        + '</select></td>'
+//      <% end %>
       + '<td><input type="button" value="+" onClick="ItemField_contributor_select2.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_contributor_select2.remove(__count__);" /></td>',
     add : function () {
@@ -256,11 +261,18 @@
       $clone[0].id = 'select2_contributor';
       $clone.show();
       $clone.attr('name','contributor_ids[' + this.currentNumber + ']');
+      var $contributor_types_clone = $("#select2_contributor_types_hidden").clone();
+      $contributor_types_clone[0].id = 'select2_contributor_types';
+      $contributor_types_clone.show();
+      $contributor_types_clone.attr('name','contributor_type_ids[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "RF" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
       var $clone_field = $("<td/>");
       $clone_field.append($clone);
+      var $contributor_types_clone_field = $("<td/>");
+      $contributor_types_clone_field.append($contributor_types_clone);
       $new_field.append($clone_field);
+      $new_field.append($contributor_types_clone_field);
       $new_field.append(newItem);
       $("#contributor_field > table > tbody").append($new_field);
       this.currentNumber += 1;
@@ -290,6 +302,13 @@
           },
         },
       });
+      $contributor_types_clone.select2({
+        width: "250px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
     },
     remove : function (div_num) {
       var field = document.getElementById('RF' + div_num);
@@ -306,9 +325,17 @@
     <td><%= link_to realize.agent.full_name, agent_path(realize.agent_id), :target => ["_blank"] -%></td>
     <% if SystemConfiguration.get("use_agent_type") %>
       <td>
-        <%= select_tag "realizes[#{realize.agent_id}]",
+        <%#= select_tag "realizes[#{realize.agent_id}]",
             options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] },
             :selected => realize.realize_type_id) %>
+        <%= select2_script "realizes_#{ realize.agent_id }" %>
+        <%= make_select2(
+          "realizes_#{ realize.agent_id }", 
+          "realizes_[#{ realize.agent_id }]", 
+          @realize_types,
+          realize.realize_type_id, 
+          250, 
+        ) %>
       </td>
     <% else %>
       <%= hidden_field_tag "realizes[#{realize.agent_id}]" %>
@@ -339,8 +366,16 @@
       <% end %>
       <% if SystemConfiguration.get("use_agent_type") %>
         <td>
-        <%= select_tag "contributor_type_ids[#{i}]",
+        <%#= select_tag "contributor_type_ids[#{i}]",
           options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] }, :selected => contributor[:type_id]) %>
+        <%= select2_script "contributor_type_ids_#{i}" %>
+        <%= make_select2(
+          "contributor_type_ids_#{i}", 
+          "contributor_type_ids[#{i}]", 
+          @realize_types,
+          contributor[:type_id], 
+          250, 
+        ) %>
         </td>
       <% end %>
       <td><%= button_to_function t('page.add_line'), "ItemField_contributor#{select2_str}.add()" -%></td>
@@ -350,6 +385,11 @@
   </table>
 </div>
 
+<% if SystemConfiguration.get("use_agent_type") %>
+  <select id="select2_publisher_types_hidden" style="display: none;">
+    <%= raw @produce_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
+  </select>
+<% end %>
 <script>
   var ItemField_publisher = {
     currentNumber : <%= raw (@add_publishers.blank? ? 1 : @add_publishers.size).to_json %>,
@@ -379,11 +419,11 @@
   var ItemField_publisher_select2 = {
     currentNumber : <%= raw (@add_publishers.blank? ? 1 : @add_publishers.size).to_json %>,
     itemTemplate : ''
-      <% if SystemConfiguration.get("use_agent_type") %>
-        + '<td><select id="publisher_type_ids___count__" name="publisher_type_ids[__count__]">'
-        + <%= raw @produce_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
-        + '</select></td>'
-      <% end %>
+//      <% if SystemConfiguration.get("use_agent_type") %>
+//        + '<td><select id="publisher_type_ids___count__" name="publisher_type_ids[__count__]">'
+//        + <%= raw @produce_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
+//        + '</select></td>'
+//      <% end %>
       + '<td><input type="button" value="+" onClick="ItemField_publisher_select2.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_publisher_select2.remove(__count__);" /></td>',
     add : function () {
@@ -391,11 +431,18 @@
       $clone[0].id = 'select2_publisher';
       $clone.show();
       $clone.attr('name','publisher_ids[' + this.currentNumber + ']');
+      var $publisher_types_clone = $("#select2_publisher_types_hidden").clone();
+      $publisher_types_clone[0].id = 'select2_publisher_types';
+      $publisher_types_clone.show();
+      $publisher_types_clone.attr('name','publisher_type_ids[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "PF" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
       var $clone_field = $("<td/>");
       $clone_field.append($clone);
+      var $publisher_types_clone_field = $("<td/>");
+      $publisher_types_clone_field.append($publisher_types_clone);
       $new_field.append($clone_field);
+      $new_field.append($publisher_types_clone_field);
       $new_field.append(newItem);
       $("#publisher_field > table > tbody").append($new_field);
       this.currentNumber += 1;
@@ -425,6 +472,13 @@
           },
         },
       });
+      $publisher_types_clone.select2({
+        width: "250px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
     },
     remove : function (div_num) {
       var field = document.getElementById('PF' + div_num);
@@ -441,9 +495,17 @@
     <td><%= link_to produce.agent.full_name, agent_path(produce.agent_id), :target => ["_blank"] -%></td>
     <% if SystemConfiguration.get("use_agent_type") %>
       <td>
-        <%= select_tag "produces[#{produce.agent_id}]",
+        <%#= select_tag "produces[#{produce.agent_id}]",
             options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] },
             :selected => produce.produce_type_id) %>
+        <%= select2_script "produces_#{produce.agent_id}" %>
+        <%= make_select2(
+          "produces_#{produce.agent_id}", 
+          "produces[#{produce.agent_id}]", 
+          @produce_types,
+          produce.produce_type_id, 
+          250, 
+        ) %>
       </td>
     <% else %>
       <%= hidden_field_tag "produces[#{produce.agent_id}]" %>
@@ -474,8 +536,16 @@
       <% end %>
       <% if SystemConfiguration.get("use_agent_type") %>
         <td>
-        <%= select_tag "publisher_type_ids[#{i}]",
+        <%#= select_tag "publisher_type_ids[#{i}]",
           options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] }, :selected => publisher[:type_id]) %>
+        <%= select2_script "publisher_type_ids_#{i}" %>
+        <%= make_select2(
+          "publisher_type_ids_#{i}", 
+          "publisher_type_ids[#{i}]", 
+          @produce_types,
+          publisher[:type_id], 
+          250, 
+        ) %>
         </td>
       <% end %>
       <td><%= button_to_function t('page.add_line'), "ItemField_publisher#{select2_str}.add()" -%></td>

@@ -1466,8 +1466,8 @@ class ManifestationsController < ApplicationController
     @frequencies = Frequency.all
     @nii_types = NiiType.all if defined?(NiiType)
     @create_types = CreateType.find(:all, :select => "id, name, display_name")
-    @realize_types = RealizeType.find(:all, :select => "id, display_name")
-    @produce_types = ProduceType.find(:all, :select => "id, display_name")
+    @realize_types = RealizeType.find(:all, :select => "id, name, display_name")
+    @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @work_manifestation = Manifestation.new

@@ -93,44 +93,40 @@ class Payment < ActiveRecord::Base
     order.calculation_total_payment
   end
 
-
-  def self.create_paid(order_id)
+  def self.create_paid(order)
     @paid = Payment.new
-    
-    @paid.order_id = order_id
-    @paid.payment_type = 3
+    @paid.order_id = order.id
+    @paid.payment_type = 3 # TODO: value from jst keycoes.
     @paid.billing_date = Date.today
+    @paid.manifestation_id = order.manifestation_id
 
-    @order = Order.find(order_id)
-    @paid.manifestation_id = @order.manifestation_id
-
-    @payments = Payment.where(:order_id => order_id)
+    @payments = Payment.where(:order_id => order.id)
 
     payment_taxable_amount = 0
     payment_tax_exempt_amount = 0
     payment_number_of_payment = 0
     @payments.each do |p|
-      if p.payment_type != 3
+      if p.payment_type != 3 # TODO: value from jst keycoes.
         payment_taxable_amount += p.taxable_amount
         payment_tax_exempt_amount += p.tax_exempt_amount
         payment_number_of_payment += p.number_of_payment
       end
     end
-    if @order.payment_form.v == '1' || @order.payment_form.v == '3'
-      @paid.taxable_amount = @order.taxable_amount / @order.number_of_acceptance_schedule * (@order.number_of_acceptance_schedule - @order.number_of_acceptance)
-      @paid.tax_exempt_amount = @order.tax_exempt_amount / @order.number_of_acceptance_schedule * (@order.number_of_acceptance_schedule - @order.number_of_acceptance)
-      @paid.amount_of_payment = @order.yen_imprest / @order.number_of_acceptance_schedule * (@order.number_of_acceptance_schedule - @order.number_of_acceptance)
-      @paid.number_of_payment = @order.number_of_acceptance_schedule - @order.number_of_acceptance
-    else
-      @paid.taxable_amount = @order.taxable_amount - payment_taxable_amount
-      @paid.tax_exempt_amount = @order.tax_exempt_amount - payment_tax_exempt_amount
-      @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
-      @paid.number_of_payment = @order.number_of_acceptance_schedule - payment_number_of_payment
-    end
+    # TODO: value of payment from code is from jst keycodes. 
+    #if order.payment_form.v == '1' || order.payment_form.v == '3'
+    #  @paid.taxable_amount = order.taxable_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+    #  @paid.tax_exempt_amount = order.tax_exempt_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+    #  @paid.amount_of_payment = order.cost / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+    #  @paid.number_of_payment = order.number_of_acceptance_schedule - order.number_of_acceptance
+    #else 
+    #  @paid.taxable_amount = order.taxable_amount - payment_taxable_amount
+    #  @paid.tax_exempt_amount = order.tax_exempt_amount - payment_tax_exempt_amount
+    #  @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
+    #  @paid.number_of_payment = order.number_of_acceptance_schedule - payment_number_of_payment
+    #end
     @paid.save
 
     return @paid
-
   end
 
   def self.create_advance_payment(order_id)
