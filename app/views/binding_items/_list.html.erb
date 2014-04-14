@@ -14,6 +14,24 @@
         }
       });
     }
+   // -->
+</script>
+<script>
+  <!--
+    function removeItem(item_identifier) {
+      var result = $.ajax({
+        url: "<%= bookbinding_binding_item_path %>",
+        type: 'DELETE',
+        dataType: 'json',
+        data: {binding_item: {item_identifier: item_identifier}},
+        error: function() {
+          $("#message").text("<%= t('binding_item.no_item_identifier') %>");
+        },
+        success: function(obj){
+          $("#list").html(obj.result);
+        }
+      });
+    }
   // -->
 </script>
 <script>
