@@ -80,9 +80,11 @@ class BindingItemsController < ApplicationController
       access_denied
       return
     end
+    binding_item_id = @binding_item.id
     @binding_item.destroy
 
     respond_to do |format|
+      format.js   { render :json => { success: 1, binding_item_id: binding_item_id } }
       format.html { redirect_to(bookbinding_binding_items_url(@bookbinding))}
       format.xml  { head :ok }
     end
