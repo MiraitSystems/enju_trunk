@@ -1,13 +1,18 @@
 <script type="text/javascript">
   function displayVals() {
     var libraryValue = $("#item_library_id").val();
-    $("#item_shelf_id").load('<%= shelves_path %>?mode=select&library_id=' + libraryValue);
+    $("#item_shelf_id").load('<%= shelves_path %>?mode=select&library_id=' + libraryValue, function() {
+      var display_name = $("#item_shelf_id").delay("slow").children().first().text();
+      $("#s2id_item_shelf_id span.select2-chosen").html(display_name);
+    });
   }
   function displayShelves() {
     var shelfValue = $("#shelf_category").val();
     $("#item_shelf_id").load('<%= shelves_path %>?mode=select&shelf_category=' + shelfValue);
-   }
+  }
+
   $("#item_library_id").change(displayVals);
+
   function numbering() {
     var type = $("#numbering_type").val();
     $.ajax({
