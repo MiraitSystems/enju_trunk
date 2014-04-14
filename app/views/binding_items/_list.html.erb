@@ -14,6 +14,17 @@
         }
       });
     }
+    function removeItem(url) {
+      var result = $.ajax({
+        url: url,
+        type: 'DELETE',
+        dataType: 'json',
+        data: {},
+        success: function(obj){
+          $("#binding_items_tr_" + obj['binding_item_id']).remove();
+        }
+      });
+    }
   // -->
 </script>
 <script>
