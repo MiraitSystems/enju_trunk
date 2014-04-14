@@ -1,0 +1,16 @@
+--- 
+publication_status_00001:
+  id: 1
+  name: c
+  display_name: "en:Currently published status\r\nja:刊行中"
+  note: for nacsis
+publication_status_00002:
+  id: 2
+  name: d
+  display_name: "en:Dead status\r\nja:廃刊"
+  note: for nacsis
+publication_status_00003:
+  id: 3
+  name: u
+  display_name: "en:Unknown status\r\nja:出版状況不明"
+  note: for nacsis

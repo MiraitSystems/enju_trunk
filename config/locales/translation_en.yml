@@ -1390,8 +1390,12 @@ en:
       nacsis_user_request:
         subject_heading: Subject heading
         subject_heading_reading: Subject heading (reading)
-        title_alternative: Title alternative
-        title_alternative_transcription: Title alternative (reading)
+        title_alternative: Subject heading alternative (reading)
+        other_titles: Other title info
+        VTK: Type
+        VTD: Title
+        VTR: Title (reading)
+        VTVR: Title alternative (reading)
         publisher: Publisher
         pub_date: Publish date
         publish_year: Publish year
@@ -1400,12 +1404,14 @@ en:
         note: Note
         isbn: ISBN
         issn: ISSN
+        xissn: XISSN
         pub_country: Publish country
         title_language: Title language
         text_language: Text language
         original_language: Original Language
         author_heading: Author heading
         subject: subject
+        freq: Frequency code
         ncid: NCID
         marc: MARC ID
         cls_info: Classification info
@@ -1414,8 +1420,20 @@ en:
         ISBN: ISBN
         PRICE: Price
         XISBN: Invalid ISBN
+        cw_info: Content copyright note
+        CWT: Title
+        CWA: Responsibility
+        CWR: Title (reading)
+        CWVR: Title alternative (reading)
         nbn: NBN
         lccn: LCCN
+        ndlcn: NDL card number
+        ndlpn: NDL periodical number
+        gpon: GPO number
+        coden: CODEN
+        ulpn: ULP number
+        other_number: Other number
+        pstat: Publication state
         ptb_info: Parent manifestation info
         PTBID: ID
         PTBK: Type
@@ -1436,6 +1454,8 @@ en:
         BHBID: Before/After ID
         BHK: History type
         BHTR: Before/After Title
+        ndlcln: NDL claim number
+        ndlhold: NDL hold info
         user_id: User ID
         user_name: User Name
         request_datetime: Request datetime

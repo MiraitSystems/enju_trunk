@@ -755,6 +755,11 @@ class ManifestationsController < ApplicationController
         redirect_to series_statement_manifestations_url(@manifestation.series_statement)
       end
       return
+    else
+      if @manifestation.series_statement && @manifestation.nacsis_identifier
+        redirect_to series_statement_manifestations_url(@manifestation.series_statement)
+      end
+      return
     end
 
     store_location
@@ -1120,6 +1125,40 @@ class ManifestationsController < ApplicationController
           redirect_to created_record
         end
       end
+    end
+  end
+
+  def upload_to_nacsis
+    result = NacsisCat.upload_info_to_nacsis(params[:work_id], params[:db_type], params[:command])
+
+    case params[:db_type]
+    when 'BOOK'
+      if params[:series_id]
+        redirect_url = series_statement_manifestations_url(params[:series_id], :all_manifestations => true)
+      else
+        redirect_url = manifestation_url(params[:work_id])
+      end
+      model_str = t('page.nacsis_book')
+    when 'SERIAL'
+      redirect_url = series_statement_manifestations_url(params[:work_id], :all_manifestations => true)
+      model_str = t('page.nacsis_serial')
+    end
+
+    if result[:return_code] == '200'
+      model_str = t('external_catalog.nacsis') + model_str + t('resource_import_textfile.book')
+      case params[:command]
+      when 'insert'
+        flash[:notice] = t('controller.successfully_created', :model => model_str)
+      when 'update'
+        flash[:notice] = t('controller.successfully_updated', :model => model_str)
+      end
+      flash[:notice] += " #{t('activerecord.attributes.nacsis_user_request.ncid')} : #{result[:result_id]}"
+    else
+      flash[:notice] = "#{t('resource_import_nacsisfiles.upload_failed')} CODE = #{result[:return_code]} (#{result[:return_phrase]})"
+    end
+
+    respond_to do |format|
+      format.html { redirect_to redirect_url }
     end
   end
 

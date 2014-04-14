@@ -129,7 +129,7 @@ $(document).ready(function() {
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.search_resource', :model => t('page.resource')) -%></h1>
 <div id="content_list">
-  <div style="color: green"><%= flash[:message] -%></div>
+  <div style="color: green"><%= flash[:message] || flash[:notice] -%></div>
   <%= render 'manifestations/title', :manifestation => @manifestation if @manifestation -%>
   <% if @basket %>
     <p id="basket_count"><%= t('basket.show_basket', :count => @basket.try(:checked_manifestations).try(:size)) %></p>

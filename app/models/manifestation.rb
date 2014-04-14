@@ -876,6 +876,18 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
+  def vol_string
+    if volume_number_string.present?
+      if issue_number_string.present?
+        "#{volume_number_string}[#{issue_number_string}]"
+      else
+        volume_number_string
+      end
+    elsif issue_number_string.present?
+      "[#{issue_number_string}]"
+    end
+  end
+
   def self.build_search_for_manifestations_list(search, query, with_filter, without_filter)
     search.build do
       fulltext query unless query.blank?

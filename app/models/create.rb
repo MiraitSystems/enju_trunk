@@ -1,6 +1,7 @@
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'create')
 class Create < ActiveRecord::Base
   belongs_to :agent
+  belongs_to :create_type
   validates_associated :agent
   after_save :reindex
   after_destroy :reindex

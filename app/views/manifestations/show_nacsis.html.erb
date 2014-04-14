@@ -60,13 +60,13 @@
           <tr>
             <td style="width: 200px"><%= t('activerecord.attributes.nacsis_user_request.'+key.to_s) -%></td>
           <%- case key -%>
-          <%- when :publisher, :subject -%>
+          <%- when :publisher, :subject, :ndlcn, :other_number, :xissn -%>
             <td style="width: 490px"><%= @nacsis_cat.detail[key].join(", ") -%></td>
           <%- when :pub_country -%>
             <td><%= @nacsis_cat.detail[key].try(:display_name).try(:localize) -%> </td>
           <%- when :title_language, :text_language, :original_language -%>
             <td><%= @nacsis_cat.detail[key].map{|lang| lang.display_name.localize}.join(", ") -%> </td>
-          <%- when :author_heading, :title_alternative, :title_alternative_transcription -%>
+          <%- when :author_heading -%>
             <td><%= @nacsis_cat.detail[key].join(" ") -%></td>
           <%- when :cls_info -%>
             <td>
@@ -74,7 +74,7 @@
                 <%= cls_key.to_s + ": " + cls_value.to_s -%>&nbsp;
               <%- end -%>
             </td>
-          <%- when :vol_info, :ptb_info, :utl_info, :bhn_info -%>
+          <%- when :vol_info, :ptb_info, :utl_info, :bhn_info, :cw_info, :other_titles -%>
             <td>
               <%- @nacsis_cat.detail[key].each do |info| -%>
                 <%- info.each do |info_key, info_value| %>
@@ -119,38 +119,36 @@
   </div>
 </div>
 
-<div id="submenu_block">
-  <div id="submenu" class="ui-corner-all">
-    <ul>
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li>
+      <%= link_to t('activerecord.models.nacsis_request_lend'),
+        {:controller => "nacsis_user_requests",
+         :action => "new",
+         :ncid => @nacsis_cat.ncid,
+         :manifestation_type => params[:manifestation_type],
+         :request_type => "1" } -%>
+    </li>
+    <li>
+      <%= link_to t('activerecord.models.nacsis_request_copy'),
+        {:controller => "nacsis_user_requests",
+         :action => "new",
+         :ncid => @nacsis_cat.ncid,
+         :manifestation_type => params[:manifestation_type],
+         :request_type => "2" } -%>
+    </li>
+    <% if @nacsis_cat.manifestation %>
       <li>
-        <%= link_to t('activerecord.models.nacsis_request_lend'),
-          {:controller => "nacsis_user_requests",
-           :action => "new",
-           :ncid => @nacsis_cat.ncid,
-           :manifestation_type => params[:manifestation_type],
-           :request_type => "1" } -%>
+        <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
       </li>
+    <% else %>
       <li>
-        <%= link_to t('activerecord.models.nacsis_request_copy'),
-          {:controller => "nacsis_user_requests",
-           :action => "new",
-           :ncid => @nacsis_cat.ncid,
-           :manifestation_type => params[:manifestation_type],
-           :request_type => "2" } -%>
+        <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
+          <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
+          <%= hidden_field_tag 'manifestation_type', params[:manifestation_type] %>
+          <%= submit_tag t('.local_import') %>
+        <% end %>
       </li>
-      <% if @nacsis_cat.manifestation %>
-        <li>
-          <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
-        </li>
-      <% else %>
-        <li>
-          <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
-            <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
-            <%= hidden_field_tag 'manifestation_type', params[:manifestation_type] %>
-            <%= submit_tag t('.local_import') %>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  </div>
+    <% end %>
+  </ul>
 </div>

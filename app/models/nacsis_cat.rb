@@ -147,6 +147,101 @@ class NacsisCat
       end
     end
 
+    # NACSISへ情報の登録・更新・削除を行い、結果データ(cat_container)を返却する
+    #
+    # * id - 編集対象のモデルの id
+    #        BHOLD  : Item.id
+    #        SHOLD  : Item.id
+    #        BOOK   : Manifestation.id
+    #        SERIAL : SeriesStatement.id
+    #
+    # * db_type - NACSISへの編集対象となるDB名
+    #             図書所蔵 : 'BHOLD'
+    #             雑誌所蔵 : 'SHOLD'
+    #             図書書誌 : 'BOOK'
+    #             雑誌書誌 : 'SERIAL'
+    #
+    # * command - NACSISへ送信するコマンド名
+    #             登録 : 'insert'
+    #             更新 : 'update'
+    #             削除 : 'delete' (BOOK,SERIALの場合は実行不可)
+    #
+    def upload_info_to_nacsis(id, db_type, command)
+      return {} unless check_upload_params(id, db_type, command)
+
+      req_query = {}
+      case db_type
+      when 'BHOLD','SHOLD'
+        @item = Item.find(id)
+
+        if command == 'insert'
+          bid = @item.manifestation.items.pluck(:nacsis_identifier).uniq.compact
+          if bid.present?
+            command = 'update'
+            @item.nacsis_identifier = bid.first
+          end
+        end
+        req_query[:query] = hold_query(command, db_type)
+        result_id = @item.nacsis_identifier
+
+      when 'BOOK'
+        @manifestation = Manifestation.find(id)
+        if @manifestation.series_statement.try(:root_manifestation)
+          @manifestation = @manifestation.series_statement.root_manifestation
+        end
+        req_query[:query] = book_query(command)
+        result_id = @manifestation.nacsis_identifier
+
+      when 'SERIAL'
+        @series_statement = SeriesStatement.find(id)
+        @manifestation = @series_statement.root_manifestation
+        req_query[:query] = serial_query(command)
+        result_id = @series_statement.nacsis_series_statementid
+
+      end
+
+      return {} unless req_query[:query]
+
+      req_query[:command] = command
+      req_query[:db_type] = db_type
+      req_query[:db_names] = [db_type]
+
+      result_info = {}
+      result_info = http_post_value(gateway_upload_cat_url, {:cat_container => req_query})
+      cat_container = result_info['cat_container']
+
+      return {} unless cat_container
+
+      if cat_container['catp_code'] == '200'
+        result_record = cat_container['result_records'].try(:first)
+        case db_type
+        when 'BHOLD','SHOLD'
+          if command == 'insert'
+            result_record = db_type == 'BHOLD' ? result_record['bhold_info'] : result_record['shold_info']
+            result_id = result_record['hold_id']
+          end
+          hold_id = command == 'delete' ? nil : result_id
+          @item.manifestation.items.each do |i|
+            if i.library == @item.library
+              i.nacsis_identifier = hold_id
+              i.save!
+            end
+          end
+        when 'BOOK'
+          result_id = result_record['book_info']['bibliog_id']
+          @manifestation.nacsis_identifier = result_id
+          @manifestation.save!
+        when 'SERIAL'
+          result_id = result_record['serial_info']['bibliog_id']
+          @series_statement.nacsis_series_statementid = result_id
+          @series_statement.save!
+        end
+      end
+      { :return_code => cat_container['catp_code'],
+        :return_phrase => cat_container['catp_phrase'],
+        :result_id => result_id }
+    end
+
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からManifestationを作成する
     def create_manifestation_from_nbn(nbn, book_types = ManifestationType.book.all, nacsis_cat = nil)
       raise ArgumentError if nbn.blank?
@@ -185,7 +280,6 @@ class NacsisCat
       end
       create_series_with_relation_from_nacsis_cat(nacsis_cat, book_types)
     end
-
 
     private
 
@@ -351,44 +445,485 @@ class NacsisCat
         JSON.parse(resp.body)
       end
 
+      def check_upload_params(id, db_type, command)
+        return unless id
+        return unless (['BHOLD','SHOLD','BOOK','SERIAL'].include?(db_type))
+        return unless (['insert','update','delete'].include?(command))
+        case db_type
+        when 'BOOK','SERIAL'
+          return if command == 'delete'
+        end
+        return true
+      end
+
+      def hold_query(command, db_type)
+        return unless @item
+        return @item.nacsis_identifier if command == 'delete'
+
+        query_field = command == 'update' ? ["ID=#{@item.nacsis_identifier}"] : []
+        query_field += [
+          "FANO=#{gateway_config['federation_id']}",
+          "LOC=#{@item.shelf.library.nacsis_location_code}",
+          "LTR="
+        ]
+
+        if db_type == 'BHOLD'
+          query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
+          @item.manifestation.items.each do |item|
+            query_field += [
+              '<HOLD>',
+              "VOL=#{item.manifestation.vol_string}",
+              "CLN=#{item.call_number}",
+              "RGTN=#{item.item_identifier}",
+              "CPYR=#{item.manifestation.date_of_publication.try(:year)}",
+              "LDF=#{item.note}",
+              "CPYNT=#{item.manifestation.note}",
+              '</HOLD>'
+            ]
+          end
+        else
+          query_field += [
+            "BID=#{@item.manifestation.series_statement.nacsis_series_statementid}",
+            "HLYR=#{shold_hl_info[:HLYR]}",
+            "HLV=#{shold_hl_info[:HLV]}",
+            "CONT=#{shold_hl_info[:CONT]}",
+            "CLN=#{@item.manifestation.items.pluck(:call_number).reject{|c| c.blank?}.join("||")}",
+            "LDF=#{@item.manifestation.items.pluck(:note).reject{|n| n.blank?}.join("||")}",
+            "CPYNT=#{@item.manifestation.note}"
+          ]
+        end
+        query_field.join("\n")
+      end
+
+      def shold_hl_info
+        hl_info = {}
+        hl_info[:HLYR] = '*'
+        hl_info[:HLV] = '*'
+        hl_info[:CONT] = ''
+        hl_info
+      end
+
+      def book_query(command)
+        return unless @manifestation
+        query_field = command == 'update' ? ["ID=#{@manifestation.nacsis_identifier}"] : []
+
+        # Common field
+        query_field += common_field
+
+        # Book field
+        query_field += book_field
+
+        query_field.join("\n")
+      end
+
+      def serial_query(command)
+        return unless @series_statement && @manifestation
+        query_field = command == 'update' ? ["ID=#{@series_statement.nacsis_series_statementid}"] : []
+
+        # Common field
+        query_field += common_field
+
+        # Serial field
+        query_field += serial_field
+
+        query_field.join("\n")
+      end
+
+      def common_field
+        field = [
+          "MARCID=", # SOURCE=ORG 以外の場合必須
+          "SOURCE=#{'ORG'}", # [Required]
+          "ISSN=#{@manifestation.issn}",
+          "LCCN=#{@manifestation.lccn}",
+          "GPON=#{get_identifier_number('gpon')}",
+          "GMD=#{}",
+          "SMD=#{}",
+          "CNTRY=#{@manifestation.country_of_publication.marc21}",
+          "REPRO=#{}",
+          "TTLL=#{get_nacsis_language('title')}",
+          "TXTL=#{get_nacsis_language('body')}",
+          "ORGL=#{get_nacsis_language('original')}",
+          "ED=#{}",
+          "NOTE=#{@manifestation.note}"
+        ]
+
+        # YEAR Group [Required]
+        field += year_group
+
+        # TR Group [Required]
+        field += tr_group
+
+        # VT Group Repeat:16
+        field += vt_group
+
+        # PUB Group [Required] Repeat:4
+        field += pub_group
+
+        # PHYS Group
+        field += phys_group
+
+        # AL Group Repeat:24
+        field += al_group
+
+        # SH Group Repeat:24
+        field += sh_group
+
+        field
+      end
+
+      def book_field
+
+        field = []
+
+        get_identifier_numbers('ndlcn').each do |number|
+          field << "NDLCN=#{number}" # Repeat:255
+        end
+
+        get_identifier_other_numbers.each do |other_number|
+          field << "OTHN=#{other_number}" # Repeat:255
+        end
+
+        nbn_array = @manifestation.nbn.try(:split, ',') || []
+        nbn_array.each do |nbn_str|
+          field <<  "NBN=#{nbn_str}" # Repeat:255
+        end
+
+        # VOLG Group
+        field += volg_group
+
+        # CW Group
+        field += cw_group
+
+        # PTBL Group
+        field += ptbl_group
+
+        # UTL Group Repeat:255
+        field += utl_group
+
+        # CLS Group Repeat:24
+        field += cls_group
+
+        field
+      end
+
+      def get_identifier_other_numbers
+        return [] unless @manifestation
+        other_numbers = []
+        excluded_types = ['isbn','xisbn','issn','nbn','ndlcn','gpon','ndlpn','coden','ulpn']
+        @manifestation.identifiers.each do |identifier|
+          unless excluded_types.include?(identifier.identifier_type.name)
+            other_numbers << "#{identifier.identifier_type.name}:#{identifier.body}"
+          end
+        end
+        other_numbers
+      end
+
+      def serial_field
+        result = [
+          "NDLPN=#{get_identifier_number('ndlpn')}",
+          "CODEN=#{get_identifier_number('coden')}",
+          "ULPN=#{get_identifier_number('ulpn')}",
+          "PSTAT=#{@series_statement.publication_status.try(:name)}",
+          "FREQ=#{@manifestation.frequency.try(:nii_code)}",
+          "REGL=#{}",
+          "TYPE=#{}",
+          "VLYR=#{}",
+          "PRICE=#{@manifestation.price_string}"
+        ]
+        get_identifier_numbers('xissn').each do |xissn|
+          result << "XISSN=#{xissn}"
+        end
+        result
+      end
+
+      def get_identifier_number(type_name)
+        return unless @manifestation && type_name
+        identifier_type = IdentifierType.where(:name => type_name).first
+        if identifier_type
+          identifier = @manifestation.identifiers.where('identifier_type_id' => identifier_type.id).first
+        end
+        identifier.try(:body)
+      end
+
+      def get_identifier_numbers(type_name)
+        return [] unless @manifestation && type_name
+        numbers = []
+        identifier_type = IdentifierType.where(:name => type_name).first
+        if identifier_type
+          numbers = @manifestation.identifiers.where('identifier_type_id' => identifier_type.id).pluck(:body)
+        end
+        numbers
+      end
+
+      def volg_group # book only
+        results = []
+        identifier_type = IdentifierType.where(:name => 'isbn').first
+        manifestations = @manifestation.series_statement.try(:manifestations)
+        if manifestations
+          manifestations.each do |manifestation|
+            unless @manifestation.series_statement.root_manifestation == manifestation
+              identifier = manifestation.identifiers.where(:identifier_type_id => identifier_type.id).first
+              results += [
+                '<VOLG>',
+                "VOL=#{manifestation.edition_display_value}",
+                "ISBN=#{identifier.try(:body)}",
+                "PRICE=#{manifestation.price_string}",
+                "XISBN=#{manifestation.wrong_isbn}",
+                '</VOLG>'
+              ]
+            end
+          end
+        else
+          identifier = @manifestation.identifiers.where(:identifier_type_id => identifier_type.id).first
+          results = [
+            '<VOLG>',
+            "VOL=#{@manifestation.edition_display_value}",
+            "ISBN=#{identifier.try(:body)}",
+            "PRICE=#{@manifestation.price_string}",
+            "XISBN=#{@manifestation.wrong_isbn}",
+            '</VOLG>'
+          ]
+        end
+        results
+      end
+
+      def year_group
+        [
+          '<YEAR>',
+          "YEAR1=#{@manifestation.date_of_publication_string.try(:[], 0, 4)}",
+          "YEAR2=#{@manifestation.date_of_publication_string.try(:[], 5, 4)}",
+          '</YEAR>'
+        ]
+      end
+
+      def tr_group
+        alternatives = @manifestation.title_alternative.try(:split, '||') || []
+        [
+          '<TR>',
+          "TRD=#{@manifestation.original_title}",
+          "TRR=#{@manifestation.title_transcription}",
+          "TRVR=#{alternatives[0]}",
+          "TRVR=#{alternatives[1]}",
+          '</TR>'
+        ]
+      end
+
+      def vt_group
+        results = []
+        type_ids = TitleType.where("note = 'for nacsis' and name <> 'UTL'").pluck(:id)
+        if type_ids.present?
+          @manifestation.work_has_titles.where(title_type_id: type_ids).each do |wht|
+            alternatives = wht.manifestation_title.title_alternative.try(:split, '||') || []
+            results += [
+              '<VT>',
+              "VTK=#{wht.title_type.name}",
+              "VTD=#{wht.manifestation_title.title}",
+              "VTR=#{wht.manifestation_title.title_transcription}",
+              "VTVR=#{alternatives[0]}",
+              "VTVR=#{alternatives[1]}",
+              '</VT>'
+            ]
+          end
+        end
+        results
+      end
+
+      def pub_group
+        [
+          '<PUB>',
+          "PUBP=#{@manifestation.place_of_publication}",
+          "PUBL=#{@manifestation.publishers.first.try(:full_name)}",
+          "PUBDT=#{}",
+          "PUBF=#{}",
+          '</PUB>'
+        ]
+      end
+
+      def phys_group
+        phys_array = @manifestation.size.split('||',-1)
+        results = []
+        if phys_array.try(:size) == 4
+          results += [
+            '<PHYS>',
+            "PHYSP=#{phys_array[0]}",
+            "PHYSI=#{phys_array[1]}",
+            "PHYSS=#{phys_array[2]}",
+            "PHYSA=#{phys_array[3]}",
+            '</PHYS>'
+          ]
+        end
+        results
+      end
+
+      def cw_group # book only
+        [
+          '<CW>',
+          "CWT=#{}",
+          "CWA=#{}",
+          "CWR=#{}",
+          "CWVR=#{}",
+          '</CW>'
+        ]
+      end
+
+      def ptbl_group # book only
+        results = []
+        parent_manifestations = @manifestation.derived_manifestations || []
+        parent_manifestations.each do |manifestation|
+          if manifestation.nacsis_identifier
+            result += [
+              '<PTBL>',
+              "PTBID=#{manifestation.nacsis_identifier}",
+              "PTBNO=#{}",
+              '</PTBL>'
+            ]
+          end
+        end
+        results
+      end
+
+      def al_group
+        results = []
+        @manifestation.creators.each do |creator|
+          if creator.agent_identifier
+            results += [
+              '<AL>',
+              "AID=#{creator.agent_identifier}",
+              "AF=#{}",
+              "AFLG=#{}",
+              '</AL>'
+            ]
+          else
+            alternatives = creator.full_name_alternative.try(:split, '||') || []
+            results += [
+              '<AL>',
+              "AHDNG=#{creator.full_name}",
+              "AHDNGR=#{creator.full_name_transcription}",
+              "AHDNGVR=#{alternatives[0]}",
+              "AHDNGVR=#{alternatives[1]}",
+              "AF=#{}",
+              "AFLG=#{}",
+              '</AL>'
+            ]
+          end
+        end
+        results
+      end
+
+      def utl_group # book only
+        results = []
+        title_type = TitleType.find_by_name('UTL')
+        utl_titles = @manifestation.manifestation_titles.where('work_has_titles.title_type_id' => title_type.id)
+        utl_titles.each do |title|
+          if title.nacsis_identifier
+            results += [
+              '<UTL>',
+              "UTID=#{title.nacsis_identifier}",
+              "UTINFO=#{title.note}",
+              "UTFLG=#{}",
+              '</UTL>'
+            ]
+          else
+            alternatives = title.title_alternative.try(:split, '||') || []
+            results += [
+              '<UTL>',
+              "UTHDNG=#{title.title}",
+              "UTHDNGR=#{title.title_transcription}",
+              "UTHDNGVR=#{alternatives[0]}",
+              "UTHDNGVR=#{alternatives[1]}",
+              "UTINFO=#{title.note}",
+              "UTFLG=#{}",
+              '</UTL>'
+            ]
+          end
+        end
+        results
+      end
+
+      def cls_group # book only
+        [
+          '<CLS>',
+            "CLSK=#{}",
+            "CLSD=#{}",
+          '</CLS>'
+        ]
+      end
+
+      def sh_group
+        results = []
+        @manifestation.subjects.each do |subject|
+          alternatives = subject.term_alternative.try(:split, '||') || []
+          results += [
+            '<SH>',
+            "SHT=#{'NDLSH'}", # 件名標目表の種類コード表のテーブルが必要
+            "SHD=#{subject.term}",
+            "SHK=#{subject.subject_type.name}",
+            "SHR=#{subject.term_transcription}",
+            "SHVR=#{alternatives[0]}",
+            "SHVR=#{alternatives[1]}",
+            '</SH>'
+          ]
+        end
+        results
+      end
+
+      def get_nacsis_language(type_name)
+        languages = []
+        language_type = LanguageType.where(:name => type_name)
+        if language_type
+          work_has_languages = @manifestation.work_has_languages.where(:language_type_id => language_type)
+          languages = work_has_languages.map {|whl| whl.language.iso_639_2 }
+        end
+        languages.join
+      end
+
+      def gateway_upload_cat_url
+        "#{gateway_config['gw_url']}cat/gateway.json"
+      end
+
+      def http_post_value(url, query)
+        uri = URI.parse(url)
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        resp = http.post(uri.path, query.to_query)
+
+        JSON.parse(resp.body)
+      end
+
       def create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
         return nil if nacsis_cat.blank?
-        created_manifestations = []
 
-        #子書誌情報の登録
-        child_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
-        child_manifestation.save!
-        child_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
+        child_manifestation = nil
+        child_manifestation = new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+        created_manifestations = []
         created_manifestations << child_manifestation
 
-        #親書誌情報の登録
+        # 親書誌情報の登録
         nacsis_cat.detail[:ptb_info].each do |ptbl_record|
           parent_manifestation = Manifestation.where(:nacsis_identifier => ptbl_record['PTBID']).first
           if parent_manifestation
             created_manifestations << parent_manifestation
           else
-            parent_result = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
-            if parent_result[:book].blank?
+            parent_nacsis_cat = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
+            parent_nacsis_cat = parent_nacsis_cat[:book].try(:first)
+            if parent_nacsis_cat
+              created_manifestations << new_root_manifestation_from_nacsis_cat(parent_nacsis_cat, book_types)
+            else
               unless ptbl_record['PTBTR'].nil?
                 created_manifestations <<
                   Manifestation.where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
                     if m.new_record?
                       m.nacsis_identifier = ptbl_record['PTBID']
                       m.title_transcription = ptbl_record['PTBTRR']
-                      m.title_alternative_transcription = ptbl_record['PTBTRVR']
+                      m.title_alternative = arraying(ptbl_record['PTBTRVR']).join('||')
                       m.note = ptbl_record['PTBNO']
                     end
                   end
               end
-            else
-              parent_manifestation = new_manifestation_from_nacsis_cat(parent_result[:book].first, book_types)
-              parent_manifestation.save!
-              parent_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(parent_result[:book].first)
-              created_manifestations << parent_manifestation
             end
           end
         end
-        #親書誌関係の登録
+        # 親書誌関係の登録
         created_manifestations.reverse.each do |parent|
           created_manifestations.each do |child|
             break if parent == child
@@ -398,22 +933,54 @@ class NacsisCat
         child_manifestation
       end
 
-      def new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+      def new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+        case nacsis_cat.detail[:vol_info].size
+        when 0 # VOLGが0件の場合
+          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+        when 1 # VOLGが1件の場合
+          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, nacsis_cat.detail[:vol_info].first)
+        else   # VOLGが2件以上の場合
+          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+
+          volg_manifestations = []
+          nacsis_cat.detail[:vol_info].each do |volg|
+            volg_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg)
+            volg_manifestations << volg_manifestation
+          end
+          series_statement = new_series_statement_from_nacsis_cat(nacsis_cat)
+          series_statement.periodical = false
+          series_statement.root_manifestation = root_manifestation
+          series_statement.manifestations << root_manifestation
+          series_statement.manifestations += volg_manifestations
+          series_statement.save!
+        end
+        root_manifestation
+      end
+
+      def new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg_info = {})
         return nil if nacsis_cat.blank? || book_types.blank?
         nacsis_info = nacsis_cat.detail
         attrs = {}
-        attrs[:nacsis_identifier] = nacsis_cat.ncid
         attrs[:external_catalog] = 2
         attrs[:original_title] = nacsis_info[:subject_heading]
         attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-        attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
-        attrs[:title_alternative_transcription] = nacsis_info[:title_alternative_transcription].try(:join, ",")
+        attrs[:title_alternative] = nacsis_info[:title_alternative]
         attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
         attrs[:note] = nacsis_info[:note]
         attrs[:marc_number] = nacsis_info[:marc]
         attrs[:date_of_publication_string] = nacsis_info[:publish_year]
-        attrs[:size] = nacsis_info[:size]
         attrs[:lccn] = nacsis_info[:lccn]
+        attrs[:issn] = nacsis_info[:issn]
+
+        if nacsis_info[:size].present?
+          size_array = [
+            nacsis_info[:size].try(:[],'PHYSP'),
+            nacsis_info[:size].try(:[],'PHYSI'),
+            nacsis_info[:size].try(:[],'PHYSS'),
+            nacsis_info[:size].try(:[],'PHYSA')
+          ]
+          attrs[:size] = size_array.join('||')
+        end
 
         # 出版国がnilの場合、unknownを設定する。
         if nacsis_info[:pub_country]
@@ -445,7 +1012,7 @@ class NacsisCat
               if p.new_record?
                 p.agent_identifier = creator['AID']
                 p.full_name_transcription = creator['AHDNGR']
-                p.full_name_alternative_transcription = creator['AHDNGVR']
+                p.full_name_alternative = arraying(creator['AHDNGVR']).join('||')
               end
             end
         end
@@ -468,30 +1035,94 @@ class NacsisCat
             else
               attrs[:subjects] << Subject.create(:term => subject['SHD'],
                                                  :term_transcription => subject['SHR'],
+                                                 :term_alternative => arraying(subject['SHVR']).join('||'),
                                                  :subject_type_id => subject_type.id)
             end
           end
         end
 
+        attrs[:identifiers] = []
+        if nacsis_info[:gpon]
+          identifier_type = IdentifierType.where(:name => 'gpon').first_or_create
+          attrs[:identifiers] <<
+           Identifier.create(:body => nacsis_info[:gpon], :identifier_type_id => identifier_type.id)
+        end
+
         if nacsis_cat.book?
-          attrs[:nbn] = nacsis_info[:nbn]
+          unless nacsis_info[:vol_info].size >= 2 && volg_info.present?
+            attrs[:nacsis_identifier] = nacsis_cat.ncid
+            attrs[:nbn] = nacsis_info[:nbn]
+          end
+
           attrs[:ndc] = get_latest_ndc(nacsis_info[:cls_info])
-          # 関連テーブル：ISBNの設定
-          identifier_type = IdentifierType.where(:name => 'isbn').first
-          if identifier_type
-            attrs[:identifiers] = []
-            nacsis_info[:vol_info].each do |vol_info|
-              if vol_info['ISBN']
-                attrs[:identifiers] << Identifier.create(:body => vol_info['ISBN'],
-                                                         :identifier_type_id => identifier_type.id)
-              end
+          # 関連テーブル：版冊次の設定
+          if volg_info.present?
+            if volg_info['ISBN']
+              identifier_type = IdentifierType.where(:name => 'isbn').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => volg_info['ISBN'], :identifier_type_id => identifier_type.id)
+            end
+            attrs[:edition_display_value] = volg_info['VOL']
+            attrs[:price_string] = volg_info['PRICE']
+            attrs[:wrong_isbn] = volg_info['XISBN']
+          end
+          if nacsis_info[:ndlcn].present?
+            identifier_type = IdentifierType.where(:name => 'ndlcn').first_or_create
+            nacsis_info[:ndlcn].uniq.each do |ndlcn|
+              attrs[:identifiers] <<
+                Identifier.create(:body => ndlcn, :identifier_type_id => identifier_type.id)
+            end
+          end
+          nacsis_info[:other_number].each do |othn|
+            othn_array = othn.split(':')
+            name = othn_array[0]
+            val = othn_array[1]
+            unless name.nil? || val.nil?
+              identifier_type = IdentifierType.where(:name => name.downcase).first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => val, :identifier_type_id => identifier_type.id)
             end
           end
         else # root_manifestation用
+          attrs[:nacsis_identifier] = nacsis_cat.ncid
+          nacsis_info[:xissn].each do |xissn|
+            identifier_type = IdentifierType.where(:name => 'xissn').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => xissn, :identifier_type_id => identifier_type.id)
+          end
+          if nacsis_info[:ndlpn]
+            identifier_type = IdentifierType.where(:name => 'ndlpn').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => nacsis_info[:ndlpn], :identifier_type_id => identifier_type.id)
+          end
+          if nacsis_info[:coden]
+            identifier_type = IdentifierType.where(:name => 'coden').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => nacsis_info[:coden], :identifier_type_id => identifier_type.id)
+          end
+          if nacsis_info[:ulpn]
+            identifier_type = IdentifierType.where(:name => 'ulpn').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => nacsis_info[:ulpn], :identifier_type_id => identifier_type.id)
+          end
+          if nacsis_info[:ndlcln]
+            identifier_type = IdentifierType.where(:name => 'ndlcln').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => nacsis_info[:ndlcln], :identifier_type_id => identifier_type.id)
+          end
+          if nacsis_info[:ndlhold]
+            identifier_type = IdentifierType.where(:name => 'ndlhold').first_or_create
+            attrs[:identifiers] <<
+              Identifier.create(:body => nacsis_info[:ndlhold], :identifier_type_id => identifier_type.id)
+          end
+          attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id)
           attrs[:price_string] = nacsis_info[:price]
         end
 
-        Manifestation.new(attrs)
+        manifestation = Manifestation.create(attrs)
+        manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
+        manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
+        manifestation
       end
 
       def create_series_with_relation_from_nacsis_cat(nacsis_cat, book_types)
@@ -543,6 +1174,7 @@ class NacsisCat
         series_statement = SeriesStatement.where(:nacsis_series_statementid => nacsis_cat.ncid).first
         if series_statement.nil?
           series_statement = new_series_statement_from_nacsis_cat(nacsis_cat)
+          series_statement.periodical = true
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
           root_manifestation.periodical_master = true
           root_manifestation.save!
@@ -559,12 +1191,11 @@ class NacsisCat
         nacsis_info = nacsis_cat.detail
         attrs = {}
         attrs[:nacsis_series_statementid] = nacsis_cat.ncid
-        attrs[:periodical] = true
         attrs[:original_title] = nacsis_info[:subject_heading]
         attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
-        attrs[:title_alternative] = nacsis_info[:title_alternative].try(:join,",")
         attrs[:issn] = nacsis_info[:issn]
         attrs[:note] = nacsis_info[:note]
+        attrs[:publication_status_id] = PublicationStatus.find_by_name(nacsis_info[:pstat]).try(:id)
         SeriesStatement.new(attrs)
       end
 
@@ -581,6 +1212,45 @@ class NacsisCat
           end
         end
         whl_ary
+      end
+
+      def new_work_has_titles_from_nacsis_cat(nacsis_cat)
+        return [] if nacsis_cat.blank?
+        nacsis_info = nacsis_cat.detail
+        wht_ary = []
+        nacsis_info[:other_titles].each do |other_title|
+          wht = WorkHasTitle.new
+          title = Title.find_by_title(other_title['VTD'])
+          if title
+            wht.manifestation_title = title
+          else
+            wht.manifestation_title =
+              Title.create(:title => other_title['VTD'],
+                           :title_transcription => other_title['VTR'],
+                           :title_alternative => arraying(other_title['VTVR']).join('||'))
+          end
+          wht.title_type = TitleType.find_by_name(other_title['VTK'])
+          wht_ary << wht
+        end
+        if nacsis_cat.book?
+          nacsis_info[:utl_info].each do |utl_info|
+            wht = WorkHasTitle.new
+            title = Title.find_by_nacsis_identifier(utl_info['UTID'])
+            if title
+              wht.manifestation_title = title
+            else
+              wht.manifestation_title =
+                Title.create(:title => utl_info['UTHDNG'],
+                             :title_transcription => utl_info['UTHDNGR'],
+                             :title_alternative => arraying(utl_info['UTHDNGVR']).join('||'),
+                             :note => utl_info['UTINFO'],
+                             :nacsis_identifier => utl_info['UTID'])
+            end
+            wht.title_type = TitleType.find_by_name('UTL')
+            wht_ary << wht
+          end
+        end
+        wht_ary
       end
 
       def create_family_from_fid(fid)
@@ -624,6 +1294,17 @@ class NacsisCat
           false
         end
       end
+
+      def arraying(obj)
+        case true
+        when obj.blank?
+          []
+        when obj.is_a?(Array)
+          obj
+        else
+          [obj]
+        end
+      end
   end
 
   def initialize(*args)
@@ -658,11 +1339,7 @@ class NacsisCat
   end
 
   def issn
-    if serial?
-      @record['ISSN']
-    else
-      nil
-    end
+    @record['ISSN']
   end
 
   def fid
@@ -729,8 +1406,8 @@ class NacsisCat
     {
       :subject_heading => @record['TR'].try(:[], 'TRD'),
       :subject_heading_reading => @record['TR'].try(:[], 'TRR'),
-      :title_alternative => map_attrs(@record['VT'], 'VTD').compact.uniq,
-      :title_alternative_transcription => map_attrs(@record['VT'], 'VTR').compact.uniq,
+      :title_alternative => map_attrs(@record['TR'], 'TRVR').join('||'),
+      :other_titles => arraying(@record['VT']),
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT', 'PUBF'], ',') },
       :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
@@ -749,26 +1426,37 @@ class NacsisCat
       end.compact,
       :subject => map_attrs(@record['SH'], 'SHD').compact.uniq,
       :note => arraying(@record['NOTE']).compact.join(" "),
-
       :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
-      :size => @record['PHYS'].try(:[],'PHYSS'),
+      :size => @record['PHYS'],
       :creators => arraying(@record['AL']),
       :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
       :subjects => arraying(@record['SH']),
       :marc => @record['MARCID'],
       :lccn => @record['LCCN'],
+      :gpon => @record['GPON'],
+      :issn => issn
     }.tap do |hash|
       if book?
-        hash[:nbn] = nbn.join(",")
-        hash[:cls_info] = class_id_pair
         hash[:vol_info] = arraying(@record['VOLG'])
+        hash[:cw_info] = arraying(@record['CW'])
+        hash[:nbn] = nbn.join(",")
+        hash[:ndlcn] = arraying(@record['NDLCN'])
+        hash[:other_number] = arraying(@record['OTHN'])
         hash[:ptb_info] = arraying(@record['PTBL'])
         hash[:utl_info] = arraying(@record['UTL'])
+        hash[:cls_info] = class_id_pair
       else
-        hash[:issn] = issn
+        hash[:xissn] = arraying(@record['XISSN'])
         hash[:price] = @record['PRICE']
         hash[:fid] = fid
+        hash[:pstat] = @record['PSTAT']
+        hash[:freq] = @record['FREQ']
         hash[:bhn_info] = arraying(@record['BHNT'])
+        hash[:ndlpn] = @record['NDLPN']
+        hash[:coden] = @record['CODEN']
+        hash[:ulpn] = @record['ULPN']
+        hash[:ndlcln] = @record['NDLCLN']
+        hash[:ndlhold] = @record['NDLHOLD']
       end
       hash[:ncid] = ncid
     end

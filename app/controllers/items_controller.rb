@@ -299,12 +299,36 @@ class ItemsController < ApplicationController
     end
   end
 
+  def upload_to_nacsis
+    result = NacsisCat.upload_info_to_nacsis(params[:item_id], params[:db_type], params[:command])
+
+    if result[:return_code] == '200'
+      model_str = t('external_catalog.nacsis') + t('activerecord.models.item')
+      case params[:command]
+      when 'insert'
+        flash[:notice] = t('controller.successfully_created', :model => model_str)
+      when 'update'
+        flash[:notice] = t('controller.successfully_updated', :model => model_str)
+      when 'delete'
+        flash[:notice] = t('controller.successfully_deleted', :model => model_str)
+      end
+      flash[:notice] += " #{t('activerecord.attributes.manifestation.hold_id')} : #{result[:result_id]}"
+    else
+      flash[:notice] = "#{t('resource_import_nacsisfiles.upload_failed')} CODE = #{result[:return_code]} (#{result[:return_phrase]})"
+    end
+
+    respond_to do |format|
+      format.html { redirect_to item_url(params[:item_id]) }
+    end
+  end
+
   def numbering
     item_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil
     render :json => {:success => 1, :item_identifier => item_identifier}
   end
 
   private
+
   def prepare_options
     @libraries = Library.real
     @libraries.delete_if {|l| l.shelves.empty?}

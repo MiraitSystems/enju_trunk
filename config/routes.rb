@@ -95,6 +95,7 @@ EnjuLeaf::Application.routes.draw do
     get :search_manifestation, :on => :collection
     post :create_from_nacsis, :on => :collection
     get :numbering, :on => :collection
+    post :upload_to_nacsis, :on => :collection
   end
 
   match 'checked_manifestations/create' => 'checked_manifestations#create'
@@ -436,6 +437,7 @@ EnjuLeaf::Application.routes.draw do
     get :remove, :on => :member
     get :restore, :on => :member
     get :numbering, :on => :collection
+    post :upload_to_nacsis, :on => :collection
   end
 
   resources :owns

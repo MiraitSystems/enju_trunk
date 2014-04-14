@@ -12,6 +12,7 @@ library_00001:
   agent_id: 2
   call_number_delimiter: "|"
   position: 1
+  nacsis_location_code: '@'
 library_00002:
   name: gotanda1
   short_display_name: gotanda1
@@ -25,6 +26,7 @@ library_00002:
   agent_id: 3
   call_number_delimiter: "|"
   position: 2
+  nacsis_location_code: '@'
 library_00004:
   name: gotanda2
   short_display_name: gotanda2
@@ -38,6 +40,7 @@ library_00004:
   agent_id: 4
   call_number_delimiter: "|"
   position: 3
+  nacsis_location_code: '@'
 library_00005:
   name: gotanda3
   short_display_name: gotanda3
@@ -51,3 +54,4 @@ library_00005:
   agent_id: 5
   call_number_delimiter: "|"
   position: 4
+  nacsis_location_code: '@'
