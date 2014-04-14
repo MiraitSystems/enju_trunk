@@ -1026,6 +1026,9 @@ class ManifestationsController < ApplicationController
   # DELETE /manifestations/1
   # DELETE /manifestations/1.json
   def destroy
+    if SystemConfiguration.get("manifestation.has_one_item")
+      @manifestation.items.each{ |item| item.mark_for_destruction }
+    end
     @manifestation.destroy
     flash[:message] = t('controller.successfully_deleted', :model => t('activerecord.models.manifestation'))
 
