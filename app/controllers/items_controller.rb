@@ -85,10 +85,13 @@ class ItemsController < ApplicationController
   # GET /items/1
   # GET /items/1.json
   def show
-    #@item = Item.find(params[:id])
     @item = @item.versions.find(@version).item if @version
-    # logger.error "############## #{@item.manifestation.id} ##############"
-    # logger.error "############## #{@item.manifestation.manifestation_type.id} ##############"
+
+    # 書誌と所蔵が１：１の場合 manifestations#showにリダイレクト
+    if SystemConfiguration.get("manifestation.has_one_item") == true
+      redirect_to manifestation_url(@item.manifestation)
+      return
+    end
 
     respond_to do |format|
       format.html # show.html.erb

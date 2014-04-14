@@ -42,7 +42,11 @@ class Ability
       end
       can [:read, :create, :update, :output_excelx], Manifestation
       can :destroy, Manifestation do |manifestation|
-        manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        if SystemConfiguration.get("manifestation.has_one_item")
+          manifestation.items.first.deletable? and Setting.operation
+        else
+          manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        end
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
@@ -230,7 +234,11 @@ class Ability
       end
       can [:read, :create, :update, :output_excelx], Manifestation
       can :destroy, Manifestation do |manifestation|
-        manifestation.items.empty? and !manifestation.is_reserved?
+        if SystemConfiguration.get("manifestation.has_one_item")
+          manifestation.items.first.deletable? and Setting.operation
+        else
+          manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        end
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|

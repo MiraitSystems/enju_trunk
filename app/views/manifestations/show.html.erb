@@ -190,7 +190,9 @@ $(function(){
             <li><%= link_to t('manifestation.add_derivation'), manifestation_manifestations_path(@manifestation, :mode => 'add') -%></li>
             <li><%= link_to t('page.listing', :model => t('activerecord.models.subject')), work_subjects_path(@manifestation) -%></li>
             <%- unless @manifestation.bookbinder -%>
-              <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%></li>
+              <% unless SystemConfiguration.get("manifestation.has_one_item") %>
+                <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%></li>
+              <% end %>
             <%- end -%>
             <%- if @manifestation.bookbinder -%>
               <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :manifestation_id => @manifestation.id}, :confirm => t('page.are_you_sure')) -%></li>
@@ -199,6 +201,17 @@ $(function(){
               <% end %>
             <%- end -%>
             <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@manifestation) %></li>
+            <%# 書誌と所蔵を１：１で管理する設定時、除籍・復元を表示 %>
+            <% if SystemConfiguration.get("manifestation.has_one_item") %>
+              <% item = SystemConfiguration.get('manifestation.manage_item_rank') ? @manifestation.items.sort_rank.first : @manifestation.items.first %>
+              <% if item.present? %>
+                <%- if item.circulation_status.name != "Removed" -%>
+                  <li><%= link_to t('page.remove'), remove_item_path(item) -%></li>
+                <%- else -%>
+                  <li><%= link_to t('page.restore'), restore_item_path(item) -%></li>
+                <%- end -%>
+              <% end %>
+            <% end %>
           </ul>
         <% else %>
           <% if can_use_purchase_request? %>
