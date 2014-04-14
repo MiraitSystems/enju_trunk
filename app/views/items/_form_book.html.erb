@@ -10,7 +10,6 @@
   <div class="field">
     <%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong><br />
     <%#= f.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]} %>
-    <%#--TODO shelf の項目との関連が取れていない為、保留 --%>
     <%= select2_script "item_library_id" %>
     <%= make_select2_struct("item_library_id", "item[library_id]", libraries, @item.library_id, 250) %>
     <%- if @shelf_categories %>
@@ -22,12 +21,8 @@
       <%#= make_select2("item_shelf_id", "item[shelf_id]", @shelves, @item.shelf_id, 250) %>
     <%- else -%>
       <%#= f.select :shelf_id, @shelves.map{|s| [s.display_name.localize, s.id]} %>
-      <br>
       <%= select2_script "item_shelf_id" %>
-      <%= make_select2("item_shelf_id", "item[shelf_id]", @shelves, @item.shelf_id, 300) %>
-      <br>
-      <%= select2_script "item_test" %>
-      <%= make_select2("item_test", "item[test]", @shelves, @item.shelf_id, 300) %>
+      <%= make_select2("item_shelf_id", "item[shelf_id]", @shelves, @item.shelf_id, 300, false, false) %>
     <%- end -%>
     <%= render 'observe_field' %>
   </div>
