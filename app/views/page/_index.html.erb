@@ -57,8 +57,10 @@ $(document).FunctionKeys(
         <br />
         <p><b><%= t('page.theme.hot_topic') %> : </b></p>
         <div>
-          <% @themes.each do |theme| %>
-            <%= link_to theme.name, manifestations_path(:theme_id => theme.id) %>
+          <% unless @themes.blank? %>
+            <% @themes.each do |theme| %>
+              <%= link_to theme.name, manifestations_path(:theme_id => theme.id) %>
+            <% end %>
           <% end %>
         </div>
         <p><b><%= link_to t('page.theme.theme_list'), themes_path %></b></p>
