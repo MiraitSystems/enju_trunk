@@ -145,9 +145,9 @@ class SeriesStatement < ActiveRecord::Base
     root_manifestation.realizes = Realize.new_from_instance(objs[:realizes], objs[:del_contributors], objs[:add_contributors])
     root_manifestation.produces = Produce.new_from_instance(objs[:produces], objs[:del_publishers], objs[:add_publishers])
     root_manifestation.manifestation_exinfos = ManifestationExinfo.
-      add_exinfos(params[:exinfos], root_manifestation.id) if objs[:exinfos]
+      add_exinfos(objs[:exinfos], root_manifestation.id) if objs[:exinfos]
     root_manifestation.manifestation_extexts = ManifestationExtext.
-      add_extexts(params[:extexts], root_manifestation.id) if objs[:extexts]
+      add_extexts(objs[:extexts], root_manifestation.id) if objs[:extexts]
     return root_manifestation
   end
 
