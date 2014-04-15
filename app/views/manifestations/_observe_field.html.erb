@@ -10,4 +10,22 @@
       }
     });
   }
+  function item_numbering() {
+    var type = $("#item_numbering_type").val();
+    $.ajax({
+      type: "Get",
+      url: "<%= numbering_items_path %>",
+      data: {type: type},
+      success: function(obj) {
+        $("#manifestation_items_attributes_0_item_identifier").val(obj.item_identifier);
+      }
+    });
+  }
+  $(function(){
+    $('#manifestation_items_attributes_0_library_id').change(function() {
+      var libraryValue = $(this).val();
+      $("#manifestation_items_attributes_0_shelf_id").load('<%= shelves_path %>?mode=select&library_id=' + libraryValue);
+      return false;
+    });
+  });
 </script>

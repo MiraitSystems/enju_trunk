@@ -31,18 +31,22 @@ class Ability
       can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
         inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
       end
-      can [:read, :create, :update, :remove, :restore], Item
+      can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
-      end      
+      end
       can [:read, :create, :update], Library
       can :destroy, Library do |library|
         #library.shelves.empty? and library.users.empty? and library.budgets.empty? and library.events.empty? and !library.web?
         library.id != 0 and  library.shelves.size == 1 and library.shelves[0].open_access == 9 and library.shelves[0].items.empty? and library.budgets.empty? and library.events.empty? and !library.web?
       end
-      can [:read, :create, :update, :output_excelx], Manifestation
+      can [:read, :create, :update, :output_excelx, :upload_to_nacsis], Manifestation
       can :destroy, Manifestation do |manifestation|
-        manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        if SystemConfiguration.get("manifestation.has_one_item")
+          manifestation.items.first.deletable? and Setting.operation
+        else
+          manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        end
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
@@ -224,13 +228,17 @@ class Ability
       can [:update, :update, :destroy], InterLibraryLoan do |inter_library_loan|
         inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
       end
-      can [:read, :create, :update, :remove, :restore], Item
+      can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
       end
-      can [:read, :create, :update, :output_excelx], Manifestation
+      can [:read, :create, :update, :output_excelx, :upload_to_nacsis], Manifestation
       can :destroy, Manifestation do |manifestation|
-        manifestation.items.empty? and !manifestation.is_reserved?
+        if SystemConfiguration.get("manifestation.has_one_item")
+          manifestation.items.first.deletable? and Setting.operation
+        else
+          manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+        end
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|

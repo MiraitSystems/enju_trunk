@@ -32,7 +32,7 @@ function_00004:
   controller_name: ManifestationsController
   action_names: |
                 read:index,show,search_manifestation
-                update:new,create,edit,update,output_excelx,numbering
+                update:new,create,edit,update,output_excelx,numbering,upload_to_nacsis
                 delete:destroy
   position: 4
 function_00005:
@@ -41,7 +41,7 @@ function_00005:
   controller_name: ItemsController
   action_names:  |
                  read:index,show
-                 update:new,create,edit,update,numbering,remove,restore
+                 update:new,create,edit,update,numbering,remove,restore,upload_to_nacsis
                  delete:destroy
   position: 5
 function_00006:

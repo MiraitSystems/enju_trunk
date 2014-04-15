@@ -1540,10 +1540,14 @@ ja:
         body: 本文
         created_at: 登録日
       nacsis_user_request:
-        subject_heading: 本表題/責任表示
-        subject_heading_reading: 本表題等の読み
-        title_alternative: その他の表題
-        title_alternative_transcription: その他の表題の読み
+        subject_heading: 本標題/責任表示
+        subject_heading_reading: 本標題等の読み
+        title_alternative: 本標題等のその他の読み
+        other_titles: その他の標題情報
+        VTK: 種類
+        VTD: 標題
+        VTR: 読み
+        VTVR: その他の読み
         publisher: 出版者
         pub_date: 出版年
         publish_year: 出版年
@@ -1552,12 +1556,14 @@ ja:
         note: 資料注記
         isbn: ISBN
         issn: ISSN
+        xissn: XISSN
         pub_country: 出版国
         title_language: 標題言語
         text_language: 本文言語
         original_language: 原本言語
         author_heading: 著者情報
         subject: 件名
+        freq: 刊行頻度コード
         ncid: NCID
         marc: MARC ID
         cls_info: 分類記号
@@ -1566,8 +1572,20 @@ ja:
         ISBN: ISBN
         PRICE: 価格
         XISBN: 無効ISBN
-        nbn: NBN
-        lccn: LCCN
+        cw_info: 内容著作注記
+        CWT: 標題
+        CWA: 責任表示
+        CWR: 読み
+        CWVR: その他の読み
+        nbn: 全国書誌番号
+        lccn: LCカード番号
+        ndlcn: NDLカード番号
+        ndlpn: NDL雑誌番号
+        gpon: GPO番号
+        coden: CODEN
+        ulpn: ULP番号
+        other_number: その他の番号
+        pstat: 出版状況コード
         ptb_info: 親書誌情報
         PTBID: ID
         PTBK: 種類
@@ -1588,6 +1606,8 @@ ja:
         BHBID: 前後書誌レコードID
         BHK: 遍歴タイプ
         BHTR: 前後タイトル
+        ndlcln: NDL請求番号
+        ndlhold: NDL所蔵データ
         user_id: 利用者ID
         user_name: 利用者名
         request_datetime: 依頼日時

@@ -43,6 +43,8 @@ class Manifestation < ActiveRecord::Base
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
+  accepts_nested_attributes_for :items
+
   scope :without_master, where(:periodical_master => false)
   # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
   SELECT2_OBJ = Struct.new(:id, :name, :display_name)
@@ -871,6 +873,18 @@ class Manifestation < ActiveRecord::Base
         subject = Subject.create(:term => s, :subject_type_id => 1)
       end
       self.subjects << subject unless self.subjects.include?(subject)
+    end
+  end
+
+  def vol_string
+    if volume_number_string.present?
+      if issue_number_string.present?
+        "#{volume_number_string}[#{issue_number_string}]"
+      else
+        volume_number_string
+      end
+    elsif issue_number_string.present?
+      "[#{issue_number_string}]"
     end
   end
 

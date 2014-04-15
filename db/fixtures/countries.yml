@@ -341,6 +341,7 @@ country_00101:
   note: 
   alpha_2: JP
   alpha_3: JPN
+  marc21: jp
 country_00021: 
   position: 21
   name: Belgium  
@@ -593,6 +594,7 @@ country_00215:
   note: 
   alpha_2: US
   alpha_3: USA
+  marc21: us
 country_00027: 
   position: 27
   name: Bosnia and Herzegovina  

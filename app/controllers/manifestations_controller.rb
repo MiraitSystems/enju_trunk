@@ -755,6 +755,11 @@ class ManifestationsController < ApplicationController
         redirect_to series_statement_manifestations_url(@manifestation.series_statement)
       end
       return
+    else
+      if @manifestation.series_statement && @manifestation.nacsis_identifier
+        redirect_to series_statement_manifestations_url(@manifestation.series_statement)
+      end
+      return
     end
 
     store_location
@@ -853,6 +858,10 @@ class ManifestationsController < ApplicationController
     @original_manifestation = original_manifestation if params[:mode] == 'add'
     @manifestation.identifiers << Identifier.new
 
+    if SystemConfiguration.get("manifestation.has_one_item") == true
+      @manifestation.items.build
+    end
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @manifestation }
@@ -887,6 +896,11 @@ class ManifestationsController < ApplicationController
       @select_theme_tags = Manifestation.struct_theme_selects
       @keep_themes = @manifestation.themes.collect(&:id).flatten.join(',')
     end
+
+    if SystemConfiguration.get("manifestation.has_one_item") == true
+      @manifestation.items.build if @manifestation.items.blank?
+    end
+
   end
 
   # POST /manifestations
@@ -1017,6 +1031,9 @@ class ManifestationsController < ApplicationController
   # DELETE /manifestations/1
   # DELETE /manifestations/1.json
   def destroy
+    if SystemConfiguration.get("manifestation.has_one_item")
+      @manifestation.items.each{ |item| item.mark_for_destruction }
+    end
     @manifestation.destroy
     flash[:message] = t('controller.successfully_deleted', :model => t('activerecord.models.manifestation'))
 
@@ -1108,6 +1125,40 @@ class ManifestationsController < ApplicationController
           redirect_to created_record
         end
       end
+    end
+  end
+
+  def upload_to_nacsis
+    result = NacsisCat.upload_info_to_nacsis(params[:work_id], params[:db_type], params[:command])
+
+    case params[:db_type]
+    when 'BOOK'
+      if params[:series_id]
+        redirect_url = series_statement_manifestations_url(params[:series_id], :all_manifestations => true)
+      else
+        redirect_url = manifestation_url(params[:work_id])
+      end
+      model_str = t('page.nacsis_book')
+    when 'SERIAL'
+      redirect_url = series_statement_manifestations_url(params[:work_id], :all_manifestations => true)
+      model_str = t('page.nacsis_serial')
+    end
+
+    if result[:return_code] == '200'
+      model_str = t('external_catalog.nacsis') + model_str + t('resource_import_textfile.book')
+      case params[:command]
+      when 'insert'
+        flash[:notice] = t('controller.successfully_created', :model => model_str)
+      when 'update'
+        flash[:notice] = t('controller.successfully_updated', :model => model_str)
+      end
+      flash[:notice] += " #{t('activerecord.attributes.nacsis_user_request.ncid')} : #{result[:result_id]}"
+    else
+      flash[:notice] = "#{t('resource_import_nacsisfiles.upload_failed')} CODE = #{result[:return_code]} (#{result[:return_phrase]})"
+    end
+
+    respond_to do |format|
+      format.html { redirect_to redirect_url }
     end
   end
 
@@ -1489,6 +1540,57 @@ class ManifestationsController < ApplicationController
     @add_creators = [{}] if @add_creators.blank?
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
+
+    # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
+    if SystemConfiguration.get("manifestation.has_one_item") == true
+      @libraries = Library.real
+      @libraries.delete_if {|l| l.shelves.empty?}
+      if @manifestation.items.present?
+        @item = SystemConfiguration.get('manifestation.manage_item_rank') ? @manifestation.items.sort_rank.first : @manifestation.items.first
+        @library = @item.shelf.library rescue nil
+      else
+        @item = Item.new
+        @library = Library.real.first(:order => :position, :include => :shelves)
+      end
+      @shelf_categories = Shelf.try(:categories) rescue nil
+      if @shelf_categories
+        @shelves = []
+        @shelves << @item.shelf if @item
+      else
+        @shelves = @library.shelves
+      end
+      @checkout_types = CheckoutType.all
+      @accept_types = AcceptType.all
+      @circulation_statuses = CirculationStatus.all
+      @circulation_statuses.reject!{|cs| cs.name == "Removed"}
+      @retention_periods = RetentionPeriod.all
+      @bookstores = Bookstore.all
+      @use_restrictions = UseRestriction.available
+      @roles = Role.all
+      @claim_types = ClaimType.all
+      @item_numberings = []
+      Numbering.where(:numbering_type => 'item').each do |numbering|
+        @item_numberings << Manifestation::SELECT2_OBJ.new(numbering.name, numbering.name, numbering.display_name)
+      end
+      @use_restriction_id = @item.use_restriction.present? ? @item.use_restriction.id : nil
+      if SystemConfiguration.get('manifestation.use_item_has_operator')
+        @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", @item])
+        if @countoperators == 0
+          operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @library)
+          operator.user_number = ""
+          @item.item_has_operators << operator
+          @countoperators = 1
+        end
+      end
+      if @item.item_has_operators.present?
+        @item.item_has_operators.each do |item_has_operator|
+          unless item_has_operator.user.blank?
+            item_has_operator.user_number = item_has_operator.user.user_number
+          end
+        end
+      end
+    end
+
   end
 
   def save_search_history(query, offset = 0, total = 0, user = nil)

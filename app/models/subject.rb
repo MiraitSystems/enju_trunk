@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 require EnjuSubject::Engine.root.join('app', 'models', 'subject')
 class Subject < ActiveRecord::Base
+  attr_accessible :term_alternative
   has_paper_trail
 
   def self.import_subjects(subject_lists, subject_transcriptions = nil)
