@@ -42,10 +42,18 @@ class Ability
       end
       can [:read, :create, :update, :output_excelx, :upload_to_nacsis], Manifestation
       can :destroy, Manifestation do |manifestation|
-        if SystemConfiguration.get("manifestation.has_one_item")
-          manifestation.items.first.deletable? and Setting.operation
+        if manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+          true
         else
-          manifestation.items.empty? and Setting.operation and !manifestation.is_reserved?
+          if SystemConfiguration.get("manifestation.has_one_item")
+            if manifestation.items.first.new_record?
+              Setting.operation and !manifestation.is_reserved?
+            else
+              manifestation.items.first.deletable? and Setting.operation and !manifestation.is_reserved?
+            end
+          else
+            false
+          end
         end
       end
       can [:read, :create, :update], SeriesStatement
