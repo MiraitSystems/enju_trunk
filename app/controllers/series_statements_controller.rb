@@ -1,13 +1,22 @@
 # -*- encoding: utf-8 -*-
 class SeriesStatementsController < ApplicationController
-  add_breadcrumb "I18n.t('page.configuration')", 'page_configuration_path'
-  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.series_statement'))", 'series_statements_path'
-  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.series_statement'))", 'new_series_statement_path', :only => [:new, :create]
-  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.series_statement'))", 'edit_series_statement_path([:id])', :only => [:edit, :update]
-  add_breadcrumb "I18n.t('activerecord.models.series_statement')", 'series_statement_path([:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.configuration')",
+    'page_configuration_path'
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.series_statement'))",
+    'series_statements_path'
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.series_statement'))", 
+    'new_series_statement_path', 
+    only: [:new, :create]
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.series_statement'))", 
+    'edit_series_statement_path([:id])', 
+    only: [:edit, :update]
+  add_breadcrumb "I18n.t('activerecord.models.series_statement')", 
+    'series_statement_path([:id])', 
+    only: [:show]
+
   load_and_authorize_resource
   before_filter :get_work, :only => [:index, :new, :edit]
-  before_filter :get_manifestation, :only => [:index, :new, :edit]
+  before_filter :get_manifestation, :only => [:index]
   before_filter :prepare_options, :only => [:new, :edit]
   cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
@@ -93,7 +102,6 @@ class SeriesStatementsController < ApplicationController
     SeriesStatement.transaction do
       @series_statement = SeriesStatement.new(params[:series_statement])
       @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
-
       # set class instance variables, and create root_manifestation
       set_and_create_root_manifestation(params)
       @series_statement.save!
@@ -131,7 +139,7 @@ class SeriesStatementsController < ApplicationController
       # reindex 
       if before_series_statement_periodical != @series_statement.periodical
         @series_statement.manifestations.update_all(periodical: @series_statement.periodical)
-        @series_statement.manifestations.map { |manifestation| manifestation.index }
+        Sunspot.index! @series_statement.manifestations
       end
       respond_to do |format|
         format.html { redirect_to series_statement_manifestations_path(@series_statement, :all_manifestations => true), 

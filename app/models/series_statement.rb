@@ -132,8 +132,8 @@ class SeriesStatement < ActiveRecord::Base
 
   def self.create_root_manifestation(series_statement, objs)
     root_manifestation = series_statement.root_manifestation
-    root_manifestation.periodical_master   = series_statement.periodical ? true : false
-    root_manifestation.periodical          = series_statement.periodical ? true : false
+    root_manifestation.periodical_master   = series_statement.periodical
+    root_manifestation.periodical          = series_statement.periodical
     root_manifestation.original_title      = series_statement.original_title
     root_manifestation.title_transcription = series_statement.title_transcription
     root_manifestation.title_alternative   = series_statement.title_alternative

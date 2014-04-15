@@ -5,6 +5,7 @@ class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
   include OutputColumns
+
   has_many :creators, :through => :creates, :source => :agent, :order => :position
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
   has_many :publishers, :through => :produces, :source => :agent, :order => :position
@@ -445,6 +446,10 @@ class Manifestation < ActiveRecord::Base
     boolean :except_recent
     boolean :non_searchable do
       non_searchable?
+    end
+    boolean :hide do
+      # 定期刊行物でないroot_manifestationは隠す
+      root_of_series? and periodical == false 
     end
     string :exinfo_1
     string :exinfo_2
