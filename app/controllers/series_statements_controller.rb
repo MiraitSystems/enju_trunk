@@ -51,27 +51,17 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/1
   # GET /series_statements/1.json
   def show
-    #@manifestations = @series_statement.manifestations.periodical_children.page(params[:manifestation_page]).per_page(Manifestation.default_per_page)
-
     respond_to do |format|
-      format.html { # show.html.erb
-        if user_signed_in? and current_user.has_role?('Librarian')
-          redirect_to series_statement_manifestations_url(@series_statement, :all_manifestations => true)
-        else
-          redirect_to series_statement_manifestations_url(@series_statement)
-        end
-      }
+      if user_signed_in? and current_user.has_role?('Librarian')
+        format.html   { redirect_to series_statement_manifestations_url(@series_statement, :all_manifEstations => true) }
+        format.mobile { redirect_to series_statement_manifestations_url(@series_statement, :all_manifEstations => true) }
+      else
+        format.html   { redirect_to series_statement_manifestations_url(@series_statement) }
+        format.mobile { redirect_to series_statement_manifestations_url(@series_statement) }
+      end
       format.json { render :json => @series_statement }
       #format.js
-      format.mobile {
-        if user_signed_in? and current_user.has_role?('Librarian')
-          redirect_to series_statement_manifestations_url(@series_statement, :all_manifestations => true)
-        else
-          redirect_to series_statement_manifestations_url(@series_statement)
-        end
-      }
     end
-
   end
 
   # GET /series_statements/new
@@ -80,27 +70,11 @@ class SeriesStatementsController < ApplicationController
     original_series_statement = SeriesStatement.find(params[:series_statement_id]) if params[:series_statement_id]
     if original_series_statement
       @series_statement = original_series_statement.dup
-      if @series_statement.root_manifestation
-        @manifestation = @series_statement.root_manifestation
-        @series_statement.root_manifestation = @manifestation
-        if @manifestation.manifestation_exinfos
-          @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") }
-        end
-        if @manifestation.manifestation_extexts
-          @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
-        end
-      else
-        @manifestation = @series_statement.root_manifestation
-        @series_statement.root_manifestation = Manifestation.new
-      end
-    else # GET /series_statements/new
-      @manifestation = @series_statement.root_manifestation
+      @series_statement.root_manifestation = original_series_statement.root_manifestation.dup
+      set_root_manifestation_instance_vals(original_series_statement.root_manifestation)
+    else
       @series_statement.root_manifestation = Manifestation.new
     end
-    @series_work_has_languages = @series_statement.root_manifestation.work_has_languages
-    @creates = @series_statement.root_manifestation.creates.order(:position)
-    @realizes = @series_statement.root_manifestation.realizes.order(:position)
-    @produces = @series_statement.root_manifestation.produces.order(:position)
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -110,18 +84,7 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/1/edit
   def edit
     @series_statement.work = @work if @work
-    @series_statement.root_manifestation = Manifestation.new unless @series_statement.root_manifestation
-    @series_work_has_languages = @series_statement.root_manifestation.work_has_languages
-    @creates = @series_statement.root_manifestation.creates.order(:position)
-    @realizes = @series_statement.root_manifestation.realizes.order(:position)
-    @produces = @series_statement.root_manifestation.produces.order(:position)
-    if @series_statement.root_manifestation
-      manifestation = @series_statement.root_manifestation
-      @subject = manifestation.subjects.collect(&:term).join(';')
-      @subject_transcription = manifestation.subjects.collect(&:term_transcription).join(';')
-      manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if manifestation.manifestation_exinfos
-      manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if manifestation.manifestation_extexts
-    end
+    set_root_manifestation_instance_vals(@series_statement.root_manifestation)
   end
 
   # POST /series_statements
@@ -167,7 +130,7 @@ class SeriesStatementsController < ApplicationController
       @series_statement.save!
       # reindex 
       if before_series_statement_periodical != @series_statement.periodical
-        @series_statement.manifestations.update_all(periodical: @series_statement.periodical ? true : false)
+        @series_statement.manifestations.update_all(periodical: @series_statement.periodical)
         @series_statement.manifestations.map { |manifestation| manifestation.index }
       end
       respond_to do |format|
@@ -210,6 +173,19 @@ class SeriesStatementsController < ApplicationController
   end 
 
   private
+  def set_root_manifestation_instance_vals(root_manifestation)
+    @series_work_has_languages = root_manifestation.work_has_languages
+    @creates = root_manifestation.creates.order(:position)
+    @realizes = root_manifestation.realizes.order(:position)
+    @produces = root_manifestation.produces.order(:position)
+    @subject = root_manifestation.subjects.collect(&:term).join(';')
+    @subject_transcription = root_manifestation.subjects.collect(&:term_transcription).join(';')
+    root_manifestation.manifestation_exinfos.
+      each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if root_manifestation.manifestation_exinfos
+    root_manifestation.manifestation_extexts.
+      each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if root_manifestation.manifestation_extexts
+  end
+
   def prepare_options
     @carrier_types = CarrierType.all
     @manifestation_types = ManifestationType.series
