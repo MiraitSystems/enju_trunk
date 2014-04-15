@@ -410,9 +410,9 @@ $(document).keydown(function(e) {
             options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
 
         <%= select2_script "language_id_0" %>
-        <%= make_select2("manifestation", 'language_id[0]', @languages, @default_language.id, 300) %>
+        <%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %>
         <%= select2_script "language_type_0" %>
-        <%= make_select2("manifestation", 'language_type[0]', @languages, 0, 200) %>
+        <%= make_select2("language_type_0", 'language_type[0]', @language_types, 0, 200) %>
         <%= button_to_function '+', 'ItemField_language_select2.add()' -%>
       </div>
     <% else %>
