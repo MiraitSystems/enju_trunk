@@ -405,7 +405,6 @@ $(document).keydown(function(e) {
   <div class="field" id="language">
     <%= f.label t('activerecord.models.language') -%>
     <% if @work_has_languages.blank? %>
-        <table id="bless">
       <div id="LANG0">
         <%#= select_tag 'language_id[0]',
             options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
@@ -413,6 +412,7 @@ $(document).keydown(function(e) {
         <%#= select_tag 'language_type[0]',
             options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
 
+        <table id="bless">
           <tr> 
             <%= select2_script "language_id_0" %>
             <td><%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %></td>
@@ -420,8 +420,8 @@ $(document).keydown(function(e) {
             <td><%= make_select2("language_type_0", 'language_type[0]', @language_types, 0, 200) %></td>
             <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
           </tr>
-      </div>
         </table>
+      </div>
     <% else %>
       <% @work_has_languages.each_with_index do |whl, i| %>
         <div id="LANG<%= i.to_s %>">
