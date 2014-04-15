@@ -2,7 +2,7 @@
   <strong>
     <%- if [1, 2].include?(manifestation.missing_issue) %><%= t('manifestation.missing') %><%- end %>
     <%= t('manifestation.periodical') if manifestation.periodical_master? %>
-    <% if manifestation.root_of_series? %>
+    <% if manifestation.periodical_master %>
       <%= link_to highlight(manifestation.series_statement.original_title), 
         series_statement_manifestations_path(manifestation.series_statement, reset_facet_params(params)) %>
     <% else %>
