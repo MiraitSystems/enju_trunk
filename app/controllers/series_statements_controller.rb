@@ -188,25 +188,19 @@ class SeriesStatementsController < ApplicationController
   # DELETE /series_statements/1
   # DELETE /series_statements/1.json
   def destroy
-    respond_to do |format|
-      begin
-        SeriesStatement.transaction do
-          if @series_statement.manifestations
-            if @series_statement.manifestations.size == 1
-               manifestation = @series_statement.manifestations.first
-               if manifestation == @series_statement.root_manifestation
-                 manifestation.destroy
-               end
-            end
-          end
-          @series_statement.destroy
-          format.html { redirect_to series_statements_url }
-          format.json { head :no_content }
-        end
-      rescue
-        format.html { redirect_to(series_statements_path) }
-        format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
+    SeriesStatement.transaction do
+      @series_statement.root_manifestation.destroy
+      @series_statement.destroy
+      respond_to do |format|
+        format.html { redirect_to series_statements_url }
+        format.json { head :no_content }
       end
+    end
+  rescue => e
+    logger.error "Failed to update: #{e}"
+    respond_to do |format|
+      format.html { redirect_to(series_statements_path) }
+      format.json { render :json => @series_statement.errors, :status => :unprocessable_entity }
     end
   end
 

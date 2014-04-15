@@ -50,11 +50,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        if series_statement.periodical
-          series_statement.manifestations.size == 1 and series_statement.manifestations[0].periodical_master
-        else
-          series_statement.manifestations.empty?
-        end
+        series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first
       end
       can [:read, :create, :update], Agent
       can :destroy, Agent do |agent|
@@ -242,11 +239,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        if series_statement.periodical
-          series_statement.manifestations.size == 1 and series_statement.manifestations[0].periodical_master
-        else
-          series_statement.manifestations.empty?
-        end
+        series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first
       end
       can [:output], Shelf
       can [:index, :create], Agent
