@@ -1378,6 +1378,7 @@ class ManifestationsController < ApplicationController
         without << [:non_searchable, :equal_to, true]
       end
     end
+    without << [:hide, :equal_to, true]
 
     without << [:id, :equal_to, @binder.manifestation.id] if @binder
 

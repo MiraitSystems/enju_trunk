@@ -1,10 +1,3 @@
-  <%- if !@series_statement.new_record? and @manifestation -%>
-    <div class="field">
-      <%= link_to @manifestation.original_title, @manifestation -%>
-      <%= f.hidden_field :manifestation_id %>
-    </div>
-  <%- end -%>
-
   <div class="field">
     <%= f.label :original_title %><br />
     <%= f.text_field :original_title %>

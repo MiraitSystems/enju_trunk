@@ -130,6 +130,27 @@ class SeriesStatement < ActiveRecord::Base
     titles.flatten.compact
   end
 
+  def self.create_root_manifestation(series_statement, objs)
+    root_manifestation = series_statement.root_manifestation
+    root_manifestation.periodical_master   = series_statement.periodical
+    root_manifestation.periodical          = series_statement.periodical
+    root_manifestation.original_title      = series_statement.original_title
+    root_manifestation.title_transcription = series_statement.title_transcription
+    root_manifestation.title_alternative   = series_statement.title_alternative
+    root_manifestation.save!
+
+    root_manifestation.subjects = Subject.import_subjects(objs[:subjects], objs[:subject_transcriptions])
+    root_manifestation.work_has_languages = WorkHasLanguage.new_objs(objs[:series_work_has_languages].uniq)
+    root_manifestation.creates = Create.new_from_instance(objs[:creates], objs[:del_creators], objs[:add_creators])
+    root_manifestation.realizes = Realize.new_from_instance(objs[:realizes], objs[:del_contributors], objs[:add_contributors])
+    root_manifestation.produces = Produce.new_from_instance(objs[:produces], objs[:del_publishers], objs[:add_publishers])
+    root_manifestation.manifestation_exinfos = ManifestationExinfo.
+      add_exinfos(params[:exinfos], root_manifestation.id) if objs[:exinfos]
+    root_manifestation.manifestation_extexts = ManifestationExtext.
+      add_extexts(params[:extexts], root_manifestation.id) if objs[:extexts]
+    return root_manifestation
+  end
+
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
