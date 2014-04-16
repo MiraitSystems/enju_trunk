@@ -243,7 +243,8 @@
       <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :item_id => @item.id}, :confirm => t('page.undo_binding')) -%></li>
     <%- end -%>
   </ul>
-  <%- if @item.manifestation.nacsis_identifier || @item.manifestation.series_statement.nacsis_series_statementid -%>
+  <%#- if @item.manifestation.nacsis_identifier || @item.manifestation.series_statement.nacsis_series_statementid -%>
+  <%- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
     <br /><strong>&nbsp;
     <%= t('external_catalog.nacsis') + ' ' + t('page.edit') %>
     <%- if @item.manifestation.nacsis_identifier %>
