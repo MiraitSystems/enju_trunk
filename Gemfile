@@ -46,7 +46,8 @@ gem 'rubyzip', "=0.9.9"
 gem 'spreadsheet', '0.7.9'
 gem 'axlsx', '~> 1.3.6'
 
-gem 'select2-rails'
+# gem 'select2-rails'
+gem 'select2-rails', :git => 'git@github.com:MiraitSystems/select2-rails.git'
 
 gem 'spinjs-rails'
 gem 'kaminari'
