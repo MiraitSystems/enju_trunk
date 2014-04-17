@@ -194,6 +194,18 @@ $(document).keydown(function(e) {
 </script>
 
 <script id="script_add_title">
+  function add_field(obj, parent_id, id_name) {
+    var new_area = document.createElement("div");
+    new_area.setAttribute("id", id_name + obj.currentNumber);
+    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
+    document.getElementById(parent_id).appendChild(new_area);
+    obj.currentNumber += 1;
+  }
+  function remove_field(div_num, id_name) {
+    var field = document.getElementById(id_name + div_num);
+    if(field != null){ field.parentNode.removeChild(field); }
+  }
+
   var ItemField_title = {
     currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
     template : ''
@@ -201,7 +213,7 @@ $(document).keydown(function(e) {
       + '<input id="work_has_titles_attributes___count___title_str" name="work_has_titles_attributes___count___title_str" placeholder=<%= t('activerecord.models.title') %> type="text" class="resource_title" /> '
       + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
       <% @title_types.collect do |m| %>
-        + '<option value="<%= m.id %>"><%= m.display_name %></option>'
+        + '<option value="<%= m.id %>"><%= m.display_name.localize %></option>'
       <% end %>
       + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> '
       + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
