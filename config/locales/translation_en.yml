@@ -3326,3 +3326,5 @@ en:
     yen_imprest: "Yen imprest"
     deduction_quantity: "Deduction quantity"
     delayed_quantity: "Delayed quantity"
+  order_search:
+    notset: "Not set"
