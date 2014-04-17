@@ -1,8 +1,9 @@
-<%= form_for(@department) do |f| -%>
+<%= render 'page/required_field' %>
+<%= simple_form_for(@department, :html => { :multipart => true }) do |f| -%>
   <%= f.error_messages -%>
 
   <div class="field">
-    <%= f.label :name -%><br />
+    <%= f.label :name -%> <%= t('department.help_name') -%><br />
     <%= f.text_field :name -%>
   </div>
 

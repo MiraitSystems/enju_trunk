@@ -2372,6 +2372,8 @@ en:
       place: Conference place
       birth_date: Conference birth date
       death_date: Conference death date
+  department:
+    help_name: (Use half-width characters.)
   question:
     my: My questions
     all: All questions

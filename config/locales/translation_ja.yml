@@ -2363,6 +2363,8 @@ ja:
       place: 開催地
       birth_date: 開催開始年月日
       death_date: 開催終了年月日
+  department:
+    help_name: (半角英数字で入力してください。)
   question:
     my: "自分の質問"
     all: "全ての質問"
