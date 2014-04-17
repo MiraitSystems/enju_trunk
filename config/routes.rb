@@ -251,7 +251,6 @@ EnjuLeaf::Application.routes.draw do
     resources :series_statement_relationships, :except => :index
   end
   resources :series_statement_relationships
-  resources :barcodes
   resources :barcode_lists do
     match 'print', :to => 'barcode_lists#print'
     match 'create_pdf', :to => 'barcode_lists#create_pdf'
