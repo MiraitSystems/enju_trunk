@@ -3299,3 +3299,5 @@ ja:
     yen_imprest: "発注金額"
     deduction_quantity: "精算対象外差引数"
     delayed_quantity: "延着数"
+  order_search:
+    notset: "未設定"

@@ -107,7 +107,15 @@
     $('#check_all_payment_form_code').click(function() {
       $('input.payment_form_code:checkbox').prop('checked', $(this).is(':checked'));  
     });
-    
+    $('input.bookstore_code:checkbox').click(function() {
+      $('#check_all_bookstore_code').prop('checked', false);
+    });
+    $('input.order_organization_id:checkbox').click(function() {
+      $('#check_all_order_organization_id').prop('checked', false);
+    });
+    $('input.payment_form_code:checkbox').click(function() {
+      $('#check_all_payment_form_code').prop('checked', false);
+    });
   });
 // -->
 </script>
@@ -154,7 +162,7 @@
       <%= text_field_tag :identifier, @selected_identifier %>
     </p>
     <p>
-      <%= t('activerecord.attributes.order.bookstore_code') %>:<input type="checkbox" id="check_all_bookstore_code"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.bookstore_code')) %>
+      <%= t('activerecord.attributes.order.bookstore_code') %>:<%= check_box_tag "check_all_bookstore_code", true, @check_all_bookstore_code %><%= t('advanced_search.all', :model => t('activerecord.attributes.order.bookstore_code')) %>
     </p>
     <ul>
       <% bookstore_codes.each_with_index do |bookstore_code, index| %>
@@ -162,9 +170,12 @@
           <%= check_box_tag "bookstore_code[]", bookstore_code.id, @selected_bookstore_code.include?(bookstore_code.id.to_s), :class => "bookstore_code" %><%= bookstore_code.keyname.localize %>
         </li>
       <% end %>
+      <li style="list-style: none; width: 30%; float: left;">
+        <%= check_box_tag "bookstore_code[]", "notset", @selected_bookstore_code.include?("notset"), :class => "bookstore_code" %><%= t('order_search.notset') %>
+      </li>
     </ul>
     <p style="clear:left;">
-      <%= t('activerecord.attributes.order.order_organization_id') %>:<input type="checkbox" id="check_all_order_organization_id"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.order_organization_id')) %>
+      <%= t('activerecord.attributes.order.order_organization_id') %>:<%= check_box_tag "check_all_order_organization_id", true, @check_all_order_organization_id %><%= t('advanced_search.all', :model => t('activerecord.attributes.order.order_organization_id')) %>
     </p>
     <ul>
       <% @agents.each do |agent| %>
@@ -172,9 +183,12 @@
           <%= check_box_tag "order_organization_id[]", agent.id, @selected_order_organization_id.include?(agent.id.to_s), :class => "order_organization_id" %><%= agent.full_name %>
         </li>
       <% end %>
+      <li style="list-style: none; width: 30%; float: left;">
+        <%= check_box_tag "order_organization_id[]", "notset", @selected_order_organization_id.include?("notset"), :class => "order_organization_id" %><%= t('order_search.notset') %>
+      </li>
     </ul>
     <p style="clear:left;">
-      <%= t('activerecord.attributes.order.payment_form_code') %>:<input type="checkbox" id="check_all_payment_form_code"><%= t('advanced_search.all', :model => t('activerecord.attributes.order.payment_form_code')) %>
+      <%= t('activerecord.attributes.order.payment_form_code') %>:<%= check_box_tag "check_all_payment_form_code", true, @check_all_payment_form_code %><%= t('advanced_search.all', :model => t('activerecord.attributes.order.payment_form_code')) %>
     </p>
     <ul>
       <% payment_form_codes.each do |payment_form_code| %>
@@ -182,6 +196,9 @@
           <%= check_box_tag "payment_form_code[]", payment_form_code.id, @selected_payment_form_code.include?(payment_form_code.id.to_s), :class => "payment_form_code" %><%= payment_form_code.keyname.localize %>
         </li>
       <% end %>
+      <li style="list-style: none; width: 30%; float: left;">
+        <%= check_box_tag "payment_form_code[]", "notset", @selected_payment_form_code.include?("notset"), :class => "payment_form_code" %><%= t('order_search.notset') %>
+      </li>
     </ul>
 
     <br style="clear: left;" />
@@ -200,12 +217,15 @@
         <% bookstore_codes.each do |bookstore_code| %>
           <%= hidden_field_tag "bookstore_code[]" %>
         <% end %>
+        <%= hidden_field_tag "bookstore_code[]" %>
         <% @agents.each do |agent| %>
           <%= hidden_field_tag "order_organization_id[]" %>
         <% end %>
+        <%= hidden_field_tag "order_organization_id[]" %>
         <% payment_form_codes.each do |payment_form_code| %>
           <%= hidden_field_tag "payment_form_code[]" %>
         <% end %>
+        <%= hidden_field_tag "payment_form_code[]" %>
         <div id='check_cols_book'>
           <br />
           <strong><%= t('order.select_document') %></strong>

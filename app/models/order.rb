@@ -176,6 +176,90 @@ class Order < ActiveRecord::Base
 
   paginates_per 10
 
+  def self.ouput_columns
+    return [{name:"number", model: "calculate", column: "calculate"},
+            {name:"full_name", model: "agents", column: "full_name"},
+            {name:"zip_code_1", model: "agents", column: "zip_code_1"},
+            {name:"address_1", model: "agents", column: "address_1"},
+            {name:"country_of_publication_id", model: "manifestations", column: "country_of_publication_id"},
+            {name:"date_of_publication", model: "manifestations", column: "date_of_publication"},
+            {name:"bookstore_code", model: "orders", column: "bookstore_code"},
+            {name:"collection_status_code", model: "orders", column: "collection_status_code"},
+            {name:"currency_id", model: "orders", column: "currency_id"},
+            {name:"edition", model: "manifestations", column: "edition"},
+            {name:"frequency_id", model: "manifestations", column: "frequency_id"},
+            {name:"currency_rate", model: "orders", column: "currency_rate"},
+            {name:"discount_commision", model: "orders", column: "discount_commision"},
+            {name:"group", model: "orders", column: "group"},
+            {name:"order_note", model: "orders", column: "note"},
+            {name:"prepayment_principal_rate", model: "calculate", column: "calculate"},
+            {name:"number_of_acceptance", model: "orders", column: "number_of_acceptance"},
+            {name:"number_of_acceptance_schedule", model: "orders", column: "number_of_acceptance_schedule"},
+            {name:"identifier", model: "manifestations", column: "identifier"},
+            {name:"issn", model: "manifestations", column: "issn"},
+            {name:"number_of_missing", model: "orders", column: "number_of_missing"},
+            {name:"order_identifier", model: "orders", column: "order_identifier"},
+            {name:"pair_manifestation_id", model: "orders", column: "pair_manifestation_id"},
+            {name:"issue_number_string", model: "manifestations", column: "issue_number_string"},
+            {name:"report_number_string", model: "manifestations", column: "issue_number_string"},
+            {name:"original_title", model: "manifestations", column: "original_title"},
+            {name:"publishers", model: "manifestations", column: "publishers"},
+            {name:"volume_number_string", model: "manifestations", column: "volume_number_string"},
+            {name:"report_volume_number_string", model: "manifestations", column: "volume_number_string"},
+            {name:"acquired_at", model: "items", column: "acquired_at_string"},
+            {name:"quantity", model: "calculate", column: "calculate"},
+            {name:"payment_form_code", model: "orders", column: "payment_form_code"},
+            {name:"prepayment_principal", model: "orders", column: "prepayment_principal"},
+            {name:"publication_year", model: "orders", column: "publication_year"},
+            {name:"tax_exempt_amount", model: "orders", column: "tax_exempt_amount"},
+            {name:"taxable_amount", model: "orders", column: "taxable_amount"},
+            {name:"item_note", model: "items", column: "note"},
+            {name:"transportation_route_code", model: "orders", column: "transportation_route_code"},
+            {name:"yen_imprest", model: "orders", column: "yen_imprest"},
+            {name:"deduction_quantity", model: "calculate", column: "calculate"},
+            {name:"delayed_quantity", model: "calculate", column: "calculate"}
+           ]
+  end
+
+  def self.document_application_columns
+    return ["full_name","zip_code_1","address_1","order_note","identifier","original_title"]
+  end
+
+  def self.list_of_order_columns
+    return ["number","country_of_publication_id","bookstore_code","currency_id","frequency_id","currency_rate",
+            "discount_commision","group","order_note","prepayment_principal_rate","identifier","issn",
+            "order_identifier","pair_manifestation_id","original_title","publishers","payment_form_code",
+            "prepayment_principal","transportation_route_code","yen_imprest"]
+  end
+
+  def self.list_of_deferred_payment_acceptance_columns
+    return ["number","date_of_publication","bookstore_code","currency_id","edition",
+            "currency_rate","discount_commision","group","identifier","order_identifier",
+            "issue_number_string","report_number_string","original_title","volume_number_string",
+            "report_volume_number_string","acquired_at ","quantity","prepayment_principal",
+            "publication_year","transportation_route_code","yen_imprest"]
+  end
+
+  def self.list_of_acceptance_situation_columns
+    return ["date_of_publication","bookstore_code","collection_status_code","edition","frequency_id",
+            "group","order_note","number_of_acceptance","number_of_acceptance_schedule","identifier",
+            "issn","number_of_missing","issue_number_string","report_number_string","original_title",
+            "publishers","volume_number_string","acquired_at ","publication_year","item_note"]
+  end
+
+  def self.list_of_payment_columns
+    return ["country_of_publication_id","bookstore_code","collection_status_code","currency_id","frequency_id",
+            "currency_rate","discount_commision","group","number_of_acceptance","number_of_acceptance_schedule",
+            "identifier","issn","number_of_missing","order_identifier","original_title","publishers","payment_form_code",
+            "prepayment_principal","publication_year","tax_exempt_amount","taxable_amount","yen_imprest",
+            "deduction_quantity","delayed_quantity"]
+  end
+
+  def self.list_of_acceptance_after_payment_columns
+    return ["date_of_publication","bookstore_code","edition","group","identifier","order_identifier",
+            "issue_number_string","report_number_string","original_title","volume_number_string",
+            "acquired_at ","publication_year","transportation_route_code"]
+  end
 
 end
 
