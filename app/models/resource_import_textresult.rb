@@ -1,3 +1,4 @@
+require 'axlsx'
 class ResourceImportTextresult < ActiveRecord::Base
   attr_accessible :resource_import_textfile_id, :body, :error_msg, :extraparams, :failed
 

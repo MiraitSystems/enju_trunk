@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'manifestation')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation') # unless SystemConfiguration.isWebOPAC
+require 'enju_trunk/output_columns'
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch

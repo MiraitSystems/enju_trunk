@@ -1,3 +1,5 @@
+require 'roo'
+
 class ResourceImportTextfilesController < ApplicationController
   add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.resource_import_textfile'))", 'resource_import_textfiles_path'
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.resource_import_textfile'))", 'new_resource_import_textfile_path', :only => [:new, :create]

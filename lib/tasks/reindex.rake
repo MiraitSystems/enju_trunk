@@ -1,3 +1,5 @@
+require 'parallel'
+
 # based on Sunspot::Rails::Searchable.solr_index
 # (sunspot_rails-2.0.0.pre.130115/lib/sunspot/rails/searchable.rb)
 module Sunspot
