@@ -1947,6 +1947,7 @@ en:
     new: New %{model}
     editing: Editing %{model}
     showing: Showing %{model}
+    deleting: Deleting %{model}
     output: Output %{model}
     output_cover: Output %{model} cover
     output_pdf: Output %{model}(PDF)

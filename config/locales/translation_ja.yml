@@ -1938,6 +1938,7 @@ ja:
     new: "%{model}の新規作成"
     editing: "%{model}の編集"
     showing: "%{model}の表示"
+    deleting: "%{model}の削除"
     output: "%{model}の出力"
     output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
