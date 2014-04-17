@@ -318,7 +318,7 @@ $(document).keydown(function(e) {
                 :placeholder => t('activerecord.models.title'),
                 :class => 'resource_title' %>
             <% end %>
-            <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name,m.id]} %>
+            <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name.localize, m.id]} %>
             <%= w_f.hidden_field :title_id -%>
             <%= w_f.hidden_field :position -%>
             <%= button_to_function '+', 'ItemField_title.add()' %>
