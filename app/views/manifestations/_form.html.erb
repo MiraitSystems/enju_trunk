@@ -315,6 +315,7 @@ $(document).keydown(function(e) {
 
   <% if SystemConfiguration.get('manifestation.use_titles') %>
     <div class="field" id='titles'>
+      <%= f.label :other_titles %><br />
       <% @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.blank? %>
       <% @work_manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
         <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>

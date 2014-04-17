@@ -944,7 +944,7 @@ ja:
         title_transcription: タイトル（ヨミ）
         article_title: 誌名
         classification_number: 分類番号
-        other_title: その他のタイトル
+        other_titles: その他のタイトル
         identifier: 識別子
         date_of_publication: 出版日
         pub_date: 出版日
