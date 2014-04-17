@@ -864,6 +864,7 @@ en:
         title_transcription: Title transcription
         article_title: Article title
         classification_number: Classification number
+        other_titles: Other titles
         identifier: Manifestation identifier
         date_of_publication: Date of publication
         date_of_discontinuance: Date of Discontinuance
@@ -2252,6 +2253,7 @@ en:
     cancel_reservation: Cancel this reservation
     query_search_result: Search results for %{query} in %{library_group_name}
     serial: Serial
+    series_statement: Series statement
     number: Number
     issue_number: Issue number
     serial_number: Serial number
@@ -3325,3 +3327,5 @@ en:
     yen_imprest: "Yen imprest"
     deduction_quantity: "Deduction quantity"
     delayed_quantity: "Delayed quantity"
+  order_search:
+    notset: "Not set"

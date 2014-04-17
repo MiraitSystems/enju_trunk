@@ -12,71 +12,13 @@ class OrdersController < ApplicationController
   def initialize
     @selected_bookstore_code, @selected_payment_form_code, @selected_order_organization_id = [], [], []
     @agents = Agent.joins(:agent_type).where(["agent_types.name = 'OrderOrganization'"]).order(:id)
-    @ouput_columns = []
-    @ouput_columns << {name:"number", model: "calculate", column: "calculate"}
-    @ouput_columns << {name:"full_name", model: "agents", column: "full_name"}
-    @ouput_columns << {name:"zip_code_1", model: "agents", column: "zip_code_1"}
-    @ouput_columns << {name:"address_1", model: "agents", column: "address_1"}
-    @ouput_columns << {name:"country_of_publication_id", model: "manifestations", column: "country_of_publication_id"}
-    @ouput_columns << {name:"date_of_publication", model: "manifestations", column: "date_of_publication"}
-    @ouput_columns << {name:"bookstore_code", model: "orders", column: "bookstore_code"}
-    @ouput_columns << {name:"collection_status_code", model: "orders", column: "collection_status_code"}
-    @ouput_columns << {name:"currency_id", model: "orders", column: "currency_id"}
-    @ouput_columns << {name:"edition", model: "manifestations", column: "edition"}
-    @ouput_columns << {name:"frequency_id", model: "manifestations", column: "frequency_id"}
-    @ouput_columns << {name:"currency_rate", model: "orders", column: "currency_rate"}
-    @ouput_columns << {name:"discount_commision", model: "orders", column: "discount_commision"}
-    @ouput_columns << {name:"group", model: "orders", column: "group"}
-    @ouput_columns << {name:"order_note", model: "orders", column: "note"}
-    @ouput_columns << {name:"prepayment_principal_rate", model: "calculate", column: "calculate"}
-    @ouput_columns << {name:"number_of_acceptance", model: "orders", column: "number_of_acceptance"}
-    @ouput_columns << {name:"number_of_acceptance_schedule", model: "orders", column: "number_of_acceptance_schedule"}
-    @ouput_columns << {name:"identifier", model: "manifestations", column: "identifier"}
-    @ouput_columns << {name:"issn", model: "manifestations", column: "issn"}
-    @ouput_columns << {name:"number_of_missing", model: "orders", column: "number_of_missing"}
-    @ouput_columns << {name:"order_identifier", model: "orders", column: "order_identifier"}
-    @ouput_columns << {name:"pair_manifestation_id", model: "orders", column: "pair_manifestation_id"}
-    @ouput_columns << {name:"issue_number_string", model: "manifestations", column: "issue_number_string"}
-    @ouput_columns << {name:"report_number_string", model: "manifestations", column: "issue_number_string"}
-    @ouput_columns << {name:"original_title", model: "manifestations", column: "original_title"}
-    @ouput_columns << {name:"publishers", model: "manifestations", column: "publishers"}
-    @ouput_columns << {name:"volume_number_string", model: "manifestations", column: "volume_number_string"}
-    @ouput_columns << {name:"report_volume_number_string", model: "manifestations", column: "volume_number_string"}
-    @ouput_columns << {name:"acquired_at", model: "items", column: "acquired_at_string"}
-    @ouput_columns << {name:"quantity", model: "calculate", column: "calculate"}
-    @ouput_columns << {name:"payment_form_code", model: "orders", column: "payment_form_code"}
-    @ouput_columns << {name:"prepayment_principal", model: "orders", column: "prepayment_principal"}
-    @ouput_columns << {name:"publication_year", model: "orders", column: "publication_year"}
-    @ouput_columns << {name:"tax_exempt_amount", model: "orders", column: "tax_exempt_amount"}
-    @ouput_columns << {name:"taxable_amount", model: "orders", column: "taxable_amount"}
-    @ouput_columns << {name:"item_note", model: "items", column: "note"}
-    @ouput_columns << {name:"transportation_route_code", model: "orders", column: "transportation_route_code"}
-    @ouput_columns << {name:"yen_imprest", model: "orders", column: "yen_imprest"}
-    @ouput_columns << {name:"deduction_quantity", model: "calculate", column: "calculate"}
-    @ouput_columns << {name:"delayed_quantity", model: "calculate", column: "calculate"}
-    
-    @document_application_columns = ["full_name","zip_code_1","address_1","order_note","identifier","original_title"]
-    @list_of_order_columns = ["number","country_of_publication_id","bookstore_code","currency_id","frequency_id","currency_rate",
-                              "discount_commision","group","order_note","prepayment_principal_rate","identifier","issn",
-                              "order_identifier","pair_manifestation_id","original_title","publishers","payment_form_code",
-                              "prepayment_principal","transportation_route_code","yen_imprest"]
-    @list_of_deferred_payment_acceptance_columns = ["number","date_of_publication","bookstore_code","currency_id","edition",
-                                                    "currency_rate","discount_commision","group","identifier","order_identifier",
-                                                    "issue_number_string","report_number_string","original_title","volume_number_string",
-                                                    "report_volume_number_string","acquired_at ","quantity","prepayment_principal",
-                                                    "publication_year","transportation_route_code","yen_imprest"]
-    @list_of_acceptance_situation_columns = ["date_of_publication","bookstore_code","collection_status_code","edition","frequency_id",
-                                             "group","order_note","number_of_acceptance","number_of_acceptance_schedule","identifier",
-                                             "issn","number_of_missing","issue_number_string","report_number_string","original_title",
-                                             "publishers","volume_number_string","acquired_at ","publication_year","item_note"]
-    @list_of_payment_columns = ["country_of_publication_id","bookstore_code","collection_status_code","currency_id","frequency_id",
-                                "currency_rate","discount_commision","group","number_of_acceptance","number_of_acceptance_schedule",
-                                "identifier","issn","number_of_missing","order_identifier","original_title","publishers","payment_form_code",
-                                "prepayment_principal","publication_year","tax_exempt_amount","taxable_amount","yen_imprest",
-                                "deduction_quantity","delayed_quantity"]
-    @list_of_acceptance_after_payment_columns = ["date_of_publication","bookstore_code","edition","group","identifier","order_identifier",
-                                                 "issue_number_string","report_number_string","original_title","volume_number_string",
-                                                 "acquired_at ","publication_year","transportation_route_code"]
+    @ouput_columns = Order.ouput_columns
+    @document_application_columns = Order.document_application_columns
+    @list_of_order_columns = Order.list_of_order_columns
+    @list_of_deferred_payment_acceptance_columns = Order.list_of_deferred_payment_acceptance_columns
+    @list_of_acceptance_situation_columns = Order.list_of_acceptance_situation_columns
+    @list_of_payment_columns = Order.list_of_payment_columns
+    @list_of_acceptance_after_payment_columns = Order.list_of_acceptance_after_payment_columns
     super
   end
 
@@ -92,17 +34,44 @@ class OrdersController < ApplicationController
     unless params[:identifier].blank?
       orders = orders.where(["manifestations.identifier like ?", params[:identifier] + "%"])
     end
+    params[:bookstore_code].delete("")
     unless params[:bookstore_code].blank?
-      params[:bookstore_code].delete("")
-      orders = orders.where(["bookstore_code in (?)", params[:bookstore_code]])
+      if params[:bookstore_code].include?("notset")
+        ids = params[:bookstore_code].reject{|e| e == "notset"}
+        if ids.blank?
+          orders = orders.where("bookstore_code IS NULL")
+        else
+          orders = orders.where(["bookstore_code in (?) OR bookstore_code IS NULL", ids])
+        end
+      else
+        orders = orders.where(["bookstore_code in (?)", params[:bookstore_code]])
+      end
     end
+    params[:order_organization_id].delete("")
     unless params[:order_organization_id].blank?
-      params[:order_organization_id].delete("")
-      orders = orders.where(["order_organization_id in (?)", params[:order_organization_id]])
+      if params[:order_organization_id].include?("notset")
+        ids = params[:order_organization_id].reject{|e| e == "notset"}
+        if ids.blank?
+          orders = orders.where("order_organization_id IS NULL")
+        else
+          orders = orders.where(["order_organization_id in (?) OR order_organization_id IS NULL", ids])
+        end
+      else
+        orders = orders.where(["order_organization_id in (?)", params[:order_organization_id]])
+      end
     end
+    params[:payment_form_code].delete("")
     unless params[:payment_form_code].blank?
-      params[:payment_form_code].delete("")
-      orders = orders.where(["payment_form_code in (?)", params[:payment_form_code]])
+      if params[:payment_form_code].include?("notset")
+        ids = params[:payment_form_code].reject{|e| e == "notset"}
+        if ids.blank?
+          orders = orders.where("payment_form_code IS NULL")
+        else
+          orders = orders.where(["payment_form_code in (?) OR payment_form_code IS NULL", ids])
+        end
+      else
+        orders = orders.where(["payment_form_code in (?)", params[:payment_form_code]])
+      end
     end
 
     orders = orders.order("bookstore_code, order_organization_id, manifestations.identifier")
@@ -229,8 +198,21 @@ class OrdersController < ApplicationController
     if params[:manifestation_id]
       @orders = Order.where(["manifestation_id = ?",params[:manifestation_id]]).order("order_year DESC, order_identifier DESC").page(params[:page])
       @manifestation = Manifestation.find(params[:manifestation_id])
-      else
-      @orders = Kaminari.paginate_array(Array.new).page(params[:page])
+    else
+      # all checked
+      @check_all_bookstore_code = true
+      @check_all_order_organization_id = true
+      @check_all_payment_form_code = true
+      @selected_year = Time.now.year
+      bookstore_codes = self.class.helpers.bookstore_codes
+      @selected_bookstore_code = bookstore_codes.present? ? bookstore_codes.pluck(:id).collect{|i| i.to_s} : []
+      @selected_bookstore_code << "notset"
+      payment_form_codes = self.class.helpers.payment_form_codes
+      @selected_payment_form_code = payment_form_codes.present? ? payment_form_codes.pluck(:id).collect{|i| i.to_s} : []
+      @selected_payment_form_code << "notset"
+      @selected_order_organization_id = @agents.present? ? agents.pluck(:id).collect{|i| i.to_s} : []
+      @selected_order_organization_id << "notset"
+      @orders = Order.where(["order_year = ?",@selected_year]).order("order_identifier DESC").page(params[:page])
     end
 
     set_select_years
@@ -423,7 +405,8 @@ class OrdersController < ApplicationController
     end
 
     unless params[:order_year].blank?
-      @orders = @orders.where(["order_year = ?", params[:publication_year]])
+      @orders = @orders.where(["order_year = ?", params[:order_year]])
+#      @orders = @orders.where(["order_year = ?", params[:publication_year]])
     end
 
     # identifier
@@ -433,17 +416,44 @@ class OrdersController < ApplicationController
 
     # bookstore_code
     unless params[:bookstore_code].blank?
-      @orders = @orders.where(["bookstore_code in (?)", params[:bookstore_code]])
+      if params[:bookstore_code].include?("notset")
+        ids = params[:bookstore_code].reject{|e| e == "notset"}
+        if ids.blank?
+          @orders = @orders.where("bookstore_code IS NULL")
+        else
+          @orders = @orders.where(["bookstore_code in (?) OR bookstore_code IS NULL", ids])
+        end
+      else
+        @orders = @orders.where(["bookstore_code in (?)", params[:bookstore_code]])
+      end
     end
 
     # order_organization_id
     unless params[:order_organization_id].blank?
-      @orders = @orders.where(["order_organization_id in (?)", params[:order_organization_id]])
+      if params[:order_organization_id].include?("notset")
+        ids = params[:order_organization_id].reject{|e| e == "notset"}
+        if ids.blank?
+          @orders = @orders.where("order_organization_id IS NULL")
+        else
+          @orders = @orders.where(["order_organization_id in (?) OR order_organization_id IS NULL", ids])
+        end
+      else
+        @orders = @orders.where(["order_organization_id in (?)", params[:order_organization_id]])
+      end
     end
 
     # payment_form_code
     unless params[:payment_form_code].blank?
-      @orders = @orders.where(["payment_form_code in (?)", params[:payment_form_code]])
+      if params[:payment_form_code].include?("notset")
+        ids = params[:payment_form_code].reject{|e| e == "notset"}
+        if ids.blank?
+          @orders = @orders.where("payment_form_code IS NULL")
+        else
+          @orders = @orders.where(["payment_form_code in (?) OR payment_form_code IS NULL", ids])
+        end
+      else
+        @orders = @orders.where(["payment_form_code in (?)", params[:payment_form_code]])
+      end
     end
 
     @orders = @orders.order("bookstore_code, order_organization_id, identifier").joins(:manifestation).page(params[:page])
@@ -458,8 +468,10 @@ class OrdersController < ApplicationController
     @selected_bookstore_code = params[:bookstore_code] if params[:bookstore_code].present?
     @selected_payment_form_code = params[:payment_form_code] if params[:payment_form_code].present?
     @selected_order_organization_id = params[:order_organization_id] if params[:order_organization_id].present?
+    @check_all_bookstore_code = params[:check_all_bookstore_code]
+    @check_all_order_organization_id = params[:check_all_order_organization_id]
+    @check_all_payment_form_code = params[:check_all_payment_form_code]
     set_select_years
-
     respond_to do |format|
       format.html {render "index"}
     end
