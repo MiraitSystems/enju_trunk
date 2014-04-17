@@ -944,6 +944,7 @@ ja:
         title_transcription: タイトル（ヨミ）
         article_title: 誌名
         classification_number: 分類番号
+        other_title: その他のタイトル
         identifier: 識別子
         date_of_publication: 出版日
         pub_date: 出版日
@@ -2240,6 +2241,7 @@ ja:
     cancel_reservation: "この資料の予約を解除"
     query_search_result: "検索語 %{query} による %{library_group_name} の資料の検索結果"
     serial: "定期刊行物"
+    series_statement: "シリーズ情報"
     new_serial: "(最新号)"
     number: "巻号"
     issue_number: "号数"
