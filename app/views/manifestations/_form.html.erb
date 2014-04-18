@@ -352,6 +352,7 @@ $(document).keydown(function(e) {
   </div>
 
   <%= render 'form_agent_field' %>
+
   <div class="field">
     <%= f.label t('page.file') -%><br />
     <%= f.file_field :attachment -%>
@@ -568,6 +569,8 @@ $(document).keydown(function(e) {
     <%= f.text_area :note, :class => 'resource_textarea' -%>
   </div>
 
+  <%= render 'form_subject_field' %>
+
   <div class="field">
     <%= f.label :subject -%><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :subject, :value => @subject -%>
@@ -648,7 +651,6 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
     <%#= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
-    <%# TODO make_select2 内の分岐がうまくできない %>
     <%= select2_script "use_license_id" %>
     <%= make_select2_struct(
       :use_license_id, 

@@ -2283,6 +2283,7 @@ ja:
     creator_transcription: 著者(ヨミ)
     contributor_transcription: 協力者・編者(ヨミ)
     publisher_transcription: 出版者(ヨミ)
+    subject: 件名
     subject_transcription: 件名(ヨミ)
     same_manifestation_already_exist: 同じ%{attribute}の資料が既に存在しています。
     no_item: 所蔵情報なし

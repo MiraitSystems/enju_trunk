@@ -881,7 +881,8 @@ class ManifestationsController < ApplicationController
     @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
-    @subject = @manifestation.subjects.collect(&:term).join(';')
+    # @subject = @manifestation.subjects.collect(&:term).join(';')
+    @subjects = @manifestation.subjects.order(:position)
     @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts

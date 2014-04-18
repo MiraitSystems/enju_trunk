@@ -2296,7 +2296,8 @@ en:
     creator_transcription: Creator transcription
     contributor_transcription: Contributor transcription
     publisher_transcription: Publiher transcription
-    subject_transcription: Subeject transcription
+    subject: Subject
+    subject_transcription: Subject transcription
     same_manifestation_already_exist: Same %{attribute} already exist
     no_item: No item
   item:
