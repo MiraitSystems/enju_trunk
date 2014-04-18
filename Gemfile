@@ -11,11 +11,11 @@ gem 'enju_oai', :git => 'git://github.com/next-l/enju_oai.git'
 gem 'enju_book_jacket', "0.1.0.pre"
 gem 'enju_manifestation_viewer', :git => 'git://github.com/next-l/enju_manifestation_viewer.git'
 #gem 'enju_message', "0.1.14.pre"
-gem 'enju_message', :git => 'git://github.com/shinozuka/enju_message.git'
+gem 'enju_message', :git => 'git://github.com/MiraitSystems/enju_trunk_message.git' 
 gem "enju_ndl", "0.1.0.pre3"
 #gem 'enju_ndl', :git => 'git://github.com/nabeta/enju_ndl.git'
 #gem 'enju_question', :git => 'git://github.com/nabeta/enju_question.git'
-gem 'enju_event', :git => 'git://github.com/shinozuka/enju_event.git'
+gem 'enju_trunk_event', :git => 'git://github.com/MiraitSystems/enju_trunk_event.git', :tag => 'version0.2', :require => 'enju_event'
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
 gem 'enju_ssf', :git => "https://mis-enju:3M9irait@github.com/MiraitSystems/enju_ssf.git"
@@ -26,8 +26,8 @@ gem "jpp_customercode_transfer", "~> 0.0.2"
 platforms :ruby do
   gem 'pg'
   #gem 'mysql2', '~> 0.3'
-  gem 'ruby-prof', :group => [:development, :test]
-  gem 'zipruby'
+  #gem 'ruby-prof', :group => [:development, :test]
+  #gem 'zipruby'
   gem 'kgio'
 end
 
@@ -64,7 +64,8 @@ gem 'aws-sdk', '~> 1.3'
 #gem 'prism'
 #gem 'money'
 gem 'RedCloth', '>= 4.2.9'
-gem 'isbn-tools', :git => 'git://github.com/nabeta/isbn-tools.git', :require => 'isbn/tools'
+gem 'lisbn', '~> 0.1.0'
+gem 'nori', '~> 2.0' 
 #gem 'extractcontent'
 gem 'cancan', '>= 1.6.7'
 gem 'scribd_fu'
@@ -99,7 +100,7 @@ gem 'paranoia'
 gem 'thinreports', :git => 'git://github.com/emiko/thinreports-generator.git'
 gem 'prawn', '1.0.0.rc1'
 gem "rmagick", :require => false
-gem "crypt19"
+#gem "crypt19"
 gem "rails_autolink"
 gem 'parallel'
 #gem 'oink', '>= 0.9.3'
@@ -154,11 +155,10 @@ gem 'capistrano'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # FRBR models
-gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git'
+gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git', :tag => 'version1.1.0'
 
 group :operation do
-  gem 'enju_trunk_circulation', :tag => 'v0.9', :git => 'git://github.com/emiko/enju_trunk_circulation.git'
-  gem 'enju_trunk_ill', :git => 'git://github.com/emiko/enju_trunk_ill.git'
-  gem 'enju_trunk_statistics', :git => 'git://github.com/emiko/enju_trunk_statistics.git'
+  gem 'enju_trunk_circulation', :git => 'git://github.com/MiraitSystems/enju_trunk_circulation.git', :tag => 'version0.9.3'
+  gem 'enju_trunk_ill', :git => 'git://github.com/MiraitSystems/enju_trunk_ill.git', :tag => 'version0.0.1'
+  gem 'enju_trunk_statistics', :git => 'git://github.com/MiraitSystems/enju_trunk_statistics.git', :tag => 'version0.0.1'
 end
-
