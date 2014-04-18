@@ -2,12 +2,16 @@
 
 module EnjuTrunk
   module EnjuTrunkHelper
-    include PictureFilesHelper
-    include EnjuBookJacket::BookJacketHelper if defined?(EnjuBookJacket)
-    include EnjuManifestationViewer::ManifestationViewerHelper if defined?(EnjuManifestationViewer)
-    include EnjuBookmark::BookmarkHelper if defined?(EnjuBookmark)
-    include JaDateFormat
-    include EnjuTerminalsHelper
+    extend ActiveSupport::Concern
+
+    included do
+      include PictureFilesHelper
+      include EnjuBookJacket::BookJacketHelper if defined?(EnjuBookJacket)
+      include EnjuManifestationViewer::ManifestationViewerHelper if defined?(EnjuManifestationViewer)
+      include EnjuBookmark::BookmarkHelper if defined?(EnjuBookmark)
+      include JaDateFormat
+      include EnjuTerminalsHelper
+    end
 
     def form_icon(carrier_type)
       case carrier_type.name
