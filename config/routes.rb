@@ -1,4 +1,4 @@
-EnjuLeaf::Application.routes.draw do
+EnjuTrunk::Engine.routes.draw do
   resources :sequence_patterns
   resources :publication_statuses
   resources :claim_types
@@ -47,8 +47,6 @@ EnjuLeaf::Application.routes.draw do
   resources :create_types
   resources :realize_types
   resources :produce_types
-
-  devise_for :users, :path => 'accounts'
 
   resource :my_account
 
@@ -600,9 +598,7 @@ EnjuLeaf::Application.routes.draw do
   # for opac begin
   match '/opac/signed_in' => 'opac#signed_in'
   match '/opac/search' => 'opac#search'
-  #devise_for :users, :path => 'opac_accounts', :options => {:opac => true}
   scope "opac", :path => "opac", :as => "opac" do
-    #devise_for :users, :path => 'accounts', :options => {:opac => true}
     resources :manifestations, :opac => true do
       post :output_show, :on => :member
     end
@@ -613,9 +609,6 @@ EnjuLeaf::Application.routes.draw do
     resources :events, :opac => true
     match '/manifestation_exstats/bestreader' => 'manifestation_exstats#bestreader', :opac => true
     match '/manifestation_exstats/bestrequest' => 'manifestation_exstats#bestrequest', :opac => true
-  end
-  devise_scope :user do
-    match '/opac' => 'opac#index'
   end
   # for opac end
 
