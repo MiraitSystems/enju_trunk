@@ -34,7 +34,24 @@ require 'enju_leaf'
 require 'enju_trunk/engine'
 require 'enju_trunk/enju_trunk_controller'
 require 'enju_trunk/resourceadapter'
-require 'acts_as_tree'
 
+begin
+  require 'enju_trunk_circulation'
+rescue LoadError
+  warn $!
+end
+
+begin
+  require 'enju_trunk_ill' 
+rescue LoadError
+  warn $!
+end
+
+begin
+  require 'enju_trunk_statistics' 
+rescue LoadError
+  warn $!
+end
+ 
 module EnjuTrunk
 end
