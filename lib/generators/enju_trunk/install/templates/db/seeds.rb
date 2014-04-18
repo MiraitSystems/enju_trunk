@@ -18,8 +18,10 @@ unless solr = Sunspot.commit rescue nil
   raise "Solr is not running."
 end
 
-Dir.glob(Rails.root.to_s + '/db/fixtures/*.yml').each do |file|
-  ActiveRecord::Fixtures.create_fixtures('db/fixtures', File.basename(file, '.*'))
+Dir.glob(Rails.root.to_s + '/db/fixtures/**/*.yml').each do |file|
+  file = file.sub(/\A#{Regexp.quote(Rails.root.to_s)}\/+/, '')
+  ActiveRecord::Fixtures.create_fixtures(
+    File.dirname(file), File.basename(file, '.*'))
 end
 
 Agent.reindex
