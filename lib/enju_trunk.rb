@@ -33,6 +33,7 @@ require 'enju_subject'
 require 'enju_leaf'
 require 'enju_trunk/engine'
 require 'enju_trunk/enju_trunk_controller'
+require 'enju_trunk/resourceadapter'
 require 'acts_as_tree'
 
 module EnjuTrunk
