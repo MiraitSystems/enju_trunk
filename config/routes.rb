@@ -1,4 +1,4 @@
-EnjuTrunk::Engine.routes.draw do
+Rails.application.routes.draw do
   resources :sequence_patterns
   resources :publication_statuses
   resources :claim_types
