@@ -1,12 +1,10 @@
-require 'parallel'
-
 # based on Sunspot::Rails::Searchable.solr_index
 # (sunspot_rails-2.0.0.pre.130115/lib/sunspot/rails/searchable.rb)
 module Sunspot
   module Rails
     module Searchable
       module ActsAsMethods									
-	def solr_index_parallel(opts={})
+        def solr_index_parallel(opts={})
           
           options = {
             :batch_size => Sunspot.config.indexing.default_batch_size,
@@ -34,7 +32,7 @@ module Sunspot
               while tcount < 1 do
 		            Thread.pass
               end
-	      mutex.synchronize {tcount -= 1}
+              mutex.synchronize {tcount -= 1}
               solr_benchmark options[:batch_size], batch_counter do
                 ths << Thread.start do
                   begin
@@ -68,7 +66,7 @@ end
 namespace :enju_trunk do
   namespace :reindex do
     desc "Reindex all model (by model)" 
-    task :parallelbymodel, [:exec_processor_size] => :environment do |t, args|
+    task :parallelbymodel, [:exec_processor_size] => :eager_load do |t, args|
       Sunspot.session = Sunspot::SessionProxy::Retry5xxSessionProxy.new(Sunspot.session)
       reindex_options = { :batch_commit => false, :exec_processor_size => 1 }
 
@@ -85,7 +83,6 @@ namespace :enju_trunk do
       puts "#{Parallel.processor_count} procesor(s)"
       puts "reindex using #{reindex_options[:exec_processor_size]} thread(s)"
 
-      Dir.glob(Rails.root.join('app/models/**/*.rb')).each { |path| require path }
       sunspot_models = Sunspot.searchable
       total_documents = sunspot_models.map { | m | m.count }.sum
       sorted_models = sunspot_models.sort{|a, b| a.count <=> b.count} 
@@ -119,7 +116,7 @@ namespace :enju_trunk do
     end
 
     desc "Reindex all model (paralleled by record)" 
-    task :parallelbyrecord, [:exec_processor_size,:batch_size] => :environment do |t, args|
+    task :parallelbyrecord, [:exec_processor_size,:batch_size] => :eager_load do |t, args|
       Sunspot.session = Sunspot::SessionProxy::Retry5xxSessionProxy.new(Sunspot.session)
       reindex_options = { :batch_commit => false,
                           :exec_processor_size => 1, 
@@ -142,7 +139,6 @@ namespace :enju_trunk do
       puts "#{Parallel.processor_count} procesor(s)"
       puts "reindex using #{reindex_options[:exec_processor_size]} procesor(s)"
 
-      Dir.glob(Rails.root.join('app/models/**/*.rb')).each { |path| require path }
       sunspot_models = Sunspot.searchable
       total_documents = sunspot_models.map { | m | m.count }.sum
       sorted_models = sunspot_models.sort{|a, b| a.count <=> b.count} 
@@ -186,6 +182,15 @@ namespace :enju_trunk do
 
     desc "Reindex manifestations,users, and users"
     task :all => [:manifestations, :items, :users]
+
+    desc "Drop and then reindex all solr models that are located in your application's models directory."
+    task :sunspot, [:batch_size, :models] => [:eager_load] do |t, args|
+      Rake::Task['sunspot:reindex'].invoke(args[:batch_size], args[:models])
+    end
+
+    task :eager_load => :environment do
+      Rails.application.eager_load!
+    end
 
     def request_reindex(model_class)
       require 'ostruct'
