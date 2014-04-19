@@ -646,7 +646,7 @@ class User < ActiveRecord::Base
   end
 
   def self.output_userlist_pdf(users)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'userlist.tlf')
+    report = EnjuTrunk.new_report('userlist.tlf')
 
     # set page_num
     report.events.on :page_create do |e|

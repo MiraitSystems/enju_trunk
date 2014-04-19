@@ -5,10 +5,12 @@ describe ResourceImportFile do
   fixtures :all
   use_vcr_cassette "enju_ndl/ndl_search", :record => :new_episodes
 
+  let(:examples_path) { EnjuTrunk::Engine.root + 'examples' }
+
   describe "when its mode is 'create'" do
     describe "when it is written in utf-8" do
       before(:each) do
-        @file = ResourceImportFile.create :resource_import => File.new("#{Rails.root.to_s}/examples/resource_import_file_sample1.tsv")
+        @file = ResourceImportFile.create :resource_import => File.new("#{examples_path}/resource_import_file_sample1.tsv")
       end
 
       it "should be imported" do
@@ -42,7 +44,7 @@ describe ResourceImportFile do
 
     describe "when it is written in shift_jis" do
       before(:each) do
-        @file = ResourceImportFile.create :resource_import => File.new("#{Rails.root.to_s}/examples/resource_import_file_sample2.tsv")
+        @file = ResourceImportFile.create :resource_import => File.new("#{examples_path}/resource_import_file_sample2.tsv")
       end
 
       it "should be imported" do
@@ -76,7 +78,7 @@ describe ResourceImportFile do
 
     describe "when it has only isbn" do
       before(:each) do
-        @file = ResourceImportFile.create :resource_import => File.new("#{Rails.root.to_s}/examples/isbn_sample.txt")
+        @file = ResourceImportFile.create :resource_import => File.new("#{examples_path}/isbn_sample.txt")
       end
 
       it "should be imported" do
@@ -91,7 +93,7 @@ describe ResourceImportFile do
 
   describe "when its mode is 'update'" do
     it "should update items" do
-      @file = ResourceImportFile.create :resource_import => File.new("#{Rails.root.to_s}/examples/item_update_file.tsv")
+      @file = ResourceImportFile.create :resource_import => File.new("#{examples_path}/item_update_file.tsv")
       @file.modify
       Item.where(:item_identifier => '00001').first.manifestation.creators.collect(&:full_name).should eq ['たなべ', 'こうすけ']
       Item.where(:item_identifier => '00001').first.manifestation.contributors.collect(&:full_name).should eq ['test1']
@@ -103,7 +105,7 @@ describe ResourceImportFile do
   describe "when its mode is 'destroy'" do
     it "should remove items" do
       old_count = Item.count
-      @file = ResourceImportFile.create :resource_import => File.new("#{Rails.root.to_s}/examples/item_delete_file.tsv")
+      @file = ResourceImportFile.create :resource_import => File.new("#{examples_path}/item_delete_file.tsv")
       @file.remove
       Item.count.should eq old_count - 2
     end

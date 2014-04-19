@@ -1,6 +1,6 @@
 require 'digest/sha1'
 
-SCRIPT_ROOT = "#{Rails.root.to_s}/script/enjusync"
+SCRIPT_ROOT = "#{EnjuTrunk::Engine.root}/script/enjusync"
 INIT_BUCKET = "#{SCRIPT_ROOT}/init-bucket.pl"
 SEND_BUCKET = "#{SCRIPT_ROOT}/send-bucket.pl"
 RECV_BUCKET = "#{SCRIPT_ROOT}/recv-bucket.pl"

@@ -331,7 +331,7 @@ class UsersController < ApplicationController
         access_denied; return
       end
     end
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'password.tlf')
+    report = EnjuTrunk.new_report('password.tlf')
     report.start_new_page do |page|
       page.item(:password).value(params[:password])
     end
@@ -345,7 +345,7 @@ class UsersController < ApplicationController
       end
     end
     user = User.find_by_username(params[:id])
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'user_notice.tlf')
+    report = EnjuTrunk.new_report('user_notice.tlf')
     report.start_new_page do |page|
       page.item(:library).value(LibraryGroup.system_name(@locale))
       page.item(:user).value(user.user_number)
