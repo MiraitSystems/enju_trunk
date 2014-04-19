@@ -130,7 +130,6 @@ devise_scope :user do
 
 \1config.middleware.use Rack::Protection,
 \1  except: [:escaped_params, :json_csrf, :session_hijacking]
-\1config.assets.initialize_on_precompile = false
 \1config.railties_order = [
 \1  EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
 \1]
