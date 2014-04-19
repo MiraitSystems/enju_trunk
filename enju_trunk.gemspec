@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'roo', '= 1.10.1'
   s.add_dependency 'rubyzip', "= 0.9.9" # roo 1.10.1 depends on rubyzip 0.9.x (x >= 4)
   s.add_dependency 'axlsx', '~> 1.3.6'
-  s.add_dependency 'select2-rails'
   s.add_dependency 'spinjs-rails'
   s.add_dependency 'kaminari'
   s.add_dependency 'settingslogic'
