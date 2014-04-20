@@ -76,5 +76,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'factory_girl_rails', '~> 3.0'
   s.add_development_dependency 'vcr', '~> 2.0.0.rc2'
   s.add_development_dependency 'ci_reporter'
-  s.add_development_dependency 'database_cleaner'
 end
