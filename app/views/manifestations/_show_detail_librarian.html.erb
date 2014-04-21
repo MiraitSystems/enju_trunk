@@ -606,6 +606,11 @@
               <td><%= t('page.updated_at') -%> (<%= t('activerecord.models.item') -%>):</td>
               <td><%=l (item.updated_at) %></td>
             </tr>
+            <% if user_signed_in? and current_user.has_role?('Librarian') %>
+              <% if SystemConfiguration.get('manifestation.use_item_has_operator')%>
+                <%= render 'show_item_has_operator', item: item %>
+              <% end %>
+            <% end %>
           <% end %>
         <% end %>
       </table>
