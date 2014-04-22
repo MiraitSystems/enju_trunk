@@ -1,0 +1,33 @@
+<% unless item.item_has_operators.empty? %>
+  <% item.item_has_operators.each.with_index(1) do |operator, i| %>
+    <tr>
+      <td>
+        <%= t('activerecord.models.item_has_operator') %><%=i %>:
+        <%= t('activerecord.attributes.item_has_operator.user_id') %>
+       </td>
+      <td><%= link_to operator.try(:user).try(:agent).try(:full_name), operator.try(:user) %></td>
+    </tr>
+    <tr>
+      <td>
+        <%= t('activerecord.models.item_has_operator') %><%=i %>:
+        <%= t('activerecord.attributes.item_has_operator.operated_at') %>
+      </td>
+      <td><%= l(operator.operated_at, :format => :only_date) if operator.operated_at %></td>
+    </tr>
+    <tr>
+      <td>
+        <%= t('activerecord.models.item_has_operator') %><%=i %>:
+        <%= t('activerecord.attributes.item_has_operator.library_id') %>
+      </td>
+      <td><%= operator.try(:library).try(:display_name) %></td>
+    </tr>
+    <tr>
+      <td>
+        <%= t('activerecord.models.item_has_operator') %><%=i %>:
+        <%= t('activerecord.attributes.item_has_operator.note') %>:
+      </td>
+      <td><%= operator.note %></td>
+    </tr>
+  <% end %>
+<% end %>
+
