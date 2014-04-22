@@ -5,10 +5,6 @@ source "https://rubygems.org"
 # development dependencies will be added by default to the :development group.
 gemspec
 
-# jquery-rails is used by the dummy application
-gem "jquery-rails"
-
-
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or
 # Git. Remember to move these dependencies to your gemspec before releasing
@@ -18,6 +14,7 @@ gem "jquery-rails"
 # gem 'debugger'
 
 # For the dummy application
+gem 'pg'
 gem 'thinreports', git: 'git://github.com/emiko/thinreports-generator.git'
 gem 'select2-rails', git: 'git@github.com:MiraitSystems/select2-rails.git'
 gem 'enju_trunk_event', git: 'git://github.com/MiraitSystems/enju_trunk_event.git', require: 'enju_event'
