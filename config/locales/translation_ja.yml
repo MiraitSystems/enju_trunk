@@ -3306,6 +3306,7 @@ ja:
     notset: "未設定"
   approval_search:
     notset: "未設定"
+    select_all: "全て選択"
   approval_output_csv:
     approval_identifier: "見計らい識別子"
     identifier: "識別子"

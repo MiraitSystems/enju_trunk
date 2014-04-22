@@ -42,6 +42,12 @@
     $('input.approval_result:checkbox').click(function() {
       $('#check_all_approval_result').prop('checked', false);
     });
+    $('#check_all_output_column').click(function() {
+      $('#excelx_book_dialog [name="ouput_column[]"]').prop('checked', $(this).is(':checked'));  
+    });
+    $('#excelx_book_dialog [name="ouput_column[]').click(function() {
+      $('#check_all_output_column').prop('checked', false);
+    });
   });
 // -->
 </script>
@@ -102,11 +108,16 @@
         <%= hidden_field_tag "identifier" %>
         <div id='check_cols_book'>
           <br />
-          <strong><%= t('page.output_excelx_dialog') %></strong><br />
+          <strong><%= t('page.output_excelx_dialog') %></strong>
+          <br />
           <ul>
+            <li style="list-style: none; width: 90%; float: left;">
+              <%= check_box_tag "check_all_output_column", true, true %>
+              <%= t('approval_search.select_all') %>
+            </li>
             <% @ouput_columns.each do |ouput_column| %>
               <li style="list-style: none; width: 30%; float: left;">
-                <%= check_box_tag "ouput_column[]", ouput_column[:name] %>
+                <%= check_box_tag "ouput_column[]", ouput_column[:name], true %>
                 <%= t("approval_output_csv.#{ouput_column[:name]}") -%>
               </li>
             <% end %>
