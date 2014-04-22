@@ -3333,6 +3333,7 @@ en:
     notset: "Not set"
   approval_search:
     notset: "Not set"
+    select_all: "Select all"
   approval_output_csv:
     approval_identifier: "Approval identifier"
     identifier: "Identifier"
