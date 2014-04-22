@@ -49,7 +49,7 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
 
   def setup_sunspot_rails
     solr_name = 'apache-solr-3.6.2'
-    solr_dir = "vendor/#{solr_name}"
+    solr_dir = "#{Rails.root}/vendor/#{solr_name}"
     solr_url = "http://archive.apache.org/dist/lucene/solr/3.6.2/#{solr_name}.tgz"
     solr_md5 = 'e9c51f51265b070062a9d8ed50b84647'
     solr_sha1 = '3a1a40542670ea6efec246a081053732c5503ec1'
