@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split(/\n/)
   s.test_files    = `git ls-files -- {test,spec}/*`.split(/\n/)
   #s.executables   = `git ls-files -- bin/*`.split("\n").map{|f| File.basename(f) }
+  s.executables   = %w(ndl_statistics)
 
   s.add_dependency "rails", "~> 3.2.17"
   s.add_dependency 'jquery-rails', "~> 3.0.4"
@@ -77,5 +78,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails', '~> 2.9'
   s.add_development_dependency 'factory_girl_rails', '~> 3.0'
   s.add_development_dependency 'vcr', '~> 2.0.0.rc2'
+  s.add_development_dependency 'fakeweb' # required by vcr
   s.add_development_dependency 'ci_reporter'
 end
