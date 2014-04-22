@@ -1,33 +1,151 @@
+<script>
+<!--
+  $(function(){
+    $('#excelx_book_dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: Math.floor($(window).width() * 0.60),
+    });
+    $('#excelx_book_dialog_opener').click( function() {
+      $('#excelx_book_dialog').dialog('open');
+      return false;
+    });
+    $('#excelx_book_trigger').click( function() {
+      $('#output-form [name="approval_identifier"]').val($('#search-form [name="approval_identifier"]').val());
+      $('#output-form [name="identifier"]').val($('#search-form [name="identifier"]').val());
+      $('#output-form [name="status[]"]').remove();
+      $('#search-form [name="status[]"]').each(function(index){
+        if($(this).is(':checked')){
+          $('<input>').attr({type: 'hidden', name: 'status[]', value: $(this).val()}).appendTo('#output-form');
+        }
+      });
+      $('#output-form [name="approval_result[]"]').remove();
+      $('#search-form [name="approval_result[]"]').each(function(index){
+        if($(this).is(':checked')){
+          $('<input>').attr({type: 'hidden', name: 'approval_result[]', value: $(this).val()}).appendTo('#output-form');
+        }
+      });
+      $('#output-form').submit();
+      $('#excelx_book_dialog').dialog('close');
+      return false;
+    });
+
+    $('#check_all_status').click(function() {
+      $('input.status:checkbox').prop('checked', $(this).is(':checked'));  
+    });
+    $('input.status:checkbox').click(function() {
+      $('#check_all_status').prop('checked', false);
+    });
+    $('#check_all_approval_result').click(function() {
+      $('input.approval_result:checkbox').prop('checked', $(this).is(':checked'));  
+    });
+    $('input.approval_result:checkbox').click(function() {
+      $('#check_all_approval_result').prop('checked', false);
+    });
+  });
+// -->
+</script>
 <div id="content_detail" class="ui-corner-all">
-<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.approval')) -%></h1>
-<div id="content_list">
-<div style="color: red"><%= flash[:message].to_s -%></div>
-<table class="index">
-  <tr>
-    <th><%= t('activerecord.attributes.manifestation.original_title') %></th>
-    <th><%= t('activerecord.attributes.manifestation.identifier') %></th>
-    <th><nobr><%#= TODO %></nobr></th>
-    <th><%= t('activerecord.attributes.approval.status') %></th>
-    <th></th>
-  </tr>
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.approval')) -%></h1>
+  <div id="content_list">
 
-<% @approvals.each do |approval| %>
-  <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= link_to approval.manifestation.original_title, approval %></td>
-    <td><nobr><%= link_to approval.manifestation.identifier, approval.manifestation %></nobr></td>
-    <td><%#= TODO approval identifier %></td>
-    <td><nobr><%= t("activerecord.attributes.approval.approval_status.#{approval.status}") %><nobr></td>
-    <td><nobr>
-      <%= link_to t('page.edit'), edit_approval_path(approval) %>
-      <%= link_to t('page.destroy'), approval, :confirm => t('page.are_you_sure'), :method => :delete -%>
-    </nobr></td>
-  </tr>
-<% end %>
-</table>
+    <%= form_tag({:action => "search"},  {:method => "get", :id => "search-form"}) do %>
+      <p style="clear:left;">
+        <%= t('activerecord.attributes.approval.approval_identifier') -%>:
+        <%= text_field_tag :approval_identifier, @selected_approval_identifier %>
+      </p>
 
-<%= paginate(@approvals) -%>
+      <p>
+        <%= t('activerecord.attributes.manifestation.identifier') -%>:
+        <%= text_field_tag :identifier, @selected_identifier %>
+      </p>
 
-</div>
+      <p>
+        <%= t('activerecord.attributes.approval.status') %>:<%= check_box_tag "check_all_status", true, @check_all_status %><%= t('advanced_search.all', :model => t('activerecord.attributes.approval.status')) %>
+      </p>
+      <ul>
+        <% t('activerecord.attributes.approval.approval_status').each do |key, val| %>
+          <li style="list-style: none; width: 30%; float: left;">
+            <%= check_box_tag "status[]", key, @selected_status.include?(key.to_s), :class => "status" %><%= val %>
+          </li>
+        <% end %>
+        <li style="list-style: none; width: 30%; float: left;">
+          <%= check_box_tag "status[]", "notset", @selected_status.include?("notset"), :class => "status" %><%= t('approval_search.notset') %>
+        </li>
+      </ul>
+
+      <p style="clear:left;">
+        <%= t('activerecord.attributes.approval.approval_result') %>:<%= check_box_tag "check_all_approval_result", true, @check_all_approval_result %><%= t('advanced_search.all', :model => t('activerecord.attributes.approval.approval_result')) %>
+      </p>
+      <ul>
+        <% if select_approval_result.present? %>
+          <% select_approval_result.each do |approval_result| %>
+            <li style="list-style: none; width: 30%; float: left;">
+              <%= check_box_tag "approval_result[]", approval_result.v, @selected_approval_result.include?(approval_result.v), :class => "approval_result" %><%= approval_result.keyname %>
+            </li>
+          <% end %>
+        <% end %>
+        <li style="list-style: none; width: 30%; float: left;">
+          <%= check_box_tag "approval_result[]", "notset", @selected_approval_result.include?("notset"), :class => "approval_result" %><%= t('approval_search.notset') %>
+        </li>
+      </ul>
+      <br style="clear: left;" />
+      <%= submit_tag t('page.search') %>
+      <button id="excelx_book_dialog_opener" type="button">
+        <%= t('page.output', :model => t('page.search_result')) %>
+      </button>
+    <% end %>
+
+    <div id="excelx_book_dialog" title="<%= t('page.output', :model => t('page.search_result')) %>" style="display:none;">
+      <%= form_tag({:action => "output_csv"},  {:method => "post", :id => "output-form"}) do %>
+        <%= hidden_field_tag "approval_identifier" %>
+        <%= hidden_field_tag "identifier" %>
+        <div id='check_cols_book'>
+          <br />
+          <strong><%= t('page.output_excelx_dialog') %></strong><br />
+          <ul>
+            <% @ouput_columns.each do |ouput_column| %>
+              <li style="list-style: none; width: 30%; float: left;">
+                <%= check_box_tag "ouput_column[]", ouput_column[:name] %>
+                <%= t("approval_output_csv.#{ouput_column[:name]}") -%>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+        <br style='clear: both' />
+        <div>
+          <br /><button id="excelx_book_trigger"><%= t('page.output_excelx_detail') %></button>
+        </div>
+      <% end %>
+    </div>
+
+    <div style="color: red"><%= flash[:message].to_s -%></div>
+    <table class="index">
+      <tr>
+        <th><%= t('activerecord.attributes.manifestation.original_title') %></th>
+        <th><%= t('activerecord.attributes.manifestation.identifier') %></th>
+        <th><nobr><%#= TODO %></nobr></th>
+        <th><%= t('activerecord.attributes.approval.status') %></th>
+        <th></th>
+      </tr>
+
+    <% @approvals.each do |approval| %>
+      <tr class="line<%= cycle("0", "1") -%>">
+        <td><%= link_to approval.manifestation.original_title, approval %></td>
+        <td><nobr><%= link_to approval.manifestation.identifier, approval.manifestation %></nobr></td>
+        <td><%#= TODO approval identifier %></td>
+        <td><nobr><%= t("activerecord.attributes.approval.approval_status.#{approval.status}") %><nobr></td>
+        <td><nobr>
+          <%= link_to t('page.edit'), edit_approval_path(approval) %>
+          <%= link_to t('page.destroy'), approval, :confirm => t('page.are_you_sure'), :method => :delete -%>
+        </nobr></td>
+      </tr>
+    <% end %>
+    </table>
+
+    <%= paginate(@approvals) -%>
+
+  </div>
 </div>
 
 <div id="submenu" class="ui-corner-all">
