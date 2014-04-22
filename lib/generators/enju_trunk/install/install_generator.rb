@@ -125,15 +125,6 @@ devise_scope :user do
 
     comment_lines target, /^\s*config\.active_support\.escape_html_entities_in_json = true/
     comment_lines target, /^\s*config\.active_record\.whitelist_attributes = true/
-
-    insert_into_file target, <<-'E', after: /^(\s*)config\.assets\.version = .*\n/
-
-\1config.middleware.use Rack::Protection,
-\1  except: [:escaped_params, :json_csrf, :session_hijacking]
-\1config.railties_order = [
-\1  EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
-\1]
-    E
   end
 
   def fixup_config_environments_production
