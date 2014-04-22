@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+load File.expand_path('../../lib/enju_trunk/scripts.rb', __FILE__)
