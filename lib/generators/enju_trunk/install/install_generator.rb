@@ -17,6 +17,8 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       config/unicorn.rb.sample
       config/initializers/delayed_job_config.rb
       config/initializers/ldap_authenticatable.rb.sample
+      config/initializers/rack_protection.rb
+      config/initializers/railties_order.rb
       db/seeds.rb
     ).each do |file|
       copy_file file, file
