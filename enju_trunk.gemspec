@@ -11,10 +11,11 @@ Gem::Specification.new do |s|
   s.email       = ["EnjuTrunk@example.jp"]
   s.homepage    = "http://example.jp"
   s.summary     = "Summary of EnjuTrunk."
-  s.description = "Description of EnjuTrunke."
+  s.description = "Description of EnjuTrunk."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["spec/**/*"] - Dir["spec/dummy/log/*"] - Dir["spec/dummy/solr/{data,pids}/*"]
+  s.files         = `git ls-files`.split(/\n/)
+  s.test_files    = `git ls-files -- {test,spec}/*`.split(/\n/)
+  #s.executables   = `git ls-files -- bin/*`.split("\n").map{|f| File.basename(f) }
 
   s.add_dependency "rails", "~> 3.2.17"
   s.add_dependency 'jquery-rails', "~> 3.0.4"
@@ -66,6 +67,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'rails_autolink'
   s.add_dependency 'parallel'
   s.add_dependency 'enju_subject', '0.1.0.pre5'
+  s.add_dependency 'enju_manifestation_viewer', '0.1.0.pre3'
+  s.add_dependency 'enju_oai', '0.1.0.pre5'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'sunspot_solr', '~> 2.0.0'
