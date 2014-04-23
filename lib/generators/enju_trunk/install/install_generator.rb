@@ -18,7 +18,6 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       config/initializers/delayed_job_config.rb
       config/initializers/ldap_authenticatable.rb.sample
       config/initializers/rack_protection.rb
-      config/initializers/railties_order.rb
       db/seeds.rb
     ).each do |file|
       copy_file file, file
@@ -102,6 +101,13 @@ devise_scope :user do
   def fixup_config_application
     target = 'config/application.rb'
 
+    gsub_file target, /^(\s*)(class Application < Rails::Application)\n/, <<-'E'
+\1\2
+\1  Rails.application.config.railties_order = [
+\1    EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
+\1  ]
+    E
+
     gsub_file target, /^(\s*)\# (config\.active_record\.observers) = .*\n/, <<-'E'
 \1unless File.basename($0) == "rake" && ARGV.include?('db:migrate')
 \1  \2 = :agent_sweeper, :page_sweeper, :item_sweeper,
@@ -178,6 +184,24 @@ devise_scope :user do
     gsub_file target, /^(.*::Application\.config\.session_store) :cookie_store, (?:key:|:key =>) '(.*)'\n/, <<-'E'
 require 'action_dispatch/middleware/session/dalli_store'
 \1 :dalli_store, key: '\2'
+    E
+  end
+
+  def fixup_application_js
+    target = 'app/assets/javascripts/application.js'
+
+    gsub_file target, /^(.*\/\/= )(require jquery)\n/, <<-'E'
+\1require enju_trunk
+\1\2
+    E
+  end
+
+  def fixup_application_css
+    target = 'app/assets/stylesheets/application.css'
+
+    gsub_file target, /^(.*\*= )(require_self)\n/, <<-'E'
+\1require enju_trunk
+\1\2
     E
   end
 
