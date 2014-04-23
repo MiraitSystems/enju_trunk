@@ -22,7 +22,7 @@ function_approval:
   display_name: "見計らい"
   controller_name: ApprovalsController
   action_names: |
-                read:index,show
+                read:index,show,search,output_csv
                 update:new,create,edit,update,get_approval_report
                 delete:destroy
   position: 3
