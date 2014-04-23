@@ -105,6 +105,7 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
 
   match 'agents/search_name' => 'agents#search_name'
+  match 'subjects/search_name' => 'subjects#search_name'
 
   resources :agents do
     resources :works, :controller => 'manifestations'

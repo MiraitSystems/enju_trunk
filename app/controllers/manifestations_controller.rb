@@ -946,7 +946,8 @@ class ManifestationsController < ApplicationController
           @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
           @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-          @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
+          @manifestation.subjects = Subject.new_from_instance(@subjects, @del_subjects, @add_subjects)
+          # @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
@@ -1000,7 +1001,8 @@ class ManifestationsController < ApplicationController
         @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-        @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
+        @manifestation.subjects = Subject.new_from_instance(@subjects, @del_subjects, @add_subjects)
+        # @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
@@ -1536,12 +1538,15 @@ class ManifestationsController < ApplicationController
     @creates = [] if @creates.blank?
     @realizes = [] if @realizes.blank?
     @produces = [] if @produces.blank?
+    @subjects = [] if @subjects.blank?
     @del_creators = [] if @del_creators.blank?
     @del_contributors = [] if @del_contributors.blank?
     @del_publishers = [] if @del_publishers.blank?
+    @del_subjects = [] if @del_subjects.blank?
     @add_creators = [{}] if @add_creators.blank?
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
+    @add_subjects = [{}] if @add_subjects.blank?
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true

@@ -1,0 +1,147 @@
+<script>
+  $(document).ready(function() {
+    $("#select2_subject").select2({
+      multiple: false,
+      minimumInputLength: 1,
+      width: "250px",
+      placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
+      },
+      formatSearching: function() {
+        return <%= raw t("agent.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("agent.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: "/subjects/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+            return {search_phrase: term,
+            };
+        },
+        results: function (data, page) {
+            alert (data["subjects_term_transcription"]);
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/subjects/search_name.json?subject_id=" + id, {
+              dataType: "json"
+          }).done(function(data) { callback(data); });
+        }
+      },
+//      createSearchChoice: function(term, data) {
+//        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+//          return {id:term, text:term};
+//        }
+//      },
+    });
+  });
+</script>
+
+<%= text_field :select2_subject, :id, :id => 'select2_hidden',
+               :placeholder => t("manifestation.subject"), :style => 'display: none;' %>
+
+<script>
+  var ItemField_subject_select2 = {
+    currentNumber : <%= raw (@add_subject.blank? ? 1 : @add_subject.size).to_json %>,
+    itemTemplate : ''
+      // + '<td><input id="subject_transcription_ids___count__", name="subject_transcription_ids[__count__], placeholder="'
+      + <%= raw ("\"<td><input id='subject_transcription_ids___count__', name='subject_transcription_ids[__count__]', placeholder='#{t('manifestation.subject_transcription')}'></td>\"") %>
+      + '<td><input type="button" value="+" onClick="ItemField_subject_select2.add();" /></td>'
+      + '<td><input type="button" value="-" onClick="ItemField_subject_select2.remove(__count__);" /></td>',
+    add : function () {
+      var $clone = $("#select2_hidden").clone();
+      $clone[0].id = 'select2_subject';
+      $clone.show();
+      $clone.attr('name','subject_ids[' + this.currentNumber + ']');
+      var $new_field = $("<tr/>").attr("id", "SF" + this.currentNumber);
+      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+      var $clone_field = $("<td/>");
+      $clone_field.append($clone);
+      $new_field.append($clone_field);
+      $new_field.append(newItem);
+      $("#subject_field > table > tbody").append($new_field);
+      this.currentNumber += 1;
+      $clone.select2({
+        multiple: false,
+        minimumInputLength: 1,
+        width: "250px",
+        placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+        formatNoMatches: function(term) {
+          return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
+        },
+        formatSearching: function() {
+          return <%= raw t("agent.search_searching").to_json %>;
+        },
+        formatInputTooShort: function(term, minLength){
+          return <%= raw t("agent.search_placeholder").to_json %>;
+        },
+        ajax: {
+          url: "/subjects/search_name.json",
+          dataType: 'json',
+          data: function (term, page) {
+              return {search_phrase: term,
+              };
+          },
+          results: function (data, page) {
+              alert (data["subjects_term_transcription"]);
+              return {results: data};
+          },
+        },
+        initSelection: function(element, callback) {
+          var id = $(element).val();
+          if (id != "") {
+            $.ajax("/subjects/search_name.json?subject_id=" + id, {
+                dataType: "json"
+            }).done(function(data) { callback(data); });
+          }
+        }
+      });
+    },
+    remove : function (div_num) {
+      var field = document.getElementById('SF' + div_num);
+      if(field != null){ field.parentNode.removeChild(field); }
+    }
+  }
+</script>
+
+<div class="field">
+  <strong><%= t('manifestation.subject') -%></strong><br />
+  <table id="bless">
+  <% @subjects.each_with_index do |subject, i| %>
+    <tr>
+    <td>
+      <%= link_to subject.term, subject_path(subject.id), :target => ["_blank"] -%>
+    </td>
+    <td>
+      <%= t('page.destroy') %>
+      <%= check_box_tag 'del_creator_ids[]', subject.id.to_s, @del_creators.include?(subject.id.to_s), {} -%>
+    </td>
+    </tr>
+  <% end %>
+  </table>
+</div>
+
+<div id="subject_field" class="field">
+  <table id="bless">
+  <% @add_subjects.each_with_index do |subject, i| %>
+    <tr id="SF0">
+      <td>
+        <%= text_field_tag "select2_subject", @subject,
+          :placeholder => t("manifestation.subject") %>
+      </td>
+      <td>
+        <%= text_field_tag "select2_subject_transcription", @subject_transcription,
+          :placeholder => t("manifestation.subject_transcription") %>
+      </td>
+      <td><%= button_to_function t('page.add_line'), "ItemField_subject_select2.add()" -%></td>
+      <td><%= button_to_function t('page.del_line'), "ItemField_subject_select2.remove(#{i})" if i > 0 -%></td>
+    </tr>
+  <% end %>
+  </table>
+</div>
