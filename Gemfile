@@ -65,7 +65,7 @@ gem 'aws-sdk', '~> 1.3'
 #gem 'money'
 gem 'RedCloth', '>= 4.2.9'
 gem 'lisbn'#, '~> 0.1.0'
-gem 'nori', '~> 2.0' 
+gem 'nori', '~> 1.1.5'#'~> 2.0' 
 #gem 'extractcontent'
 gem 'cancan', '>= 1.6.7'
 gem 'scribd_fu'
@@ -155,7 +155,7 @@ gem 'capistrano'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # FRBR models
-gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git', :tag => 'version1.1.0'
+gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git', :tag => 'v1.0.0'#:tag => 'version1.1.0'
 
 group :operation do
   gem 'enju_trunk_circulation', :git => 'git://github.com/MiraitSystems/enju_trunk_circulation.git', :tag => 'version0.9.3'
