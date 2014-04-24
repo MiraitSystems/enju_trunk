@@ -2,6 +2,17 @@
   $(document).ready(function() { 
     $(document).ready(function() { get_date(); });
     $("#budget_term_id").change(function() { get_date(); });
+    $('#budget_start_date').setCalendar({src:'/assets/calendar.png'});
+    $('#budget_end_date').setCalendar({src:'/assets/calendar.png'});
+    $("#budget_budget_class").change(function(){
+      if($(this).val() == "usual"){
+        $("#budget_class_usual").show();
+        $("#budget_class_provisional").hide();
+      }else{
+        $("#budget_class_usual").hide();
+        $("#budget_class_provisional").show();
+      }
+    });
    });
 
   function get_date() {
@@ -28,8 +39,18 @@
   <%= f.error_messages %>
 
   <div class="field">
-    <%= f.label :library %><br />
-    <%= f.select(:library_id, @libraries.collect{|l| [l.display_name.localize, l.id]}) -%>
+    <%= f.label :name %><br />
+    <%= f.text_field :name -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :user_id %><br />
+    <%= f.select(:user_id, @users.collect{|l| [l.username, l.id]}) -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :budget_class %><br />
+    <%= f.select(:budget_class, @budget_classes.collect{|k,v| [v, k]}) -%>
   </div>
 
   <div class="field">
@@ -37,10 +58,32 @@
     <%= f.select(:budget_type_id, @budget_types.collect{|t| [t.name, t.id]}) -%>
   </div>
 
-  <div class="field">
-    <%= f.label :term %><br />
-    <%= f.select(:term_id, @terms.collect{|t| [t.display_name.localize, t.id]}) -%>
-      &nbsp;<span id="budget_term_date"></span>
+ <% if @budget.usual? %>
+  <div id="budget_class_usual">
+ <% else %>
+  <div id="budget_class_usual" style="display:none;">
+ <% end %>
+    <div class="field">
+      <%= f.label :term %><br />
+      <%= f.select(:term_id, @terms.collect{|t| [t.display_name.localize, t.id]}) -%>
+        &nbsp;<span id="budget_term_date"></span>
+    </div>
+  </div>
+
+  <% if @budget.usual? %>
+    <div id="budget_class_provisional" style="display:none;">
+  <% else %>
+    <div id="budget_class_provisional">
+  <% end %>
+    <div class="field">
+      <%= f.label :start_date %><br />
+      <%= f.text_field :start_date -%>
+    </div>
+
+    <div class="field">
+      <%= f.label :end_date %><br />
+      <%= f.text_field :end_date -%>
+    </div>
   </div>
 
   <div class="field">
@@ -51,6 +94,16 @@
   <div class="field">
     <%= f.label :amount %><br />
     <%= f.text_field :amount -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :revised %><br />
+    <%= f.text_field :revised -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :transferred %><br />
+    <%= f.text_field :transferred -%>
   </div>
 
   <div class="actions">

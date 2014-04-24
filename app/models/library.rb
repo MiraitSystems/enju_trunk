@@ -18,7 +18,7 @@ class Library < ActiveRecord::Base
   has_many :inter_library_loans, :foreign_key => 'from_library_id'
   has_many :users
   belongs_to :country
-  has_many :budgets
+#  has_many :budgets
   has_many :statistics
   has_many :library_reports
 
@@ -121,7 +121,8 @@ class Library < ActiveRecord::Base
 
   def destroy?
     #return false unless self.shelves.empty? && self.users.empty? && self.events.empty? && self.budgets.empty?
-    return false unless self.shelves.size == 1 && self.shelves[0].open_access == 9 && self.shelves[0].items.empty? && self.users.empty? && self.events.empty? && self.budgets.empty?
+#    return false unless self.shelves.size == 1 && self.shelves[0].open_access == 9 && self.shelves[0].items.empty? && self.users.empty? && self.events.empty? && self.budgets.empty?
+    return false unless self.shelves.size == 1 && self.shelves[0].open_access == 9 && self.shelves[0].items.empty? && self.users.empty? && self.events.empty?
     return false if self.id == 1
     return true
   end

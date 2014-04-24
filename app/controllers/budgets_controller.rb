@@ -3,12 +3,12 @@ class BudgetsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @budgets = Budget.find(:all, :order => "library_id, term_id DESC, budget_type_id")
+    @budgets = Budget.find(:all, :order => "user_id, term_id DESC, budget_type_id")
   end
 
   def new
     prepare_options
-    @budget = Budget.new
+    @budget = Budget.new(:budget_class => "usual")
   end
 
   def create
@@ -50,10 +50,21 @@ class BudgetsController < ApplicationController
 
   def show
     @budget = Budget.find(params[:id])
-    @sum = Budget.sum(:amount, :conditions => {:library_id => @budget.library_id, :term_id => @budget.term_id})
-    budget_ids = Budget.where(:library_id => @budget.library_id, :term_id => @budget.term_id).inject([]){|ids, budget| ids << budget.id}
-    expense = Expense.sum(:price, :conditions => ["budget_id IN (?)", budget_ids])
-    @balance = @sum - expense
+    @sum = 0
+    @balance = 0
+    if @budget.usual?
+      amounts = Budget.sum(:amount, :conditions => {:user_id => @budget.user_id, :term_id => @budget.term_id})
+      reviseds = Budget.sum(:revised, :conditions => {:user_id => @budget.user_id, :term_id => @budget.term_id})
+      transferreds = Budget.sum(:transferred, :conditions => {:user_id => @budget.user_id, :term_id => @budget.term_id})
+      @sum = amounts + reviseds + transferreds
+      budget_ids = Budget.where(:user_id => @budget.user_id, :term_id => @budget.term_id).inject([]){|ids, budget| ids << budget.id}
+    else
+      @sum = @budget.amount.to_i + @budget.revised.to_i + @budget.transferred.to_i
+    end
+#    @sum = Budget.sum(:amount, :conditions => {:library_id => @budget.library_id, :term_id => @budget.term_id})
+#    budget_ids = Budget.where(:library_id => @budget.library_id, :term_id => @budget.term_id).inject([]){|ids, budget| ids << budget.id}
+#    expense = Expense.sum(:price, :conditions => ["budget_id IN (?)", budget_ids])
+#    @balance = @sum - expense
   end
 
   def destroy
@@ -68,8 +79,10 @@ class BudgetsController < ApplicationController
 
 private
   def prepare_options
-    @libraries = Library.all
+#    @libraries = Library.all
     @terms = Term.all
     @budget_types = BudgetType.all
+    @users = User.all # ライブラリアンの権限と予算執行者の権限を持つもの
+    @budget_classes = t('activerecord.attributes.budget.budget_classes')
   end
 end

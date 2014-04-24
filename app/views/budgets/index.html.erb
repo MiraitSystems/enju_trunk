@@ -4,7 +4,9 @@
 
 <table class="index">
   <tr>
-    <th><%= t('activerecord.attributes.budget.library') -%></th>
+    <th><%= t('activerecord.attributes.budget.name') -%></th>
+    <th><%= t('activerecord.attributes.budget.user_id') -%></th>
+    <th><%= t('activerecord.attributes.budget.budget_class') -%></th>
     <th><%= t('activerecord.attributes.budget.term') -%></th>
     <th><%= t('activerecord.attributes.budget.budget_type') -%></th>
     <th></th>
@@ -14,11 +16,19 @@
 
 <%- @budgets.each do |budget| -%>
   <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= budget.library.display_name if budget.library -%></td>
-    <td><%= budget.term.display_name if budget.term -%></td>
+    <td><%= budget.name -%></td>
+    <td><%= budget.user.username if budget.user -%></td>
+    <td><%= t("activerecord.attributes.budget.budget_classes.#{budget.budget_class}") -%></td>
+    <td>
+      <% if budget.usual? %>
+        <%= budget.term.display_name if budget.term -%>
+      <% else %>
+        <%= l(budget.start_date, :format => :only_date) -%> - <%= l(budget.end_date, :format => :only_date) -%>
+      <% end %>
+    </td>
     <td><%= budget.budget_type.name if budget.budget_type -%></td>
     <td><%= budget.note if budget.note -%></td>
-    <td align="right"><%= to_format(budget.amount) -%></td>
+    <td align="right"><%= to_format(budget.amount.to_i + budget.revised.to_i + budget.transferred.to_i) -%></td>
     <td>
       <%- if can? :update, budget -%>
         <%= link_to t('page.edit'), edit_budget_path(budget) -%>
