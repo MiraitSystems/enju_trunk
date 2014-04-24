@@ -4,6 +4,10 @@
   font-size: 85%;
 }
 
+input:focus, textarea:focus, select:focus {
+  background-color: rgb(239, 245, 255);
+}
+
 /** tab menu**/
 a.fg-4button {
    width: 184px;

@@ -1,7 +1,188 @@
---- 
-classification_type_00001: 
-  name: unknown  
+---
+classification_type_00001:
+  name: unknown
   display_name: unknown
   id: 1
   note: ""
+  position: 2
+classification_type_00002:
+  name: ndc9
+  display_name: NDC9
+  id: 2
+  note: ""
   position: 1
+classification_type_00003:
+  name: bbk
+  display_name: 学術図書館用図書・書誌分類表 (ロシア)
+  id: 3
+  note: ""
+  position: 3
+classification_type_00004:
+  name: bc
+  display_name: 書誌分類法 (Bibliographic Classification)
+  id: 4
+  note: ""
+  position: 4
+classification_type_00005:
+  name: cc
+  display_name: コロン分類法 (Colon Classification)
+  id: 5
+  note: ""
+  position: 5
+classification_type_00006:
+  name: ccas
+  display_name: 中国科学院図書館図書分類法分類学
+  id: 6
+  note: ""
+  position: 6
+classification_type_00007:
+  name: clc
+  display_name: 中国図書館分類法分類学
+  id: 7
+  note: ""
+  position: 7
+classification_type_00008:
+  name: clc2
+  display_name: CLC2版
+  id: 8
+  note: ""
+  position: 8
+classification_type_00009:
+  name: clc3
+  display_name: CLC3版
+  id: 9
+  note: ""
+  position: 9
+classification_type_00010:
+  name: dc
+  display_name: デューイ十進分類法 (Dewey Decimal Classification)
+  id: 10
+  note: ""
+  position: 10
+classification_type_00011:
+  name: dc17
+  display_name: DC17版
+  id: 11
+  note: ""
+  position: 11
+classification_type_00012:
+  name: dc18
+  display_name: DC18版
+  id: 12
+  note: ""
+  position: 12
+classification_type_00013:
+  name: dc19
+  display_name: DC19版
+  id: 13
+  note: ""
+  position: 13
+classification_type_00014:
+  name: dc20
+  display_name: DC20版
+  id: 14
+  note: ""
+  position: 14
+classification_type_00015:
+  name: dc21
+  display_name: DC21版
+  id: 15
+  note: ""
+  position: 15
+classification_type_00016:
+  name: dc22
+  display_name: DC22版
+  id: 16
+  note: ""
+  position: 16
+classification_type_00017:
+  name: kdc
+  display_name: 韓國十進分類法 (Korean Decimal Classification)
+  id: 17
+  note: ""
+  position: 17
+classification_type_00018:
+  name: kdc2
+  display_name: KDC2版
+  id: 18
+  note: ""
+  position: 18
+classification_type_00019:
+  name: kdc3
+  display_name: KDC3版
+  id: 19
+  note: ""
+  position: 19
+classification_type_00020:
+  name: kdc4
+  display_name: KDC4版
+  id: 20
+  note: ""
+  position: 20
+classification_type_00021:
+  name: kdcp
+  display_name: KDCP
+  id: 21
+  note: ""
+  position: 21
+classification_type_00022:
+  name: lcc
+  display_name: 米国議会図書館分類表 (Library of Congress Classification)
+  id: 22
+  note: ""
+  position: 22
+classification_type_00023:
+  name: ndc
+  display_name: 日本十進分類法 (Nippon Decimal Classification)
+  id: 23
+  note: ""
+  position: 23
+classification_type_00024:
+  name: ndc6
+  display_name: NDC6版
+  id: 24
+  note: ""
+  position: 24
+classification_type_00025:
+  name: ndc7
+  display_name: NDC7版
+  id: 25
+  note: ""
+  position: 25
+classification_type_00026:
+  name: ndc8
+  display_name: NDC8版
+  id: 26
+  note: ""
+  position: 26
+classification_type_00027:
+  name: ndlc
+  display_name: 国立国会図書館分類表 (National Diet Library Classification)
+  id: 27
+  note: ""
+  position: 27
+classification_type_00028:
+  name: nlm
+  display_name: 国立医学図書館分類表 (National Library of Medicine Classification)
+  id: 28
+  note: ""
+  position: 28
+classification_type_00029:
+  name: sg86
+  display_name: ドイツ国立図書館 分類表
+  id: 29
+  note: ""
+  position: 29
+classification_type_00030:
+  name: sg
+  display_name: ドイツ国立図書館 分類表
+  id: 30
+  note: ""
+  position: 30
+classification_type_00031:
+  name: udc
+  display_name: 国際十進分類法 (Universal Decimal Classification)
+  id: 31
+  note: ""
+  position: 31
+
