@@ -449,9 +449,25 @@ $(document).keydown(function(e) {
           <table id="bless">
             <tr> 
             <%= select2_script "language_id_" + i.to_s %>
-            <td><%= make_select2("language_id_" + i.to_s, "language_id[" + i.to_s + "]", @languages, whl.language_id, 300) %></td>
+            <td>
+              <%= make_select2(
+                "language_id_" + i.to_s, 
+                "language_id[" + i.to_s + "]", 
+                @languages, 
+                whl[:language_id], 
+                300
+              ) %>
+            </td>
             <%= select2_script "language_type_" + i.to_s %>
-            <td><%= make_select2("language_type_" + i.to_s, "language_type[" + i.to_s + "]", @language_types, whl.language_type_id, 200) %></td>
+            <td>
+              <%= make_select2(
+                "language_type_" + i.to_s, 
+                "language_type[" + i.to_s + "]", 
+                @language_types, 
+                whl[:language_type_id], 
+                200
+              ) %>
+            </td>
             <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
             <td><%= button_to_function '-', 'ItemField_language_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
             </tr>
