@@ -44,6 +44,8 @@ class Manifestation < ActiveRecord::Base
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
+  belongs_to :catalog
+
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)

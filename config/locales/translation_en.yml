@@ -211,6 +211,7 @@ en:
       output_column_list: Setting of output column
       publication_status: Publication status
       sequence_pattern: Sequence Pattern
+      catalog: Catalog
 
     attributes:
       use_license:
@@ -1789,6 +1790,11 @@ en:
         volume_param: Volume Number Param
         issue_param: Issue Number Param
         sequence_type: Issue Number Type
+      catalog:
+        display_name: Display name
+        name: Name
+        nacsis_identifier: NCID
+        note: Note
 
   page:
     user_title: Welcome %{login_name}

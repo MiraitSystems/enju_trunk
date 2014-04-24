@@ -961,7 +961,7 @@ class NacsisCat
         return nil if nacsis_cat.blank? || book_types.blank?
         nacsis_info = nacsis_cat.detail
         attrs = {}
-        attrs[:external_catalog] = 2
+        attrs[:catalog_id] = Catalog.where(:name => 'nacsis').first.id
         attrs[:original_title] = nacsis_info[:subject_heading]
         attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
         attrs[:title_alternative] = nacsis_info[:title_alternative]

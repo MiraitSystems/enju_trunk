@@ -527,6 +527,8 @@ EnjuLeaf::Application.routes.draw do
   resources :checkoutlists
   resources :nacsis_user_requests
 
+  resources :catalogs
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

@@ -214,6 +214,7 @@ ja:
       output_column_list: 出力項目設定
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
+      catalog: カタログ
 
     attributes:
       use_license:
@@ -1778,6 +1779,11 @@ ja:
         volume_param: 巻が増える号数
         issue_param: 号の増加数
         sequence_type: 号の種類
+      catalog:
+        display_name: 表示名
+        name: 名前
+        nacsis_identifier: NCID
+        note: 注記
 
   page:
     user_title: "ようこそ %{login_name} さん"
