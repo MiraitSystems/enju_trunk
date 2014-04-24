@@ -466,24 +466,31 @@ class ApplicationController < ActionController::Base
   end
 
   def set_agent_instance_from_params # Use manifestations_controller.rb and series_statements_controller.rb
+    logger.error "########### create = #{params[:creates]} ###########"
     @creates = Create.new_attrs(params[:creates].try(:keys), params[:creates].try(:values))
     @realizes = Realize.new_attrs(params[:realizes].try(:keys), params[:realizes].try(:values))
     @produces = Produce.new_attrs(params[:produces].try(:keys), params[:produces].try(:values))
     @del_creators = params[:del_creator_ids].nil? ? [] : params[:del_creator_ids]
     @del_contributors = params[:del_contributor_ids].nil? ? [] : params[:del_contributor_ids]
     @del_publishers = params[:del_publisher_ids].nil? ? [] : params[:del_publisher_ids]
-    @add_creators = set_agent_attrs(params[:creator_ids].try(:values),
-                                    params[:creator_full_names].try(:values),
-                                    params[:creator_full_name_transcriptions].try(:values),
-                                    params[:creator_type_ids].try(:values))
-    @add_contributors = set_agent_attrs(params[:contributor_ids].try(:values),
-                                        params[:contributor_full_names].try(:values),
-                                        params[:contributor_full_name_transcriptions].try(:values),
-                                        params[:contributor_type_ids].try(:values))
-    @add_publishers = set_agent_attrs(params[:publisher_ids].try(:values),
-                                      params[:publisher_full_names].try(:values),
-                                      params[:publisher_full_name_transcriptions].try(:values),
-                                      params[:publisher_type_ids].try(:values))
+    @add_creators = set_agent_attrs(
+      params[:creator_ids].try(:values),
+      params[:creator_full_names].try(:values),
+      params[:creator_full_name_transcriptions].try(:values),
+      params[:creator_type_ids].try(:values)
+    )
+    @add_contributors = set_agent_attrs(
+      params[:contributor_ids].try(:values),
+      params[:contributor_full_names].try(:values),
+      params[:contributor_full_name_transcriptions].try(:values),
+      params[:contributor_type_ids].try(:values)
+    )
+    @add_publishers = set_agent_attrs(
+      params[:publisher_ids].try(:values),
+      params[:publisher_full_names].try(:values),
+      params[:publisher_full_name_transcriptions].try(:values),
+      params[:publisher_type_ids].try(:values)
+    )
   end
 
   def set_agent_attrs(agent_ids, full_names, full_name_reads, type_ids)
@@ -503,6 +510,41 @@ class ApplicationController < ActionController::Base
         param[:full_name] = full_name
         param[:full_name_transcription] = full_name_reads[i] if full_name_reads
         param[:type_id] = type_ids[i] if type_ids
+        list << param
+      end
+    else
+      list = []
+    end
+    list
+  end
+
+  def set_subject_instance_from_params # Use manifestations_controller.rb and series_statements_controller.rb
+    logger.error "########### subject= #{params[:subjects]} ###########"
+    logger.error "########### subject= #{params[:subjects.inspect]} ###########"
+    @subjects = Subject.new_attrs(params[:subjects])
+    @del_subjects = params[:del_subject_ids].nil? ? [] : params[:del_subject_ids]
+    @add_subjectss = set_subject_attrs(
+      params[:subject_ids].try(:values),
+      params[:subject_term].try(:values),
+      params[:subject_term_transcriptions].try(:values)
+    )
+  end
+
+  def set_subject_attrs(subject_ids, terms, term_trascriptions)
+    list = []
+    if subject_ids
+      subject_ids.each_with_index.each do |subject_id ,i|
+        next if subject_id.blank?
+        param = {}
+        param[:subject_id] = subject_id
+        list << param
+      end
+    elsif terms
+      terms.each_with_index.each do |term ,i|
+        next if term.blank?
+        param = {}
+        param[:term] = term
+        param[:term_transcription] = term_transcriptions[i] if term_transcriptions
         list << param
       end
     else

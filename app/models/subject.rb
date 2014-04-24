@@ -6,9 +6,20 @@ class Subject < ActiveRecord::Base
 
   def self.new_from_instance(subjects, del_subjects, add_subjects)
     editing_subjects = subjects.dup
-    editing_subjects.reject!{|s| del_subjects.include?(s.id.to_s)}
+    editing_subjects.reject!{ |s| del_subjects.include?(s.id.to_s) }
     editing_subjects += self.import_subjects(add_subjects)
-    editing_subjects.uniq{|s| s.id}
+    editing_subjects.uniq{ |s| s.id }
+  end
+
+  def self.new_attrs(subject_ids)
+    return [] if subject_ids.blank?
+    lists = []
+    subject_ids.each do |subject_id|
+      subject = {}
+      subject[:subject_id] = subject_id
+      lists << new(subject)
+    end
+    lists
   end
 
   def self.import_subjects(subject_infos)

@@ -820,7 +820,8 @@ class ManifestationsController < ApplicationController
       @creates = original_manifestation.creates.order(:position)
       @realizes = original_manifestation.realizes.order(:position)
       @produces = original_manifestation.produces.order(:position)
-      @subject = original_manifestation.subjects.collect(&:term).join(';')
+      # @subject = original_manifestation.subjects.collect(&:term).join(';')
+      @subjects = original_manifestation.subjects.order(:position)
       @subject_transcription = original_manifestation.subjects.collect(&:term_transcription).join(';')
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
@@ -841,6 +842,7 @@ class ManifestationsController < ApplicationController
         @creates = root_manifestation.creates.order(:position)
         @realizes = root_manifestation.realizes.order(:position)
         @produces = root_manifestation.produces.order(:position)
+        @subjects = root_manifestation.subjects.order(:position)
         @manifestation.carrier_type = root_manifestation.carrier_type
         @manifestation.manifestation_type = root_manifestation.manifestation_type
         @manifestation.frequency = root_manifestation.frequency
@@ -978,7 +980,9 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1.json
   def update
     set_agent_instance_from_params # Implemented in application_controller.rb
-    @subject = params[:manifestation][:subject]
+    set_subject_instance_from_params
+    logger.error "########### #{params[:subjects]} ###########"
+    # @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
@@ -998,6 +1002,9 @@ class ManifestationsController < ApplicationController
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
         #TODO update position to edit agents without destroy
+        logger.error "########### #{@creates} ###########"
+        logger.error "########### #{@subjects} ###########"
+        logger.error "########### #{@del_subjects} ###########"
         @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)

@@ -1,10 +1,16 @@
 <script>
   $(document).ready(function() {
-    $("#select2_subject").select2({
+    $("#subject_term").select2({
       multiple: false,
       minimumInputLength: 1,
       width: "250px",
-      placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+      placeholder: <%= raw t("manifestation.subject").to_json %>,
+
+      <%# TODO %>
+      formatResult: function(object, container, query) {
+        return query.term
+      },
+
       formatNoMatches: function(term) {
         return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
       },
@@ -22,7 +28,7 @@
             };
         },
         results: function (data, page) {
-            alert (data["subjects_term_transcription"]);
+            // alert (data["subjects_term_transcription"]);
             return {results: data};
         },
       },
@@ -34,11 +40,11 @@
           }).done(function(data) { callback(data); });
         }
       },
-//      createSearchChoice: function(term, data) {
-//        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-//          return {id:term, text:term};
-//        }
-//      },
+      createSearchChoice: function(term, data) {
+        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+          return {id:term, text:term};
+        }
+      },
     });
   });
 </script>
@@ -50,15 +56,14 @@
   var ItemField_subject_select2 = {
     currentNumber : <%= raw (@add_subject.blank? ? 1 : @add_subject.size).to_json %>,
     itemTemplate : ''
-      // + '<td><input id="subject_transcription_ids___count__", name="subject_transcription_ids[__count__], placeholder="'
-      + <%= raw ("\"<td><input id='subject_transcription_ids___count__', name='subject_transcription_ids[__count__]', placeholder='#{t('manifestation.subject_transcription')}'></td>\"") %>
+      + <%= raw ("\"<td><input id='subject_term_transcriptions___count__', name='subject_term_transcriptions[__count__]', placeholder='#{t('manifestation.subject_transcription')}'></td>\"") %>
       + '<td><input type="button" value="+" onClick="ItemField_subject_select2.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_subject_select2.remove(__count__);" /></td>',
     add : function () {
       var $clone = $("#select2_hidden").clone();
       $clone[0].id = 'select2_subject';
       $clone.show();
-      $clone.attr('name','subject_ids[' + this.currentNumber + ']');
+      $clone.attr('name','subject_term[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "SF" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
       var $clone_field = $("<td/>");
@@ -71,7 +76,13 @@
         multiple: false,
         minimumInputLength: 1,
         width: "250px",
-        placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+        placeholder: <%= raw t("manifestation.subject").to_json %>,
+
+        <%# TODO %>
+        formatResult: function(object, container, query) {
+          return object.term
+        },
+
         formatNoMatches: function(term) {
           return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
         },
@@ -89,7 +100,6 @@
               };
           },
           results: function (data, page) {
-              alert (data["subjects_term_transcription"]);
               return {results: data};
           },
         },
@@ -99,6 +109,11 @@
             $.ajax("/subjects/search_name.json?subject_id=" + id, {
                 dataType: "json"
             }).done(function(data) { callback(data); });
+          }
+        },
+        createSearchChoice: function(term, data) {
+          if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+            return {id:term, text:term};
           }
         }
       });
@@ -132,11 +147,11 @@
   <% @add_subjects.each_with_index do |subject, i| %>
     <tr id="SF0">
       <td>
-        <%= text_field_tag "select2_subject", @subject,
-          :placeholder => t("manifestation.subject") %>
+        <%#= text_field :manifestation, :subject, :id => 'subject_term', :placeholder => t("manifestation.subject") %>
+        <%= text_field :subject_term, i, :id => 'subject_term', :placeholder => t("manifestation.subject") %>
       </td>
       <td>
-        <%= text_field_tag "select2_subject_transcription", @subject_transcription,
+        <%= text_field_tag "subject_term_transcriptions[#{i}]", subject[:term_transcription],
           :placeholder => t("manifestation.subject_transcription") %>
       </td>
       <td><%= button_to_function t('page.add_line'), "ItemField_subject_select2.add()" -%></td>
