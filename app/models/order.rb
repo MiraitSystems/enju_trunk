@@ -172,7 +172,35 @@ class Order < ActiveRecord::Base
     return true
   end
 
+  def create_manifestations(:with_item => true)
+    ordered_manifestation = self.manifestation
+    new_manifestations = []
+    if self.manifestation.periodical_master
+      num = self.number_of_acceptance_schedule
+      series_statement = ordered_manifestation.series_statement
+      num.times do
+        new_m = series_statement.new_manifestation
+        new_m.save!
+        new_manifestations << new_m
+      end
+    else
+      new_manifestations << ordered_manifestation
+    end
 
+    self.ordered_manifestations = new_manifestations
+
+    new_manifestations.map {|m| create_item(m)} if with_item
+  end
+
+  def create_item(manifestation)
+    item = Item.new
+    item.circulation_status = CirculationStatus.find_by_name('On Order') || CirculationStatus.first
+    #TODO default checkout_type
+    item.checkout_type = CheckoutType.first
+    item.manifestation = manifestation
+    item.order_id = self.id
+    item.save
+  end
 
   paginates_per 10
 
