@@ -5,7 +5,7 @@
     $('#budget_start_date').setCalendar({src:'/assets/calendar.png'});
     $('#budget_end_date').setCalendar({src:'/assets/calendar.png'});
     $("#budget_budget_class").change(function(){
-      if($(this).val() == "usual"){
+      if($(this).val() == "usual" || $(this).val() == "revised"){
         $("#budget_class_usual").show();
         $("#budget_class_provisional").hide();
       }else{
@@ -58,7 +58,7 @@
     <%= f.select(:budget_type_id, @budget_types.collect{|t| [t.name, t.id]}) -%>
   </div>
 
- <% if @budget.usual? %>
+ <% if @budget.usual? || @budget.revised? %>
   <div id="budget_class_usual">
  <% else %>
   <div id="budget_class_usual" style="display:none;">
@@ -70,10 +70,10 @@
     </div>
   </div>
 
-  <% if @budget.usual? %>
-    <div id="budget_class_provisional" style="display:none;">
-  <% else %>
+  <% if @budget.provisional? %>
     <div id="budget_class_provisional">
+  <% else %>
+    <div id="budget_class_provisional" style="display:none;">
   <% end %>
     <div class="field">
       <%= f.label :start_date %><br />
@@ -94,11 +94,6 @@
   <div class="field">
     <%= f.label :amount %><br />
     <%= f.text_field :amount -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :revised %><br />
-    <%= f.text_field :revised -%>
   </div>
 
   <div class="field">

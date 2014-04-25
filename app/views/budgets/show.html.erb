@@ -25,7 +25,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.budget.term') -%>:</strong>
-  <% if @budget.usual? %>
+  <% if @budget.usual? || @budget.revised? %>
     <%= @budget.term.display_name if @budget.term -%> (<%= l(@budget.term.start_at, :format => :only_date) if @budget.term -%> - <%= l(@budget.term.end_at, :format => :only_date) if @budget.term-%>)
   <% else %>
     <%= l(@budget.start_date, :format => :only_date) if @budget.start_date -%> - <%= l(@budget.end_date, :format => :only_date) if @budget.end_date-%>
@@ -43,18 +43,13 @@
 </p>
 
 <p>
-  <strong><%= t('activerecord.attributes.budget.revised') -%>:</strong>
-  <%= t('budget.yen', :amount => to_format(@budget.revised)) -%>
-</p>
-
-<p>
   <strong><%= t('activerecord.attributes.budget.transferred') -%>:</strong>
   <%= t('budget.yen', :amount => to_format(@budget.transferred)) -%>
 </p>
 
 <p>
   <strong><%= t('budget.sum') -%>:</strong>
-  <%= t('budget.yen', :amount => to_format(@sum)) -%>
+  <%= t('budget.yen', :amount => to_format(@sum)) -%>(<% if @sum_revised.present? %><%= t('budget.yen', :amount => to_format(@sum_revised)) -%><% end %>)
 </p>
 
 <p>

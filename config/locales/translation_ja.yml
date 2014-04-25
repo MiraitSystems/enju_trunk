@@ -1489,8 +1489,8 @@ ja:
         budget_class: 予算分類
         budget_classes:
           usual: 通常
+          revised: 補正
           provisional: 臨時
-        revised: 補正予算額
         start_date: 期間開始日
         end_date: 期間終了日
         transferred: 繰越額
@@ -2876,7 +2876,7 @@ ja:
   budget:
     yen: "%{amount} 円"
     yent: 円
-    sum: 予算全額(補正予算を含む)
+    sum: 予算全額(うち補正予算)
     balance: 残金
     all_budgets: 全ての予算
     all_libraries: 全ての図書館

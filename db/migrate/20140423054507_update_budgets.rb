@@ -3,7 +3,6 @@ class UpdateBudgets < ActiveRecord::Migration
     remove_column :budgets, :library_id
     add_column :budgets, :user_id, :integer
     add_column :budgets, :name, :string
-    add_column :budgets, :revised, :integer
     add_column :budgets, :transferred, :integer
     add_column :budgets, :actual, :integer
     add_column :budgets, :implementation, :integer
@@ -18,7 +17,6 @@ class UpdateBudgets < ActiveRecord::Migration
     add_column :budgets, :library_id, :integer
     remove_column :budgets, :user_id
     remove_column :budgets, :name
-    remove_column :budgets, :revised
     remove_column :budgets, :transferred
     remove_column :budgets, :actual
     remove_column :budgets, :implementation
