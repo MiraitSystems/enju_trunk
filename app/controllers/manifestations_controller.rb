@@ -900,7 +900,6 @@ class ManifestationsController < ApplicationController
     if SystemConfiguration.get("manifestation.has_one_item") == true
       @manifestation.items.build if @manifestation.items.blank?
     end
-
   end
 
   # POST /manifestations

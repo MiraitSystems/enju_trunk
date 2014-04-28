@@ -30,7 +30,6 @@ class WorkHasLanguage < ActiveRecord::Base
       whl = {}
       whl[:language_id] = language_id.to_i
       whl[:language_type_id] = language_type_id.to_i
-      # logger.error "############# work_has_languages = #{whl} ##############"
       list << whl
     end
     return list

@@ -1,0 +1,28 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.item_accept') -%></h1>
+<div id="content_list">
+
+<div id="error" style="color: red"><%= flash[:message].to_s -%></div>
+<p id="notice"></p>
+
+<div class="field">
+<%= form_tag(items_create_item_has_operator_path, remote: true) do %>
+  <%= t('activerecord.attributes.item.item_identifier') %>:
+  <%= text_field '', :item_identifier, :value => @identifier %>
+  <%= submit_tag t('page.item_accept') %>
+<% end %>
+</div>
+
+<table class="index" id="accept_list">
+  <tr id="accept_list_header">
+    <th><%= t('activerecord.attributes.item.item_identifier') %></th>
+    <th><%= t('activerecord.attributes.item_has_operator.user_id') %></th>
+    <th><%= t('activerecord.attributes.item_has_operator.library_id') %></th>
+    <th><%= t('activerecord.attributes.item_has_operator.operated_at') %></th>
+    <th><%= t('activerecord.attributes.item.circulation_status_id') %></th>
+  </tr>
+</table>
+
+</div>
+</div>
+
