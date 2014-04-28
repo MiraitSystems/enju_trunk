@@ -108,7 +108,7 @@ class ResourceImportTextfilesController < ApplicationController
     @manifestation_types = ManifestationType.all
     @numberings = Numbering.where(:numbering_type => 'item')
     templatename = a.template_filename_edit
-    filename = "lib/enju_trunk/resourceadapter/views/#{templatename}"
+    filename = "#{EnjuTrunk::Engine.root}/lib/enju_trunk/resourceadapter/views/#{templatename}"
     logger.debug "filename=#{filename}"
     render :layout => false, :file => filename
   end
@@ -127,7 +127,7 @@ class ResourceImportTextfilesController < ApplicationController
     @oo = Excelx.new(path)
     @manifestation_types = ManifestationType.all
     @numberings = Numbering.where(:numbering_type => 'item')
-    data = "lib/enju_trunk/resourceadapter/views/excelfile_select.html.erb"
+    data = "#{EnjuTrunk::Engine.root}/lib/enju_trunk/resourceadapter/views/excelfile_select.html.erb"
     render :layout => false, :file => data
   end
 end
