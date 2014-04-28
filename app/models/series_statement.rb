@@ -130,6 +130,29 @@ class SeriesStatement < ActiveRecord::Base
     titles.flatten.compact
   end
 
+  def new_manifestation
+    manifestation = Manifestation.new
+    manifestation.original_title = self.original_title
+    manifestation.title_transcription = self.title_transcription
+    manifestation.issn = self.issn
+    if root_manifestation = self.root_manifestation
+      manifestation.creates = root_manifestation.creates.order(:position)
+      manifestation.realizes = root_manifestation.realizes.order(:position)
+      manifestation.produces = root_manifestation.produces.order(:position)
+      manifestation.carrier_type = root_manifestation.carrier_type
+      manifestation.manifestation_type = root_manifestation.manifestation_type
+      manifestation.frequency = root_manifestation.frequency
+      manifestation.country_of_publication = root_manifestation.country_of_publication
+      manifestation.place_of_publication = root_manifestation.place_of_publication
+      manifestation.access_address = root_manifestation.access_address
+      manifestation.required_role = root_manifestation.required_role
+      manifestation.work_has_languages = root_manifestation.work_has_languages
+      manifestation.manifestation_identifier = root_manifestation.identifier
+    end  
+    manifestation.series_statement = self
+    return manifestation
+  end
+
   def self.create_root_manifestation(series_statement, objs)
     root_manifestation = series_statement.root_manifestation
     root_manifestation.periodical_master   = series_statement.periodical

@@ -84,6 +84,7 @@ class Item < ActiveRecord::Base
   has_many :item_exinfos, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim
+  belongs_to :order
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
@@ -148,6 +149,7 @@ class Item < ActiveRecord::Base
     integer :remove_reason_id
     boolean :non_searchable
     integer :bookbinder_id
+    integer :order_id
     time :created_at
     time :updated_at
   end

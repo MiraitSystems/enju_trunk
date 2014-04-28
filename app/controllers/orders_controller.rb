@@ -406,7 +406,6 @@ class OrdersController < ApplicationController
 
     unless params[:order_year].blank?
       @orders = @orders.where(["order_year = ?", params[:order_year]])
-#      @orders = @orders.where(["order_year = ?", params[:publication_year]])
     end
 
     # identifier
@@ -520,6 +519,23 @@ class OrdersController < ApplicationController
 
     redirect_to :action => "search", :order_year => params[:year], :test => "test", :order_identifier => params[:order_identifier]
 
+  end
+  
+  def create_ordered_manifestations
+    begin
+      @order = Order.find(params[:id])
+      manifestations = @order.create_manifestations
+      if manifestations.size > 0   
+        flash[:notice] = t('controller.successfully_created', :model => t('order.items'))
+      else
+        flash[:notice] = t('order.not_created_items')
+      end
+      redirect_to order_items_path(@order)
+    rescue => ex
+      logger.error "Failed to create ordered items: #{ex}"
+      flash[:notice] = ex
+      redirect_to order_path(@order) 
+    end
   end
 
 end

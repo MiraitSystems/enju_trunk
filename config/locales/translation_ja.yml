@@ -3232,6 +3232,7 @@ ja:
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    items: 発注資料
     subsequent_year_orders: 次年度発注
     create_subsequent_year_orders: 次年度発注生成
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
@@ -3245,6 +3246,9 @@ ja:
     list_of_payment: "精算リスト"
     list_of_acceptance_after_payment: "精算後受入リスト"
     select_document: "帳票を選択"
+    create_ordered_manifestations: "発注資料を一括作成"
+    confirm_create_ordered: "発注資料を作成しますか。"
+    not_created_items: "発注資料は作成されませんでした。"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"

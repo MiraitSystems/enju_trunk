@@ -33,6 +33,7 @@ class Order < ActiveRecord::Base
   belongs_to :currency
 
   has_many :payments
+  has_many :items
 
   validates :ordered_at, :presence => true
   validates :order_year, :numericality => true
@@ -172,24 +173,24 @@ class Order < ActiveRecord::Base
     return true
   end
 
-  def create_manifestations(:with_item => true)
+  def create_manifestations(with_item = TRUE)
     ordered_manifestation = self.manifestation
     new_manifestations = []
+    num = self.number_of_acceptance_schedule
     if self.manifestation.periodical_master
-      num = self.number_of_acceptance_schedule
       series_statement = ordered_manifestation.series_statement
       num.times do
         new_m = series_statement.new_manifestation
         new_m.save!
         new_manifestations << new_m
       end
+      new_manifestations.map {|m| create_item(m)} if with_item
     else
+      num.times { create_item(ordered_manifestation) } if with_item
       new_manifestations << ordered_manifestation
     end
 
-    self.ordered_manifestations = new_manifestations
-
-    new_manifestations.map {|m| create_item(m)} if with_item
+    return new_manifestations
   end
 
   def create_item(manifestation)

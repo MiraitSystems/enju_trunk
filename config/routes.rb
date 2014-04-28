@@ -280,7 +280,10 @@ EnjuLeaf::Application.routes.draw do
     get :paid, :on => :member
     get :search, :on => :collection
     get :create_subsequent_year_orders, :on => :collection
+    get :create_ordered_manifestations, :on => :member
     post :output_csv, :on => :collection
+    resources :payments
+    resources :items
   end
   match 'payments/search', :to => 'payments#search'
   resources :payments

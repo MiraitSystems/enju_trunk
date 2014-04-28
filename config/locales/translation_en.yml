@@ -3277,11 +3277,15 @@ en:
     switch_manual_entry: "Use auto calculate the amount"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
+    items: Ordered Items
     paid: Paid
     want_to_paid: "Want to paid?"
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+    create_ordered_manifestations: "Creste ordered items"
+    confirm_create_ordered: "Are you sure?"
+    not_created_items: "Ordered item wasn't created"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
   approval:
