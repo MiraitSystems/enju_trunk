@@ -241,17 +241,14 @@ class ItemsController < ApplicationController
           flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.item'))
         end
 
-        # TODO
-        if SystemConfiguration.get('manifestation.use_item_has_operator')
-          logger.error "########### #{params[:item][:item_identifier]} ###########"
-          logger.error "################ manifestation.use_item_has_operator ##################"
-          create_item_has_operator
-        end
+        logger.error "############ update_attributes ###########"
 
         format.html { redirect_to @item }
         format.json { head :no_content }
       else
+        logger.error "############ NOT update_attributes ###########"
         if SystemConfiguration.get('manifestation.use_item_has_operator')
+          create_item_has_operator
           @countoperators = @item.item_has_operators.size
         end
         prepare_options
@@ -385,7 +382,6 @@ class ItemsController < ApplicationController
   end
 
   def accept
-    logger.error "############## accept start #############"
     @item_identifier = params[:item][:item_identifier]
     @item = Item.find_by_item_identifier(@item_identifier)
     @operator = ItemHasOperator.find(params[:operator]) if params[:operator]
@@ -417,14 +413,11 @@ class ItemsController < ApplicationController
         @operator.save!
 
         @notice = t('item.accept_completed_successfully')
-        logger.error "############## ActiveRecord end #############"
       end
     rescue => e
       @notice = e.message
-      logger.error "############## @notice = #{@notice} #############"
       logger.info "ERROR: #{e.message}"
     end
-    logger.error "############## render #############"
     render :action => :accept
   end
 end

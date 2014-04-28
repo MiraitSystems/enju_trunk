@@ -8,7 +8,7 @@
 <div class="field">
 <%= form_tag(items_create_item_has_operator_path, remote: true) do %>
   <%= t('activerecord.attributes.item.item_identifier') %>:
-  <%= text_field '', :item_identifier, :value => @identifier %>
+  <%= text_field '', :item_identifier, :value => @item_identifier %>
   <%= submit_tag t('page.item_accept') %>
 <% end %>
 </div>
