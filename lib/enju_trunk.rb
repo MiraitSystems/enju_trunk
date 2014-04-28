@@ -32,10 +32,6 @@ require 'enju_subject'
 require 'enju_manifestation_viewer'
 require 'enju_oai'
 require 'enju_leaf'
-require 'enju_trunk/engine'
-require 'enju_trunk/enju_trunk_controller'
-require 'enju_trunk/enju_trunk_helper'
-require 'enju_trunk/resourceadapter'
 
 begin
   require 'enju_trunk_circulation'
@@ -55,6 +51,11 @@ rescue LoadError
   warn $!
 end
  
+require 'enju_trunk/resourceadapter'
+require 'enju_trunk/enju_trunk_controller'
+require 'enju_trunk/enju_trunk_helper'
+require 'enju_trunk/engine'
+
 module EnjuTrunk
   def report_path
     Engine.root + 'report'
