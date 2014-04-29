@@ -498,17 +498,17 @@ class ManifestationsController < ApplicationController
 
       if params[:basket_id]
         @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
+        @all_manifestations = params[:all_manifestations] = true
       end
 
       if params[:basket_id]
         @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
+        @all_manifestations = params[:all_manifestations] = true
       end
 
       if params[:basket_id]
         @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
+        @all_manifestations = params[:all_manifestations] = true
       end
 
       @query = params[:query] # フォームで入力されたメインの検索語を保存する
@@ -636,7 +636,7 @@ class ManifestationsController < ApplicationController
     end
 
     store_location # before_filter ではファセット検索のURLを記憶してしまう
-    
+
     respond_to do |format|
       if params[:opac]
         if @manifestations.size > 0
@@ -680,7 +680,7 @@ class ManifestationsController < ApplicationController
       }
       format.mods
       format.json { render :json => @manifestations }
-      format.js { 
+      format.js {
         case params[:verb]
         when 'Exchange'
           render 'exchange_manifestations/manifestations'
@@ -814,6 +814,7 @@ class ManifestationsController < ApplicationController
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects if defined?(EnjuTrunkTheme)
     @work_has_languages = []
+    @manifestation_has_classifications = []
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
@@ -826,8 +827,9 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
       @work_has_languages = original_manifestation.work_has_languages
+      @manifestation_has_classifications = original_manifestation.manifestation_has_classifications
       if original_manifestation.manifestation_exinfos
-        original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
+        original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") }
       end
       if original_manifestation.manifestation_extexts
         original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
@@ -849,6 +851,7 @@ class ManifestationsController < ApplicationController
         @manifestation.access_address = root_manifestation.access_address
         @manifestation.required_role = root_manifestation.required_role
         @work_has_languages = root_manifestation.work_has_languages
+        @manifestation_has_classifications = root_manifestation.manifestation_has_classifications
       end
       @manifestation.series_statement = @series_statement
     end
@@ -878,6 +881,7 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     @work_has_languages = @manifestation.work_has_languages
+    @manifestation_has_classifications = @manifestation.manifestation_has_classifications
     @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
@@ -923,6 +927,7 @@ class ManifestationsController < ApplicationController
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
+    @manifestation_has_classifications = ManifestationHasClassification.create_attrs(params[:classification_id].try(:values), params[:classification_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -948,6 +953,7 @@ class ManifestationsController < ApplicationController
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
+          @manifestation.manifestation_has_classifications = ManifestationHasClassification.new_objs(@manifestaion_has_classifications.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -968,9 +974,9 @@ class ManifestationsController < ApplicationController
   end
 
   def numbering
-    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil 
+    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil
     render :json => {:success => 1, :manifestation_identifier => manifestation_identifier}
-  end 
+  end
 
   # PUT /manifestations/1
   # PUT /manifestations/1.json
@@ -980,6 +986,7 @@ class ManifestationsController < ApplicationController
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
+    @manifestation_has_classifications = ManifestationHasClassification.create_attrs(params[:classification_id].try(:values), params[:classification_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -1005,7 +1012,9 @@ class ManifestationsController < ApplicationController
           @manifestation.themes = Theme.add_themes(@theme)
         end
         @manifestation.work_has_languages.destroy_all;
+        @manifestation.manifestation_has_classifications.destroy_all;
         @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
+        @manifestation.manifestation_has_classifications = ManifestationHasClassification.new_objs(@manifestation_has_classifications.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1372,9 +1381,9 @@ class ManifestationsController < ApplicationController
     if @removed
       with << [:has_removed, :equal_to, true]
     else
-      if !params[:missing_issue] && 
+      if !params[:missing_issue] &&
         (@all_manifestations.blank? or !@all_manifestations == true) &&
-        !SystemConfiguration.get("manifestation.show_all") 
+        !SystemConfiguration.get("manifestation.show_all")
         without << [:non_searchable, :equal_to, true]
       end
     end
@@ -1387,7 +1396,7 @@ class ManifestationsController < ApplicationController
         with << [:periodical, :equal_to, false] if options[:add_mode].blank? and @series_statement.blank? and @basket.blank?
       end
     end
-    with << [:periodical_master, :equal_to, false] if options[:add_mode] 
+    with << [:periodical_master, :equal_to, false] if options[:add_mode]
     return [with, without] if options[:add_mode]
 
     #
@@ -1514,6 +1523,8 @@ class ManifestationsController < ApplicationController
     @roles = Role.all
     @languages = Language.all_cache
     @language_types = LanguageType.all
+    @classifications = Classification.all
+    @classification_types = ClassificationType.all
     @countries = Country.all
     @frequencies = Frequency.all
     @nii_types = NiiType.all if defined?(NiiType)
@@ -1741,7 +1752,7 @@ class ManifestationsController < ApplicationController
           (SystemConfiguration.get('manifestation.isbn_unique') &&
             params[:isbn].present? && params[:isbn] !~ /\*/) ||
               (params[:identifier].present? && params[:identifier] !~ /\*/)
-        search_opts[:direct_mode] = true unless params[:binding_items_flg] 
+        search_opts[:direct_mode] = true unless params[:binding_items_flg]
       end
 
       # split option (local)

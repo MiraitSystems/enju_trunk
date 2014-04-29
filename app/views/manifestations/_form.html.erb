@@ -27,7 +27,7 @@ jQuery(function(){
     $.ajax({
       type: "GET",
       url: "/manifestations/search_manifestation",
-      data: { 
+      data: {
         "original_title": $("#manifestation_original_title").val(),
         "manifestation_id": "<%= @manifestation.try(:id) %>"
       },
@@ -38,22 +38,22 @@ jQuery(function(){
           $('#search_manifestation').show();
           var data = "<strong><%= t('manifestation.same_manifestation_already_exist', :attribute => t('activerecord.attributes.manifestation.original_title')) %></strong>"
           data += "<ui>";
-          jQuery.each(obj["manifestation_urls"], function(index, value) {  
+          jQuery.each(obj["manifestation_urls"], function(index, value) {
             data += "<li>";
             data += value;
             data += "</li>";
           });
           data += "</ui>";
           $('#search_manifestation').html(data);
-        } 
+        }
       }
    });
- } 
+ }
 <% end %>
 
 function displayArticleTitle(article_title) {
   var manifestation_type = $('#manifestation_manifestation_type_id').val();
-  var series  = ['3', '4', '5', '6']; 
+  var series  = ['3', '4', '5', '6'];
   var article = ['9', '10'];
   var pub_data_field = "<label class='pub_date' for='manifestation_pub_date'><%= t('activerecord.attributes.manifestation.pub_date')%></label>";
 
@@ -63,7 +63,7 @@ function displayArticleTitle(article_title) {
     $("#frequency_field").hide();
     $("#manifestation_frequency_id").val("17");
   } else if($.inArray(manifestation_type, series) != -1) {
-    $("#frequency_field").show(); 
+    $("#frequency_field").show();
     $("#article_title_field").hide();
     $("#manifestation_article_title").val("");
   } else {
@@ -88,15 +88,15 @@ $(document).keydown(function(e) {
 
 <% if defined?(EnjuTrunkTheme) %>
   <script id="script_theme">
-    $(document).ready(function() { 
+    $(document).ready(function() {
       $("#manifestation_theme").select2({
-        multiple: true, 
-        data: <%= raw @select_theme_tags.to_json -%>, 
+        multiple: true,
+        data: <%= raw @select_theme_tags.to_json -%>,
         formatNoMatches: function(term) {
           return <%= raw t("page.theme.no_matches_found").to_json %>;
         },
         width: "300px",
-      }); 
+      });
     });
   </script>
 <% end %>
@@ -153,8 +153,8 @@ $(document).keydown(function(e) {
       $type_clone.show();
 
       // form のid,name設定
-      $clone.attr('name', 'language_id[' + this.currentNumber + ']'); 
-      $type_clone.attr('name', 'language_type[' + this.currentNumber + ']'); 
+      $clone.attr('name', 'language_id[' + this.currentNumber + ']');
+      $type_clone.attr('name', 'language_type[' + this.currentNumber + ']');
       var $new_field = $("<tr/>").attr("id", "LANG" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
 
@@ -190,6 +190,98 @@ $(document).keydown(function(e) {
     }
   }
 </script>
+
+<!-- issue6540 start -->
+<script>
+  var ItemField_classification = {
+    currentNumber : <%= raw (@manifestation_has_classifications.blank? ? 1 : @manifestation_has_classification.size).to_json %>,
+    itemTemplate : ''
+      + '<select id="classification_id___count__" name="classification_id[__count__]">'
+      + <%= raw @classifications.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.category.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
+      + '<select id="classification_type___count__" name="classificatione_type[__count__]">'
+      + <%= raw @classification_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
+      + '<input type="button" value="+" onClick="ItemField_classification.add();" /> '
+      + '<input type="button" value="-" onClick="ItemField_classification.remove(__count__);" />',
+    add : function () {
+      var field = document.getElementById('classification');
+      var new_area = document.createElement("div");
+      new_area.setAttribute("id", "CLS" + this.currentNumber);
+      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+      new_area.innerHTML = newItem;
+      field.appendChild(new_area);
+      this.currentNumber += 1;
+    },
+    remove : function (div_num) {
+      var field = document.getElementById('CLS' + div_num);
+      if(field != null){ field.parentNode.removeChild(field); }
+    }
+  }
+</script>
+
+<select id="classifications_select2_hidden" style="display: none;">
+  <%= raw @languages.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.display_name.localize + " (" + l.name + ")</option>"] } %>
+</select>
+<select id="language_types_select2_hidden" style="display: none;">
+  <%= raw @language_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
+</select>
+<script>
+  var ItemField_classification_select2 = {
+    currentNumber : <%= raw (@manifestation_has_classifications.blank? ? 1 : @manifestation_has_classifications.size).to_json %>,
+    itemTemplate : ''
+      + '<td><input type="button" value="+" onClick="ItemField_classification_select2.add();" /></td> '
+      + '<td><input type="button" value="-" onClick="ItemField_classification_select2.remove(__count__);" /></td>',
+    add : function () {
+      // language_clone
+      var $clone = $("#classifications_select2_hidden").clone();
+      $clone[0].id = 'select2_classification';
+      $clone.show();
+
+      // language_type_clone
+      var $type_clone = $("#classification_types_select2_hidden").clone();
+      $type_clone[0].id = 'select2_classification_type';
+      $type_clone.show();
+
+      // form のid,name設定
+      $clone.attr('name', 'classification_id[' + this.currentNumber + ']');
+      $type_clone.attr('name', 'classification_type[' + this.currentNumber + ']');
+      var $new_field = $("<tr/>").attr("id", "CLS" + this.currentNumber);
+      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
+
+      var $clone_field = $("<td/>");
+      $clone_field.append($clone);
+      var $type_clone_field = $("<td/>");
+      $type_clone_field.append($type_clone);
+      $new_field.append($clone_field);
+      $new_field.append($type_clone_field);
+      $new_field.append(newItem);
+
+      $("#classification > table > tbody").append($new_field);
+
+      this.currentNumber += 1;
+      $clone.select2({
+        width: "300px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
+      $type_clone.select2({
+        width: "200px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
+    },
+    remove : function (div_num) {
+      var field = document.getElementById('CLS' + div_num);
+      if(field != null){ field.parentNode.removeChild(field); }
+    }
+  }
+</script>
+<!-- issue6540 en -->
 
 <script id="script_add_title">
   function add_field(obj, parent_id, id_name) {
@@ -425,7 +517,7 @@ $(document).keydown(function(e) {
           options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
 
       <table id="bless">
-        <tr id="LANG0"> 
+        <tr id="LANG0">
           <%= select2_script "language_id_0" %>
           <td><%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %></td>
           <%= select2_script "language_type_0" %>
@@ -446,20 +538,20 @@ $(document).keydown(function(e) {
           <%= select2_script "language_id_" + i.to_s %>
           <td>
             <%= make_select2(
-              "language_id_" + i.to_s, 
-              "language_id[" + i.to_s + "]", 
-              @languages, 
-              whl[:language_id], 
+              "language_id_" + i.to_s,
+              "language_id[" + i.to_s + "]",
+              @languages,
+              whl[:language_id],
               300
             ) %>
           </td>
           <%= select2_script "language_type_" + i.to_s %>
           <td>
             <%= make_select2(
-              "language_type_" + i.to_s, 
-              "language_type[" + i.to_s + "]", 
-              @language_types, 
-              whl[:language_type_id], 
+              "language_type_" + i.to_s,
+              "language_type[" + i.to_s + "]",
+              @language_types,
+              whl[:language_type_id],
               200
             ) %>
           </td>
@@ -501,6 +593,65 @@ $(document).keydown(function(e) {
       <%= f.label :ndc -%>
       <%= f.text_field :ndc, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
     </div>
+
+   <div class="field" id="classification">
+    <%= f.label t('activerecord.models.classification') -%>
+    <% if @manifestation_has_classifications.blank? %>
+      <%#= select_tag 'language_id[0]',
+          options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
+          :selected => @default_language.id ) %>
+      <%#= select_tag 'language_type[0]',
+          options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
+
+      <table id="bless">
+        <tr id="CLS0">
+          <%= select2_script "classification_id_0" %>
+          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, @default_classification.id, 300) %></td>
+          <%= select2_script "classification_type_0" %>
+          <td><%= make_select2("classification_type_0", 'classification_type[0]', @classification_types, 0, 200) %></td>
+          <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
+        </tr>
+      </table>
+    <% else %>
+      <table id="bless">
+        <% @work_has_languages.each_with_index do |whl, i| %>
+          <%#= select_tag 'language_id[' + i.to_s + ']',
+              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id] },
+              :selected => whl[:language_id] ) %>
+          <%#= select_tag 'language_type[' + i.to_s + ']',
+              options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] },
+              :selected => whl[:language_type_id] ) %>
+          <tr id="CLAS<%= i.to_s %>">
+          <%= select2_script "classification_id_" + i.to_s %>
+          <td>
+            <%= make_select2(
+              "classification_id_" + i.to_s,
+              "classification_id[" + i.to_s + "]",
+              @languages,
+              whl[:classification_id],
+              300
+            ) %>
+          </td>
+          <%= select2_script "classification_type_" + i.to_s %>
+          <td>
+            <%= make_select2(
+              "classification_type_" + i.to_s,
+              "classification_type[" + i.to_s + "]",
+              @language_types,
+              whl[:classification_type_id],
+              200
+            ) %>
+          </td>
+          <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
+          <td><%= button_to_function '-', 'ItemField_classification_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
+          </tr>
+        <% end %>
+      </table>
+    <% end %>
+  </div>
+
+
+
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
@@ -511,7 +662,7 @@ $(document).keydown(function(e) {
           <div class="field" id="identifiers_<%= index %>">
             <%= i_f.text_field :body %>
             <%= i_f.select :identifier_type_id, @identifier_types.collect{|type| [type.display_name, type.id]} %>
-            <%= i_f.hidden_field :position, :value => index %> 
+            <%= i_f.hidden_field :position, :value => index %>
             <%= button_to_function '+', 'ItemField_identifier.add()' -%>
             <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 -%><br />
            </div>
@@ -606,15 +757,15 @@ $(document).keydown(function(e) {
     <%= f.text_field :acceptance_number, :class => "resource_integer" %>
   </div>
 
-<% if false %> 
+<% if false %>
   <%#= TODO for exinfo: change property_name(=> exinfo1) when use this form. %>
   <div class="field">
-    <label>exinfo</label><br /> 
+    <label>exinfo</label><br />
     <%= text_field :exinfos, :exinfo1, :value => @exinfo1, :class => "" %>
   </div>
   <%#= TODO for extext: change property_name(=> extext1) when use this form. %>
   <div class="field">
-    <label>extext</label><br /> 
+    <label>extext</label><br />
     <%= text_field :extexts, :extext1, :value => @extext1, :class => "" %>
   </div>
 <% end %>
@@ -661,12 +812,12 @@ $(document).keydown(function(e) {
     <%# TODO make_select2 内の分岐がうまくできない %>
     <%= select2_script "use_license_id" %>
     <%= make_select2_struct(
-      :use_license_id, 
-      "manifestation[use_license_id]", 
-      use_licenses, 
-      @manifestation.use_license_id, 
-      250, 
-      true, 
+      :use_license_id,
+      "manifestation[use_license_id]",
+      use_licenses,
+      @manifestation.use_license_id,
+      250,
+      true,
       false
     ) %>
   </div>

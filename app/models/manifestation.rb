@@ -6,6 +6,8 @@ class Manifestation < ActiveRecord::Base
   include EnjuNdl::NdlSearch
   include OutputColumns
 
+  has_many :classifications, :through => :manifestation_has_classifications, :order => :position
+
   has_many :creators, :through => :creates, :source => :agent, :order => :position
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
   has_many :publishers, :through => :produces, :source => :agent, :order => :position
@@ -49,9 +51,9 @@ class Manifestation < ActiveRecord::Base
   scope :without_master, where(:periodical_master => false)
   # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
   SELECT2_OBJ = Struct.new(:id, :name, :display_name)
-  JPN_OR_FOREIGN = [ 
-    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn'), I18n.t('jpn_or_foreign.jpn')), 
-    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign'), I18n.t('jpn_or_foreign.foreign')) 
+  JPN_OR_FOREIGN = [
+    SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn'), I18n.t('jpn_or_foreign.jpn')),
+    SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign'), I18n.t('jpn_or_foreign.foreign'))
   ]
 
   SUNSPOT_EAGER_LOADING = {
@@ -171,7 +173,7 @@ class Manifestation < ActiveRecord::Base
     end
     string :manifestation_type, :multiple => true do
       manifestation_type.try(:name)
-      #if series_statement.try(:id) 
+      #if series_statement.try(:id)
       #  1
       #else
       #  0
@@ -203,7 +205,7 @@ class Manifestation < ActiveRecord::Base
       if series_statement && series_statement.root_manifestation
         [identifier, series_statement.root_manifestation.identifier]
       else
-        [identifier]  
+        [identifier]
       end
     end
     string :removed_at, :multiple => true do
@@ -268,7 +270,7 @@ class Manifestation < ActiveRecord::Base
         series_manifestations.
           map(&:volume_number_string).compact
       else
-        volume_number_string 
+        volume_number_string
       end
     end
     string :issue_number_string, :multiple => true do
@@ -277,7 +279,7 @@ class Manifestation < ActiveRecord::Base
         series_manifestations.
           map(&:issue_number_string).compact
       else
-        issue_number_string 
+        issue_number_string
       end
     end
     string :serial_number_string, :multiple => true do
@@ -286,7 +288,7 @@ class Manifestation < ActiveRecord::Base
         series_manifestations.
           map(&:serial_number_string).compact
       else
-        serial_number_string 
+        serial_number_string
       end
     end
     string :start_page
@@ -449,7 +451,7 @@ class Manifestation < ActiveRecord::Base
     end
     boolean :hide do
       # 定期刊行物でないroot_manifestationは隠す
-      root_of_series? and periodical == false 
+      root_of_series? and periodical == false
     end
     string :exinfo_1
     string :exinfo_2
@@ -615,7 +617,7 @@ class Manifestation < ActiveRecord::Base
       hide = true if i.non_searchable
       hide = true if item_retention_period_non_searchable?(i)
       if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
-        hide = true if i.try(:use_restriction).try(:name) == 'Not For Loan' 
+        hide = true if i.try(:use_restriction).try(:name) == 'Not For Loan'
       end
       unless article?
         hide = true if item_circulation_status_unsearchable?(i)
@@ -623,7 +625,7 @@ class Manifestation < ActiveRecord::Base
           hide = true if i.rank == 2
         end
       end
-      return false unless hide 
+      return false unless hide
     end
     return true
   end
@@ -642,7 +644,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def new_serial?
-    return false unless self.serial?    
+    return false unless self.serial?
     return true if self.series_statement.last_issues.include?(self)
 #    unless self.serial_number.blank?
 #      return true if self == self.series_statement.last_issue
@@ -690,7 +692,7 @@ class Manifestation < ActiveRecord::Base
 
   def reservable?
     unless SystemConfiguration.get("reserves.able_for_not_item")
-      return false if items.for_checkout.empty? 
+      return false if items.for_checkout.empty?
     end
     return false if self.periodical_master?
     true
@@ -787,10 +789,10 @@ class Manifestation < ActiveRecord::Base
   def set_series_statement
     if self.series_statement_id
       series_statement = SeriesStatement.find(self.series_statement_id)
-      self.series_statement = series_statement unless series_statement.blank?   
+      self.series_statement = series_statement unless series_statement.blank?
     end
-  end 
- 
+  end
+
   def uniq_options
     self.creators.uniq!
     self.contributors.uniq!
@@ -815,12 +817,12 @@ class Manifestation < ActiveRecord::Base
     when :previous_term
       term = Term.previous_term
       if term
-        sum = Reserve.where("manifestation_id = ? AND created_at >= ? AND created_at <= ?", self.id, term.start_at, term.end_at).count 
+        sum = Reserve.where("manifestation_id = ? AND created_at >= ? AND created_at <= ?", self.id, term.start_at, term.end_at).count
       end
     when :current_term
       term = Term.current_term
       if term
-        sum = Reserve.where("manifestation_id = ? AND created_at >= ? AND created_at <= ?", self.id, term.start_at, term.end_at).count 
+        sum = Reserve.where("manifestation_id = ? AND created_at >= ? AND created_at <= ?", self.id, term.start_at, term.end_at).count
       end
     end
     return sum
@@ -831,7 +833,7 @@ class Manifestation < ActiveRecord::Base
     case type
     when nil
     when :all
-      self.items.all.each {|item| sum += Checkout.where(:item_id=>item.id).count} 
+      self.items.all.each {|item| sum += Checkout.where(:item_id=>item.id).count}
     when :previous_term
       term = Term.previous_term
       if term
@@ -840,7 +842,7 @@ class Manifestation < ActiveRecord::Base
     when :current_term
       term = Term.current_term
       if term
-        self.items.all.each {|item| sum += Checkout.where("item_id = ? AND created_at >= ? AND created_at <= ?", item.id, term.start_at, term.end_at).count } 
+        self.items.all.each {|item| sum += Checkout.where("item_id = ? AND created_at >= ? AND created_at <= ?", item.id, term.start_at, term.end_at).count }
       end
     end
     return sum
@@ -861,7 +863,7 @@ class Manifestation < ActiveRecord::Base
       items = self.items.for_retain_from_own(lib).concat(self.items.for_retain_from_others(lib)).flatten
     end
   end
- 
+
   def ordered?
     self.purchase_requests.each do |p|
 #      return true if p.state == "ordered"
@@ -926,7 +928,7 @@ class Manifestation < ActiveRecord::Base
       series_statements_total =
         Manifestation.where(:id => solr_search.execute.raw_results.map(&:primary_key)).joins(:series_statement => :manifestations).count
     end
-    
+
     get_all_ids = proc do
       solr_search.execute.raw_results.map(&:primary_key)
     end
@@ -956,19 +958,19 @@ class Manifestation < ActiveRecord::Base
     generate_manifestation_list_internal(manifestation_ids, output_type, current_user, search_condition_summary, cols, &block)
   end
 
-  # TODO: エクセル、TSV、PDF利用部分のメソッド名を修正すること	
+  # TODO: エクセル、TSV、PDF利用部分のメソッド名を修正すること
   def self.generate_manifestation_list_internal(manifestation_ids, output_type, current_user, summary, cols, &block)
     output = OpenStruct.new
     output.result_type = output_type == :excelx ? :path : :data
     case output_type
-    when :pdf 
+    when :pdf
       method = 'get_manifestation_list_pdf'
       type  = cols.first =~ /\Aarticle./ ? :article : :book
-      result = output.__send__("#{output.result_type}=", 
+      result = output.__send__("#{output.result_type}=",
         self.__send__(method, manifestation_ids, current_user, summary, type))
     when :request
       method = 'get_missing_list_pdf'
-      result = output.__send__("#{output.result_type}=", 
+      result = output.__send__("#{output.result_type}=",
         self.__send__(method, manifestation_ids, current_user))
     when :excelx, :tsv
       method = 'get_manifestation_list_excelx'
@@ -976,12 +978,12 @@ class Manifestation < ActiveRecord::Base
         result = output.__send__("#{output.result_type}=",
           self.__send__('get_manifestation_list_tsv_csv', manifestation_ids, cols))
       else
-        result = output.__send__("#{output.result_type}=", 
+        result = output.__send__("#{output.result_type}=",
           self.__send__('get_manifestation_list_excelx', manifestation_ids, current_user, cols))
       end
     when :label
       method = 'get_label_list_tsv_csv'
-      result = output.__send__("#{output.result_type}=", 
+      result = output.__send__("#{output.result_type}=",
         self.__send__(method, manifestation_ids))
     end
 
@@ -1080,10 +1082,10 @@ class Manifestation < ActiveRecord::Base
           row = []
           row << item.manifestation.ndc
           row << item.manifestation.manifestation_exinfos(:name => 'author_mark').first.try(:value)# 著者記号
-          row << item.shelf.name 
-          data << row.join(split) +"\n" 
+          row << item.shelf.name
+          data << row.join(split) +"\n"
         end
-      end       
+      end
     end
     return data
   end
@@ -1282,7 +1284,7 @@ class Manifestation < ActiveRecord::Base
       splits = ws_col.split('.')
       case splits[0]
       when 'manifestation_extext'
-        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).first 
+        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).first
         val =  extext.value if extext
       when 'manifestation_exinfo'
         exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).first
@@ -1382,7 +1384,7 @@ class Manifestation < ActiveRecord::Base
 
   def self.get_manifestation_locate(manifestation, current_user)
     report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'manifestation_reseat.tlf')
-   
+
     # footer
     report.layout.config.list(:list) do
       use_stores :total => 0
@@ -1475,7 +1477,7 @@ class Manifestation < ActiveRecord::Base
         }
       end
     end
-    return report 
+    return report
   end
 
   class GenerateManifestationListJob
@@ -1638,7 +1640,7 @@ class Manifestation < ActiveRecord::Base
 
       work_has_titles.each_with_index do |work_has_title,index|
         if @title_list[index.to_s].blank?
-          work_has_title.mark_for_destruction 
+          work_has_title.mark_for_destruction
         else
           if work_has_title.title_id
             work_has_title.manifestation_title.title = @title_list[index.to_s]
@@ -1646,7 +1648,7 @@ class Manifestation < ActiveRecord::Base
             title = Title.new(:title => @title_list[index.to_s])
             title.save
             work_has_title.title_id = title.id
-          end        
+          end
         end
       end
     end
