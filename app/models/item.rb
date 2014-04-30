@@ -97,7 +97,6 @@ class Item < ActiveRecord::Base
 
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
-
   def set_item_operator
     item_has_operators.each do |operator|
       operator.item = self if operator.item.blank?
@@ -243,6 +242,42 @@ class Item < ActiveRecord::Base
       true
     else
       false
+    end
+  end
+
+  # TODO
+  def upd_item_has_operator(item, operator_data)
+    begin
+      ActiveRecord::Base.transaction do
+=begin
+        @item.circulation_status = CirculationStatus.find(:first, :conditions => ["name = ?", 'Available On Shelf'])
+
+        library = current_user.library
+        shelf_name = case library.id
+          when 5 then 'create_manifestation'
+          when 6 then 'create_index'
+          else        library.name
+        end
+        shelf = Shelf.find(:first, :conditions => ["library_id = ? AND name = ?", library.id, shelf_name])
+        @item.shelf = shelf if shelf
+        @item.save!
+=end
+        logger.error "########### user = #{User.current_user.username} ###########"
+        logger.error "########### operator_data = #{operator_data} ###########"
+
+        @operator = ItemHasOperator.new(:item_id => item.id)
+        #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
+        @operator.user_number = User.current_user.user_number #TODO: #6964
+        @operator.user_id = User.current_user.id
+        @operator.library_id = User.current_user.library.id
+        @operator.operated_at = Date.today
+        @operator.save!
+
+        @notice = I18n.t('item.accept_completed_successfully')
+      end
+    rescue => e
+      @notice = e.message
+      logger.info "ERROR: #{e.message}"
     end
   end
 

@@ -161,7 +161,6 @@ class ItemsController < ApplicationController
         @countoperators = 1
       end
     end
-
   end
 
   # POST /items
@@ -241,14 +240,19 @@ class ItemsController < ApplicationController
           flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.item'))
         end
 
-        logger.error "############ update_attributes ###########"
+        logger.error "############ @item = #{@item.inspect} ###########"
+        if SystemConfiguration.get('manifestation.use_item_has_operator')
+          operator_data = params[:item][:item_has_operators_attributes]
+          logger.error "########### operator_data = #{operator_data} ###########"
+          logger.error "########### operator_data = #{operator_data[0]} ###########"
+          @item.upd_item_has_operator(@item, operator_data)
+        end
 
         format.html { redirect_to @item }
         format.json { head :no_content }
       else
         logger.error "############ NOT update_attributes ###########"
         if SystemConfiguration.get('manifestation.use_item_has_operator')
-          create_item_has_operator
           @countoperators = @item.item_has_operators.size
         end
         prepare_options
@@ -380,44 +384,11 @@ class ItemsController < ApplicationController
     end
     return true
   end
-
+  
+  # TODO 必要か?
   def accept
     @item_identifier = params[:item][:item_identifier]
     @item = Item.find_by_item_identifier(@item_identifier)
     @operator = ItemHasOperator.find(params[:operator]) if params[:operator]
-  end
-
-  def create_item_has_operator
-    begin
-      ActiveRecord::Base.transaction do
-        @item = Item.find_by_item_identifier(params[:item][:item_identifier])
-        raise t('item.not_found') unless @item
-
-        @item.circulation_status = CirculationStatus.find(:first, :conditions => ["name = ?", 'Available On Shelf'])
-        library = current_user.library
-        shelf_name = case library.id
-          when 5 then 'create_manifestation'
-          when 6 then 'create_index'
-          else        library.name
-        end
-        shelf = Shelf.find(:first, :conditions => ["library_id = ? AND name = ?", library.id, shelf_name])
-        @item.shelf = shelf if shelf
-        @item.save!
-
-        @operator = ItemHasOperator.new(:item_id => @item.id)
-        #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
-        @operator.user_number = current_user.user_number #TODO: #6964
-        @operator.user_id = current_user.id
-        @operator.library_id = current_user.library.id
-        @operator.operated_at = Date.today
-        @operator.save!
-
-        @notice = t('item.accept_completed_successfully')
-      end
-    rescue => e
-      @notice = e.message
-      logger.info "ERROR: #{e.message}"
-    end
-    render :action => :accept
   end
 end
