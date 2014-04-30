@@ -105,7 +105,6 @@ EnjuLeaf::Application.routes.draw do
   match 'checked_manifestations/clear_all' => 'checked_manifestations#destroy_all'
 
   match 'items/accept' => 'items#accept'
-  match 'items/create_item_has_operator' => 'items#create_item_has_operator'
 
   match 'agents/search_name' => 'agents#search_name'
 
