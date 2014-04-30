@@ -221,10 +221,10 @@ $(document).keydown(function(e) {
 </script>
 
 <select id="classifications_select2_hidden" style="display: none;">
-  <%= raw @languages.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.display_name.localize + " (" + l.name + ")</option>"] } %>
+  <%= raw @classifications.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.category.localize + " (" + l.name + ")</option>"] } %>
 </select>
-<select id="language_types_select2_hidden" style="display: none;">
-  <%= raw @language_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
+<select id="classification_types_select2_hidden" style="display: none;">
+  <%= raw @classification_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
 </select>
 <script>
   var ItemField_classification_select2 = {
@@ -233,12 +233,12 @@ $(document).keydown(function(e) {
       + '<td><input type="button" value="+" onClick="ItemField_classification_select2.add();" /></td> '
       + '<td><input type="button" value="-" onClick="ItemField_classification_select2.remove(__count__);" /></td>',
     add : function () {
-      // language_clone
+      // classification_clone
       var $clone = $("#classifications_select2_hidden").clone();
       $clone[0].id = 'select2_classification';
       $clone.show();
 
-      // language_type_clone
+      // classification_type_clone
       var $type_clone = $("#classification_types_select2_hidden").clone();
       $type_clone[0].id = 'select2_classification_type';
       $type_clone.show();
@@ -563,9 +563,12 @@ $(document).keydown(function(e) {
     <% end %>
   </div>
 
+  <!-- test1 -->
   <%- if @manifestation.series_statement -%>
+    <!-- test2 -->
     <%= render :partial => 'manifestations/serial_form', :locals => {:f => f, :manifestation => @manifestation} -%>
   <%- else -%>
+    <!-- test3 -->
     <div class="field">
       <%= f.label :edition_display_value -%>
       <%= f.text_field :edition_display_value, :size=>"10" -%>
@@ -597,16 +600,10 @@ $(document).keydown(function(e) {
    <div class="field" id="classification">
     <%= f.label t('activerecord.models.classification') -%>
     <% if @manifestation_has_classifications.blank? %>
-      <%#= select_tag 'language_id[0]',
-          options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
-          :selected => @default_language.id ) %>
-      <%#= select_tag 'language_type[0]',
-          options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
-
       <table id="bless">
         <tr id="CLS0">
           <%= select2_script "classification_id_0" %>
-          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, @default_classification.id, 300) %></td>
+          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %></td>
           <%= select2_script "classification_type_0" %>
           <td><%= make_select2("classification_type_0", 'classification_type[0]', @classification_types, 0, 200) %></td>
           <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
@@ -614,13 +611,7 @@ $(document).keydown(function(e) {
       </table>
     <% else %>
       <table id="bless">
-        <% @work_has_languages.each_with_index do |whl, i| %>
-          <%#= select_tag 'language_id[' + i.to_s + ']',
-              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id] },
-              :selected => whl[:language_id] ) %>
-          <%#= select_tag 'language_type[' + i.to_s + ']',
-              options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] },
-              :selected => whl[:language_type_id] ) %>
+        <% @manifestation_has_classifications.each_with_index do |whl, i| %>
           <tr id="CLAS<%= i.to_s %>">
           <%= select2_script "classification_id_" + i.to_s %>
           <td>
@@ -649,9 +640,7 @@ $(document).keydown(function(e) {
       </table>
     <% end %>
   </div>
-
-
-
+    <!-- test32 -->
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
