@@ -166,6 +166,7 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
+        SubCarrierType,
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140422071100) do
+ActiveRecord::Schema.define(:version => 20140424121918) do
 
   create_table "abbreviations", :force => true do |t|
     t.string   "keyword"
@@ -1657,6 +1657,7 @@ ActiveRecord::Schema.define(:version => 20140422071100) do
     t.datetime "date_of_discontinuance"
     t.string   "dis_date"
     t.integer  "use_license_id"
+    t.integer  "sub_carrier_type_id"
   end
 
   add_index "manifestations", ["access_address"], :name => "index_manifestations_on_access_address"
@@ -1676,6 +1677,7 @@ ActiveRecord::Schema.define(:version => 20140422071100) do
   add_index "manifestations", ["original_title", "pub_date"], :name => "index_1"
   add_index "manifestations", ["periodical"], :name => "index_manifestations_on_periodical"
   add_index "manifestations", ["required_role_id"], :name => "index_manifestations_on_required_role_id"
+  add_index "manifestations", ["sub_carrier_type_id"], :name => "index_manifestations_on_sub_carrier_type_id"
   add_index "manifestations", ["updated_at"], :name => "index_manifestations_on_updated_at"
 
   create_table "medium_of_performances", :force => true do |t|
@@ -2494,6 +2496,21 @@ ActiveRecord::Schema.define(:version => 20140422071100) do
     t.integer  "manifestation_type_id", :default => 0
     t.integer  "user_status_id",        :default => 0
   end
+
+  create_table "sub_carrier_types", :force => true do |t|
+    t.string   "name"
+    t.string   "display_name"
+    t.integer  "carrier_type_id",                  :null => false
+    t.string   "nacsis_identifier"
+    t.string   "note"
+    t.integer  "position",          :default => 0, :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+  end
+
+  add_index "sub_carrier_types", ["carrier_type_id"], :name => "index_sub_carrier_types_on_carrier_type_id"
+  add_index "sub_carrier_types", ["nacsis_identifier"], :name => "index_sub_carrier_types_on_nacsis_identifier"
+  add_index "sub_carrier_types", ["name"], :name => "index_sub_carrier_types_on_name"
 
   create_table "subject_has_classifications", :force => true do |t|
     t.integer  "subject_id"
