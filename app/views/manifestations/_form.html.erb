@@ -253,8 +253,8 @@ $(document).keydown(function(e) {
       $clone_field.append($clone);
       var $type_clone_field = $("<td/>");
       $type_clone_field.append($type_clone);
-      $new_field.append($clone_field);
       $new_field.append($type_clone_field);
+      $new_field.append($clone_field);
       $new_field.append(newItem);
 
       $("#classification > table > tbody").append($new_field);
@@ -602,10 +602,10 @@ $(document).keydown(function(e) {
     <% if @manifestation_has_classifications.blank? %>
       <table id="bless">
         <tr id="CLS0">
-          <%= select2_script "classification_id_0" %>
-          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %></td>
           <%= select2_script "classification_type_0" %>
           <td><%= make_select2("classification_type_0", 'classification_type[0]', @classification_types, 0, 200) %></td>
+          <%= select2_script "classification_id_0" %>
+          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %></td>
           <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
         </tr>
       </table>
@@ -613,16 +613,6 @@ $(document).keydown(function(e) {
       <table id="bless">
         <% @manifestation_has_classifications.each_with_index do |whl, i| %>
           <tr id="CLAS<%= i.to_s %>">
-          <%= select2_script "classification_id_" + i.to_s %>
-          <td>
-            <%= make_select2(
-              "classification_id_" + i.to_s,
-              "classification_id[" + i.to_s + "]",
-              @languages,
-              whl[:classification_id],
-              300
-            ) %>
-          </td>
           <%= select2_script "classification_type_" + i.to_s %>
           <td>
             <%= make_select2(
@@ -633,7 +623,17 @@ $(document).keydown(function(e) {
               200
             ) %>
           </td>
-          <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
+          <%= select2_script "classification_id_" + i.to_s %>
+          <td>
+            <%= make_select2(
+              "classification_id_" + i.to_s,
+              "classification_id[" + i.to_s + "]",
+              @languages,
+              whl[:classification_id],
+              300
+            ) %>
+          </td>
+         <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
           <td><%= button_to_function '-', 'ItemField_classification_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
           </tr>
         <% end %>
