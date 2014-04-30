@@ -7,8 +7,6 @@ class SubCarrierType < ActiveRecord::Base
 
   attr_accessible :carrier_type_id, :display_name, :nacsis_identifier, :name, :note, :position
 
-  validates_presence_of :name
   validates_presence_of :display_name
-  validates_presence_of :nacsis_identifier
 
 end
