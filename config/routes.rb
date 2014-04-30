@@ -7,6 +7,8 @@ EnjuLeaf::Application.routes.draw do
   resources :title_types
   resources :approvals do
     get :get_approval_report, :on => :collection
+    get :search, :on => :collection
+    post :output_csv, :on => :collection
   end
   resources :keycodes
   resources :use_licenses

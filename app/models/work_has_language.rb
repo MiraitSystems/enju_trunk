@@ -28,8 +28,9 @@ class WorkHasLanguage < ActiveRecord::Base
     list = []
     language_ids.zip(language_type_ids).each do |language_id ,language_type_id|
       whl = {}
-      whl[:language_id] = language_id
-      whl[:language_type_id] = language_type_id
+      whl[:language_id] = language_id.to_i
+      whl[:language_type_id] = language_type_id.to_i
+      # logger.error "############# work_has_languages = #{whl} ##############"
       list << whl
     end
     return list
