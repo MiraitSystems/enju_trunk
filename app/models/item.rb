@@ -95,6 +95,13 @@ class Item < ActiveRecord::Base
   after_save :check_price, :except => :delete
   after_save :reindex
 
+  # TODO
+  def exist_user_number
+    unless self.user_number.blank?
+      user = User.where(:user_number => self.user_number).first
+      errors[:base] << I18n.t('user.not_found') unless user
+    end
+  end
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
   def set_item_operator
@@ -246,38 +253,36 @@ class Item < ActiveRecord::Base
   end
 
   # TODO
-  def upd_item_has_operator(item, operator_data)
+  def upd_item_has_operator(item, operator_data, user_number)
     begin
       ActiveRecord::Base.transaction do
-=begin
-        @item.circulation_status = CirculationStatus.find(:first, :conditions => ["name = ?", 'Available On Shelf'])
-
-        library = current_user.library
-        shelf_name = case library.id
-          when 5 then 'create_manifestation'
-          when 6 then 'create_index'
-          else        library.name
-        end
-        shelf = Shelf.find(:first, :conditions => ["library_id = ? AND name = ?", library.id, shelf_name])
-        @item.shelf = shelf if shelf
-        @item.save!
-=end
         logger.error "########### user = #{User.current_user.username} ###########"
         logger.error "########### operator_data = #{operator_data} ###########"
 
-        @operator = ItemHasOperator.new(:item_id => item.id)
-        #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
-        @operator.user_number = User.current_user.user_number #TODO: #6964
-        @operator.user_id = User.current_user.id
-        @operator.library_id = User.current_user.library.id
-        @operator.operated_at = Date.today
-        @operator.save!
-
+        # if # update:同一のitem_idで作業者が既に存在している場合
+        # else # new:updateの条件に当てはまらない時
+          @operator = ItemHasOperator.new(:item_id => item.id)
+          #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
+          @operator.user_number = user_number #TODO: #6964
+          @operator.user_id = User.find(:first, :select => "id", :conditions => ["user_number = ?", user_number])
+          @operator.library_id = User.current_user.library.id
+          @operator.operated_at = Date.today
+          @operator.note = operator_data['0'][:note]
+          @operator.save!
+        # end  
         @notice = I18n.t('item.accept_completed_successfully')
       end
     rescue => e
       @notice = e.message
       logger.info "ERROR: #{e.message}"
+    end
+  end
+
+  def operator_is_exist
+    # 今のitemにoperatorが存在するか
+　　operator = ItemHasOperator.find(:item_id => item.id)
+    if operator
+      
     end
   end
 

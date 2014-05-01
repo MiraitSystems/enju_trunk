@@ -243,9 +243,8 @@ class ItemsController < ApplicationController
         logger.error "############ @item = #{@item.inspect} ###########"
         if SystemConfiguration.get('manifestation.use_item_has_operator')
           operator_data = params[:item][:item_has_operators_attributes]
-          logger.error "########### operator_data = #{operator_data} ###########"
-          logger.error "########### operator_data = #{operator_data[0]} ###########"
-          @item.upd_item_has_operator(@item, operator_data)
+          user_number = params[:item_has_operators_attributes_0_user_number]
+          @item.upd_item_has_operator(@item, operator_data, user_number)
         end
 
         format.html { redirect_to @item }
