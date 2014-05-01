@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
   #before_filter :get_library_group, :set_locale, :set_available_languages, :prepare_for_mobile, :set_current_user
   before_filter :get_library_group, :set_locale, :set_available_languages, :set_current_user, :get_current_basket
   #helper_method :mobile_device?
+  has_mobile_fu
 
   protected
   def add_breadcrumb name, url=''
