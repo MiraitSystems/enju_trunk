@@ -193,14 +193,15 @@ $(document).keydown(function(e) {
 
 <!-- issue6540 start -->
 <script>
+  // <%= raw @classifications.size %>
   var ItemField_classification = {
     currentNumber : <%= raw (@manifestation_has_classifications.blank? ? 1 : @manifestation_has_classification.size).to_json %>,
     itemTemplate : ''
+     + '<select id="classification_type___count__" name="classificatione_type[__count__]">'
+      + <%= raw @classification_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
       + '<select id="classification_id___count__" name="classification_id[__count__]">'
       + <%= raw @classifications.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.category.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<select id="classification_type___count__" name="classificatione_type[__count__]">'
-      + <%= raw @classification_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
       + '</select>&#10'
       + '<input type="button" value="+" onClick="ItemField_classification.add();" /> '
       + '<input type="button" value="-" onClick="ItemField_classification.remove(__count__);" />',
