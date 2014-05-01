@@ -937,9 +937,7 @@ class NacsisCat
         case nacsis_cat.detail[:vol_info].size
         when 0 # VOLGが0件の場合
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
-        when 1 # VOLGが1件の場合
-          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, nacsis_cat.detail[:vol_info].first)
-        else   # VOLGが2件以上の場合
+        else   # VOLGが1件以上の場合
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
 
           volg_manifestations = []
@@ -1049,7 +1047,7 @@ class NacsisCat
         end
 
         if nacsis_cat.book?
-          unless nacsis_info[:vol_info].size >= 2 && volg_info.present?
+          unless nacsis_info[:vol_info].size >= 1 && volg_info.present?
             attrs[:nacsis_identifier] = nacsis_cat.ncid
             attrs[:nbn] = nacsis_info[:nbn]
           end
