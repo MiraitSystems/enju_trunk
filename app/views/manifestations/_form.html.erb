@@ -158,8 +158,6 @@ $(document).keydown(function(e) {
       var $new_field = $("<tr/>").attr("id", "LANG" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
 
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "LANG" + this.currentNumber);
       var $clone_field = $("<td/>");
       $clone_field.append($clone);
       var $type_clone_field = $("<td/>");
@@ -168,7 +166,7 @@ $(document).keydown(function(e) {
       $new_field.append($type_clone_field);
       $new_field.append(newItem);
 
-      $("#language > div > table > tbody").append($new_field);
+      $("#language > table > tbody").append($new_field);
 
       this.currentNumber += 1;
       $clone.select2({
@@ -420,44 +418,56 @@ $(document).keydown(function(e) {
   <div class="field" id="language">
     <%= f.label t('activerecord.models.language') -%>
     <% if @work_has_languages.blank? %>
-      <div id="LANG0">
-        <%#= select_tag 'language_id[0]',
-            options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
-            :selected => @default_language.id ) %>
-        <%#= select_tag 'language_type[0]',
-            options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
+      <%#= select_tag 'language_id[0]',
+          options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
+          :selected => @default_language.id ) %>
+      <%#= select_tag 'language_type[0]',
+          options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
 
-        <table id="bless">
-          <tr> 
-            <%= select2_script "language_id_0" %>
-            <td><%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %></td>
-            <%= select2_script "language_type_0" %>
-            <td><%= make_select2("language_type_0", 'language_type[0]', @language_types, 0, 200) %></td>
-            <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
-          </tr>
-        </table>
-      </div>
+      <table id="bless">
+        <tr id="LANG0"> 
+          <%= select2_script "language_id_0" %>
+          <td><%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %></td>
+          <%= select2_script "language_type_0" %>
+          <td><%= make_select2("language_type_0", 'language_type[0]', @language_types, 0, 200) %></td>
+          <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
+        </tr>
+      </table>
     <% else %>
-      <% @work_has_languages.each_with_index do |whl, i| %>
-        <div id="LANG<%= i.to_s %>">
+      <table id="bless">
+        <% @work_has_languages.each_with_index do |whl, i| %>
           <%#= select_tag 'language_id[' + i.to_s + ']',
               options_for_select(@languages.collect{|l| [l.display_name.localize, l.id] },
               :selected => whl[:language_id] ) %>
           <%#= select_tag 'language_type[' + i.to_s + ']',
               options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] },
               :selected => whl[:language_type_id] ) %>
-          <table id="bless">
-            <tr> 
-            <%= select2_script "language_id_" + i.to_s %>
-            <td><%= make_select2("language_id_" + i.to_s, "language_id[" + i.to_s + "]", @languages, whl.language_id, 300) %></td>
-            <%= select2_script "language_type_" + i.to_s %>
-            <td><%= make_select2("language_type_" + i.to_s, "language_type[" + i.to_s + "]", @language_types, whl.language_type_id, 200) %></td>
-            <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
-            <td><%= button_to_function '-', 'ItemField_language_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
-            </tr>
-          </table>
-        </div>
-      <% end %>
+          <tr id="LANG<%= i.to_s %>">
+          <%= select2_script "language_id_" + i.to_s %>
+          <td>
+            <%= make_select2(
+              "language_id_" + i.to_s, 
+              "language_id[" + i.to_s + "]", 
+              @languages, 
+              whl[:language_id], 
+              300
+            ) %>
+          </td>
+          <%= select2_script "language_type_" + i.to_s %>
+          <td>
+            <%= make_select2(
+              "language_type_" + i.to_s, 
+              "language_type[" + i.to_s + "]", 
+              @language_types, 
+              whl[:language_type_id], 
+              200
+            ) %>
+          </td>
+          <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
+          <td><%= button_to_function '-', 'ItemField_language_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
+          </tr>
+        <% end %>
+      </table>
     <% end %>
   </div>
 
