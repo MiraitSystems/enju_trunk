@@ -3,7 +3,6 @@ class SeriesHasManifestationsController < ApplicationController
   load_and_authorize_resource
   before_filter :get_manifestation#, :only => [:index, :new, :edit, :create, :destroy]
   before_filter :get_series_statement, :only => [:index, :new, :create, :edit, :update, :update_all]
-  cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
 
   # GET /series_has_manifestations
   # GET /series_has_manifestations.json
