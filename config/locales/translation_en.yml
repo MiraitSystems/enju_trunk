@@ -3286,6 +3286,8 @@ en:
     create_ordered_manifestations: "Creste ordered items"
     confirm_create_ordered: "Are you sure?"
     not_created_items: "Ordered item wasn't created"
+    update_order: ”Update order”
+    confirm_update_order: "Are you sure to update acquired number and create payments?"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
   approval:

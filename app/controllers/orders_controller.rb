@@ -538,4 +538,16 @@ class OrdersController < ApplicationController
     end
   end
 
+  def update_order
+    begin
+      @order = Order.find(params[:id])
+      @order.update_order
+      flash[:notice] = t('controller.successfully_created', :model => t('order.payments'))
+    rescue => ex
+      logger.error "Failed to update order: #{ex}"
+      flash[:notice] = ex
+    end
+    redirect_to order_payments_path(@order)
+  end
+
 end

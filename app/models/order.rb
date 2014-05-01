@@ -205,6 +205,34 @@ class Order < ActiveRecord::Base
 
   paginates_per 10
 
+  # update number_of_acceptance
+  # create payments 
+  def update_order
+    order = self
+    acquired_num = order.items.where('acquired_at IS NOT NULL').size rescue 0
+    order.number_of_acceptance = acquired_num
+    order.save
+    if order.payment_form.v == '1' || order.payment_form.v == '3' #TODO only prepayment
+      ordered_items = order.items.where('payment_id IS NULL')
+      ordered_items.each do |item|
+        payment = Payment.new(:order_id => order.id)
+        payment.billing_date = Time.now
+        payment.manifestation_id = item.manifestation.id #TODO
+        payment.currency_id = order.currency_id
+        payment.currency_rate = order.currency_rate
+        payment.discount_commision = order.margin_ratio
+        payment.before_conv_amount_of_payment = order.original_price
+        payment.amount_of_payment = order.unit_price
+#        payment.taxable_amount = order.taxable_amount
+#        payment.tax_exempt_amount = order.tax_exempt_amount
+        payment.number_of_payment = 1 
+        payment.payment_type = 2 #TODO
+        payment.save!
+        item.update_attributes(:payment_id => payment.id)
+      end
+    end 
+  end 
+
   def self.ouput_columns
     return [{name:"number", model: "calculate", column: "calculate"},
             {name:"full_name", model: "agents", column: "full_name"},

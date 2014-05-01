@@ -3249,6 +3249,8 @@ ja:
     create_ordered_manifestations: "発注資料を一括作成"
     confirm_create_ordered: "発注資料を作成しますか。"
     not_created_items: "発注資料は作成されませんでした。"
+    update_order: "発注情報の更新"
+    confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"
