@@ -86,9 +86,9 @@ $(function(){
   <% i = 0 %>
   <%= f.fields_for :item_has_operators, @item.item_has_operators, :include_id => false do |operator| %>
     <% if @item.item_has_operators[i].delete_flg %>
-    <div id="SF<%= i %>" style="display:none">
+      <div id="SF<%= i %>" style="display:none">
     <% else %>
-    <div id="SF<%= i %>">
+      <div id="SF<%= i %>">
     <% end %>
     <div class="field">
       <%= operator.label :user_id %>
@@ -121,5 +121,5 @@ $(function(){
     <% i += 1%>
   <% end %>
 
-<div id="SF<%= i %>"></div>
+<!--div id="SF<%= i %>"></div-->
 </div>

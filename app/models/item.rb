@@ -12,6 +12,7 @@ class Item < ActiveRecord::Base
                   :non_searchable,
                   :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes 
+  attr_accessor :user_number
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -89,6 +90,7 @@ class Item < ActiveRecord::Base
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
   validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
+  validate :exist_user_number, :if => proc{ SystemConfiguration.get('manifestation.use_item_has_operator') }
   before_validation :set_circulation_status, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
@@ -254,33 +256,26 @@ class Item < ActiveRecord::Base
 
   # TODO
   def upd_item_has_operator(item, operator_data, user_number)
-    begin
-      ActiveRecord::Base.transaction do
-        logger.error "########### user = #{User.current_user.username} ###########"
-        logger.error "########### operator_data = #{operator_data} ###########"
+    logger.error "########### user = #{User.current_user.username} ###########"
+    logger.error "########### operator_data = #{operator_data} ###########"
 
-        # if # update:同一のitem_idで作業者が既に存在している場合
-        # else # new:updateの条件に当てはまらない時
-          @operator = ItemHasOperator.new(:item_id => item.id)
-          #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
-          @operator.user_number = user_number #TODO: #6964
-          @operator.user_id = User.find(:first, :select => "id", :conditions => ["user_number = ?", user_number])
-          @operator.library_id = User.current_user.library.id
-          @operator.operated_at = Date.today
-          @operator.note = operator_data['0'][:note]
-          @operator.save!
-        # end  
-        @notice = I18n.t('item.accept_completed_successfully')
-      end
-    rescue => e
-      @notice = e.message
-      logger.info "ERROR: #{e.message}"
-    end
+    # if operator_is_exist # update:同一のitem_idで作業者が既に存在している場合
+    # else # new:updateの条件に当てはまらない時
+      @operator = ItemHasOperator.new(:item_id => item.id)
+      #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
+      @operator.user_number = user_number #TODO: #6964
+      @operator.user_id = User.find(:first, :select => "id", :conditions => ["user_number = ?", user_number])
+      @operator.library_id = User.current_user.library.id
+      @operator.operated_at = Date.today
+      @operator.note = operator_data['0'][:note]
+      @operator.save!
+    # end  
+    @notice = I18n.t('item.accept_completed_successfully')
   end
 
   def operator_is_exist
     # 今のitemにoperatorが存在するか
-　　operator = ItemHasOperator.find(:item_id => item.id)
+    # operator = ItemHasOperator.find(:item_id => item.id, :conditions => { :user_number = })
     if operator
       
     end
