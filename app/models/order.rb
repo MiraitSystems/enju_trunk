@@ -179,10 +179,18 @@ class Order < ActiveRecord::Base
     num = self.number_of_acceptance_schedule
     if self.manifestation.periodical_master
       series_statement = ordered_manifestation.series_statement
+      m_issue = series_statement.last_issue
+      last_volume = m_issue.volume_number
+      last_issue = m_issue.issue_number
+      last_serial = m_issue.serial_number
       num.times do
         new_m = series_statement.new_manifestation
+        new_m.set_next_number(last_volume, last_issue)
+        new_m.serial_number = last_serial + 1  rescue nil
+        new_m.serial_number_string = new_m.serial_number.to_s rescue nil
         new_m.save!
         new_manifestations << new_m
+        last_volume = new_m.volume_number; last_issue = new_m.issue_number; last_serial = new_m.serial_number
       end
       new_manifestations.map {|m| create_item(m)} if with_item
     else
@@ -213,7 +221,7 @@ class Order < ActiveRecord::Base
     order.number_of_acceptance = acquired_num
     order.save
     if order.payment_form.v == '1' || order.payment_form.v == '3' #TODO only prepayment
-      ordered_items = order.items.where('payment_id IS NULL')
+      ordered_items = order.items.where('acquired_at IS NOT NULL AND payment_id IS NULL')
       ordered_items.each do |item|
         payment = Payment.new(:order_id => order.id)
         payment.billing_date = Time.now

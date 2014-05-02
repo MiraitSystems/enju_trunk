@@ -37,8 +37,9 @@ class SeriesStatement < ActiveRecord::Base
 
   # TODO: 不要メソッド　テストを実行し、削除しても問題内容であれば消すこと
   def last_issue
-    manifestations.where('serial_number IS NOT NULL').order('serial_number DESC').first # || manifestations.first
-    manifestations.where('date_of_publication IS NOT NULL').order('date_of_publication DESC').first || manifestations.first
+    m = manifestations.where('periodical_master IS FALSE AND serial_number IS NOT NULL').order('serial_number DESC').first # || manifestations.first
+    m = manifestations.where('periodical_master IS FALSE AND date_of_publication IS NOT NULL').order('date_of_publication DESC').first || manifestations.first unless m
+    return m
   end
 
   def last_issues
