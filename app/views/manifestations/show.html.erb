@@ -228,23 +228,25 @@ $(function(){
       <%- end -%>
       <%- unless @manifestation.series_statement.try(:nacsis_series_statementid) -%>
         <%- unless @manifestation.series_statement.try(:periodical) == false %>
-          <br>
-          <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_book') + t('resource_import_textfile.book') + ' ' %>
-          <%- option_hash = {:confirm => t('page.roles_confirm')} %>
-          <%= form_tag upload_to_nacsis_manifestations_path, method: 'post' do %>
-            <%= hidden_field_tag 'work_id', @manifestation.id %>
-            <%= hidden_field_tag 'db_type', 'BOOK' %>
-            <%- if @manifestation.nacsis_identifier -%>
-              <%- submit_display_str += t('page.update') %>
-              <%= hidden_field_tag 'command', 'update' %>
-            <%- else %>
-              <%- submit_display_str += t('page.create') %>
-              <%= hidden_field_tag 'command', 'insert' %>
+          <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+            <br>
+            <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_book') + t('resource_import_textfile.book') + ' ' %>
+            <%- option_hash = {:confirm => t('page.roles_confirm')} %>
+            <%= form_tag upload_to_nacsis_manifestations_path, method: 'post' do %>
+              <%= hidden_field_tag 'work_id', @manifestation.id %>
+              <%= hidden_field_tag 'db_type', 'BOOK' %>
+              <%- if @manifestation.nacsis_identifier -%>
+                <%- submit_display_str += t('page.update') %>
+                <%= hidden_field_tag 'command', 'update' %>
+              <%- else %>
+                <%- submit_display_str += t('page.create') %>
+                <%= hidden_field_tag 'command', 'insert' %>
+              <%- end %>
+              <%= "　" %>
+              <%= submit_tag submit_display_str , option_hash %>
             <%- end %>
-            <%= "　" %>
-            <%= submit_tag submit_display_str , option_hash %>
-          <%- end %>
-          <br>
+            <br>
+          <% end %>
         <%- end %>
       <%- end %>
     </div>

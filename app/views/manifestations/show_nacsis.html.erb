@@ -142,13 +142,15 @@
         <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
       </li>
     <% else %>
-      <li>
-        <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
-          <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
-          <%= hidden_field_tag 'manifestation_type', params[:manifestation_type] %>
-          <%= submit_tag t('.local_import') %>
-        <% end %>
-      </li>
+      <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+        <li>
+          <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
+            <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
+            <%= hidden_field_tag 'manifestation_type', params[:manifestation_type] %>
+            <%= submit_tag t('.local_import') %>
+          <% end %>
+        </li>
+      <% end %>
     <% end %>
   </ul>
 </div>
