@@ -18,7 +18,6 @@ class ManifestationsController < ApplicationController
   after_filter :solr_commit, :only => [:create, :up, :outputdate, :destroy]
   after_filter :convert_charset, :only => :index
 
-  cache_sweeper :manifestation_sweeper, :only => [:create, :update, :destroy]
   helper_method :get_manifestation, :get_subject
   helper_method :get_libraries
 
