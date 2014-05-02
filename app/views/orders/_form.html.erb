@@ -217,7 +217,7 @@ multiple: false,
   <% if payment_form_codes %>
     <div class="field">
       <%= f.label :payment_form_code %><br />
-      <%= f.select :payment_form_code, payment_form_codes.collect{|p| [p.keyname.localize, p.id]}, :include_blank => true %>
+      <%= f.select :payment_form_code, payment_form_codes.collect{|p| [p.keyname.localize, p.id]} %>
     </div>
   <% end %>
 
@@ -244,7 +244,7 @@ multiple: false,
 
   <div class="field">
     <%= f.label :currency_id %><br />
-    <%= f.collection_select :currency_id, @currencies, :id, :display_name, :include_blank => true %>
+    <%= f.collection_select :currency_id, @currencies, :id, :display_name %>
   </div>
 
   <div class="field">
