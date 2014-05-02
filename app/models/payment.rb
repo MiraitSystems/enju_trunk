@@ -112,18 +112,19 @@ class Payment < ActiveRecord::Base
         payment_number_of_payment += p.number_of_payment
       end
     end
-    # TODO: value of payment from code is from jst keycodes. 
-    #if order.payment_form.v == '1' || order.payment_form.v == '3'
-    #  @paid.taxable_amount = order.taxable_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.tax_exempt_amount = order.tax_exempt_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.amount_of_payment = order.cost / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.number_of_payment = order.number_of_acceptance_schedule - order.number_of_acceptance
-    #else 
-    #  @paid.taxable_amount = order.taxable_amount - payment_taxable_amount
-    #  @paid.tax_exempt_amount = order.tax_exempt_amount - payment_tax_exempt_amount
-    #  @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
-    #  @paid.number_of_payment = order.number_of_acceptance_schedule - payment_number_of_payment
-    #end
+    #TODO starts
+    if order.payment_form.v == '1' || order.payment_form.v == '3' #TODO: value from jst keycodes
+      @paid.taxable_amount = order.taxable_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.tax_exempt_amount = order.tax_exempt_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.amount_of_payment = order.cost / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.number_of_payment = order.number_of_acceptance_schedule - order.number_of_acceptance
+    else 
+      @paid.taxable_amount = order.taxable_amount - payment_taxable_amount
+      @paid.tax_exempt_amount = order.tax_exempt_amount - payment_tax_exempt_amount
+      @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
+      @paid.number_of_payment = order.number_of_acceptance_schedule - payment_number_of_payment
+    end
+    #TODO end
     @paid.save
 
     return @paid
