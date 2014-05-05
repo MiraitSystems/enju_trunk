@@ -62,70 +62,6 @@ describe FunctionClassAbility do
     end
   end
 
-  describe '.required_abilityは' do
-    subject { FunctionClassAbility }
-
-    def required_ability(action)
-      subject.required_ability(controller_class, action)
-    end
-
-    let(:controller_class) do
-      ManifestationsController
-    end
-
-    before do
-      FactoryGirl.create(
-        :function,
-        display_name: 'Function A',
-        controller_name: controller_class.name,
-        action_names: <<-E)
-read:index,show
-update:new,create
-delete:destroy
-        E
-
-      FactoryGirl.create(
-        :function,
-        display_name: 'Function B',
-        controller_name: controller_class.name,
-        action_names: <<-E)
-read:index,show,edit
-update:edit,update
-delete:destroy
-        E
-
-      FactoryGirl.create( # テスト用のダミー
-        :function,
-        display_name: 'Function X',
-        controller_name: 'ItemsController',
-        action_names: <<-E)
-read:index,show,new,create,edit,update,destroy
-update:
-delete:
-        E
-    end
-
-    it '指定されたコントローラのアクションに対して必要な権限を返すこと' do
-      {
-        'index' => 1,
-        'show' => 1,
-        'new' => 2,
-        'create' => 2,
-        'edit' => 1, # "Function A"ではupdate、"Function B"ではread、よってより低いreadが十分条件
-        'update' => 2,
-        'destroy' => 3,
-      }.each do |action, ability|
-        r = required_ability(action)
-        expect(r).to eq(ability),
-          "expected #{ability} for #{action}, got #{r.inspect}"
-      end
-    end
-
-    it '未知のアクションに対してnilを返すこと' do
-      expect(required_ability('unknwon')).to be_nil
-    end
-  end
-
   describe '.permit?は' do
     let(:common_action_names) do
       <<-E
@@ -159,6 +95,18 @@ delete:destroy
         action_names: common_action_names)
     end
 
+    let(:function4) do
+      FactoryGirl.create(
+        :function,
+        display_name: 'LibrariesX',
+        controller_name: 'LibrariesController',
+        action_names: <<-E)
+read:show,edit,destroy
+update:new,create
+delete:index
+        E
+    end
+
     let(:class1) do
       FactoryGirl.create(:function_class, name: 'class1', display_name: 'class1')
     end
@@ -167,9 +115,14 @@ delete:destroy
       FactoryGirl.create(:function_class, name: 'class2', display_name: 'class2')
     end
 
+    let(:class3) do
+      FactoryGirl.create(:function_class, name: 'class3', display_name: 'class3')
+    end
+
     let(:guest) do
       FactoryGirl.create(
         :user,
+        username: '_guest_',
         agent: FactoryGirl.create(:agent),
         function_class: nil)
     end
@@ -177,6 +130,7 @@ delete:destroy
     let(:user) do
       FactoryGirl.create(
         :user,
+        username: '_user_',
         agent: FactoryGirl.create(:agent),
         function_class: class1)
     end
@@ -184,8 +138,17 @@ delete:destroy
     let(:admin) do
       FactoryGirl.create(
         :user,
+        username: '_admin_',
         agent: FactoryGirl.create(:agent),
         function_class: class2)
+    end
+
+    let(:user3) do
+      FactoryGirl.create(
+        :user,
+        username: '_user3_',
+        agent: FactoryGirl.create(:agent),
+        function_class: class3)
     end
 
     def permit_for_user?(controller_class, action_name, user)
@@ -214,6 +177,10 @@ delete:destroy
           function1 => 1,
           function2 => 2,
           function3 => 3,
+        },
+        class3 => {
+          function3 => 1,
+          function4 => 3,
         },
       })
     end
@@ -252,6 +219,24 @@ delete:destroy
             %w(index show) => true,
             %w(new create edit update) => true,
             %w(destroy) => true,
+          },
+        },
+        user3 => { # user3はclass3に属す
+          ManifestationsController => {
+            %w(index show) => false,
+            %w(new create edit update) => false,
+            %w(destroy) => false,
+          },
+          ItemsController => {
+            %w(index show) => false,
+            %w(new create edit update) => false,
+            %w(destroy) => false,
+          },
+          LibrariesController => {
+            %w(index show) => true, # function3、function4による許可
+            %w(edit destroy) => true, # function4による許可
+            %w(new create) => true, # function4による許可
+            %w(update) => false,
           },
         },
         guest => { # guestはどれにも属さない
@@ -293,7 +278,7 @@ delete:destroy
           spec.each do |action_names, permission|
             action_names.each do |action_name|
               expect(permit_for_user?(controller_class, action_name, u)).to eq(permission),
-                "expects #{permission} for #{u.try(:username)} to access #{controller_class.name}\##{action_name}, got #{!!permission}"
+                "expects #{permission} for #{u.try(:username) || '""'} to access #{controller_class.name}\##{action_name}, got #{!permission}"
             end
           end
         end
@@ -337,7 +322,7 @@ delete:destroy
           spec.each do |action_names, permission|
             action_names.each do |action_name|
               expect(permit_for_user?(controller_class, action_name, user)).to eq(permission),
-                "expects #{permission} for #{user.try(:username)} to access #{controller_class.name}\##{action_name}, got #{!!permission}"
+                "expects #{permission} for #{user.try(:username) || '""'} to access #{controller_class.name}\##{action_name}, got #{!permission}"
             end
           end
         end
@@ -381,7 +366,7 @@ delete:destroy
           spec.each do |action_names, permission|
             action_names.each do |action_name|
               expect(permit_for_user?(controller_class, action_name, user)).to eq(permission),
-                "expects #{permission} for #{user.try(:username)} to access #{controller_class.name}\##{action_name}, got #{!!permission}"
+                "expects #{permission} for #{user.try(:username) || '""'} to access #{controller_class.name}\##{action_name}, got #{!permission}"
             end
           end
         end
