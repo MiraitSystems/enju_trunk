@@ -46,11 +46,13 @@ class ItemsController < ApplicationController
     agent = @agent
     manifestation = @manifestation
     shelf = get_shelf
+    order = @order = Order.find(params[:order_id]) if params[:order_id]
     unless params[:mode] == 'add'
       search.build do
         with(:agent_ids).equal_to agent.id if agent
         with(:manifestation_id).equal_to manifestation.id if manifestation
         with(:shelf_id).equal_to shelf.id if shelf
+        with(:order_id).equal_to order.id if order
       end
     end
 
