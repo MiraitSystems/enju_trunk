@@ -357,16 +357,18 @@ class Item < ActiveRecord::Base
   end
 
   def binded_missing_manifestations(sort = :id)
+    missing_status = CirculationStatus.missing
+    return  unless missing_status
     if sort == :serial_number
-      missing_manifestations = self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation)
-      binding_item, not_binding_item = missing_manifestations.partition{|binding_items| binding_items.serial_number?}
+        missing_manifestations = self.binding_items.where(:circulation_status_id => missing_status.id).map(&:manifestation)
+        binding_item, not_binding_item = missing_manifestations.partition{|binding_items| binding_items.serial_number?}
       if binding_item
         binding_item.sort_by(&sort) + not_binding_item
       else
         not_binding_item
       end
     else
-      self.binding_items.where(:circulation_status_id => CirculationStatus.where(:name => 'Missing').first.id).map(&:manifestation).sort_by(&sort)
+      self.binding_items.where(:circulation_status_id => missing_status.id).map(&:manifestation).sort_by(&sort)
     end
   end
 
