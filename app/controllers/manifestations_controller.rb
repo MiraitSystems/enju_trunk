@@ -735,6 +735,20 @@ class ManifestationsController < ApplicationController
       @reserve = current_user.reserves.where(:manifestation_id => @manifestation.id).last if user_signed_in?
     end
 
+    store_location
+
+    if @manifestation.attachment.path
+      if Setting.uploaded_file.storage == :s3
+        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
+      else
+        file = @manifestation.attachment.path
+      end
+    end
+
+    if @manifestation.bookbinder
+      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
+    end
+
     if @manifestation.periodical_master?
       if params[:opac]
         redirect_to series_statement_manifestations_url(@manifestation.series_statement, :opac => true)
@@ -751,19 +765,6 @@ class ManifestationsController < ApplicationController
       return
     end
 
-    store_location
-
-    if @manifestation.attachment.path
-      if Setting.uploaded_file.storage == :s3
-        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
-      else
-        file = @manifestation.attachment.path
-      end
-    end
-
-    if @manifestation.bookbinder
-      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
-    end
 
     respond_to do |format|
       format.html { render :template => 'opac/manifestations/show', :layout => 'opac' } if params[:opac]
