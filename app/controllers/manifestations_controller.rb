@@ -854,7 +854,7 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     @work_has_languages = @manifestation.work_has_languages
-    @manifestation_has_classifications = @manifestation.manifestation_has_classifications
+    @manifestation_has_classifications = @manifestation.classifications
     @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
@@ -926,7 +926,7 @@ class ManifestationsController < ApplicationController
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
-          @manifestation.manifestation_has_classifications = ManifestationHasClassification.new_objs(@manifestaion_has_classifications.uniq)
+          @manifestation.classifications = ManifestationHasClassification.new_objs(@manifestaion_has_classifications.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -985,9 +985,9 @@ class ManifestationsController < ApplicationController
           @manifestation.themes = Theme.add_themes(@theme)
         end
         @manifestation.work_has_languages.destroy_all;
-        @manifestation.manifestation_has_classifications.destroy_all;
+        @manifestation.classifications.destroy_all;
         @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
-        @manifestation.manifestation_has_classifications = ManifestationHasClassification.new_objs(@manifestation_has_classifications.uniq)
+        @manifestation.classifications = ManifestationHasClassification.new_objs(@manifestation_has_classifications.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end

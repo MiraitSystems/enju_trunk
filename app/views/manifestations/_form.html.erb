@@ -222,7 +222,7 @@ $(document).keydown(function(e) {
 </script>
 
 <select id="classifications_select2_hidden" style="display: none;">
-  <%= raw @classifications.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.category.localize + " (" + l.name + ")</option>"] } %>
+  <%= raw @classifications.collect{ |l| ["<option alt='" + l.classifiation_identifier + "', value='" + l.id.to_s + "'>" + l.category.localize + " (" + l.classifiation_identifier + ")</option>"] } %>
 </select>
 <select id="classification_types_select2_hidden" style="display: none;">
   <%= raw @classification_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
@@ -606,14 +606,65 @@ $(document).keydown(function(e) {
           <%= select2_script "classification_type_0" %>
           <td><%= make_select2("classification_type_0", 'classification_type[0]', @classification_types, 0, 200) %></td>
           <%= select2_script "classification_id_0" %>
-          <td><%= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %></td>
+          <td>
+            <script>
+                function movieFormatResult(movie) {
+                  var markup = "<table class='movie-result'><tr>";
+                      if (movie.posters !== undefined && movie.posters.thumbnail !== undefined) {
+                        markup += "<td class='movie-image'><img src='" + movie.posters.thumbnail + "'/></td>";
+                      }
+                      markup += "<td class='movie-info'><div class='movie-title'>" + movie.title + "</div>";
+                        if (movie.critics_consensus !== undefined) {
+                          markup += "<div class='movie-synopsis'>" + movie.critics_consensus + "</div>";
+                        }
+                        else if (movie.synopsis !== undefined) {
+                          markup += "<div class='movie-synopsis'>" + movie.synopsis + "</div>";
+                        }
+                        markup += "</td></tr></table>";
+                  return markup;
+                }
+                function movieFormatSelection(movie) {
+                  return movie.title;
+                }
+              </script>
+              <script>
+                $(document).ready(function() { $("#e6").select2({
+                    placeholder: "<%= I18n.t("manifestation_page.classification_ph") %>",
+                    minimumInputLength: 3,
+                    ajax: {
+                      url: "<%= classifications_path(:format => :json) -%>",
+                      dataType: 'json',
+                      data: function (term, page) {
+                        return {
+                          "query": term,
+                          "utf8": "true",
+                          "quietMillis": 100,
+                        };
+                      },
+                      results: function (data, page) {
+                        return {results: data};
+                      }
+                    },
+                    formatResult: function (data) {
+                      return "<div class='select2-user-result'>" + data.classifications + "</div>";
+                    },
+                    formatSelection: function (data) {
+                      return data.client;
+                    },
+                    escapeMarkup: function (m) { return m; }
+                }
+                ); });
+            </script>
+            <input type="hidden" id="e6" style="width:300px" class="input-xlarge" />
+            <%#= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %>
+          </td>
           <td><%= button_to_function '+', 'ItemField_classification_select2.add()' -%></td>
         </tr>
       </table>
     <% else %>
       <table id="bless">
         <% @manifestation_has_classifications.each_with_index do |whl, i| %>
-          <tr id="CLAS<%= i.to_s %>">
+          <tr id="CLS<%= i.to_s %>">
           <%= select2_script "classification_type_" + i.to_s %>
           <td>
             <%= make_select2(
@@ -626,10 +677,10 @@ $(document).keydown(function(e) {
           </td>
           <%= select2_script "classification_id_" + i.to_s %>
           <td>
-            <%= make_select2(
+            <%#= make_select2(
               "classification_id_" + i.to_s,
               "classification_id[" + i.to_s + "]",
-              @languages,
+              @classifications,
               whl[:classification_id],
               300
             ) %>
