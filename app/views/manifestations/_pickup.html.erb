@@ -1,5 +1,4 @@
 <% if manifestation %>
-<% cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'pickup', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
     <div id="pickup_book_jacket">
       <%= book_jacket(manifestation) -%>
     </div>
@@ -24,5 +23,4 @@
     <%= render 'manifestations/show_index', :manifestation => manifestation -%>
     <%= render 'manifestations/holding', :manifestation => manifestation -%>
   </div>
-  <% end %>
 <% end %>

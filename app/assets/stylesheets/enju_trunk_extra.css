@@ -4,6 +4,15 @@
   font-size: 85%;
 }
 
+input[type='text']:focus, 
+input[type='password']:focus, 
+input[type='search']:focus, 
+input[type='url']:focus, 
+textarea:focus, 
+select:focus {
+  background-color: #ffffdd;
+}
+
 /** tab menu**/
 a.fg-4button {
    width: 184px;

@@ -23,10 +23,6 @@ class Ability
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
       end
-      can [:read, :create, :update], ClassificationType
-      can :destroy, ClassificationType do |classification_type|
-        classification_type.classifications.empty?
-      end
       can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
       can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
         inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
@@ -109,7 +105,6 @@ class Ability
         CheckoutStatHasUser,
         CheckoutType,
         ClaimType,
-        Classification,
         Classmark,
         CopyRequest,
         Create,
@@ -164,11 +159,6 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
-        SubjectType,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -183,7 +173,6 @@ class Ability
         UserReserveStat,
         UserStatus,
         Wareki,
-        WorkHasSubject,
         WorkHasTitle,
         LanguageType
       ]
@@ -344,8 +333,6 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
-        Subject,
-        SubjectHasClassification,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -354,7 +341,6 @@ class Ability
         TitleType,
         UseLicense,
         UserStatus,
-        WorkHasSubject,
         WorkHasTitle
       ]
       can [:read, :update], [
@@ -368,8 +354,6 @@ class Ability
         CheckoutStatHasManifestation,
         CheckoutStatHasUser,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         ContentType,
         Country,
         Extent,
@@ -397,9 +381,6 @@ class Ability
         Role,
         SearchEngine,
         Shelf,
-        SubjectType,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
         EnjuTerminal,
         UseRestriction,
         UserGroup,
@@ -475,14 +456,12 @@ class Ability
         AcceptType,
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
         Create,
         CreateType,
-	      Department,
+	Department,
         Exemplify,
         Extent,
         Frequency,
@@ -508,16 +487,12 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         EnjuTerminal,
         UserCheckoutStat,
         UserReserveStat,
         UserStatus,
         UserGroup,
         Wareki,
-        WorkHasSubject
       ]
     else
       can :index, Agent
@@ -531,8 +506,6 @@ class Ability
       can :read, [
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
@@ -565,14 +538,10 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,
         Wareki,
-        WorkHasSubject
       ]
     end
 
@@ -694,6 +663,72 @@ class Ability
       when 'Librarian'     then can :manage, [Theme]
       when 'User'          then can :read,   [Theme]
       else                      can :read,   [Theme]
+      end
+    end
+
+    #TODO
+    if defined?(EnjuSubject)
+      case user.try(:role).try(:name)
+      when 'Administrator'
+        can :manage, [
+          Classification,
+          Subject,
+          WorkHasSubject,
+        ]
+        if LibraryGroup.site_config.network_access_allowed?(ip_address)
+          can [:read, :create, :update], ClassificationType
+          can [:destroy, :delete], ClassificationType do |classification_type|
+            classification_type.classifications.empty?
+          end
+          can :manage, [
+            Classification,
+            Subject,
+            SubjectHasClassification,
+            SubjectHeadingType,
+            SubjectHeadingTypeHasSubject,
+            SubjectType,
+            WorkHasSubject,
+          ]
+        else
+          can :read, [
+            ClassificationType,
+            SubjectHasClassification,
+            SubjectHeadingType,
+            SubjectHeadingTypeHasSubject,
+            SubjectType,
+          ]
+        end
+      when 'Librarian'
+        can :manage, [
+          Subject,
+          SubjectHasClassification,
+          WorkHasSubject,
+        ]
+        can :read, [
+          Classification,
+          ClassificationType,
+          SubjectHeadingType,
+          SubjectHeadingTypeHasSubject,
+          SubjectType,
+        ]
+      when 'User'
+        can :read, [
+          Classification,
+          ClassificationType,
+          Subject,
+          SubjectHasClassification,
+          SubjectHeadingType,
+          WorkHasSubject,
+        ]
+      else
+        can :read, [
+          Classification,
+          ClassificationType,
+          Subject,
+          SubjectHasClassification,
+          SubjectHeadingType,
+          WorkHasSubject,
+        ]
       end
     end
 

@@ -152,7 +152,41 @@ class Approval < ActiveRecord::Base
   end
 
 
-
   paginates_per 10
+
+  def self.ouput_columns
+    return [{name:"approval_identifier"},
+            {name:"identifier"},
+            {name:"original_title"},
+            {name:"four_priority_areas"},
+            {name:"document_classification_1"},
+            {name:"document_classification_2"},
+            {name:"carrier_type"},
+            {name:"jmas"},
+            {name:"sample_note"},
+            {name:"group_approval_result"},
+            {name:"group_result_reason"},
+            {name:"group_note"},
+            {name:"adoption_report_flg"},
+            {name:"approval_result"},
+            {name:"reason"},
+            {name:"approval_end_at"},
+            {name:"all_process_end_at"},
+            {name:"publishers"},
+            {name:"thrsis_review_flg"},
+            {name:"ja_text_author_summary_flg"},
+            {name:"en_text_author_summary_flg"},
+            {name:"proceedings_number_of_year"},
+            {name:"excepting_number_of_year"},
+            {name:"creators"},
+            {name:"country_of_publication"},
+            {name:"frequency"},
+            {name:"subject"},
+            {name:"language"},
+            {name:"date_of_publication"},
+            {name:"adption_code"},
+            {name:"issn"},
+            {name:"jstage"}]
+  end
 
 end

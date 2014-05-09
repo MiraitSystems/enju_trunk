@@ -1921,7 +1921,10 @@ ja:
     did_you_mean_to_search_for: "もしかして"
     not_found_users: "該当の利用者は見つかりませんでした。"
     limit_exceeded: "検索件数の上限を超えました。最初の%{count}件を表示しています。"
+    enter_search: "%{column}を入力してください。"
     enter_search_term: "検索語を入力してください。"
+    enter_more_character: "%{num}文字以上入力してください。"
+    searching: "検索中..."
     serial: "雑誌・定期刊行物"
     number_of_pages: "ページ数"
     holding_library: "所蔵館"
@@ -3232,6 +3235,7 @@ ja:
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    items: 発注資料
     subsequent_year_orders: 次年度発注
     create_subsequent_year_orders: 次年度発注生成
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
@@ -3245,6 +3249,11 @@ ja:
     list_of_payment: "精算リスト"
     list_of_acceptance_after_payment: "精算後受入リスト"
     select_document: "帳票を選択"
+    create_ordered_manifestations: "発注資料を一括作成"
+    confirm_create_ordered: "発注資料を作成しますか。"
+    not_created_items: "発注資料は作成されませんでした。"
+    update_order: "発注情報の更新"
+    confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"
@@ -3304,3 +3313,39 @@ ja:
     delayed_quantity: "延着数"
   order_search:
     notset: "未設定"
+  approval_search:
+    notset: "未設定"
+    select_all: "全て選択"
+  approval_output_csv:
+    approval_identifier: "見計らい識別子"
+    identifier: "識別子"
+    original_title: "タイトル"
+    four_priority_areas: "重点４分野　"
+    document_classification_1: "資料分類１"
+    document_classification_2: "資料分類２"
+    carrier_type: "資料の形態"
+    jmas: "医中誌"
+    sample_note: "サンプル誌到着状況－備考"
+    group_approval_result: "グループ見計らい結果"
+    group_result_reason: "グループ収録不可理由"
+    group_note: "グループ見計らい結果－備考"
+    adoption_report_flg: "採択可能記事有無"
+    approval_result: "見計らい結果"
+    reason: "収録不可理由"
+    approval_end_at: "見計らい完了日"
+    all_process_end_at: "全工程完了日"
+    publishers: "出版者"
+    thrsis_review_flg: "論文審査有無　"
+    ja_text_author_summary_flg: "和文著者抄録有無"
+    en_text_author_summary_flg: "英文著者抄録有無"
+    proceedings_number_of_year: "年間件数（予稿集以外）"
+    excepting_number_of_year: "年間件数（予稿集）"
+    creators: "著者"
+    country_of_publication: "出版国"
+    frequency: "発行頻度"
+    subject: "分類"
+    language: "本文言語"
+    date_of_publication: "出版日"
+    adption_code: "採択"
+    issn: "ＩＳＳＮ"
+    jstage: "J-Stage搭載"

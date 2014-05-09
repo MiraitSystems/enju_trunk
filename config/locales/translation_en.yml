@@ -1931,7 +1931,10 @@ en:
     did_you_mean_to_search_for: Did you mean to search for
     not_found_users: Not found users.
     limit_exceeded: Limit exceeded. Listing the first %{count} records.
+    enter_search: Please enter search %{column}.
     enter_search_term: Enter your search term.
+    enter_more_character: Please enter %{num} more character.
+    searching: Searching...
     serial: Serial
     number_of_pages: Number of pages
     holding_library: Holding library
@@ -3277,11 +3280,17 @@ en:
     switch_manual_entry: "Use auto calculate the amount"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
+    items: Ordered Items
     paid: Paid
     want_to_paid: "Want to paid?"
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+    create_ordered_manifestations: "Creste ordered items"
+    confirm_create_ordered: "Are you sure?"
+    not_created_items: "Ordered item wasn't created"
+    update_order: ”Update order”
+    confirm_update_order: "Are you sure to update acquired number and create payments?"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
   approval:
@@ -3331,3 +3340,39 @@ en:
     delayed_quantity: "Delayed quantity"
   order_search:
     notset: "Not set"
+  approval_search:
+    notset: "Not set"
+    select_all: "Select all"
+  approval_output_csv:
+    approval_identifier: "Approval identifier"
+    identifier: "Identifier"
+    original_title: "Original title"
+    four_priority_areas: "Four priority areas"
+    document_classification_1: "Document classification 1"
+    document_classification_2: "Document classification 2"
+    carrier_type: "Carrier Type"
+    jmas: "JMAS"
+    sample_note: "Sample arrival status－note"
+    group_approval_result: "Group Approval Result"
+    group_result_reason: "Group Result Reason"
+    group_note: "Group approval－note"
+    adoption_report_flg: "Have adoption report"
+    approval_result: "Approval result"
+    reason: "Reason"
+    approval_end_at: "Approval end at"
+    all_process_end_at: "All process end at"
+    publishers: "Publisher"
+    thrsis_review_flg: "Thrsis review flag"
+    ja_text_author_summary_flg: "Japanese text author summary flag"
+    en_text_author_summary_flg: "English text author summary flag"
+    proceedings_number_of_year: "Proceedings number of year"
+    excepting_number_of_year: "Excepting number of year"
+    creators: "Creator"
+    country_of_publication: "Country of publication"
+    frequency: "Frequency"
+    subject: "Subject"
+    language: "Language"
+    date_of_publication: "Date of publication"
+    adption_code: "Adption_Code"
+    issn: "ISSN"
+    jstage: "J-Stage"
