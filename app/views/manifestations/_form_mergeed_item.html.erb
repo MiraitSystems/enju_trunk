@@ -18,6 +18,40 @@ jQuery(function(){
        search_manifestation();
     });
   <% end %>
+
+/**
+TODO
+**/
+    $(".manifestation_subject").select2({
+      multiple: false,
+      minimumInputLength: 1,
+      width: "250px",
+      placeholder: <%= raw t('page.enter_search', column: t('activerecord.models.subject')).to_json %>,
+      formatSearching: function() { return <%= raw t('page.searching').to_json %>; },
+      formatInputTooShort: function(){ return <%= raw t('page.enter_more_character', num: 1).to_json %>; },
+      ajax: {
+        url: "/subjects/search_subject.json",//"/agents/search_name.json",
+        dataType: 'json',
+        data: function (term, page) { return { search_phrase: term, }; },
+        results: function (data, page) {
+          return { results: data };
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/agents/search_name.json?agent_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+      },
+      createSearchChoice: function(term, data) {
+        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+          return { id:term, text:term };
+        }
+      },
+    });
+ 
 })
 
 <% if SystemConfiguration.get('manifestation.check_duplicate_title') %>
@@ -78,11 +112,12 @@ $(document).keydown(function(e) {
   $("input[type=text]").keypress(function(ev) {
    if ((ev.which && ev.which === 13) ||
         (ev.keyCode && ev.keyCode === 13)) {
-      return false;
+     return false;
     } else {
       return true;
     }
   });
+
 });
 </script>
 
@@ -203,9 +238,7 @@ $(document).keydown(function(e) {
     var field = document.getElementById(id_name + div_num);
     if(field != null){ field.parentNode.removeChild(field); }
   }
-</script>
 
-<script id="script_add_title">
   var ItemField_title = {
     currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
     template : ''
@@ -222,6 +255,20 @@ $(document).keydown(function(e) {
       + '</div>',
     add : function () { add_field(this, 'titles', 'VF'); },
     remove : function (div_num) { remove_field(div_num, 'VF'); }
+  };
+
+  var Field_subject = {
+    currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
+    template : ''
+      + '<div class="field">'
+      + '<input id="manifestation_theme" name="manifestation[subject]" size="30" type="text">'      
+      + '<input id="manifestation_theme" name="manifestation[subject_transcription]" size="30" type="text">'      
+      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
+      + '<input type="button" value="+" onClick="Field_subject.add();" />  '
+      + '<input type="button" value="-" onClick="Field_subject.remove(__count__);" /> '
+      + '</div>',
+    add : function () { add_field(this, 'subjects', 'SUBJECT'); },
+    remove : function (div_num) { remove_field(div_num, 'SUBJECT'); }
   };
 </script>
 
@@ -587,6 +634,41 @@ $(document).keydown(function(e) {
     <strong><%= t('manifestation.subject_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
     <%= f.text_field :subject_transcription, :value => @subject_transcription, :class => 'resource_url' -%>
   </div>
+  <div class="field" id="subjects">
+    <%= f.label :subject %><br />
+    <% 5.times do |i| %>
+      <div id="SUBJECT<%= i %>">
+        <%= f.text_field :subject, id: "manifestation_subject_#{i}", class: "manifestation_subject"  %>
+        <%= f.text_field :subject_transcription, id: "manifestation_subject_transcription_#{i}" %>
+        <%= button_to_function '+', 'Field_subject.add()', style:'margin-bottom: 10px;' %>
+        <%= button_to_function '-', 'Field_subject.remove(' + i.to_s + ')', style:'margin-bottom: 10px;' if i > 0 %>
+      </div>
+    <% end %>
+<% if false %>
+    <% if _note_type_nums.blank? %>
+      <div id="NOTE0">
+        <%#= TODO select2にする %>
+        <%= select_tag 'exinfos[note_type0]',
+          options_for_select(note_types.collect{ |p| [p.keyname.localize, p.id] }, @note_type0) %><br />
+        <%= text_area 'extexts', 'note0', :value => @note0, :class => "resource_textarea" %>
+        <%= button_to_function '+', 'Field_note.add()', style:'margin-bottom: 10px;' %>
+      </div>
+    <% else %>
+      <% _note_type_nums.each do |num| %>
+        <%# num = note_type_exinfo.name.match('\d') %>
+        <div id="NOTE<%= num %>">
+          <%#= TODO select2にする %>
+          <%= select_tag "exinfos[note_type#{num}]",
+            options_for_select(note_types.collect{ |p| [p.keyname.localize, p.id] }, eval("@note_type#{num}")) %><br />
+          <%= text_area 'extexts', "note#{num}", :value => eval("@note#{num}"), :class => "resource_textarea" %>
+          <%= button_to_function '+', 'Field_note.add()', style:'margin-bottom: 10px;' %>
+          <%= button_to_function '-', 'Field_note.remove(' + num.to_s + ')', style:'margin-bottom: 10px;' if num.to_s.to_i > 0 %>
+        </div>
+      <% end %>
+    <% end %>
+<% end %>
+  </div>
+
 
   <% if defined?(EnjuTrunkTheme) %>
     <div class="field">

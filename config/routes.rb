@@ -81,8 +81,8 @@ EnjuLeaf::Application.routes.draw do
     resources :realizes
     resources :produces
     resources :picture_files
-    resources :items
-    resources :work_has_subjects
+    #resources :items
+    #resources :work_has_subjects#TODO 20140509 
     resources :manifestation_relationships
     resources :manifestations
     resources :series_statements
@@ -142,8 +142,8 @@ EnjuLeaf::Application.routes.draw do
   resources :works, :controller => 'manifestations' do
     resources :agents
     resources :creates
-    resources :subjects
-    resources :work_has_subjects
+    #resources :subjects #TODO 20140509
+    #resources :work_has_subjects #TODO 20140509
     resources :expressions, :controller => 'manifestations'
     resources :manifestation_relationships
     resources :manifestations
@@ -226,11 +226,11 @@ EnjuLeaf::Application.routes.draw do
   resources :agent_types
   resources :circulation_statuses
   resources :form_of_works
-  resources :subject_has_classifications
-  resources :subject_heading_types do
-    resources :subjects
-  end
-  resources :subject_heading_type_has_subjects
+  #resources :subject_has_classifications #TODO 20140509
+  #resources :subject_heading_types do #TODO 20140509
+  #  resources :subjects
+  #end
+  #resources :subject_heading_type_has_subjects #TODO 20140509
   resources :agent_merge_lists do
     resources :agents
     resources :agent_merges
@@ -357,13 +357,13 @@ EnjuLeaf::Application.routes.draw do
 
   resources :library_groups, :except => [:new, :create, :destroy]
 
-  resources :classifications do
-    resources :subject_has_classifications
-  end
+  #resources :classifications do #TODO 20140509
+  #  resources :subject_has_classifications
+  #end
 
-  resources :classification_types do
-    resource :classifications
-  end
+  #resources :classification_types do #TODO 20140509
+  #  resource :classifications
+  #end
 
   resources :search_engines
 
@@ -375,10 +375,11 @@ EnjuLeaf::Application.routes.draw do
     post :informed, :on => :member
   end
 
-  resources :subject_types
+  #resources :subject_types  #TODO 20140509
 
-  resources :work_has_subjects
-
+  #resources :work_has_subjects #TODO 20140509
+=begin
+ #TODO 20140509
   resources :subjects do
     resources :works, :controller => 'manifestations'
     resources :subject_heading_types
@@ -386,7 +387,7 @@ EnjuLeaf::Application.routes.draw do
     resources :work_has_subjects
     resources :classifications
   end
-
+=end
   resources :content_types
 
   resources :carrier_types

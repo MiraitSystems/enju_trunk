@@ -1931,7 +1931,10 @@ en:
     did_you_mean_to_search_for: Did you mean to search for
     not_found_users: Not found users.
     limit_exceeded: Limit exceeded. Listing the first %{count} records.
+    enter_search: Please enter search %{column}.
     enter_search_term: Enter your search term.
+    enter_more_character: Please enter %{num} more character.
+    searching: Searching...
     serial: Serial
     number_of_pages: Number of pages
     holding_library: Holding library
