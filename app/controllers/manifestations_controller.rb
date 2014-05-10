@@ -18,7 +18,6 @@ class ManifestationsController < ApplicationController
   after_filter :solr_commit, :only => [:create, :up, :outputdate, :destroy]
   after_filter :convert_charset, :only => :index
 
-  cache_sweeper :manifestation_sweeper, :only => [:create, :update, :destroy]
   helper_method :get_manifestation, :get_subject
   helper_method :get_libraries
 
@@ -501,16 +500,6 @@ class ManifestationsController < ApplicationController
         @all_manifestations = params[:all_manifestations] = true 
       end
 
-      if params[:basket_id]
-        @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
-      end
-
-      if params[:basket_id]
-        @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
-      end
-
       @query = params[:query] # フォームで入力されたメインの検索語を保存する
 
       # 検索オブジェクトのfactoryを生成する
@@ -746,6 +735,20 @@ class ManifestationsController < ApplicationController
       @reserve = current_user.reserves.where(:manifestation_id => @manifestation.id).last if user_signed_in?
     end
 
+    store_location
+
+    if @manifestation.attachment.path
+      if Setting.uploaded_file.storage == :s3
+        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
+      else
+        file = @manifestation.attachment.path
+      end
+    end
+
+    if @manifestation.bookbinder
+      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
+    end
+
     if @manifestation.periodical_master?
       if params[:opac]
         redirect_to series_statement_manifestations_url(@manifestation.series_statement, :opac => true)
@@ -762,19 +765,6 @@ class ManifestationsController < ApplicationController
       return
     end
 
-    store_location
-
-    if @manifestation.attachment.path
-      if Setting.uploaded_file.storage == :s3
-        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
-      else
-        file = @manifestation.attachment.path
-      end
-    end
-
-    if @manifestation.bookbinder
-      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
-    end
 
     respond_to do |format|
       format.html { render :template => 'opac/manifestations/show', :layout => 'opac' } if params[:opac]
@@ -833,24 +823,9 @@ class ManifestationsController < ApplicationController
         original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
       end
     elsif @series_statement # GET /series_statements/1/manifestations/new
-      @manifestation.original_title = @series_statement.original_title
-      @manifestation.title_transcription = @series_statement.title_transcription
-      @manifestation.issn = @series_statement.issn
-      if @series_statement.root_manifestation
-        root_manifestation = @series_statement.root_manifestation
-        @creates = root_manifestation.creates.order(:position)
-        @realizes = root_manifestation.realizes.order(:position)
-        @produces = root_manifestation.produces.order(:position)
-        @manifestation.carrier_type = root_manifestation.carrier_type
-        @manifestation.manifestation_type = root_manifestation.manifestation_type
-        @manifestation.frequency = root_manifestation.frequency
-        @manifestation.country_of_publication = root_manifestation.country_of_publication
-        @manifestation.place_of_publication = root_manifestation.place_of_publication
-        @manifestation.access_address = root_manifestation.access_address
-        @manifestation.required_role = root_manifestation.required_role
-        @work_has_languages = root_manifestation.work_has_languages
-      end
-      @manifestation.series_statement = @series_statement
+      @manifestation = @series_statement.new_manifestation
+      #TODO refactoring
+      @creates, @realizes, @produces, @work_has_languages = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.work_has_languages
     end
 
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'

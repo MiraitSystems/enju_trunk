@@ -33,6 +33,7 @@ class Order < ActiveRecord::Base
   belongs_to :currency
 
   has_many :payments
+  has_many :items
 
   validates :ordered_at, :presence => true
   validates :order_year, :numericality => true
@@ -172,9 +173,73 @@ class Order < ActiveRecord::Base
     return true
   end
 
+  def create_manifestations(with_item = TRUE)
+    ordered_manifestation = self.manifestation
+    new_manifestations = []
+    num = self.number_of_acceptance_schedule
+    if self.manifestation.periodical_master
+      series_statement = ordered_manifestation.series_statement
+      m_issue = series_statement.last_issue
+      last_volume = m_issue.volume_number
+      last_issue = m_issue.issue_number
+      last_serial = m_issue.serial_number
+      num.times do
+        new_m = series_statement.new_manifestation
+        new_m.set_next_number(last_volume, last_issue)
+        new_m.serial_number = last_serial + 1  rescue nil
+        new_m.serial_number_string = new_m.serial_number.to_s rescue nil
+        new_m.save!
+        new_manifestations << new_m
+        last_volume = new_m.volume_number; last_issue = new_m.issue_number; last_serial = new_m.serial_number
+      end
+      new_manifestations.map {|m| create_item(m)} if with_item
+    else
+      num.times { create_item(ordered_manifestation) } if with_item
+      new_manifestations << ordered_manifestation
+    end
 
+    return new_manifestations
+  end
+
+  def create_item(manifestation)
+    item = Item.new
+    item.circulation_status = CirculationStatus.find_by_name('On Order') || CirculationStatus.first
+    #TODO default checkout_type
+    item.checkout_type = CheckoutType.first
+    item.manifestation = manifestation
+    item.order_id = self.id
+    item.save
+  end
 
   paginates_per 10
+
+  # update number_of_acceptance
+  # create payments 
+  def update_order
+    order = self
+    acquired_num = order.items.where('acquired_at IS NOT NULL').size rescue 0
+    order.number_of_acceptance = acquired_num
+    order.save
+    if order.payment_form.v == '1' || order.payment_form.v == '3' #TODO only prepayment
+      ordered_items = order.items.where('acquired_at IS NOT NULL AND payment_id IS NULL')
+      ordered_items.each do |item|
+        payment = Payment.new(:order_id => order.id)
+        payment.billing_date = Time.now
+        payment.manifestation_id = item.manifestation.id #TODO
+        payment.currency_id = order.currency_id
+        payment.currency_rate = order.currency_rate
+        payment.discount_commision = order.margin_ratio
+        payment.before_conv_amount_of_payment = order.original_price
+        payment.amount_of_payment = order.unit_price
+#        payment.taxable_amount = order.taxable_amount
+#        payment.tax_exempt_amount = order.tax_exempt_amount
+        payment.number_of_payment = 1 
+        payment.payment_type = 2 #TODO
+        payment.save!
+        item.update_attributes(:payment_id => payment.id)
+      end
+    end 
+  end 
 
   def self.ouput_columns
     return [{name:"number", model: "calculate", column: "calculate"},
