@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140424121918) do
+ActiveRecord::Schema.define(:version => 20140512012009) do
 
   create_table "abbreviations", :force => true do |t|
     t.string   "keyword"
@@ -430,15 +430,17 @@ ActiveRecord::Schema.define(:version => 20140424121918) do
   add_index "carrier_type_has_checkout_types", ["checkout_type_id"], :name => "index_carrier_type_has_checkout_types_on_checkout_type_id"
 
   create_table "carrier_types", :force => true do |t|
-    t.string   "name",         :null => false
+    t.string   "name",              :null => false
     t.text     "display_name"
     t.text     "note"
     t.integer  "position"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.string   "nacsis_identifier"
   end
 
   add_index "carrier_types", ["id", "position"], :name => "carrier_types_index"
+  add_index "carrier_types", ["nacsis_identifier"], :name => "index_carrier_types_on_nacsis_identifier"
 
   create_table "catalogs", :force => true do |t|
     t.string   "display_name"
@@ -1551,9 +1553,12 @@ ActiveRecord::Schema.define(:version => 20140424121918) do
     t.text     "display_name"
     t.text     "note"
     t.integer  "position"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.string   "nacsis_identifier"
   end
+
+  add_index "manifestation_types", ["nacsis_identifier"], :name => "index_manifestation_types_on_nacsis_identifier"
 
   create_table "manifestations", :force => true do |t|
     t.text     "original_title",                                     :null => false
@@ -1658,6 +1663,7 @@ ActiveRecord::Schema.define(:version => 20140424121918) do
     t.string   "dis_date"
     t.integer  "use_license_id"
     t.integer  "sub_carrier_type_id"
+    t.boolean  "original",                        :default => false
   end
 
   add_index "manifestations", ["access_address"], :name => "index_manifestations_on_access_address"
