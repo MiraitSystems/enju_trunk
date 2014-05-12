@@ -1786,6 +1786,7 @@ en:
         note: Note
       item_has_operators:
         user: User
+        operated_at: Operated at
       claim_type:
         name: Name
         display_name: Display name

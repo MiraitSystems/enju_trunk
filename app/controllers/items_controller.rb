@@ -156,7 +156,6 @@ class ItemsController < ApplicationController
     if SystemConfiguration.get('manifestation.use_item_has_operator')
 
       @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", params[:id]])
-      logger.error "############ #{@countoperators} ############"
       if @countoperators == 0
         operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
         operator.user_number = ""
@@ -203,14 +202,11 @@ class ItemsController < ApplicationController
           format.json { render :json => @item, :status => :created, :location => @item }
         end
 
-        # TODO
-        if SystemConfiguration.get('manifestation.use_item_has_operator')
-          logger.error "################ manifestation.use_item_has_operator ##################"
-          create_item_has_operator
-        end
-
       rescue => e
-        logger.error "################ #{e.message} ##################"
+        if SystemConfiguration.get('manifestation.use_item_has_operator')
+          @countoperators = @item.item_has_operators.size
+          @item_has_operator = params[:item][:item_has_operators_attributes] 
+        end
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
@@ -221,7 +217,6 @@ class ItemsController < ApplicationController
   # PUT /items/1
   # PUT /items/1.json
   def update
-    @countoperators = 5
     if params[:item][:claim_attributes]
       if params[:item][:claim_attributes][:claim_type_id].blank?
         params[:item].delete("claim_attributes")
@@ -233,57 +228,36 @@ class ItemsController < ApplicationController
     respond_to do |format|
       begin
         ActiveRecord::Base.transaction do
-          if @item.update_attributes(params[:item])
-            if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
-              Manifestation.find(@item.manifestation.series_statement.root_manifestation_id).index
-            end
-            unless @item.remove_reason.nil?
-              if @item.reserve
-                @item.reserve.revert_request rescue nil
-              end
-              flash[:notice] = t('item.item_removed')
-            else
-              flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.item'))
-            end
-
-            logger.error "############ @item = #{@item.inspect} ###########"
-            if SystemConfiguration.get('manifestation.use_item_has_operator')
-
-              operators_attributes = params[:item][:item_has_operators_attributes]['0']
-              logger.error "############ operators_attributes = #{operators_attributes} ############"
-              operators_attributes.each do |operators_attribute|
-                logger.error "############ #{operators_attribute} ############"
-                logger.error "############ #{operators_attribute.class.name} ############"
-                @item.item_has_operators << ItemHasOperator.new(operators_attribute)
-              end
-
-              operator_data = params[:item][:item_has_operators_attributes]
-              user_number = params[:item_has_operators_attributes_0_user_number]
-              @item.upd_item_has_operator(@item, operator_data, user_number)
-            end
-
-            format.html { redirect_to @item }
-            format.json { head :no_content }
-          else
-            logger.error "############ NOT update_attributes ###########"
-            if SystemConfiguration.get('manifestation.use_item_has_operator')
-              @countoperators = @item.item_has_operators.size
-            end
-            prepare_options
-            unless params[:item][:remove_reason_id]
-              format.html { render :action => "edit" }
-            else
-              @remove_reasons = RemoveReason.all
-              @remove_id = CirculationStatus.where(:name => "Removed").first.id rescue nil
-              flash[:notice] = t('item.update_failed')
-              format.html { render :action => "remove" }
-            end
-            format.json { render :json => @item.errors, :status => :unprocessable_entity }
+          @item.update_attributes!(params[:item])
+          if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
+            Manifestation.find(@item.manifestation.series_statement.root_manifestation_id).index
           end
+          unless @item.remove_reason.nil?
+            if @item.reserve
+              @item.reserve.revert_request rescue nil
+            end
+            flash[:notice] = t('item.item_removed')
+          else
+            flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.item'))
+          end
+
+          format.html { redirect_to @item }
+          format.json { head :no_content }
         end 
       rescue => e
+        if SystemConfiguration.get('manifestation.use_item_has_operator')
+          @countoperators = @item.item_has_operators.size
+          @item_has_operator = params[:item][:item_has_operators_attributes] 
+        end
         prepare_options
-        format.html { render :action => "edit" }
+        unless params[:item][:remove_reason_id]
+          format.html { render :action => "edit" }
+        else
+          @remove_reasons = RemoveReason.all
+          @remove_id = CirculationStatus.where(:name => "Removed").first.id rescue nil
+          flash[:notice] = t('item.update_failed')
+          format.html { render :action => "remove" }
+        end
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
       end
     end

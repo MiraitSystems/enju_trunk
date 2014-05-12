@@ -80,7 +80,7 @@ class Item < ActiveRecord::Base
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   has_many :item_has_operators, :dependent => :destroy, :validate => true
   has_many :operators, :through => :item_has_operators, :source => :user
-  accepts_nested_attributes_for :item_has_operators
+  accepts_nested_attributes_for :item_has_operators, :reject_if => proc {|attributes| attributes['user_number'].blank?}
   has_many :item_exinfos, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim
@@ -90,41 +90,18 @@ class Item < ActiveRecord::Base
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
   validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
-  validate :exist_user_number, :if => proc{ SystemConfiguration.get('manifestation.use_item_has_operator') }
   before_validation :set_circulation_status, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   after_save :check_price, :except => :delete
   after_save :reindex
-
-  # TODO
-  def exist_user_number
-    unless self.user_number.blank?
-      user = User.where(:user_number => self.user_number).first
-      errors[:base] << I18n.t('user.not_found') unless user
-    end
-  end
-
-  before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
-  def set_item_operator
-    item_has_operators.each do |operator|
-      operator.item = self if operator.item.blank?
-    end
-  end
-
-  before_validation :check_user_number
-  def check_user_number
-    item_has_operators.each_with_index do |operator, i|
-      operator.user_number = @user_number_list[i.to_s] if @user_number_list
-    end
-  end
-
-  before_validation :check_destroy_operator
-  def check_destroy_operator
-    item_has_operators.each do |operator|
-      if operator.user_number.blank? || operator.operated_at.blank? || operator.library_id.blank?
-        operator.delete_flg = true
-        operator.destroy 
+  
+  before_save :mark_destroy_item_has_operator
+  def mark_destroy_item_has_operator
+    return unless SystemConfiguration.get('manifestation.use_item_has_operator')
+    item_has_operators.each do |item_has_operator|
+      if item_has_operator.user_number.blank?
+        item_has_operator.mark_for_destruction
       end
     end
   end
@@ -252,33 +229,6 @@ class Item < ActiveRecord::Base
       true
     else
       false
-    end
-  end
-
-  # TODO
-  def upd_item_has_operator(item, operator_data, user_number)
-    logger.error "########### user = #{User.current_user.username} ###########"
-    logger.error "########### operator_data = #{operator_data} ###########"
-
-    # if operator_is_exist # update:同一のitem_idで作業者が既に存在している場合
-    # else # new:updateの条件に当てはまらない時
-      @operator = ItemHasOperator.new(:item_id => item.id)
-      #@operator.user_number = "" #TODO: #6964 なぜわざわざblank登録しているのか確認すること
-      @operator.user_number = user_number #TODO: #6964
-      @operator.user_id = User.find(:first, :select => "id", :conditions => ["user_number = ?", user_number])
-      @operator.library_id = User.current_user.library.id
-      @operator.operated_at = Date.today
-      @operator.note = operator_data['0'][:note]
-      @operator.save!
-    # end  
-    @notice = I18n.t('item.accept_completed_successfully')
-  end
-
-  def operator_is_exist
-    # 今のitemにoperatorが存在するか
-    # operator = ItemHasOperator.find(:item_id => item.id, :conditions => { :user_number = })
-    if operator
-      
     end
   end
 

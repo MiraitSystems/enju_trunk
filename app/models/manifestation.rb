@@ -37,7 +37,7 @@ class Manifestation < ActiveRecord::Base
   has_many :manifestation_titles, :through => :work_has_titles
   accepts_nested_attributes_for :work_has_titles
   accepts_nested_attributes_for :identifiers, :reject_if => proc {|attributes| attributes['body'].blank?}, :allow_destroy => true
-  before_save :mark_destroy_manifestaion_titile
+  before_save :mark_destroy_manifestaion_title
 
   has_many :orders
 
@@ -1632,7 +1632,7 @@ class Manifestation < ActiveRecord::Base
           where(['series_statements.id = ?', self.series_statement.id])
     end
 
-    def mark_destroy_manifestaion_titile
+    def mark_destroy_manifestaion_title
       return unless SystemConfiguration.get('manifestation.use_titles')
 
       work_has_titles.each_with_index do |work_has_title,index|
