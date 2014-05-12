@@ -1484,6 +1484,20 @@ ja:
         budget_type: 予算区分
         amount: 金額
         note: 説明
+        name: 予算名
+        user_id: 執行者
+        budget_class: 予算分類
+        budget_classes:
+          usual: 通常
+          revised: 補正
+          provisional: 臨時
+        start_date: 期間開始日
+        end_date: 期間終了日
+        transferred: 繰越額
+        actual: 実予算額
+        implementation: 執行額
+        estimated_implementation: 執行予定額
+        remaining: 残高
       budget_type:
         id: ID
         name: 区分名
@@ -2862,7 +2876,7 @@ ja:
   budget:
     yen: "%{amount} 円"
     yent: 円
-    sum: 予算全額(補正予算を含む)
+    sum: 予算全額(うち補正予算)
     balance: 残金
     all_budgets: 全ての予算
     all_libraries: 全ての図書館

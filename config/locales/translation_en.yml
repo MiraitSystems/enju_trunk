@@ -1603,6 +1603,20 @@ en:
         budget_type: Budget type
         amount: Amount
         note: Note
+        name: Name
+        user_id: Executor
+        budget_class: Budget Class
+        budget_classes:
+          usual: Usual
+          revised: Revised
+          provisional: Provisional
+        start_date: Start date
+        end_date: End date
+        transferred: Carried over
+        actual: Actual
+        implementation: Implementation
+        estimated_implementation: Estimated
+        remaining: Remaining
       budget_type:
         id: ID
         name: Name
@@ -3029,7 +3043,7 @@ en:
   budget:
     yen: '%{amount} yen'
     yent: yen
-    sum: Total budget(include supplementary)
+    sum: Total budget(supplementary)
     balance: Balance
     all_budgets: All budgets
     all_libraries: All libraries
