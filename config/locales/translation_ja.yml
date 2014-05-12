@@ -1487,6 +1487,20 @@ ja:
         budget_type: 予算区分
         amount: 金額
         note: 説明
+        name: 予算名
+        user_id: 執行者
+        budget_class: 予算分類
+        budget_classes:
+          usual: 通常
+          revised: 補正
+          provisional: 臨時
+        start_date: 期間開始日
+        end_date: 期間終了日
+        transferred: 繰越額
+        actual: 実予算額
+        implementation: 執行額
+        estimated_implementation: 執行予定額
+        remaining: 残高
       budget_type:
         id: ID
         name: 区分名
@@ -2877,7 +2891,7 @@ ja:
   budget:
     yen: "%{amount} 円"
     yent: 円
-    sum: 予算全額(補正予算を含む)
+    sum: 予算全額(うち補正予算)
     balance: 残金
     all_budgets: 全ての予算
     all_libraries: 全ての図書館
@@ -3247,6 +3261,7 @@ ja:
     auto_calculation_flag_0: 自動計算
     auto_calculation_flag_1: 手入力
     payments: 支払情報
+    items: 発注資料
     subsequent_year_orders: 次年度発注
     create_subsequent_year_orders: 次年度発注生成
     create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
@@ -3260,6 +3275,11 @@ ja:
     list_of_payment: "精算リスト"
     list_of_acceptance_after_payment: "精算後受入リスト"
     select_document: "帳票を選択"
+    create_ordered_manifestations: "発注資料を一括作成"
+    confirm_create_ordered: "発注資料を作成しますか。"
+    not_created_items: "発注資料は作成されませんでした。"
+    update_order: "発注情報の更新"
+    confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"

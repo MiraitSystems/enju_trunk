@@ -2,8 +2,8 @@ class Payment < ActiveRecord::Base
   attr_accessible :amount_of_payment, :before_conv_amount_of_payment, :billing_date, :currency_rate, :currency_id, :discount_commision, :manifestation_id, :note, :number_of_payment, :order_id, :payment_type, :volume_number, :taxable_amount, :tax_exempt_amount
 
   belongs_to :order
-  belongs_to :manifestation
   belongs_to :currency
+  has_many :items
 
   validates :discount_commision, :numericality => true
   validates :before_conv_amount_of_payment, :numericality => true
@@ -112,18 +112,19 @@ class Payment < ActiveRecord::Base
         payment_number_of_payment += p.number_of_payment
       end
     end
-    # TODO: value of payment from code is from jst keycodes. 
-    #if order.payment_form.v == '1' || order.payment_form.v == '3'
-    #  @paid.taxable_amount = order.taxable_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.tax_exempt_amount = order.tax_exempt_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.amount_of_payment = order.cost / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
-    #  @paid.number_of_payment = order.number_of_acceptance_schedule - order.number_of_acceptance
-    #else 
-    #  @paid.taxable_amount = order.taxable_amount - payment_taxable_amount
-    #  @paid.tax_exempt_amount = order.tax_exempt_amount - payment_tax_exempt_amount
-    #  @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
-    #  @paid.number_of_payment = order.number_of_acceptance_schedule - payment_number_of_payment
-    #end
+    #TODO starts
+    if order.payment_form.v == '1' || order.payment_form.v == '3' #TODO: value from jst keycodes
+      @paid.taxable_amount = order.taxable_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.tax_exempt_amount = order.tax_exempt_amount / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.amount_of_payment = order.cost / order.number_of_acceptance_schedule * (order.number_of_acceptance_schedule - order.number_of_acceptance)
+      @paid.number_of_payment = order.number_of_acceptance_schedule - order.number_of_acceptance
+    else 
+      @paid.taxable_amount = order.taxable_amount - payment_taxable_amount
+      @paid.tax_exempt_amount = order.tax_exempt_amount - payment_tax_exempt_amount
+      @paid.amount_of_payment = @paid.taxable_amount + @paid.tax_exempt_amount
+      @paid.number_of_payment = order.number_of_acceptance_schedule - payment_number_of_payment
+    end
+    #TODO end
     @paid.save
 
     return @paid
@@ -131,54 +132,23 @@ class Payment < ActiveRecord::Base
 
   def self.create_advance_payment(order_id)
 
-  order = Order.find(order_id)
+    order = Order.find(order_id)
 
-  @payment = Payment.new(:order_id => order_id)
-  @payment.billing_date = order.ordered_at
-  @payment.manifestation_id = order.manifestation_id
-  @payment.currency_id = order.currency_id
-  @payment.currency_rate = order.currency_rate
-  @payment.discount_commision = order.margin_ratio
-  @payment.before_conv_amount_of_payment = order.original_price
-  @payment.amount_of_payment = order.cost
-  @payment.taxable_amount = order.taxable_amount
-  @payment.tax_exempt_amount = order.tax_exempt_amount
-  @payment.number_of_payment = order.number_of_acceptance_schedule
-  @payment.payment_type = 1
+    payment = Payment.new(:order_id => order_id)
+    payment.billing_date = order.ordered_at
+    payment.manifestation_id = order.manifestation_id
+    payment.currency_id = order.currency_id
+    payment.currency_rate = order.currency_rate
+    payment.discount_commision = order.margin_ratio
+    payment.before_conv_amount_of_payment = order.original_price
+    payment.amount_of_payment = order.cost
+    payment.taxable_amount = order.taxable_amount
+    payment.tax_exempt_amount = order.tax_exempt_amount
+    payment.number_of_payment = order.number_of_acceptance_schedule
+    payment.payment_type = 1
 
-  @payment.save
-
-  end
-
-  #‘O•¥¸ZŒãó“ü
-  def self.payment_of_acceptance_after_adjustment
-    #‚»‚Ì“ú‚Éó“ü‚µ‚½item
-    item = Item.find(:all, :conditions => ["to_char(created_at, 'YYYY-MM-DD') = ?", Time.parse(Time.now.to_s).strftime("%Y-%m-%d")])
-    item.each do |i|
-      #”­’î•ñ‚ğQÆ
-      order = Order.find(:first, :conditions => ['manifestation_id = ? and publication_year = ?', i.manifestation.id, Time.parse(Time.now.to_s).strftime("%Y").to_i])
-      if !order.blank?
-        #x•¥Œ`®‚ª‘“à‘O•¥or‘ŠO‘O•¥
-        if order.payment_form.v == '1' || order.payment_form.v == '3'
-          #¸ZŒãó“ü‚È‚ç
-          unless Payment.where(["order_id = ? AND payment_type = 3", order.id]).empty?
-            @payment = Payment.new(:order_id => order.id)
-            @payment.billing_date = order.order_day
-            @payment.manifestation_id = order.manifestation_id
-            @payment.currency_id = order.currency_id
-            @payment.currency_rate = order.currency_rate
-            @payment.discount_commision = order.discount_commision
-            @payment.before_conv_amount_of_payment = order.prepayment_principal
-            @payment.amount_of_payment = order.yen_imprest
-            @payment.taxable_amount = order.taxable_amount
-            @payment.tax_exempt_amount = order.tax_exempt_amount
-            @payment.number_of_payment = 1
-            @payment.payment_type = 2
-            @payment.save!
-          end
-        end
-      end
-    end
+    payment.save
+ 
   end
 
   paginates_per 10

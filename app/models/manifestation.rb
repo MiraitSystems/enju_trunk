@@ -41,7 +41,6 @@ class Manifestation < ActiveRecord::Base
   before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
-  has_many :payments
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 

@@ -1,7 +1,7 @@
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.payment')) -%></h1>
 <div id="content_list">
-
+<p id="notice"><%= raw notice %></p>
 <% if @order %>
   <p>
     <%= t('activerecord.attributes.manifestation.original_title') -%>:

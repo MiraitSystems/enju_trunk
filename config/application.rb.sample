@@ -23,7 +23,7 @@ module EnjuLeaf
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
     # Activate observers that should always be running.
-    config.active_record.observers = :subject_sweeper, :page_sweeper unless (File.basename($0) == "rake" && ARGV.include?("db:migrate"))
+    #config.active_record.observers = :dummy_sweeper unless (File.basename($0) == "rake" && ARGV.include?("db:migrate"))
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.

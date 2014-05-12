@@ -37,8 +37,9 @@ class SeriesStatement < ActiveRecord::Base
 
   # TODO: 不要メソッド　テストを実行し、削除しても問題内容であれば消すこと
   def last_issue
-    manifestations.where('serial_number IS NOT NULL').order('serial_number DESC').first # || manifestations.first
-    manifestations.where('date_of_publication IS NOT NULL').order('date_of_publication DESC').first || manifestations.first
+    m = manifestations.where('periodical_master IS FALSE AND serial_number IS NOT NULL').order('serial_number DESC').first # || manifestations.first
+    m = manifestations.where('periodical_master IS FALSE AND date_of_publication IS NOT NULL').order('date_of_publication DESC').first || manifestations.first unless m
+    return m
   end
 
   def last_issues
@@ -128,6 +129,29 @@ class SeriesStatement < ActiveRecord::Base
       titles << relationship_family.series_statements.map{ |series_statement| [series_statement.original_title, series_statement.title_transcription] }
     end
     titles.flatten.compact
+  end
+
+  def new_manifestation
+    manifestation = Manifestation.new
+    manifestation.original_title = self.original_title
+    manifestation.title_transcription = self.title_transcription
+    manifestation.issn = self.issn
+    if root_manifestation = self.root_manifestation
+      manifestation.creates = root_manifestation.creates.order(:position)
+      manifestation.realizes = root_manifestation.realizes.order(:position)
+      manifestation.produces = root_manifestation.produces.order(:position)
+      manifestation.carrier_type = root_manifestation.carrier_type
+      manifestation.manifestation_type = root_manifestation.manifestation_type
+      manifestation.frequency = root_manifestation.frequency
+      manifestation.country_of_publication = root_manifestation.country_of_publication
+      manifestation.place_of_publication = root_manifestation.place_of_publication
+      manifestation.access_address = root_manifestation.access_address
+      manifestation.required_role = root_manifestation.required_role
+      manifestation.work_has_languages = root_manifestation.work_has_languages
+      manifestation.manifestation_identifier = root_manifestation.identifier
+    end  
+    manifestation.series_statement = self
+    return manifestation
   end
 
   def self.create_root_manifestation(series_statement, objs)

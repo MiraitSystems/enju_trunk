@@ -230,6 +230,7 @@
     <% end %>
 
     <li><%= link_to t('page.listing', :model => t('order.payments')), order_payments_path(@order) %></li>
+    <li><%= link_to t('page.listing', :model => t('order.items')), order_items_path(@order) %></li>
 
     <% if @return_index %>
       <li><%= link_to t('page.new', :model => t('activerecord.models.payment')), new_order_payment_path(@order, :return_index => @return_index) -%></li>
@@ -240,5 +241,12 @@
       <li><%= link_to t('payment.paid'), {:controller => 'orders', :action => 'paid', :order_id => @order}, :confirm => t('payment.want_to_paid') -%></li>
       <li><%= link_to t('order.copy'), new_order_path(:order_id => @order) %></li>
     <% end %>
+
+    <%- if @order.number_of_acceptance_schedule > @order.items.try(:size) %>
+      <li><%= link_to t('order.create_ordered_manifestations'), create_ordered_manifestations_order_path(@order), :confirm => t('order.confirm_create_ordered') -%></li>
+    <%- end -%>
+    <%- if @order.paid_flag %>
+      <li><%= link_to t('order.update_order'), update_order_order_path(@order), :confirm => t('order.confirm_update_order') -%></li>
+    <%- end -%>
   </ul>
 </div>

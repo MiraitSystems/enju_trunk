@@ -1606,6 +1606,20 @@ en:
         budget_type: Budget type
         amount: Amount
         note: Note
+        name: Name
+        user_id: Executor
+        budget_class: Budget Class
+        budget_classes:
+          usual: Usual
+          revised: Revised
+          provisional: Provisional
+        start_date: Start date
+        end_date: End date
+        transferred: Carried over
+        actual: Actual
+        implementation: Implementation
+        estimated_implementation: Estimated
+        remaining: Remaining
       budget_type:
         id: ID
         name: Name
@@ -3044,7 +3058,7 @@ en:
   budget:
     yen: '%{amount} yen'
     yent: yen
-    sum: Total budget(include supplementary)
+    sum: Total budget(supplementary)
     balance: Balance
     all_budgets: All budgets
     all_libraries: All libraries
@@ -3292,11 +3306,17 @@ en:
     switch_manual_entry: "Use auto calculate the amount"
     auto_calculation_flag_0: Auto calculation
     auto_calculation_flag_1: Manual entry
+    items: Ordered Items
     paid: Paid
     want_to_paid: "Want to paid?"
     no_matches_found_order: "No matches found order to %{attribute}"
     no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
     no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
+    create_ordered_manifestations: "Creste ordered items"
+    confirm_create_ordered: "Are you sure?"
+    not_created_items: "Ordered item wasn't created"
+    update_order: ”Update order”
+    confirm_update_order: "Are you sure to update acquired number and create payments?"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
   approval:
