@@ -203,6 +203,10 @@ class ItemsController < ApplicationController
         end
 
       rescue => e
+        logger.error "######## rescue start #########"
+        logger.error "############### backtrace start ################"
+        logger.error e.backtrace.join("\n")
+        logger.error "############### backtrace end ################"
         if SystemConfiguration.get('manifestation.use_item_has_operator')
           @countoperators = @item.item_has_operators.size
           @item_has_operator = params[:item][:item_has_operators_attributes] 

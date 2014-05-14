@@ -99,6 +99,7 @@ class Item < ActiveRecord::Base
   before_save :mark_destroy_item_has_operator
   def mark_destroy_item_has_operator
     return unless SystemConfiguration.get('manifestation.use_item_has_operator')
+    logger.error "######## item checker #######"
     item_has_operators.each do |item_has_operator|
       if item_has_operator.user_number.blank?
         item_has_operator.mark_for_destruction

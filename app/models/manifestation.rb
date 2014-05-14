@@ -1635,10 +1635,15 @@ class Manifestation < ActiveRecord::Base
     def mark_destroy_manifestaion_title
       return unless SystemConfiguration.get('manifestation.use_titles')
 
+      logger.error "######## in mark_destroy_manifestaion_title #########"
       work_has_titles.each_with_index do |work_has_title,index|
+        logger.error "######## work_has_titles.each_with_index start#########"
+        logger.error "######## @title_list = #{@title_list.inspect} #########"
         if @title_list[index.to_s].blank?
+          logger.error "######## title_list[index.to_s].blank #########"
           work_has_title.mark_for_destruction 
         else
+          logger.error "######## title_list[index.to_s]_NOT_blank #########"
           if work_has_title.title_id
             work_has_title.manifestation_title.title = @title_list[index.to_s]
           else
@@ -1647,6 +1652,7 @@ class Manifestation < ActiveRecord::Base
             work_has_title.title_id = title.id
           end        
         end
+        logger.error "######## work_has_titles.each_with_index end #########"
       end
     end
 
