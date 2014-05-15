@@ -378,11 +378,4 @@ class ItemsController < ApplicationController
     end
     return true
   end
-  
-  # TODO 必要か?
-  def accept
-    @item_identifier = params[:item][:item_identifier]
-    @item = Item.find_by_item_identifier(@item_identifier)
-    @operator = ItemHasOperator.find(params[:operator]) if params[:operator]
-  end
 end
