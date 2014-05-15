@@ -11,7 +11,6 @@ module ManifestationsHelper
   end
 
   def back_to_manifestation_index
-    logger.error "######## session = #{session[:params]} ########"
     if session[:params]
       session[:params][:output_pdf], session[:params][:output_tsv], session[:params][:output_excelx], session[:params][:output_request] = nil,nil,nil,nil
         params = session[:params].merge(:view => nil, :series_statement_id => nil, :controller => :manifestations)
