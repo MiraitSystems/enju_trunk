@@ -62,6 +62,7 @@
   <% if method == :post %><% opts = form_opts_ex %><% else %><% opts = form_opts %><% end %>
   <%= form_for :manifestations, opts do -%>
     <p <% if method == :post %>style='display:none;'<% end %>>
+      <%= back_to_manifestation_index if params[:series_statement_id]%>
       <%= t('page.search_term') -%>:
       <%= search_field_tag 'query', h(@query), {:id => "search_form_#{form_pos}", :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%- if form_type == :basic %>
