@@ -607,30 +607,11 @@ $(document).keydown(function(e) {
           <td><%= make_select2("classification_type_0", 'classification_type[0]', @classification_types, 0, 200) %></td>
           <%= select2_script "classification_id_0" %>
           <td>
-            <script>
-                function movieFormatResult(movie) {
-                  var markup = "<table class='movie-result'><tr>";
-                      if (movie.posters !== undefined && movie.posters.thumbnail !== undefined) {
-                        markup += "<td class='movie-image'><img src='" + movie.posters.thumbnail + "'/></td>";
-                      }
-                      markup += "<td class='movie-info'><div class='movie-title'>" + movie.title + "</div>";
-                        if (movie.critics_consensus !== undefined) {
-                          markup += "<div class='movie-synopsis'>" + movie.critics_consensus + "</div>";
-                        }
-                        else if (movie.synopsis !== undefined) {
-                          markup += "<div class='movie-synopsis'>" + movie.synopsis + "</div>";
-                        }
-                        markup += "</td></tr></table>";
-                  return markup;
-                }
-                function movieFormatSelection(movie) {
-                  return movie.title;
-                }
-              </script>
               <script>
                 $(document).ready(function() { $("#e6").select2({
+                    id: function(data) { return data.classification.id; },
                     placeholder: "<%= I18n.t("manifestation_page.classification_ph") %>",
-                    minimumInputLength: 3,
+                    minimumInputLength: 2,
                     ajax: {
                       url: "<%= classifications_path(:format => :json) -%>",
                       dataType: 'json',
@@ -646,14 +627,13 @@ $(document).keydown(function(e) {
                       }
                     },
                     formatResult: function (data) {
-                      return "<div class='select2-user-result'>" + data.classifications + "</div>";
+                      return "<div class='select2-user-result'>" + data.classification.category + " (" + data.classification.classifiation_identifier + ")</div>";
                     },
                     formatSelection: function (data) {
-                      return data.client;
+                      return "<div class='select2-user-result'>" + data.classification.category + " (" + data.classification.classifiation_identifier + ")</div>";
+
                     },
-                    escapeMarkup: function (m) { return m; }
-                }
-                ); });
+                }); });
             </script>
             <input type="hidden" id="e6" style="width:300px" class="input-xlarge" />
             <%#= make_select2("classification_id_0", 'classification_id[0]', @classifications, 0, 300) %>
