@@ -238,8 +238,12 @@ class ManifestationsController < ApplicationController
       end
 
       def setup_facet!
-        @search[:all].build do
-          facet_fields.each {|f| facet f }
+        [:all, :book].each do |key| 
+          if @search[key]
+            @search[key].build do
+              facet_fields.each {|f| facet f }
+            end
+          end
         end
       end
 

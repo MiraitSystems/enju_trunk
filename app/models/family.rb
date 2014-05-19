@@ -20,7 +20,7 @@ class Family < ActiveRecord::Base
 
   def self.output_familylist_pdf(families)
     max_family_column = 7
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'familylist.tlf')
+    report = EnjuTrunk.new_report('familylist.tlf')
 
     # set page_num
     report.events.on :page_create do |e|

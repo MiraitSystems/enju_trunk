@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 class UserLabel < ActiveRecord::Base
   def self.output_user_label_pdf(user_ids, output_types)
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/app/views/print_labels/agent_label"
+    report = EnjuTrunk.new_report('agent_label.tlf')
+
     user_ids.each do |user_id|
       user = User.find(user_id)
       report.start_new_page

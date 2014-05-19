@@ -3,7 +3,7 @@ class Unablelist < ActiveRecord::Base
   paginates_per 10
 
   def self.get_unable_list_pdf(users, sort)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'userlist.tlf')
+    report = EnjuTrunk.new_report('userlist.tlf')
     # set page_num
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
