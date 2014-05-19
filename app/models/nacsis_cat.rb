@@ -464,8 +464,19 @@ class NacsisCat
         query_field += [
           "FANO=#{gateway_config['federation_id']}",
           "LOC=#{@item.shelf.library.nacsis_location_code}",
-          "LTR="
+#          "LTR="
         ]
+
+        i = 0
+        @item.manifestation.subjects.each do |subject|
+          unless subject.subject_type.note == 'for nacsis data'
+            i += 1
+            query_field += [
+              "LTR=#{subject.term}"
+            ]
+          end
+          break if i >= 4
+        end
 
         if db_type == 'BHOLD'
           query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
@@ -482,11 +493,12 @@ class NacsisCat
             ]
           end
         else
+          cont = '+' if @item.manifestation.series_statement.publication_status.try(:name) == 'c'
           query_field += [
             "BID=#{@item.manifestation.series_statement.nacsis_series_statementid}",
             "HLYR=#{shold_hl_info[:HLYR]}",
             "HLV=#{shold_hl_info[:HLV]}",
-            "CONT=#{shold_hl_info[:CONT]}",
+            "CONT=#{cont}",
             "CLN=#{@item.manifestation.items.pluck(:call_number).reject{|c| c.blank?}.join("||")}",
             "LDF=#{@item.manifestation.items.pluck(:note).reject{|n| n.blank?}.join("||")}",
             "CPYNT=#{@item.manifestation.note}"
@@ -497,9 +509,17 @@ class NacsisCat
 
       def shold_hl_info
         hl_info = {}
-        hl_info[:HLYR] = '*'
-        hl_info[:HLV] = '*'
-        hl_info[:CONT] = ''
+        hlyr = @item.manifestation.series_statement.manifestations.pluck(:date_of_publication_string).reject{|c| c.blank?}.sort
+        if hlyr.present?
+          hl_info[:HLYR] = hlyr[0] + '-' + hlyr[hlyr.count - 1]
+        end
+        if hl_info[:HLYR].blank?
+          hl_info[:HLYR] = '*'
+        end
+        hl_info[:HLV] = @item.manifestation.series_statement.manifestations.pluck(:volume_number_string).reject{|c| c.blank?}.join(",")
+        if hl_info[:HLV].blank?
+          hl_info[:HLV] = '*'
+        end
         hl_info
       end
 
@@ -628,6 +648,10 @@ class NacsisCat
       end
 
       def serial_field
+        vlyr = []
+        @manifestation.manifestation_extexts.where(:name => 'VLYR').each do |extext|
+          vlyr << extext.value
+        end
         result = [
           "NDLPN=#{get_identifier_number('ndlpn')}",
           "CODEN=#{get_identifier_number('coden')}",
@@ -636,7 +660,10 @@ class NacsisCat
           "FREQ=#{@manifestation.frequency.try(:nii_code)}",
           "REGL=#{}",
           "TYPE=#{@manifestation.manifestation_type.try(:nacsis_identifier)}",
-          "VLYR=#{}",
+          "VLYR=#{vlyr[0]}",
+          "VLYR=#{vlyr[1]}",
+          "VLYR=#{vlyr[2]}",
+          "VLYR=#{vlyr[3]}",
           "PRICE=#{@manifestation.price_string}"
         ]
         get_identifier_numbers('xissn').each do |xissn|
@@ -813,7 +840,7 @@ class NacsisCat
             results += [
               '<AL>',
               "AID=#{creator.agent_identifier}",
-              "AF=#{}",
+              "AF=#{@manifestation.creates.where(:agent_id => creator.id).first.create_type.try(:name)}",
               "AFLG=#{}",
               '</AL>'
             ]
@@ -825,7 +852,7 @@ class NacsisCat
               "AHDNGR=#{creator.full_name_transcription}",
               "AHDNGVR=#{alternatives[0]}",
               "AHDNGVR=#{alternatives[1]}",
-              "AF=#{}",
+              "AF=#{@manifestation.creates.where(:agent_id => creator.id).first.create_type.try(:name)}",
               "AFLG=#{}",
               '</AL>'
             ]
@@ -1064,6 +1091,7 @@ class NacsisCat
 
         # 関連テーブル：著者の設定
         attrs[:creators] = []
+        af = {}
         nacsis_info[:creators].each do |creator|
           #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
           attrs[:creators] <<
@@ -1074,6 +1102,7 @@ class NacsisCat
                 p.full_name_alternative = arraying(creator['AHDNGVR']).join('||')
               end
             end
+          af[creator['AHDNG']] = creator['AF']
         end
 
         # 関連テーブル：出版者の設定
@@ -1182,6 +1211,21 @@ class NacsisCat
         manifestation = Manifestation.create(attrs)
         manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
         manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
+
+        if nacsis_info[:vlyr]
+          vlyr_ary = []
+          nacsis_info[:vlyr].each do |vlyr|
+            vlyr_ary << ManifestationExtext.new(:name => 'VLYR', :value => vlyr)
+          end
+          manifestation.manifestation_extexts = vlyr_ary
+        end
+
+        # 関連テーブル：著者 役割表示の設定
+        manifestation.creates.each do |cre|
+          cre.create_type_id = CreateType.where(:name => af[manifestation.creators.where(:id => cre.agent_id).first.full_name]).first.try(:id)
+          cre.save!
+        end
+
         manifestation
       end
 
@@ -1526,6 +1570,7 @@ class NacsisCat
         hash[:ulpn] = @record['ULPN']
         hash[:ndlcln] = @record['NDLCLN']
         hash[:ndlhold] = @record['NDLHOLD']
+        hash[:vlyr] = arraying(@record['VLYR'])
       end
       hash[:ncid] = ncid
     end
