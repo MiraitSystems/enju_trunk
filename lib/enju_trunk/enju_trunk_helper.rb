@@ -558,29 +558,29 @@ module EnjuTrunk
       def i18n_state(state)
         case state
         when 'pending'
-          t('reserve.pending')
+          I18n.t('reserve.pending')
         when 'requested'
-          t('reserve.requested')
+          I18n.t('reserve.requested')
         when 'retained'
-          t('reserve.retained')
+          I18n.t('reserve.retained')
         when 'in_process'
-          t('reserve.in_process')
+          I18n.t('reserve.in_process')
         when 'canceled'
-          t('reserve.canceled')
+          I18n.t('reserve.canceled')
         when 'expired'
-          t('reserve.expired')
+          I18n.t('reserve.expired')
         when 'completed'
-          t('reserve.completed')
+          I18n.t('reserve.completed')
         end
       end
       def i18n_information_type(id)
         case id
         when 0
-          t('activerecord.attributes.reserve.unnecessary')
+          I18n.t('activerecord.attributes.reserve.unnecessary')
         when 1
-          t('activerecord.attributes.reserve.email')
+          I18n.t('activerecord.attributes.reserve.email')
         when [2, 3, 4, 5, 6, 7], 2, 3, 4, 5, 6, 7
-          t('activerecord.attributes.reserve.telephone')
+          I18n.t('activerecord.attributes.reserve.telephone')
         end
       end
     end
