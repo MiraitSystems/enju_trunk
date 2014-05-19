@@ -61,7 +61,7 @@ class LibraryReportsController < ApplicationController
    @library_reports = LibraryReport.where(["yyyymmdd = ? AND library_id IN (?)", yyyymmdd, library_ids]) if library_ids
 
    begin
-      report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/app/views/library_reports/daily_library_report"
+     report = EnjuTrunk.new_report('daily_library_report.tlf')
 
       report.start_new_page
       report.page.item(:year).value(yyyymmdd[0,4])
@@ -132,7 +132,7 @@ class LibraryReportsController < ApplicationController
     yyyymm = params[:library_report][:yyyymm]
     library_ids = params[:library]
     begin
-     report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/app/views/library_reports/monthly_library_report"
+      report = EnjuTrunk.new_report('monthly_library_report.tlf')
 
       report.start_new_page
       report.page.item(:year).value(yyyymm.to_s[0,4])
