@@ -87,7 +87,6 @@ $(function(){
 <h1 class="title"><%= t('page.advanced_search') -%></h1>
 <div id="content_list">
 
-<%#- cache :controller => 'page', :action => 'advanced_search', :locale => @locale do -%>
 <%= form_tag({:controller => 'manifestations'}, {:method => 'get'}) do -%>
   <div id="tabs">
     <ul>
@@ -457,7 +456,6 @@ $(function(){
   </div>
   </div>
   </div>
-<%#- end -%>
 <%= javascript_tag("$('#query').focus()") -%>
 <%- end -%>
 </div>
