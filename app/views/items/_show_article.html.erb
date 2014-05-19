@@ -78,8 +78,6 @@
   </p>
 <% end %>
 
-<%- cache(:controller => :items, :action => :show, :id => @item.id, :page => 'detail', :role => current_user_role_name, :locale => @locale, :item_id => nil) do %>
-
 <p>
   <strong><%= t('activerecord.attributes.item.acquired_at_string') %>:</strong>
   <%= @item.acquired_at_string %>
@@ -99,7 +97,6 @@
   <strong><%= t('page.updated_at') %>:</strong>
   <%= l(@item.updated_at) %>
 </p>
-<% end %>
 
 <% if Setting.operation && @item.reserve %>
   <% if @item.reserve.user == current_user or (user_signed_in? and current_user.has_role?('Librarian')) %>

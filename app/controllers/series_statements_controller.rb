@@ -10,7 +10,6 @@ class SeriesStatementsController < ApplicationController
   before_filter :get_manifestation, :only => [:index, :new, :edit]
   before_filter :get_parent_and_child, :only => [:index, :new, :edit]
   before_filter :prepare_options, :only => [:new, :edit]
-  cache_sweeper :page_sweeper, :only => [:create, :update, :destroy]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
 
   # GET /series_statements
