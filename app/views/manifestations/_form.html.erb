@@ -1,6 +1,7 @@
 <script>
 jQuery(function(){
   new AutoKana('manifestation_original_title', 'manifestation_title_transcription', { katakana:true, toggle:false });
+  $('#manifestation_original_title').focus();
 
   var article_title = "<%= @manifestation.article_title %>"
   displayArticleTitle(article_title);
@@ -687,5 +688,4 @@ $(document).keydown(function(e) {
     <%= hidden_field_tag :subjects, @subjects if @subjects -%>
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
-  <%= javascript_tag("$('#manifestation_original_title').focus()") -%>
 <%- end -%>

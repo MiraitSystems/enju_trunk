@@ -43,13 +43,13 @@
             <% if item.circulation_status.name != 'Available On Shelf' %>
               <span class="not_rent_item">
                 <%= item.circulation_status.display_name.localize if item.circulation_status %>
-                <% if item.use_restriction.name == 'Not For Loan' %>
+                <% if item.use_restriction.try(:name) == 'Not For Loan' %>
                   (<%= t('activerecord.attributes.checkout.not_available') %>)
                 <% end %>
               </span>
             <% else %>
               <% if item.circulation_status %>
-                <% if item.use_restriction.name != 'Not For Loan' %>
+                <% if item.use_restriction.try(:name) != 'Not For Loan' %>
                   <%= item.circulation_status.display_name.localize %>
                 <% else %>
                   <span class="not_rent_item"><%= t('activerecord.attributes.checkout.not_for_loan') %></span>

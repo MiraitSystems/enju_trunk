@@ -97,7 +97,7 @@
 
 <p>
   <strong><%= t('activerecord.models.user') -%>:</strong>
-  <%= link_to @resource_import_textfile.user.username, @resource_import_textfile.user -%>
+  <%= link_to @resource_import_textfile.try(:user).try(:username), @resource_import_textfile.try(:user) if @resource_import_textfile.user -%>
 </p>
 
 </div>

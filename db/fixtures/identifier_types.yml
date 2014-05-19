@@ -1,0 +1,31 @@
+---
+identifier_type_00001:
+  id: 1
+  name: isbn
+  display_name: ISBN
+  note:
+  position: 1
+identifier_type_00002:
+  id: 2
+  name: isbn17
+  display_name: ISBN17
+  note:
+  position: 2
+identifier_type_00003:
+  id: 3
+  name: issn
+  display_name: ISSN
+  note:
+  position: 3
+identifier_type_00004:
+  id: 4
+  name: coden
+  display_name: CODEN
+  note:
+  position: 4
+identifier_type_00005:
+  id: 5
+  name: ndl
+  display_name: NDL識別子
+  note:
+  position: 5
