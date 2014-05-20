@@ -279,17 +279,6 @@ Rails.application.routes.draw do
   match 'payments/search', :to => 'payments#search'
   resources :payments
 
-  resources :inter_library_loans do
-    post :export_loan_lists, :on => :collection
-    post :get_loan_lists, :on => :collection
-    post :pickup, :on => :collection
-    post :pickup_item, :on => :collection
-    post :accept, :on => :collection
-    get :accept_item, :on => :collection
-    get :download_file, :on => :collection
-    post :output, :on => :member
-  end
-
   match '/resource_import_textfiles/adapters/:name' => 'resource_import_textfiles#inherent_view'
   resources :resource_import_textfiles do
     get :import_request, :on => :collection
@@ -402,7 +391,6 @@ Rails.application.routes.draw do
 
   resources :items do
     resources :binding_items
-    resources :inter_library_loans
     resources :item_has_use_restrictions
     resources :lending_policies
     resources :agents
