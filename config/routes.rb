@@ -85,7 +85,6 @@ Rails.application.routes.draw do
     resources :manifestations
     resources :series_statements
     resources :series_has_manifestations
-    resources :reserves
     resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
@@ -180,15 +179,9 @@ Rails.application.routes.draw do
     post :output_password, :on => :member
     post :output_user_notice, :on => :member   
     resources :answers
-    resources :baskets do
-      resources :checked_items
-      resources :checkins
-    end
-    resources :checkouts
     resources :questions do
       resources :answers
     end
-    resources :reserves
     resources :purchase_requests
     resources :questions
     resource :agent
@@ -297,10 +290,6 @@ Rails.application.routes.draw do
     post :output, :on => :member
   end
 
-  resources :baskets do
-    resources :checked_items
-  end
-
   match '/resource_import_textfiles/adapters/:name' => 'resource_import_textfiles#inherent_view'
   resources :resource_import_textfiles do
     get :import_request, :on => :collection
@@ -364,14 +353,6 @@ Rails.application.routes.draw do
 
   resources :search_engines
 
-  resources :reserves do
-    post :output, :on => :member
-    get :output_pdf, :on => :member
-    get :retain, :on => :collection
-    post :retain_item, :on => :collection
-    post :informed, :on => :member
-  end
-
   resources :subject_types
 
   resources :work_has_subjects
@@ -409,16 +390,7 @@ Rails.application.routes.draw do
     resources :shelves
   end
 
-  resources :checkins
-  resources :checked_items
 
-  resources :checkouts do
-    collection do
-      post 'output'
-      get 'extend'
-      post 'extend_checkout'
-    end
-  end
 
   resources :countries
 
@@ -430,7 +402,6 @@ Rails.application.routes.draw do
 
   resources :items do
     resources :binding_items
-    resources :checked_items
     resources :inter_library_loans
     resources :item_has_use_restrictions
     resources :lending_policies
@@ -608,18 +579,11 @@ Rails.application.routes.draw do
     resources :manifestations, :opac => true do
       post :output_show, :on => :member
     end
-    resources :users do
-      resources :reserves, :opac => true
-      resources :checkouts, :opac => true
-    end
     resources :events, :opac => true
     match '/manifestation_exstats/bestreader' => 'manifestation_exstats#bestreader', :opac => true
     match '/manifestation_exstats/bestrequest' => 'manifestation_exstats#bestrequest', :opac => true
   end
   # for opac end
-
-  match '/batch_checkin' => 'checkins#batchexec' , :via => :post
-  match '/batch_checkout' => 'checkouts#batchexec' , :via => :post
 
   match '/reservelists' => 'reservelists#index'
   match '/unablelist' => 'unablelist#index'
