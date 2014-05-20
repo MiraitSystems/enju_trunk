@@ -220,7 +220,9 @@ function displayArticleTitle(article_title) {
 
   <div class="field">
     <%= f_m.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%= f_m.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%#= f_m.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%= select2_script "jpn_or_foreign" %>
+    <%= make_select2_struct(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, 200, true, false) %>
   </div>
 
   <div class="field">
