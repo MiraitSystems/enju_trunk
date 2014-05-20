@@ -947,6 +947,13 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
+    if params[:manifestation][:work_has_titles_attributes]
+      params[:manifestation][:work_has_titles_attributes].each do |key, title_attributes|
+        if title_attributes[:title].blank? && title_attributes[:title_transcription].blank? && title_attributes[:title_alternative].blank?
+          params[:manifestation][:work_has_titles_attributes]["#{key}"][:_destroy] = 1
+        end
+      end
+    end
     set_agent_instance_from_params # Implemented in application_controller.rb
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
@@ -954,13 +961,6 @@ class ManifestationsController < ApplicationController
     @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-      end
-    end
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
