@@ -1,1 +1,1 @@
-require File.join(Rails.root, 'app', 'models', 'version')
+require File.join(EnjuTrunk::Engine.root, 'app', 'models', 'version')

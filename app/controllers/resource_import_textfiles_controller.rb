@@ -1,3 +1,5 @@
+require 'roo'
+
 class ResourceImportTextfilesController < ApplicationController
   add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.resource_import_textfile'))", 'resource_import_textfiles_path'
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.resource_import_textfile'))", 'new_resource_import_textfile_path', :only => [:new, :create]
@@ -106,7 +108,7 @@ class ResourceImportTextfilesController < ApplicationController
     @manifestation_types = ManifestationType.all
     @numberings = Numbering.where(:numbering_type => 'item')
     templatename = a.template_filename_edit
-    filename = "lib/enju_trunk/resourceadapter/views/#{templatename}"
+    filename = "#{EnjuTrunk::Engine.root}/lib/enju_trunk/resourceadapter/views/#{templatename}"
     logger.debug "filename=#{filename}"
     render :layout => false, :file => filename
   end
@@ -125,7 +127,7 @@ class ResourceImportTextfilesController < ApplicationController
     @oo = Excelx.new(path)
     @manifestation_types = ManifestationType.all
     @numberings = Numbering.where(:numbering_type => 'item')
-    data = "lib/enju_trunk/resourceadapter/views/excelfile_select.html.erb"
+    data = "#{EnjuTrunk::Engine.root}/lib/enju_trunk/resourceadapter/views/excelfile_select.html.erb"
     render :layout => false, :file => data
   end
 end

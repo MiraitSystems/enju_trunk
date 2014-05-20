@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+require 'roo'
 require File.join(File.expand_path(File.dirname(__FILE__)), 'import_book')
 require File.join(File.expand_path(File.dirname(__FILE__)), 'import_article')
 class ResourceImport < EnjuTrunk::ResourceAdapter::Base

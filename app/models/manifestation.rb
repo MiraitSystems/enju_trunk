@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'manifestation')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation') # unless SystemConfiguration.isWebOPAC
+require 'enju_trunk/output_columns'
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
@@ -1333,7 +1334,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.get_manifestation_list_pdf(manifestation_ids, current_user, summary = nil, type = :book)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'searchlist.tlf')
+    report = EnjuTrunk.new_report('searchlist.tlf')
 
     # set page_num
     report.events.on :page_create do |e|
@@ -1380,7 +1381,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.get_manifestation_locate(manifestation, current_user)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'manifestation_reseat.tlf')
+    report = EnjuTrunk.new_report('manifestation_reseat.tlf')
    
     # footer
     report.layout.config.list(:list) do

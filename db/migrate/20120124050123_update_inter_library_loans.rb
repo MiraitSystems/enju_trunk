@@ -2,7 +2,7 @@ class UpdateInterLibraryLoans < ActiveRecord::Migration
   def self.up
     rename_column :inter_library_loans, :borrowing_library_id, :to_library_id
     InterLibraryLoan.update_all ["to_library_id = ?", 0]
-    add_column :inter_library_loans, :from_library_id, :integer, :null => false
+    add_column :inter_library_loans, :from_library_id, :integer, :null => false, :default => 0
   end
 
   def self.down

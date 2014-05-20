@@ -124,7 +124,7 @@ class Agent < ActiveRecord::Base
       integer 'relationship_type_child_' + type_id.to_s , :multiple => true do
         children.select_type_id(type_id).pluck(:child_id)
       end
-    end
+    end if AgentRelationshipType.table_exists?
   end
 
   paginates_per 10

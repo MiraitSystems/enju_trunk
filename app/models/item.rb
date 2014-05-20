@@ -480,7 +480,7 @@ class Item < ActiveRecord::Base
       end
       # pdf
       if file_type.nil? || file_type == "pdf"
-        report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'removing_list.tlf') 
+        report = EnjuTrunk.new_report('removing_list.tlf')
         report.events.on :page_create do |e|
           e.page.item(:page).value(e.page.no)
         end
@@ -682,7 +682,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.make_item_register_pdf(pdf_file, items, list_title = nil)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'item_register.tlf') 
+    report = EnjuTrunk.new_report('item_register.tlf')
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
     end
@@ -728,7 +728,7 @@ class Item < ActiveRecord::Base
 
   def self.make_audio_list_pdf(pdf_file, items)
     filename = I18n.t('item_register.audio_list')
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/item_list"
+    report = EnjuTrunk.new_item_list('item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -759,7 +759,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_item_list_pdf(items, filename)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/item_list"
+    report = EnjuTrunk.new_book_list('item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -830,7 +830,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_new_item_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/new_item_list"
+    report = EnjuTrunk.new_book_list('new_item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -911,7 +911,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_removed_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/removed_list"
+    report = EnjuTrunk.new_book_term('removed_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -989,7 +989,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_new_book_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/new_book_list"
+    report = EnjuTrunk.new_report('new_book_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1070,7 +1070,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_series_statements_latest_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/series_statements_latest_list"
+    report = EnjuTrunk.new_report('series_statements_latest_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1145,7 +1145,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_series_statements_list_pdf(items, acquired_at)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/series_statements_list"
+    report = EnjuTrunk.new_report('series_statements_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1250,7 +1250,7 @@ if type == 'title'
   end
 
   def self.make_catalog_pdf(pdf_file, manifestations, list_title = nil)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{list_title}.tlf")
+    report = EnjuTrunk.new_report("#{list_title}.tlf")
     #report page
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
