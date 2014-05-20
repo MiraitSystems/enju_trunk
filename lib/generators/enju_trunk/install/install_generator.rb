@@ -110,10 +110,9 @@ devise_scope :user do
     E
 
     gsub_file target, /^(\s*)\# (config\.active_record\.observers) = .*\n/, <<-'E'
-\1unless File.basename($0) == "rake" && ARGV.include?('db:migrate')
-\1  \2 = :agent_sweeper, :page_sweeper, :item_sweeper,
-\1    :manifestation_sweeper, :library_group_sweeper, :user_sweeper
-\1end
+\1#unless File.basename($0) == "rake" && ARGV.include?('db:migrate')
+\1#  \2 = :page_sweeper
+\1#end
     E
 
     gsub_file target, /^(\s*)\# (config\.time_zone) = .*\n/, <<-'E'
