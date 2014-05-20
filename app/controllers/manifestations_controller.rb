@@ -901,13 +901,6 @@ class ManifestationsController < ApplicationController
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-      end
-    end
-
     respond_to do |format|
       if @manifestation.save
         Manifestation.transaction do
@@ -1551,18 +1544,8 @@ class ManifestationsController < ApplicationController
       @use_restriction_id = @item.use_restriction.present? ? @item.use_restriction.id : nil
       if SystemConfiguration.get('manifestation.use_item_has_operator')
         @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", @item])
-        if @countoperators == 0
-          operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @library)
-          operator.user_number = ""
-          @item.item_has_operators << operator
-          @countoperators = 1
-        end
-      end
-      if @item.item_has_operators.present?
-        @item.item_has_operators.each do |item_has_operator|
-          unless item_has_operator.user.blank?
-            item_has_operator.user_number = item_has_operator.user.user_number
-          end
+        if @item.item_has_operators.blank?
+          @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @library)
         end
       end
     end

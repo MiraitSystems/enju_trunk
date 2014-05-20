@@ -4,11 +4,12 @@ class CreateRootManifestationForSeriesStatementWithoutRootManifestation < Active
       begin
         ActiveRecord::Base.transaction do 
           manifestation = Manifestation.new
-          manifestation.periodical_master   = s.periodical || false
+          manifestation.periodical_master   = true
           manifestation.periodical          = s.periodical || false
           manifestation.original_title      = s.original_title
           manifestation.title_transcription = s.title_transcription
           manifestation.title_alternative   = s.title_alternative
+          manifestation.series_statement = s
           manifestation.save!
           s.root_manifestation = manifestation
           s.save!

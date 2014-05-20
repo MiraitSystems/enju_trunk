@@ -779,7 +779,7 @@ $(document).keydown(function(e) {
         <% end %>
       </div>
     <% end %>
-    <%= render(:partial => 'form_item_has_operator', :locals=>{:f => item}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
+    <%= render(:partial => 'items/form_item_has_operator', :locals=>{:f => item}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
   <% end %>
 
   <div class="actions">

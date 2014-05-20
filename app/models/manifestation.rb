@@ -35,14 +35,14 @@ class Manifestation < ActiveRecord::Base
 
   has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
   has_many :manifestation_titles, :through => :work_has_titles
-  accepts_nested_attributes_for :work_has_titles
+  accepts_nested_attributes_for :work_has_titles, :reject_if => :all_blank
   accepts_nested_attributes_for :identifiers, :reject_if => proc {|attributes| attributes['body'].blank?}, :allow_destroy => true
-  before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
+  validates_associated :items
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)
@@ -1521,11 +1521,6 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
-  def set_title(index, title)
-    @title_list = {} if @title_list == nil
-    @title_list[index] = title
-  end
-
   private
 
     INTERNAL_ITEM_ATTR_CACHE = {}
@@ -1630,24 +1625,6 @@ class Manifestation < ActiveRecord::Base
       @_series_manifestations_items_cache =
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id])
-    end
-
-    def mark_destroy_manifestaion_titile
-      return unless SystemConfiguration.get('manifestation.use_titles')
-
-      work_has_titles.each_with_index do |work_has_title,index|
-        if @title_list[index.to_s].blank?
-          work_has_title.mark_for_destruction 
-        else
-          if work_has_title.title_id
-            work_has_title.manifestation_title.title = @title_list[index.to_s]
-          else
-            title = Title.new(:title => @title_list[index.to_s])
-            title.save
-            work_has_title.title_id = title.id
-          end        
-        end
-      end
     end
 
 end

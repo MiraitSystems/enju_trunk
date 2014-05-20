@@ -9,8 +9,7 @@ class Item < ActiveRecord::Base
                   :use_restriction, :manifestation_id, :manifestation,
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
-                  :non_searchable,
-                  :item_has_operators_attributes,
+                  :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id 
 
   self.extend ItemsHelper
@@ -80,10 +79,10 @@ class Item < ActiveRecord::Base
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   has_many :item_has_operators, :dependent => :destroy, :validate => true
   has_many :operators, :through => :item_has_operators, :source => :user
-  accepts_nested_attributes_for :item_has_operators
+  accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
-  accepts_nested_attributes_for :claim
+  accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
@@ -112,16 +111,6 @@ class Item < ActiveRecord::Base
     end
   end
 
-  before_validation :check_destroy_operator
-  def check_destroy_operator
-    item_has_operators.each do |operator|
-      if operator.user_number.blank? || operator.operated_at.blank? || operator.library_id.blank?
-        operator.delete_flg = true
-        operator.destroy 
-      end
-    end
-  end
-
   #enju_union_catalog
   has_paper_trail
 
@@ -142,7 +131,9 @@ class Item < ActiveRecord::Base
     integer :circulation_status_id
     integer :accept_type_id
     integer :retention_period_id
-    integer :manifestation_id
+    integer :manifestation_id do
+      manifestation.try(:id)
+    end
     integer :shelf_id
     integer :agent_ids, :multiple => true
     integer :rank
