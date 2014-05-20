@@ -672,6 +672,8 @@ $(document).keydown(function(e) {
     ) %>
   </div>
 
+  <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
+
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>
