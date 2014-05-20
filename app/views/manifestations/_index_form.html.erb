@@ -297,23 +297,20 @@ function BoxChecked(check){
       <%= radio_button_tag(:format_type_book2, 'excelx', :checked => true) %><%= t('page.output_filetype_format.excelx') %><br />
       <%= radio_button_tag(:format_type_book2, 'tsv') %><%= t("page.output_filetype_format.#{ SystemConfiguration.get("set_output_format_type") ? 'tsv' : 'csv'}") %><br />
       <%= radio_button_tag(:format_type_book2, 'pdf') %><%= t('page.output_filetype_format.pdf') %><br />
-      <br />
+    </div>
 
+    <div id='check_cols_book'>
+      <form id = "column" name="column" method="GET">
+      <br />
+      <strong><%= t('page.output_excelx_dialog') %></strong>
       <% if output_column_lists = OutputColumnList.find(:all) %>
         <strong><%= t('page.output_list') %></strong><br />
         <% output_column_lists.each_with_index do |column_list, i| %>
           <%= button_tag column_list.name, :onClick=>"TemplateChecked(#{i})" %>
         <% end %>
       <% end %>
-    </div>
-    <br />
-    <%= button_tag t('page.output_select_all'), :onClick=>"BoxChecked(true);", :type=>'button' %>
-    <%= button_tag t('page.output_cancel_all'), :onClick=>"BoxChecked(false);", :type=>'button' %>
-
-    <div id='check_cols_book'>
-      <form id = "column" name="column" method="GET">
-      <br />
-      <strong><%= t('page.output_excelx_dialog') %></strong>
+      <%= button_tag t('page.output_select_all'), :onClick=>"BoxChecked(true);", :type=>'button' %>
+      <%= button_tag t('page.output_cancel_all'), :onClick=>"BoxChecked(false);", :type=>'button' %>
       <%if false%><%= check_box_tag 'all_check','all_check', true, :onclick=>"AllChecked()" %>すべて選択<%end%><br />
       <div style="width: 33%; float: left;">
         <% cols_book[0, cols_book.length / 2].each do |x| %>

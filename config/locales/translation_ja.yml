@@ -1971,7 +1971,6 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
-    output_list: 出力リスト
     output_select_all: すべて選択
     output_cancel_all: すべて解除
     batch_change: "一括更新"

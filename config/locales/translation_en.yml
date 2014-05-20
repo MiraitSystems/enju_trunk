@@ -1980,7 +1980,6 @@ en:
     output_layout: Output layout
     output_request: Request
     output_label: Label
-    output_list: Output template list
     output_select_all: Select all
     output_cansel_all: Cancel all
     batch_change: "Batch Change"
