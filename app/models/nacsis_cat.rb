@@ -170,17 +170,10 @@ class NacsisCat
       return {} unless check_upload_params(id, db_type, command)
 
       req_query = {}
+
       case db_type
       when 'BHOLD','SHOLD'
         @item = Item.find(id)
-
-        if command == 'insert'
-          bid = @item.manifestation.items.pluck(:nacsis_identifier).uniq.compact
-          if bid.present?
-            command = 'update'
-            @item.nacsis_identifier = bid.first
-          end
-        end
         req_query[:query] = hold_query(command, db_type)
         result_id = @item.nacsis_identifier
 
@@ -221,12 +214,8 @@ class NacsisCat
             result_id = result_record['hold_id']
           end
           hold_id = command == 'delete' ? nil : result_id
-          @item.manifestation.items.each do |i|
-            if i.library == @item.library
-              i.nacsis_identifier = hold_id
-              i.save!
-            end
-          end
+          @item.nacsis_identifier = hold_id
+          @item.save!
         when 'BOOK'
           result_id = result_record['book_info']['bibliog_id']
           @manifestation.nacsis_identifier = result_id
@@ -479,7 +468,11 @@ class NacsisCat
         end
 
         if db_type == 'BHOLD'
-          query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
+          if @item.manifestation.nacsis_identifier
+            query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
+          else
+            query_field += ["BID=#{@item.manifestation.series_statement.nacsis_series_statementid}"]
+          end
           @item.manifestation.items.each do |item|
             query_field += [
               '<HOLD>',
@@ -609,7 +602,8 @@ class NacsisCat
         end
 
         get_identifier_other_numbers.each do |other_number|
-          field << "OTHN=#{other_number}" # Repeat:255
+#          field << "OTHN=#{other_number}" # Repeat:255
+          field << "OTHN=#{other_number[0, 23]}" # Repeat:255
         end
 
         nbn_array = @manifestation.nbn.try(:split, ',') || []
@@ -728,8 +722,8 @@ class NacsisCat
           '<YEAR>',
 #          "YEAR1=#{@manifestation.date_of_publication_string.try(:[], 0, 4)}",
 #          "YEAR2=#{@manifestation.date_of_publication_string.try(:[], 5, 4)}",
-          "YEAR1=#{@manifestation.pub_date}",
-          "YEAR2=#{@manifestation.dis_date}",
+          "YEAR1=#{@manifestation.pub_date.try(:[], 0, 4)}",
+          "YEAR2=#{@manifestation.dis_date.try(:[], 0, 4)}",
           '</YEAR>'
         ]
       end
@@ -824,7 +818,7 @@ class NacsisCat
                 '<PTBL>',
                 "PTBID=#{manifestation.nacsis_identifier}",
                 "PTBK=#{manifestation.children.first.manifestation_relationship_type.try(:name)}",
-                "PTBNO=#{}",
+                "PTBNO=#{manifestation.note}",
                 '</PTBL>'
               ]
             end
@@ -902,7 +896,8 @@ class NacsisCat
 
       def sh_group
         results = []
-        @manifestation.subjects.each do |subject|
+#        @manifestation.subjects.each do |subject|
+        @manifestation.subjects.where(:note => 'for nacsis data').each do |subject|
           alternatives = subject.term_alternative.try(:split, '||') || []
           results += [
             '<SH>',
@@ -1203,7 +1198,9 @@ class NacsisCat
             attrs[:identifiers] <<
               Identifier.create(:body => nacsis_info[:ndlhold], :identifier_type_id => identifier_type.id)
           end
-          attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id)
+          if nacsis_info[:freq]
+            attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id) || Frequency.find_by_nii_code('u').try(:id)
+          end
           attrs[:manifestation_type_id] = ManifestationType.where(:nacsis_identifier => nacsis_info[:type]).first.try(:id)
           attrs[:price_string] = nacsis_info[:price]
         end

@@ -242,15 +242,16 @@
     <%- end -%>
   </ul>
   <%#- if @item.manifestation.nacsis_identifier || @item.manifestation.series_statement.nacsis_series_statementid -%>
-  <%- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
+  <%#- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
+  <%- if @item.manifestation.nacsis_identifier && @item.id == (@item.manifestation.items.where('nacsis_identifier is not null').first.try(:id) || @item.id) -%>
     <br /><strong>&nbsp;
     <%= t('external_catalog.nacsis') + ' ' + t('page.edit') %>
-    <%- if @item.manifestation.nacsis_identifier %>
-      <%= " (#{t('page.nacsis_book')}) " %>
-      <%- nacsis_db_type = 'BHOLD' %>
-    <%- else %>
+    <%- if @item.manifestation.series_statement && @item.manifestation.series_statement.periodical %>
       <%= " (#{t('page.nacsis_serial')}) " %>
       <%- nacsis_db_type = 'SHOLD' %>
+    <%- else %>
+      <%= " (#{t('page.nacsis_book')}) " %>
+      <%- nacsis_db_type = 'BHOLD' %>
     <%- end %>
     </strong>
     <%- if @item.nacsis_identifier %>

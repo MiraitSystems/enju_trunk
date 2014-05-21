@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140512012009) do
+ActiveRecord::Schema.define(:version => 20140516015127) do
 
   create_table "abbreviations", :force => true do |t|
     t.string   "keyword"
@@ -408,13 +408,22 @@ ActiveRecord::Schema.define(:version => 20140512012009) do
   end
 
   create_table "budgets", :force => true do |t|
-    t.integer  "library_id"
     t.integer  "term_id"
     t.integer  "amount"
     t.string   "note"
     t.integer  "budget_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
+    t.string   "name"
+    t.integer  "transferred"
+    t.integer  "actual"
+    t.integer  "implementation"
+    t.integer  "estimated_implementation"
+    t.integer  "remaining"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "budget_class"
   end
 
   create_table "carrier_type_has_checkout_types", :force => true do |t|
@@ -1217,6 +1226,7 @@ ActiveRecord::Schema.define(:version => 20140512012009) do
     t.integer  "claim_id"
     t.integer  "order_id"
     t.string   "nacsis_identifier"
+    t.integer  "payment_id"
   end
 
   add_index "items", ["bookstore_id"], :name => "index_items_on_bookstore_id"
@@ -2688,8 +2698,8 @@ ActiveRecord::Schema.define(:version => 20140512012009) do
   end
 
   create_table "titles", :force => true do |t|
-    t.string   "title",               :null => false
-    t.string   "title_transcription"
+    t.text     "title",               :null => false
+    t.text     "title_transcription"
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
     t.text     "title_alternative"

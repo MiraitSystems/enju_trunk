@@ -18,6 +18,11 @@
        <li><%= link_to t('page.destroy'), @series_statement, :confirm => t('page.are_you_sure'), :method => :delete %></li>
     <% end %>
     <% if @series_statement.root_manifestation %>
+      <%- unless @series_statement.root_manifestation.bookbinder -%>
+        <% unless SystemConfiguration.get("manifestation.has_one_item") %>
+          <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@series_statement.root_manifestation) -%></li>
+        <% end %>
+      <%- end -%>
       <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
     <% end %>
   </ul>
