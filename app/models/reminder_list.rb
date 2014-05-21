@@ -84,7 +84,7 @@ class ReminderList < ActiveRecord::Base
   end
 
   def self.output_reminder_list_pdf(reminder_lists)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'reminder_list.tlf')
+    report = EnjuTrunk.new_report('reminder_list.tlf')
 
     # set page_num
     report.events.on :page_create do |e|
@@ -168,11 +168,11 @@ class ReminderList < ActiveRecord::Base
     logger.info "create_file=> #{file}"
 
     report = ThinReports::Report.create do
-      use_layout File.join(Rails.root, 'report', 'reminder_postal_card_back.tlf'), :default => true
-      #report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'reminder_postal_card_front.tlf')
+      use_layout File.join(report_path, 'reminder_postal_card_back.tlf'), :default => true
+      #report = EnjuTrunk.new_report('reminder_postal_card_front.tlf')
       # address
       #report.start_new_page do |page|
-      start_new_page :layout => File.join(Rails.root, 'report', 'reminder_postal_card_front.tlf') do |page|
+      start_new_page :layout => File.join(report_path, 'reminder_postal_card_front.tlf') do |page|
         max_column = 16
         page.item(:zip_code).value(user.agent.zip_code_1) if user.agent.zip_code_1
         if user.agent.address_1
@@ -269,7 +269,7 @@ class ReminderList < ActiveRecord::Base
   def self.output_reminder_letter(file, reminder_lists, user, current_user)
     logger.info "create_file=> #{file}"
 
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'reminder_letter.tlf')
+    report = EnjuTrunk.new_report('reminder_letter.tlf')
     report.layout.config.list(:list) do
       events.on :footer_insert do |e|
         e.section.item(:items_num).value(I18n.t('activerecord.attributes.reminder_list.total') + " " + reminder_lists.size.to_s + " " + I18n.t('activerecord.attributes.reminder_list.items'))

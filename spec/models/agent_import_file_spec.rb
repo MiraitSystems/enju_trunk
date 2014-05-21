@@ -4,9 +4,11 @@ require 'spec_helper'
 describe AgentImportFile do
   fixtures :all
 
+  let(:examples_path) { EnjuTrunk::Engine.root + 'examples' }
+
   describe "when its mode is 'create'" do
     before(:each) do
-      @file = AgentImportFile.create! :agent_import => File.new("#{Rails.root.to_s}/examples/agent_import_file_sample1.tsv")
+      @file = AgentImportFile.create! :agent_import => File.new("#{examples_path}/agent_import_file_sample1.tsv")
     end
 
     it "should be imported" do
@@ -24,7 +26,7 @@ describe AgentImportFile do
 
   describe "when it is written in shift_jis" do
     before(:each) do
-      @file = AgentImportFile.create! :agent_import => File.new("#{Rails.root.to_s}/examples/agent_import_file_sample3.tsv")
+      @file = AgentImportFile.create! :agent_import => File.new("#{examples_path}/agent_import_file_sample3.tsv")
     end
 
     it "should be imported" do
@@ -44,7 +46,7 @@ describe AgentImportFile do
 
   describe "when its mode is 'update'" do
     it "should update users" do
-      @file = AgentImportFile.create :agent_import => File.new("#{Rails.root.to_s}/examples/user_update_file.tsv")
+      @file = AgentImportFile.create :agent_import => File.new("#{examples_path}/user_update_file.tsv")
       @file.modify
       User.where(:user_number => '00001').first.username.should eq 'user11'
       User.where(:user_number => '00001').first.agent.full_name.should eq 'たなべこうすけ'
@@ -58,7 +60,7 @@ describe AgentImportFile do
   describe "when its mode is 'destroy'" do
     it "should remove users" do
       old_count = User.count
-      @file = AgentImportFile.create :agent_import => File.new("#{Rails.root.to_s}/examples/user_delete_file.tsv")
+      @file = AgentImportFile.create :agent_import => File.new("#{examples_path}/user_delete_file.tsv")
       @file.remove
       User.count.should eq old_count - 3
     end

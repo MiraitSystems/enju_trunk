@@ -8,13 +8,12 @@ $(function(){
 
 <script>
   var ItemField = {
-    currentNumber : <%= @countoperators-1 %>,
+    currentNumber : <%= @item.item_has_operators.size %>,
     itemTemplate : ''
-                 + '<div class="field">'
                  + '<label class="integer optional" for="item_item_has_operators_attributes___count___user_id"><%= t('activerecord.attributes.item_has_operator.user_id') %></label>'
                  + '<input onclick="ItemField.add();" type="button" value="+" />'
                  + '<input type="button" value="-" onClick="ItemField.remove(__count__);" /><br />'
-                 + '<input id="item_has_operators_attributes___count___user_number" name="item_has_operators_attributes___count___user_number" type="text" />'
+                 + '<input id="item_has_operators_attributes___count___username" name="item[item_has_operators_attributes][__count__][username]" type="text" />'
                  + '</div>'
                  + '<div class="field">'
                  + '<label class="datetime optional" for="item_item_has_operators_attributes___count___operated_at"><%= t('activerecord.attributes.item_has_operator.operated_at') %></label><br />'
@@ -34,8 +33,7 @@ $(function(){
                  + '<div class="field">'
                  + '<label class="integer optional" for="item_item_has_operators_attributes___count___library_ad"><%= t('activerecord.attributes.item_has_operator.note') %></label><br />'
 
-                 + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20"></textarea>'
-                 + '</div>',
+                 + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20"></textarea>',
     itemDeleteTemplate : ''
 
                  + '<input id="item_item_has_operators_attributes___count___user_id" name="item[item_has_operators_attributes][__count__][user_id]" type="hidden" value="" />'
@@ -45,37 +43,20 @@ $(function(){
                  + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20" value="" ></textarea>',
 
     add : function () {
-      this.currentNumber++;
-      var field = document.getElementById('SF' + this.currentNumber);
       var replaceCount = this.currentNumber;
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      field.innerHTML = newItem;
-
-      var nextNumber = this.currentNumber + 1;
       var new_area = document.createElement("div");
-      new_area.setAttribute("id", "SF" + nextNumber);
+      new_area.setAttribute("id", "SF" + replaceCount);
       new_area.setAttribute("class", "field");
-      var operator_field = document.getElementById('operators');
-      operator_field.appendChild(new_area);
-
+      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
+      new_area.innerHTML = newItem;
+      $("div#operators").append(new_area);
       $('#item_item_has_operators_attributes_' + replaceCount + '_operated_at').setCalendar({src:'/assets/calendar.png'});
-
-    },
+    
+   },
     remove : function (no) {
-
-      var field = document.getElementById('SF' + no);
-
-      var input_value = document.getElementById("item_item_has_operators_attributes_" + no + "_operated_at")
-      input_value.value = ""
-
-      var input_value = document.getElementById("item_item_has_operators_attributes_" + no + "_library_id");
-      input_value.options[input_value.selectedIndex].value = "";
-      input_value.options[input_value.selectedIndex].text = "";
-
-      var input_value = document.getElementById("item_item_has_operators_attributes_" + no + "_note");
-      input_value.value = ""
-
-      field.style.display="none";
+      var field = $('div#SF' + no);
+      field.append('<input name=item[item_has_operators_attributes][' + no + '][_destroy] style="display:none" value="1" />');
+      field.hide();
     }
   };
 </script>
@@ -83,47 +64,35 @@ $(function(){
 <div id="operators">
 <br />
 <%= f.label t('activerecord.models.item_has_operator') %><br />
-<% i = 0%>
-<%= f.fields_for :item_has_operators, @item.item_has_operators do |operator| %>
-  <% if @item.item_has_operators[i].delete_flg %>
-  <div id="SF<%= i %>" style="display:none">
-  <% else %>
-  <div id="SF<%= i %>">
-  <% end %>
-  <div class="field">
-    <%= operator.label :user_id %>
-    <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%><br />
-    <% if @item.item_has_operators[i].user %>
-      <%= text_field_tag "item_has_operators_attributes_#{i}_user_number",  @item.item_has_operators[i].user.user_number %>
-    <% else %>
-      <%= text_field_tag "item_has_operators_attributes_#{i}_user_number", params["item_has_operators_attributes_#{i}_user_number"] %>
-    <% end %>
-  </div>
-  <div class="field">
-    <%= operator.label :operated_at %><br />
-    <% if @item.item_has_operators[i].operated_at %>
-      <%= operator.text_field :operated_at, :value => @item.item_has_operators[i].operated_at.to_date %>
-    <% else %> 
+<%- @item.item_has_operators.each_with_index do  |item_operator, i| %>
+  <%= f.fields_for :item_has_operators, item_operator do |operator| %>
+    <div id="SF<%= i %>">
+    <div class="field">
+      <%= operator.label :user_id %>
+      <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%><br />
+      <%#= select2_script "user_id" %>
+      <%# = make_select2(:user_id, "item_has_operator[user_id]", @checkout_types, @item.checkout_type_id, 200, false) %>
+      <%- if item_operator.username %>
+        <%= operator.text_field :username %>
+      <%- else -%>
+        <%= operator.text_field :username, :value => item_operator.try(:user).try(:username) %>
+      <%- end -%>
+    </div>
+    <div class="field">
+      <%= operator.label :operated_at %><br />
       <%= operator.text_field :operated_at %>
-    <% end %>
-  </div>
+    </div>
 
-  <div class="field">
-    <%= operator.label :library_id %><br />
-    <% if @item.item_has_operators[i].delete_flg %>
-      <%= operator.hidden_field :library_id, :value => '' %>
-    <% else %>
+    <div class="field">
+      <%= operator.label :library_id %><br />
       <%= operator.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]} %>
-    <% end %>
-  </div>
+    </div>
 
-  <div class="field">
-    <%= operator.label :note %><br />
-    <%= operator.text_area :note %>
-  </div>
-  </div>
-  <% i += 1%>
+    <div class="field">
+      <%= operator.label :note %><br />
+      <%= operator.text_area :note %>
+    </div>
+    </div>
+  <% end %>
 <% end %>
-
-<div id="SF<%= i %>"></div>
 </div>

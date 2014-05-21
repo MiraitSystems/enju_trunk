@@ -1,31 +1,29 @@
 class ItemHasOperator < ActiveRecord::Base
-  attr_accessible :created_at, :id, :item_id, :library_id, :note, :operated_at, :updated_at, :user_id, :user_number
-  attr_accessor :user_number, :delete_flg
+  attr_accessible :created_at, :id, :item_id, :library_id, :note, :operated_at, :updated_at, :username, :_destroy
+  attr_accessor :username
+
+  default_scope :order => "operated_at, created_at"
 
   belongs_to :user
   belongs_to :item
   belongs_to :library
 
-  validates_presence_of :user_id, :if => :check_number_empty
-  validates_presence_of :item_id
+  validates_presence_of :item
+  validates_presence_of :user
+  validate :validate_user_id
   before_validation :set_user
 
   def set_user
-    self.user = User.where(:user_number => self.user_number).first
+    self.user = User.where(:username => self.username).first
   end
 
-  def check_number_empty
-     self.user_number.empty?
-  end
-
-  validate :validate_user_id
   def validate_user_id
-    if self.user_number.present?
-      user = User.where("user_number = ?",self.user_number)
-      if user.empty?
-        errors.add(:user, I18n.t('item_has_operators.no_matches_found_user', :user_number => self.user_number))
+    if self.username.present?
+      user = User.where("username = ?",self.username).try(:first)
+      unless user
+        errors.add(:user, I18n.t('item_has_operators.no_matches_found_user', :user_number => self.username))
       else
-        self.user_id = user.first.id
+        self.user_id = user.id
       end
     end
   end

@@ -230,21 +230,23 @@ class SeriesStatementsController < ApplicationController
     @subject_transcription = params[:manifestation][:subject_transcription]
     @series_work_has_languages = WorkHasLanguage.
       create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @series_statement.root_manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-       end
-    end
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
     set_agent_instance_from_params # Implemented in application_controller.rb
+    if params[:manifestation][:work_has_titles_attributes]
+      params[:manifestation][:work_has_titles_attributes].each do |key, title_attributes|
+        if title_attributes[:title].blank? && title_attributes[:title_transcription].blank? && title_attributes[:title_alternative].blank?
+          params[:manifestation][:work_has_titles_attributes]["#{key}"][:_destroy] = 1
+        end  
+      end  
+    end
+    @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
       { subjects: @subject, subject_transcription: @subject_transcription,
         creates:  @creates,  del_creators:     @del_creators,     add_creators: @add_creators,
         realizes: @realizes, del_contributors: @del_contributors, add_contributors: @add_contributors,
         produces: @produces, del_publishers:   @del_publishers,   add_publishers: @add_publishers,
-        exinfos: params[:exinfos], extexts: params[:extexts], series_work_has_languages: @series_work_has_languages })
+        exinfos: params[:exinfos], extexts: params[:extexts], series_work_has_languages: @series_work_has_languages})
   end
 end

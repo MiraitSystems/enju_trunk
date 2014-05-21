@@ -70,7 +70,7 @@ class Expense < ActiveRecord::Base
   
   def self.export_pdf(expenses)
     begin
-      report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/app/views/expenses/expense_list"
+      report = EnjuTrunk.new_report('expense_list.tlf')
       report.events.on :page_create do |e|
         e.page.item(:page).value(e.page.no)
       end

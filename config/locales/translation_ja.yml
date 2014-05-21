@@ -210,7 +210,7 @@ ja:
       title: 書名
       identifier: その他の識別子
       item_has_operator: 受入作業者
-      claim_type: クレーム
+      claim_type: クレームタイプ
       output_column_list: 出力項目設定
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
@@ -697,7 +697,7 @@ ja:
       subscribe:
         started_on: 開始日
         ended_on: 終了日
-      item:
+      item: 
         call_number: 請求記号
         item_identifier: 所蔵情報ID
         deleted_at: 削除時刻
@@ -1986,7 +1986,6 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
-    output_list: 出力リスト
     output_select_all: すべて選択
     output_cancel_all: すべて解除
     batch_change: "一括更新"

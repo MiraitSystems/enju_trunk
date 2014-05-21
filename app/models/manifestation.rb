@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'manifestation')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation') # unless SystemConfiguration.isWebOPAC
+require 'enju_trunk/output_columns'
 class Manifestation < ActiveRecord::Base
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
@@ -36,9 +37,8 @@ class Manifestation < ActiveRecord::Base
 
   has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
   has_many :manifestation_titles, :through => :work_has_titles
-  accepts_nested_attributes_for :work_has_titles
+  accepts_nested_attributes_for :work_has_titles, :reject_if => lambda{|attributes| attributes[:title].blank?}, :allow_destroy => true
   accepts_nested_attributes_for :identifiers, :reject_if => proc {|attributes| attributes['body'].blank?}, :allow_destroy => true
-  before_save :mark_destroy_manifestaion_titile
 
   has_many :orders
 
@@ -46,6 +46,7 @@ class Manifestation < ActiveRecord::Base
 
   belongs_to :catalog
 
+  validates_associated :items
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)
@@ -1336,7 +1337,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.get_manifestation_list_pdf(manifestation_ids, current_user, summary = nil, type = :book)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'searchlist.tlf')
+    report = EnjuTrunk.new_report('searchlist.tlf')
 
     # set page_num
     report.events.on :page_create do |e|
@@ -1383,7 +1384,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def self.get_manifestation_locate(manifestation, current_user)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'manifestation_reseat.tlf')
+    report = EnjuTrunk.new_report('manifestation_reseat.tlf')
    
     # footer
     report.layout.config.list(:list) do
@@ -1524,11 +1525,6 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
-  def set_title(index, title)
-    @title_list = {} if @title_list == nil
-    @title_list[index] = title
-  end
-
   private
 
     INTERNAL_ITEM_ATTR_CACHE = {}
@@ -1633,24 +1629,6 @@ class Manifestation < ActiveRecord::Base
       @_series_manifestations_items_cache =
         Item.joins(:manifestation => :series_statement).
           where(['series_statements.id = ?', self.series_statement.id])
-    end
-
-    def mark_destroy_manifestaion_titile
-      return unless SystemConfiguration.get('manifestation.use_titles')
-
-      work_has_titles.each_with_index do |work_has_title,index|
-        if @title_list[index.to_s].blank?
-          work_has_title.mark_for_destruction 
-        else
-          if work_has_title.title_id
-            work_has_title.manifestation_title.title = @title_list[index.to_s]
-          else
-            title = Title.new(:title => @title_list[index.to_s])
-            title.save
-            work_has_title.title_id = title.id
-          end        
-        end
-      end
     end
 
 end
