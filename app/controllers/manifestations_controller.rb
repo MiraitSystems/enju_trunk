@@ -1517,6 +1517,12 @@ class ManifestationsController < ApplicationController
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
 
+    if params[:creator_agent_ids].blank?
+      @add_creator_agent_ids = []
+    else
+      @add_creator_agent_ids = params[:creator_agent_ids]
+    end
+
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
       @libraries = Library.real

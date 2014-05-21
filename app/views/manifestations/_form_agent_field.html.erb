@@ -1,4 +1,47 @@
 <script>
+  var add_agent_select2options = {
+    multiple: false,
+    minimumInputLength: 1,
+    width: "250px",
+    placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+    formatNoMatches: function(term) {
+      return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
+    },
+    formatSearching: function() {
+      return <%= raw t("agent.search_searching").to_json %>;
+    },
+    formatInputTooShort: function(term, minLength){
+      return <%= raw t("agent.search_placeholder").to_json %>;
+    },
+    ajax: {
+      url: "/agents/search_name.json",
+      dataType: 'json',
+      data: function (term, page) {
+          return {search_phrase: term,
+          };
+      },
+      results: function (data, page) {
+          return {results: data};
+      },
+    },
+    initSelection: function(element, callback) {
+      var id = $(element).val();
+      if (id != "" && id == parseInt(id)) {
+        $.ajax("/agents/search_name.json?agent_id=" + id, {
+            dataType: "json"
+       }).done(function(data) { callback(data); });
+      }
+      else{
+        callback({ id: id, text: id });
+      }
+    },
+    createSearchChoice: function(term, data) {
+      if ($(data).filter(function() {
+        return this.text.localeCompare(term)===0; }).length===0) {
+        return {id:term, text:term};
+      }
+    },
+  };
   $(document).ready(function() {
     $("#select2_creator,#select2_contributor,#select2_publisher").select2({
       multiple: false,
@@ -33,18 +76,74 @@
          }).done(function(data) { callback(data); });
         }
       },
-//      createSearchChoice: function(term, data) {
-//        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-//          return {id:term, text:term};
-//        }
-//      },
     });
+/*
+    $("#select2_new_creator, #select2_new_contributor, #select2_new_publisher").select2({
+      multiple: false,
+      minimumInputLength: 1,
+      width: "250px",
+      placeholder: <%= raw t("agent.search_placeholder").to_json %>,
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
+      },
+      formatSearching: function() {
+        return <%= raw t("agent.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("agent.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: "/agents/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+            return {search_phrase: term,
+            };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "" && id == parseInt(id)) {
+          $.ajax("/agents/search_name.json?agent_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+        else{
+          callback({ id: id, text: id });
+        }
+      },
+      createSearchChoice: function(term, data) {
+        if ($(data).filter(function() {
+          return this.text.localeCompare(term)===0; }).length===0) {
+          return {id:term, text:term};
+        }
+      },
+    });
+*/
+    $("#select2_new_creator, #select2_new_contributor, #select2_new_publisher").select2(select2options);
+
+  });
+  $(document).on("select2-selecting", "#select2_new_creator", function(e){
+    var attribute_name = e.target.name
+    var attribute_number = attribute_name.match(/\d+/);
+    if(e.val == parseInt(e.val)){
+        $("#creator_ids_" + attribute_number).val(e.object.id);
+        $("#creator_full_names_" + attribute_number).val(e.object.text);
+        $("#creator_full_name_transcriptions_" + attribute_number).val(e.object.full_name_transcription);
+    }
+    else{
+        $("#creator_ids_" + attribute_number).val("");
+        $("#creator_full_names_" + attribute_number).val(e.object.text);
+    }
   });
 </script>
 <% if SystemConfiguration.get("add_only_exist_agent") %>
   <% select2_str = '_select2' %>
   <%= text_field :select2_agent, :id, :id => 'select2_hidden', :style => 'display: none;' %>
 <% end %>
+
 <% if SystemConfiguration.get("use_agent_type") %>
   <select id="select2_creator_types_hidden" style="display: none;">
     <%= raw @create_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
@@ -54,22 +153,57 @@
   var ItemField_creator = {
     currentNumber : <%= raw (@add_creators.blank? ? 1 : @add_creators.size).to_json %>,
     itemTemplate : ''
-      + '<td><input id="creator_full_names___count__" name="creator_full_names[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.agent.full_name") %>"></td>'
-      + '<td><input id="creator_full_name_transcriptions___count__" name="creator_full_name_transcriptions[__count__]" size="20" type="text" placeholder="<%= t("activerecord.attributes.agent.full_name_transcription") %>"></td>'
-      <% if SystemConfiguration.get("use_agent_type") %>
-        + '<td><select id="creator_type_ids___count__" name="creator_type_ids[__count__]">'
-        + <%= raw @create_types.collect{ |r| ["<option value='" + r.id.to_s + "'>" + r.display_name.localize + "</option>"] }.join().to_json %>
-        + '</select></td>'
-      <% end %>
       + '<td><input type="button" value="+" onClick="ItemField_creator.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_creator.remove(__count__);" /></td>',
     add : function () {
-      var new_area = document.createElement("tr");
-      new_area.setAttribute("id", "CF" + this.currentNumber);
+      var $clone = $('input[name="creator_agent_ids[0]"]').clone();
+      $clone.attr('name','creator_agent_ids[' + this.currentNumber + ']');
+
+      var $creator_types_clone = $("#creator_type_ids_0").clone();
+      $creator_types_clone.attr('id', 'creator_type_ids_' + this.currentNumber);
+      $creator_types_clone.attr('name', 'creator_type_ids[' + this.currentNumber + ']');
+
+      var $creator_ids_clone = $("#creator_ids_0").clone();
+      $creator_ids_clone.attr('id', 'creator_ids_' + this.currentNumber);
+      $creator_ids_clone.attr('name', 'creator_ids[' + this.currentNumber + ']');
+      $creator_ids_clone.attr('value', "");
+
+      var $creator_full_names_clone = $("#creator_full_names_0").clone();
+      $creator_full_names_clone.attr('id', 'creator_full_names_' + this.currentNumber);
+      $creator_full_names_clone.attr('name', 'creator_full_names[' + this.currentNumber + ']');
+      $creator_full_names_clone.attr('value', "");
+
+      var $creator_full_name_transcriptions_clone = $("#creator_full_name_transcriptions_0").clone();
+      $creator_full_name_transcriptions_clone.attr('id', 'creator_full_name_transcriptions_' + this.currentNumber);
+      $creator_full_name_transcriptions_clone.attr('name', 'creator_full_name_transcriptions[' + this.currentNumber + ']');
+      $creator_full_name_transcriptions_clone.val("");
+      
+      var $clone_field = $("<td/>");
+      $clone_field.append($clone);
+      $clone_field.append($creator_ids_clone);
+      $clone_field.append($creator_full_names_clone);
+      var $creator_types_clone_field = $("<td/>");
+      $creator_types_clone_field.append($creator_types_clone);
+      var $creator_full_name_transcriptions_clone_field = $("<td/>");
+      $creator_full_name_transcriptions_clone_field.append($creator_full_name_transcriptions_clone);
+      
+      var $new_field = $("<tr/>").attr("id", "CF" + this.currentNumber);
       var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      new_area.innerHTML = newItem;
-      $("#creator_field > table > tbody").append(new_area);
+      $new_field.append($clone_field);
+      $new_field.append($creator_full_name_transcriptions_clone_field);
+      $new_field.append($creator_types_clone_field);
+      $new_field.append(newItem);
+      $("#creator_field > table > tbody").append($new_field);
       this.currentNumber += 1;
+      $clone.select2(select2options);
+      $clone.select2('val', '');
+      $creator_types_clone.select2({
+        width: "250px",
+        matcher: function(term, text, opt) {
+          return text.toUpperCase().indexOf(term.toUpperCase())==0
+              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+        }
+      });
     },
     remove : function (div_num) {
       var field = document.getElementById('CF' + div_num);
@@ -186,8 +320,9 @@
         <td><%= text_field :creator_ids, i, :id => 'select2_creator', :value => creator[:agent_id] %></td>
       <% else %>
         <td>
-          <%= text_field_tag "creator_full_names[#{i}]", creator[:full_name],
-            :placeholder => t("activerecord.attributes.agent.full_name") %>
+          <%= text_field_tag "creator_agent_ids[#{i}]", (@add_creator_agent_ids.blank? ? nil : @add_creator_agent_ids[i.to_s]), :id => 'select2_new_creator', :placeholder => t("activerecord.attributes.agent.full_name") %>
+          <%= hidden_field_tag "creator_ids[#{i}]", creator[:agent_id] %>
+          <%= hidden_field_tag "creator_full_names[#{i}]", creator[:full_name] %>
         </td>
         <td>
           <%= text_field_tag "creator_full_name_transcriptions[#{i}]", creator[:full_name_transcription],

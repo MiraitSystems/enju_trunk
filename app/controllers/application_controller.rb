@@ -491,23 +491,20 @@ class ApplicationController < ActionController::Base
     list = []
     if agent_ids
       agent_ids.each_with_index.each do |agent_id ,i|
-        next if agent_id.blank?
         param = {}
-        param[:agent_id] = agent_id
-        param[:type_id] = type_ids[i] if type_ids
+        if agent_id.blank?
+          next if full_name_reads.blank?
+          param[:full_name] = full_names[i]
+          param[:full_name_transcription] = full_name_reads[i]
+          param[:type_id] = type_ids[i]
+        else
+          param[:agent_id] = agent_id
+          param[:full_name] = full_names[i] if full_names
+          param[:full_name_transcription] = full_name_reads[i] if full_name_reads
+          param[:type_id] = type_ids[i] if type_ids
+        end
         list << param
       end
-    elsif full_names
-      full_names.each_with_index.each do |full_name ,i|
-        next if full_name.blank?
-        param = {}
-        param[:full_name] = full_name
-        param[:full_name_transcription] = full_name_reads[i] if full_name_reads
-        param[:type_id] = type_ids[i] if type_ids
-        list << param
-      end
-    else
-      list = []
     end
     list
   end

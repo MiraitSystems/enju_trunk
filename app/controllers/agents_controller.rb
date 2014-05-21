@@ -143,16 +143,16 @@ class AgentsController < ApplicationController
   end
 
   def search_name
-    struct_agent = Struct.new(:id, :text)
+    struct_agent = Struct.new(:id, :text, :full_name_transcription)
     if params[:agent_id]
-       a = Agent.where(id: params[:agent_id]).select("id, full_name").first
+       a = Agent.where(id: params[:agent_id]).select("id, full_name, full_name_transcription").first
        result = nil
-       result = struct_agent.new(a.id, a.full_name)
+       result = struct_agent.new(a.id, a.full_name, a.full_name_transcription)
     else
-       agents = Agent.where("full_name like '%#{params[:search_phrase]}%'").where(:user_id => nil).select("id, full_name").limit(10)
+       agents = Agent.where("full_name like '%#{params[:search_phrase]}%'").where(:user_id => nil).select("id, full_name, full_name_transcription").limit(10)
        result = []
        agents.each do |agent|
-           result << struct_agent.new(agent.id, agent.full_name)
+           result << struct_agent.new(agent.id, agent.full_name, agent.full_name_transcription)
        end
     end
     respond_to do |format|
