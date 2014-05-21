@@ -33,7 +33,7 @@ $(function(){
   <% @keyword_counts.each do |keyword_count| %>
     <tr class="line<%= cycle("0", "1") -%>">
       <td><nobr><%= keyword_count.rank %></nobr></td>
-      <td><nobr><%= keyword_count.keyword %></nobr></td>
+      <td><nobr><%= link_to h(keyword_count.keyword), manifestations_path(:query => keyword_count.keyword) %></nobr></td>
       <td><nobr><%= keyword_count.count %></nobr></td>
     </tr>
   <% end %> 
