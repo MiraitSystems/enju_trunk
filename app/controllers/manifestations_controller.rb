@@ -600,7 +600,7 @@ class ManifestationsController < ApplicationController
       @count[:query_result] = sum
       @collation = search_all_result.collation if @count[:query_result] == 0
 
-      unless current_user.has_role?('Librarian') 
+      if current_user.nil? or !current_user.has_role?('Librarian') 
         save_search_history(@solr_query, @manifestations.limit_value, @count[:query_result], current_user)
       end
 
