@@ -496,7 +496,7 @@ class ApplicationController < ActionController::Base
           next if full_name_reads.blank?
           param[:full_name] = full_names[i]
           param[:full_name_transcription] = full_name_reads[i]
-          param[:type_id] = type_ids[i]
+          param[:type_id] = type_ids[i] if type_ids
         else
           param[:agent_id] = agent_id
           param[:full_name] = full_names[i] if full_names
