@@ -19,20 +19,36 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       config/initializers/ldap_authenticatable.rb.sample
       config/initializers/rack_protection.rb
       config/initializers/wrap_parameters.rb
-      db/seeds.rb
+      db/seeds.rb 
+      lib/tasks/directly_import_migrations.rake
     ).each do |file|
       copy_file file, file
     end
   end
 
   def install_migrations
-    %w(
-      jpp_customercode_transfer
-      enju_event_engine
-      enju_trunk_engine
-      enju_manifestation_viewer_engine
-    ).each do |name|
-      rake "#{name}:install:migrations"
+    if File.exist?("#{EnjuTrunk::Engine.root.to_s}/db/schema.rb")
+      copy_file "#{EnjuTrunk::Engine.root.to_s}/db/schema.rb", 'db/schema.rb'
+      main_path = Rails.root.to_s
+      %w(
+        EnjuTrunk
+        EnjuEvent
+        EnjuManifestationViewer
+        JppCustomercodeTransfer
+      ).each do |name|
+        engine_path = eval("#{name}::Engine").root.to_s rescue nil
+        puts "directly import migration files from #{engine_path} to #{main_path}"
+        system "rsync -ruv #{engine_path}/db/migrate #{main_path}/db/" if engine_path
+      end
+    else
+      %w(
+        jpp_customercode_transfer
+        enju_event_engine
+        enju_trunk_engine
+        enju_manifestation_viewer_engine
+     ).each do |name|
+        rake "#{name}:install:migrations"
+      end
     end
   end
 
