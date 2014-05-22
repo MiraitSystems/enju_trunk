@@ -2,8 +2,8 @@ class KeywordCount < ActiveRecord::Base
   validates_uniqueness_of :date, :scope => [:keyword]
   attr_accessible :count, :date, :keyword
 
-  # def self.calc(date = (Time.now).to_s)
-  def self.calc(date = (Time.now - 1.day).to_s)
+  def self.calc(date = (Time.now).to_s)
+  # def self.calc(date = (Time.now - 1.day).to_s)
     require "time"
     date = Time.parse(date).strftime("%Y-%m-%d") rescue nil
     return puts "KeywordCount> wrong date" if date == nil
@@ -11,11 +11,8 @@ class KeywordCount < ActiveRecord::Base
     puts "KeywordCount> start calcu for a keyword count: #{date}"
     word = Struct.new(:query, :count)
     words = SystemConfiguration.get("write_search_log_to_file") ? calc_file(word, date) : calc_db(word, date)
-    logger.error "######### words = #{words} ##########"
 
     begin
-      logger.error "######### words.each before ##########"
-      logger.error "######### date = #{date} ##########"
       words.each do |word, count|
         keyword_count = KeywordCount.new
         keyword_count.date = date
@@ -24,7 +21,6 @@ class KeywordCount < ActiveRecord::Base
         keyword_count.save!
       end
     rescue Exception => e
-      logger.error "######### words.each rescue ##########"
       logger.error e
       p e
     end
@@ -44,11 +40,9 @@ class KeywordCount < ActiveRecord::Base
     num = 0
     rank = 0
     before_count = 0;
-    limit = 10
     logs.each do |log|
       num += 1;
       rank = num unless before_count == log.count
-      break if rank > limit 
       datas << data.new(rank, log.keyword, log.count)
       before_count = log.count
     end
@@ -85,13 +79,49 @@ class KeywordCount < ActiveRecord::Base
   end
 
   def self.calc_db(word, date)
-    logger.error "######### calc_db start ##########"
-    logger.error "######### calc_db date = #{date} ##########"
     words = SearchHistory.find(:all,
       :select     => "query, count(query) as count",
       :group      => "query",
       :conditions => ["to_char(created_at, 'YYYY-MM-DD') <= ? AND query != ''", date]
     ).collect{ |s| word.new(s.query, s.count) }
     return words
+  end
+
+  def self.get_keyword_counts_list_tsv(all_results)
+    data = String.new
+
+    # add title
+    data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
+    columns = [
+      [:rank,'activerecord.attributes.keyword_count.rank'],
+      [:keyword, 'activerecord.attributes.keyword_count.keyword'],
+      [:count, 'activerecord.attributes.keyword_count.count'],
+    ]
+    row = columns.map {|column| I18n.t(column[1])}
+    data << '"'+row.join("\"\t\"")+"\"\n"
+
+=begin
+    logger.error "########## start = #{start_d} ###########"
+    logger.error "########## end = #{end_d} ###########"
+    error =  ApplicationController.helpers.term_check(start_d, end_d)
+    return data, error unless error.blank?
+=end
+
+    # add data
+    all_results.each do |result|
+      row = []
+      columns.each do |column|
+        case column[0]
+        when :rank
+          row << result.rank
+        when :keyword
+          row << result.keyword
+        when :count
+          row << result.count
+        end
+      end
+      data << '"'+row.join("\"\t\"")+"\"\n"
+    end
+    return data
   end
 end
