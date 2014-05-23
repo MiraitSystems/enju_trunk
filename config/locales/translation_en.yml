@@ -3056,6 +3056,7 @@ en:
   expense:
     yen: ! '%{price} yen'
     export: Export 
+    export_csv: CSV
     export_tsv: TSV
     export_pdf: PDF
     term: Term to calcurate

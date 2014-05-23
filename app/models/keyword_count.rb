@@ -87,27 +87,30 @@ class KeywordCount < ActiveRecord::Base
     return words
   end
 
-  def self.get_keyword_counts_list_tsv(all_results)
+  def self.make_split_csv(all_results)
+    split = ","
+    get_keyword_counts_list(all_results, split) 
+  end
+
+  def self.make_split_tsv(all_results)
+    split = "\t"
+    get_keyword_counts_list(all_results, split) 
+  end
+
+  def self.get_keyword_counts_list(all_results, split)
     data = String.new
 
-    # add title
-    data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
+    # header
+    data << "\xEF\xBB\xBF".force_encoding("UTF-8")
     columns = [
       [:rank,'activerecord.attributes.keyword_count.rank'],
       [:keyword, 'activerecord.attributes.keyword_count.keyword'],
       [:count, 'activerecord.attributes.keyword_count.count'],
     ]
     row = columns.map {|column| I18n.t(column[1])}
-    data << '"'+row.join("\"\t\"")+"\"\n"
+    data << '"'+row.join("\"#{split}\"")+"\"\n"
 
-=begin
-    logger.error "########## start = #{start_d} ###########"
-    logger.error "########## end = #{end_d} ###########"
-    error =  ApplicationController.helpers.term_check(start_d, end_d)
-    return data, error unless error.blank?
-=end
-
-    # add data
+    # data
     all_results.each do |result|
       row = []
       columns.each do |column|
@@ -120,7 +123,7 @@ class KeywordCount < ActiveRecord::Base
           row << result.count
         end
       end
-      data << '"'+row.join("\"\t\"")+"\"\n"
+      data << '"'+row.join("\"#{split}\"")+"\"\n"
     end
     return data
   end

@@ -16,8 +16,8 @@ class KeywordCountsController < ApplicationController
     end
     respond_to do |format|
       format.html # index.html.erb
-    # format.pdf { send_data Reserve.get_reservelist_pdf(@displist).generate, :filename => Setting.reservelist_report_pdf.filename }
-      format.tsv { send_data KeywordCount.get_keyword_counts_list_tsv(@all_results), :filename => Setting.keyword_counts_list_print_tsv.filename }
+      format.csv { send_data KeywordCount.make_split_csv(@all_results), :filename => Setting.keyword_counts_list_print_csv.filename }
+      format.tsv { send_data KeywordCount.make_split_tsv(@all_results), :filename => Setting.keyword_counts_list_print_tsv.filename }
     end
   end
 end

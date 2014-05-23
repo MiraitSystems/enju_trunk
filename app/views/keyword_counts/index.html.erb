@@ -10,8 +10,10 @@
 
   function push_submit(format) {
     var o = document.getElementById('form');
-    if(format == 'pdf')
-      o.action = "<%= keyword_counts_path(:format => 'pdf') %>";
+    if(format == 'xlsx')
+      o.action = "<%= keyword_counts_path(:format => 'xlsx') %>";
+    else if(format == 'csv')
+      o.action = "<%= keyword_counts_path(:format => 'csv') %>";
     else if(format == 'tsv')
       o.action = "<%= keyword_counts_path(:format => 'tsv') %>";
     else
@@ -31,8 +33,12 @@
        h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: #{t('page.example_date')}" %>
     <%= submit_tag t('page.search'), :onclick => "push_submit('');" %>
     <div class="actions">
-      <%= submit_tag t('page.output_pdf', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))), :onclick => "push_submit('pdf');" %>
-      <%= submit_tag t('page.output_tsv', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))), :onclick => "push_submit('tsv');" %>
+      <%#= submit_tag t('page.output_csv', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))), :onclick => "push_submit('csv');" %>
+      <%#= submit_tag t('page.output_tsv', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))), :onclick => "push_submit('tsv');" %>
+      <%= t('page.output', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))) %>
+      <br>
+      <%= submit_tag t('expense.export_csv'), :onclick => "push_submit('csv');" %>
+      <%= submit_tag t('expense.export_tsv'), :onclick => "push_submit('tsv');" %>
     </div>
   </p>
 <% end %>
