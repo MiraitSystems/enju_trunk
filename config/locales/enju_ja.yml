@@ -36,3 +36,6 @@ ja:
             not_found: に該当の資料が見つかりません
         claim:
           claim_type: "クレームタイプを選択してください。"
+        identifier:
+          invalid_body: "%{body}は不正な値です。"
+          duplicate_identifier_type: "が重複しています。"

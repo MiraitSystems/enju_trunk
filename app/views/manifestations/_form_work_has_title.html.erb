@@ -24,6 +24,7 @@
         + '<option value="<%= m.id %>"><%= m.display_name.localize %></option>'
       <% end %>
       + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> '
+      + '<input id="manifestation_work_has_titles_attributes___count___nested" name="manifestation[work_has_titles_attributes][__count__][nested]" type="hidden" value=""/>'
       + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
       + '<input type="button" value="-" onClick="ItemField_title.remove(__count__);" /> '
       + '</div>',
@@ -44,6 +45,7 @@
            <%= w_f.text_field :title, :value => work_has_title.try(:manifestation_title).try(:title), :class => 'resource_title' %>
          <% end %>
          <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name.localize, m.id]} %>
+         <%= w_f.hidden_field :nested %>
          <%= button_to_function '+', 'ItemField_title.add()' %>
          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
       </div>

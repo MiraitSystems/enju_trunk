@@ -395,7 +395,6 @@ ja:
         full_name_alternative: フルネーム代替
         full_name_note: 未入力の場合、保存時に自動的に 姓＋" "＋名 が設定されます。
         agent_alias: 別名(を見よ参照)
-        agent_aliases_attributes: フルネーム, フルネーム（ヨミ）, フルネーム代替
         deleted_at: 削除時刻
         zip_code_1: 郵便番号1
         zip_code_2: 郵便番号2
@@ -1025,6 +1024,13 @@ ja:
         manifestation_identifier: 資料番号
         titles: その他の書名
         use_license_id: 著者抄録許諾(許諾機関名称)
+      manifestation/identifiers:
+        body: その他の識別子
+        identifier_type_id: その他の識別子の種類
+      manifestation/items/claim:
+        claim_type_id: クレームタイプ
+      manifestatioin/items/item_has_operators:
+        user: 作業者
       user_group:
         name: 名前
         display_name: 表示名

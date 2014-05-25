@@ -807,7 +807,6 @@ class ManifestationsController < ApplicationController
   def new
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects if defined?(EnjuTrunkTheme)
-    @work_has_languages = []
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
@@ -819,7 +818,6 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
-      @work_has_languages = original_manifestation.work_has_languages
       if original_manifestation.manifestation_exinfos
         original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
       end
@@ -829,13 +827,12 @@ class ManifestationsController < ApplicationController
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
       #TODO refactoring
-      @creates, @realizes, @produces, @work_has_languages = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.work_has_languages
+      @creates, @realizes, @produces = @manifestation.creates, @manifestation.realizes, @manifestation.produces
     end
 
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
-    @manifestation.identifiers << Identifier.new
 
     if SystemConfiguration.get("manifestation.has_one_item") == true
       @manifestation.items.build
@@ -856,7 +853,6 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @work_has_languages = @manifestation.work_has_languages
     @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
@@ -901,7 +897,6 @@ class ManifestationsController < ApplicationController
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -919,7 +914,6 @@ class ManifestationsController < ApplicationController
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
           @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
-          @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -954,11 +948,17 @@ class ManifestationsController < ApplicationController
         end
       end
     end
+    if params[:manifestation][:identifiers_attributes]
+      params[:manifestation][:identifiers_attributes].each do |key, identifier_attributes|
+        if identifier_attributes[:body].blank?
+          params[:manifestation][:identifiers_attributes]["#{key}"][:_destroy] = 1
+        end
+      end
+    end
     set_agent_instance_from_params # Implemented in application_controller.rb
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
@@ -976,8 +976,6 @@ class ManifestationsController < ApplicationController
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
         end
-        @manifestation.work_has_languages.destroy_all;
-        @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1494,14 +1492,13 @@ class ManifestationsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+#TODO starts
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @manifestation.work_has_titles
+#TODO end
     @numberings = Numbering.get_manifestation_numbering
     if SystemConfiguration.get('manifestation.use_identifiers')
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
-      @manifestation.identifiers << Identifier.new if @manifestation.identifiers.blank?
-    else
-      @identifier_types = []
     end
     @use_licenses = UseLicense.all
     @creates = [] if @creates.blank?
