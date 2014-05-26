@@ -950,6 +950,13 @@ en:
         manifestation_identifier: manifestation_identifier
         titles: Titles
         use_license_id: UseLicense
+      manifestation/identifiers:
+        body: Other identifier
+        identifier_type_id: Other identifier type
+      manifestation/items/claim:
+        claim_type_id: Claim type
+      manifestatioin/items/item_has_operators:
+        user: User
       user_group:
         name: Name
         display_name: Display name
