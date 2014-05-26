@@ -3063,6 +3063,7 @@ en:
   expense:
     yen: ! '%{price} yen'
     export: Export 
+    export_excelx: Excel(2007 and more)
     export_csv: CSV
     export_tsv: TSV
     export_pdf: PDF

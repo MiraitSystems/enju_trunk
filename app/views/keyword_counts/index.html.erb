@@ -37,8 +37,12 @@
       <%#= submit_tag t('page.output_tsv', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))), :onclick => "push_submit('tsv');" %>
       <%= t('page.output', :model => t('page.listing', :model => t('activerecord.models.keyword_count'))) %>
       <br>
-      <%= submit_tag t('expense.export_csv'), :onclick => "push_submit('csv');" %>
-      <%= submit_tag t('expense.export_tsv'), :onclick => "push_submit('tsv');" %>
+      <%= submit_tag t('expense.export_excelx'), :onclick => "push_submit('xlsx');" %>
+      <% if SystemConfiguration.get('set_output_format_type') %>
+        <%= submit_tag t('expense.export_tsv'), :onclick => "push_submit('tsv');" %>
+      <% else %>
+        <%= submit_tag t('expense.export_csv'), :onclick => "push_submit('csv');" %>
+      <% end %>
     </div>
   </p>
 <% end %>

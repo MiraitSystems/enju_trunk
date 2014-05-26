@@ -2895,6 +2895,7 @@ ja:
   expense:
     yen: "%{price} 円"
     export: 帳票の出力
+    export_excelx: Excel(2007以降)出力
     export_csv: CSV出力
     export_tsv: TSV出力
     export_pdf: PDF出力

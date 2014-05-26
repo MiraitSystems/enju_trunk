@@ -15,7 +15,9 @@ class KeywordCountsController < ApplicationController
       @rank_results << result
     end
     respond_to do |format|
+      # logger.error "######### current_user = #{current_user.inspect} ##########"
       format.html # index.html.erb
+      format.xlsx { send_data KeywordCount.get_keyword_counts_list_excelx(@all_results, current_user), :filename => Setting.keyword_counts_list_print_xlsx.filename }
       format.csv { send_data KeywordCount.make_split_csv(@all_results), :filename => Setting.keyword_counts_list_print_csv.filename }
       format.tsv { send_data KeywordCount.make_split_tsv(@all_results), :filename => Setting.keyword_counts_list_print_tsv.filename }
     end
