@@ -1,0 +1,36 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.catalog')) %></h1>
+  <div id="content_list">
+
+    <p id="notice"><%= notice %></p>
+
+    <p>
+      <b><%= t('activerecord.attributes.catalog.display_name') %>:</b>
+      <%= @catalog.display_name %>
+    </p>
+
+    <p>
+      <b><%= t('activerecord.attributes.catalog.name') %>:</b>
+      <%= @catalog.name %>
+    </p>
+
+    <p>
+      <b><%= t('activerecord.attributes.catalog.nacsis_identifier') %>:</b>
+      <%= @catalog.nacsis_identifier %>
+    </p>
+
+    <p>
+      <b><%= t('activerecord.attributes.catalog.note') %>:</b>
+      <%= @catalog.note %>
+    </p>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :create, Catalog %>
+      <li><%= link_to t('page.edit'), edit_catalog_path(@catalog) %>
+    <% end %>
+    <li><%= link_to t('page.back'), catalogs_path %>
+  </ul>
+</div>

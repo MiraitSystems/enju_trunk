@@ -194,6 +194,7 @@ class SeriesStatementsController < ApplicationController
 
   def prepare_options
     @carrier_types = CarrierType.all
+    @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.series
     @frequencies = Frequency.all
     @countries = Country.all

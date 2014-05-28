@@ -1480,6 +1480,7 @@ class ManifestationsController < ApplicationController
 
   def prepare_options
     @carrier_types = CarrierType.all
+    @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.all
     @roles = Role.all
     @languages = Language.all_cache
@@ -1885,3 +1886,4 @@ class ManifestationsController < ApplicationController
   end
 
 end
+
