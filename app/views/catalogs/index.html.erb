@@ -1,0 +1,45 @@
+<div id="content_detail" class="ui-corner-all">
+
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.catalog')) -%></h1>
+  <div id="content_list">
+
+    <table class="index">
+      <tr>
+        <th><%= t('activerecord.attributes.catalog.display_name') %></th>
+        <th><%= t('activerecord.attributes.catalog.name') %></th>
+        <th><%= t('activerecord.attributes.catalog.nacsis_identifier') %></th>
+        <th><%= t('activerecord.attributes.catalog.note') %></th>
+        <% if can? :edit, Catalog %>
+          <th></th>
+        <% end %>
+      </tr>
+
+      <% @catalogs.each do |catalog| %>
+        <tr class="line<%= cycle("0", "1") -%>">
+          <td><%= link_to catalog.display_name, catalog %></td>
+          <td><%= link_to catalog.name, catalog %></td>
+          <td><%= link_to catalog.nacsis_identifier, catalog %></td>
+          <td><%= link_to catalog.note, catalog %></td>
+          <% if can? :edit, Catalog %>
+            <td>
+              <%= link_to t('page.edit'), edit_catalog_path(catalog) %>
+              <%= link_to t('page.destroy'), catalog, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+
+    <br />
+    <%= paginate(@catalogs) -%>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :edit, Catalog %>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.catalog')), new_catalog_path %></li>
+    <% end %>
+  </ul>
+</div>
+

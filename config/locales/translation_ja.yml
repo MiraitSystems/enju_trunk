@@ -214,6 +214,8 @@ ja:
       output_column_list: 出力項目設定
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
+      catalog: カタログ
+      sub_carrier_type: 特定資料種別
 
     attributes:
       use_license:
@@ -980,6 +982,7 @@ ja:
         repository_content: リポジトリのコンテンツ
         lock_version: ロックバージョン
         carrier_type: 資料の形態
+        sub_carrier_type: 特定資料種別
         language: 言語
         lccn: LCCN
         issn: ISSN
@@ -1798,6 +1801,18 @@ ja:
         volume_param: 巻が増える号数
         issue_param: 号の増加数
         sequence_type: 号の種類
+      catalog:
+        display_name: 表示名
+        name: 名前
+        nacsis_identifier: NCID
+        note: 注記
+      sub_carrier_type:
+        name: 名前
+        display_name: 表示名
+        nacsis_identifier: NCID
+        carrier_type_id: 資料の形態
+        note: 注記
+        position: 位置
 
   page:
     user_title: "ようこそ %{login_name} さん"

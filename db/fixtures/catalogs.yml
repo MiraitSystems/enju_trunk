@@ -1,0 +1,114 @@
+catalog_00001:
+  id: 1
+  display_name: 'NDL'
+  name: 'ndl'
+  nacsis_identifier: 'NDL'
+  note: ''
+catalog_00002:
+  id: 2
+  display_name: 'NACSIS'
+  name: 'nacsis'
+  nacsis_identifier: 'NACSIS'
+  note: ''
+catalog_00003:
+  id: 3
+  display_name: 'GPO'
+  name: 'gpo'
+  nacsis_identifier: 'GPO'
+  note: ''
+catalog_00004:
+  id: 4
+  display_name: 'JP'
+  name: 'jp'
+  nacsis_identifier: 'JP'
+  note: ''
+catalog_00005:
+  id: 5
+  display_name: 'TRC'
+  name: 'trc'
+  nacsis_identifier: 'TRC'
+  note: ''
+catalog_00006:
+  id: 6
+  display_name: 'UK'
+  name: 'uk'
+  nacsis_identifier: 'UK'
+  note: ''
+catalog_00007:
+  id: 7
+  display_name: 'LC'
+  name: 'lc'
+  nacsis_identifier: 'LC'
+  note: ''
+catalog_00008:
+  id: 8
+  display_name: 'LCX'
+  name: 'lcx'
+  nacsis_identifier: 'LCX'
+  note: ''
+catalog_00009:
+  id: 9
+  display_name: 'ORG'
+  name: 'org'
+  nacsis_identifier: 'ORG'
+  note: ''
+catalog_000010:
+  id: 10
+  display_name: 'DN'
+  name: 'dn'
+  nacsis_identifier: 'DN'
+  note: ''
+catalog_000011:
+  id: 11
+  display_name: 'CH'
+  name: 'ch'
+  nacsis_identifier: 'CH'
+  note: ''
+catalog_000012:
+  id: 12
+  display_name: 'KR'
+  name: 'kr'
+  nacsis_identifier: 'KR'
+  note: ''
+catalog_000013:
+  id: 13
+  display_name: 'RE'
+  name: 're'
+  nacsis_identifier: 'RE'
+  note: ''
+catalog_000014:
+  id: 14
+  display_name: 'RLG'
+  name: 'rlg'
+  nacsis_identifier: 'RLG'
+  note: ''
+catalog_000015:
+  id: 15
+  display_name: 'OCL'
+  name: 'ocl'
+  nacsis_identifier: 'OCL'
+  note: ''
+catalog_000016:
+  id: 16
+  display_name: 'KER'
+  name: 'ker'
+  nacsis_identifier: 'KER'
+  note: ''
+catalog_000017:
+  id: 17
+  display_name: 'KAN'
+  name: 'kan'
+  nacsis_identifier: 'KAN'
+  note: ''
+catalog_000018:
+  id: 18
+  display_name: 'HBZ'
+  name: 'hbz'
+  nacsis_identifier: 'HBZ'
+  note: ''
+catalog_000019:
+  id: 19
+  display_name: 'CAL'
+  name: 'cal'
+  nacsis_identifier: 'CAL'
+  note: ''

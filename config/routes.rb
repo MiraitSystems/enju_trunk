@@ -489,6 +489,9 @@ Rails.application.routes.draw do
   resources :checkoutlists
   resources :nacsis_user_requests
 
+  resources :catalogs
+  resources :sub_carrier_types
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

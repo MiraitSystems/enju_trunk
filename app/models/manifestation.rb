@@ -17,6 +17,7 @@ class Manifestation < ActiveRecord::Base
   has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy, :order => :position
   has_many :languages, :through => :work_has_languages, :order => :position
   belongs_to :carrier_type
+  belongs_to :sub_carrier_type
   belongs_to :manifestation_type
   has_one :series_has_manifestation, :dependent => :destroy
   has_one :series_statement, :through => :series_has_manifestation
@@ -44,6 +45,7 @@ class Manifestation < ActiveRecord::Base
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
+  belongs_to :catalog
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)

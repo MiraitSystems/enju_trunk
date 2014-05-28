@@ -211,6 +211,8 @@ en:
       output_column_list: Setting of output column
       publication_status: Publication status
       sequence_pattern: Sequence Pattern
+      catalog: Catalog
+      sub_carrier_type: Sub Carrier Type
 
     attributes:
       use_license:
@@ -894,6 +896,7 @@ en:
         repository_content: Repository content
         lock_version: Lock version
         carrier_type: Manifestation form
+        sub_carrier_type: Sub Carrier Type
         language: Language
         lccn: LCCN
         issn: ISSN
@@ -1810,6 +1813,18 @@ en:
         volume_param: Volume Number Param
         issue_param: Issue Number Param
         sequence_type: Issue Number Type
+      catalog:
+        display_name: Display name
+        name: Name
+        nacsis_identifier: NCID
+        note: Note
+      sub_carrier_type:
+        name: Name
+        display_name: Display name
+        nacsis_identifier: NCID
+        carrier_type_id: Carrier Type
+        note: Note
+        position: Position
 
   page:
     user_title: Welcome %{login_name}
