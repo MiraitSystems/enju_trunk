@@ -290,7 +290,7 @@ system_configuration_00041:
 system_configuration_00042:
   id: 42
   keyname: write_search_log_to_file
-  v: "true"
+  v: "false"
   typename: Boolean
   description: "資料の検索履歴をどの媒体に記録するか"
   category: 'manifestation'
