@@ -102,129 +102,6 @@ $(document).keydown(function(e) {
   </script>
 <% end %>
 
-<script>
-  var ItemField_language = {
-    currentNumber : <%= raw (@work_has_languages.blank? ? 1 : @work_has_languages.size).to_json %>,
-    itemTemplate : ''
-      + '<select id="language_id___count__" name="language_id[__count__]">'
-      + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<select id="language_type___count__" name="language_type[__count__]">'
-      + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
-      + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
-    add : function () {
-      var field = document.getElementById('language');
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "LANG" + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      new_area.innerHTML = newItem;
-      field.appendChild(new_area);
-      this.currentNumber += 1;
-    },
-    remove : function (div_num) {
-      var field = document.getElementById('LANG' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
-    }
-  }
-</script>
-
-<select id="languages_select2_hidden" style="display: none;">
-  <%= raw @languages.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.display_name.localize + " (" + l.name + ")</option>"] } %>
-</select>
-<select id="language_types_select2_hidden" style="display: none;">
-  <%= raw @language_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
-</select>
-<script>
-  var ItemField_language_select2 = {
-    currentNumber : <%= raw (@work_has_languages.blank? ? 1 : @work_has_languages.size).to_json %>,
-    itemTemplate : ''
-      + '<td><input type="button" value="+" onClick="ItemField_language_select2.add();" /></td> '
-      + '<td><input type="button" value="-" onClick="ItemField_language_select2.remove(__count__);" /></td>',
-    add : function () {
-      // language_clone
-      var $clone = $("#languages_select2_hidden").clone();
-      $clone[0].id = 'select2_language';
-      $clone.show();
-
-      // language_type_clone
-      var $type_clone = $("#language_types_select2_hidden").clone();
-      $type_clone[0].id = 'select2_language_type';
-      $type_clone.show();
-
-      // form のid,name設定
-      $clone.attr('name', 'language_id[' + this.currentNumber + ']'); 
-      $type_clone.attr('name', 'language_type[' + this.currentNumber + ']'); 
-      var $new_field = $("<tr/>").attr("id", "LANG" + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      var $type_clone_field = $("<td/>");
-      $type_clone_field.append($type_clone);
-      $new_field.append($clone_field);
-      $new_field.append($type_clone_field);
-      $new_field.append(newItem);
-
-      $("#language > table > tbody").append($new_field);
-
-      this.currentNumber += 1;
-      $clone.select2({
-        width: "300px",
-        matcher: function(term, text, opt) {
-          return text.toUpperCase().indexOf(term.toUpperCase())==0
-              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-        }
-      });
-      $type_clone.select2({
-        width: "200px",
-        matcher: function(term, text, opt) {
-          return text.toUpperCase().indexOf(term.toUpperCase())==0
-              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-        }
-      });
-    },
-    remove : function (div_num) {
-      var field = document.getElementById('LANG' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
-    }
-  }
-</script>
-
-<script>
-  var ItemField_identifier = {
-    itemTemplate : ''
-      + '<input id="manifestation_identifiers_attributes___count___body" name="manifestation[identifiers_attributes][__count__][body]" size="30" type="text" />&#10'
-      + '<select id="manifestation_identifiers_attributes___count___identifier_type_id" name="manifestation[identifiers_attributes][__count__][identifier_type_id]"> '
-      + <%= raw @identifier_types.collect{ |identifier_type| ["<option value='" + identifier_type.id.to_s + "'>" + identifier_type.display_name.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<input id="manifestation_identifiers_attributes___count___position" name="manifestation[identifiers_attributes][__count__][position]" type="hidden" value=__position__ />'
-      + '<input type="button" value="+" onClick="ItemField_identifier.add();" /> '
-      + '<input type="button" value="-" onClick="ItemField_identifier.remove(__count__);" />',
-    add : function () {
-      var current = $("[id^='identifiers']").length;
-      var field = document.getElementById('identifiers');
-      var new_area = document.createElement("div");
-      new_area.setAttribute("class", "field");
-      new_area.setAttribute("id", "identifiers_" + current);
-      var newItem = this.itemTemplate.replace(/__count__/mg, current).replace(/__position__/mg, current);
-      new_area.innerHTML = newItem;
-      field.appendChild(new_area);
-    },
-    remove : function (currentNumber) {
-      if ( currentNumber == 0) { return; }
-      var field = document.getElementById('identifiers_' + currentNumber);
-      var new_area = document.createElement("input");
-      new_area.setAttribute("type", "hidden");
-      new_area.setAttribute("name", "manifestation[identifiers_attributes][" + currentNumber + "][_destroy]");
-      new_area.setAttribute("value", true);
-      field.appendChild(new_area);
-      field.style.display = 'none';
-    }
-  }
-</script>
-
 <%= render 'page/required_field' %>
 <%= render 'observe_field' %>
 <%= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
@@ -366,61 +243,7 @@ $(document).keydown(function(e) {
     <%= f.text_field :place_of_publication %>
   </div>
 
-  <div class="field" id="language">
-    <%= f.label t('activerecord.models.language') -%>
-    <% if @work_has_languages.blank? %>
-      <%#= select_tag 'language_id[0]',
-          options_for_select(@languages.collect{ |l| [l.display_name.localize, l.id] },
-          :selected => @default_language.id ) %>
-      <%#= select_tag 'language_type[0]',
-          options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] }) %>
-
-      <table id="bless">
-        <tr id="LANG0"> 
-          <%= select2_script "language_id_0" %>
-          <td><%= make_select2("language_id_0", 'language_id[0]', @languages, @default_language.id, 300) %></td>
-          <%= select2_script "language_type_0" %>
-          <td><%= make_select2("language_type_0", 'language_type[0]', @language_types, 0, 200) %></td>
-          <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
-        </tr>
-      </table>
-    <% else %>
-      <table id="bless">
-        <% @work_has_languages.each_with_index do |whl, i| %>
-          <%#= select_tag 'language_id[' + i.to_s + ']',
-              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id] },
-              :selected => whl[:language_id] ) %>
-          <%#= select_tag 'language_type[' + i.to_s + ']',
-              options_for_select(@language_types.collect{ |t| [t.display_name.localize, t.id] },
-              :selected => whl[:language_type_id] ) %>
-          <tr id="LANG<%= i.to_s %>">
-          <%= select2_script "language_id_" + i.to_s %>
-          <td>
-            <%= make_select2(
-              "language_id_" + i.to_s, 
-              "language_id[" + i.to_s + "]", 
-              @languages, 
-              whl[:language_id], 
-              300
-            ) %>
-          </td>
-          <%= select2_script "language_type_" + i.to_s %>
-          <td>
-            <%= make_select2(
-              "language_type_" + i.to_s, 
-              "language_type[" + i.to_s + "]", 
-              @language_types, 
-              whl[:language_type_id], 
-              200
-            ) %>
-          </td>
-          <td><%= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
-          <td><%= button_to_function '-', 'ItemField_language_select2.remove(' + i.to_s + ')' if i > 0 -%></td>
-          </tr>
-        <% end %>
-      </table>
-    <% end %>
-  </div>
+  <%= render :partial => 'form_work_has_language', :locals => {:f => f, :manifestation => @manifestation} %>
 
   <%- if @manifestation.series_statement -%>
     <%= render :partial => 'manifestations/serial_form', :locals => {:f => f, :manifestation => @manifestation} -%>
@@ -455,21 +278,8 @@ $(document).keydown(function(e) {
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
-    <div id="identifiers">
-      <%= f.label t('activerecord.models.identifier') -%><br />
-      <% @manifestation.identifiers.each_with_index do |identifier, index| %>
-        <%= f.fields_for :identifiers, identifier do |i_f| %>
-          <div class="field" id="identifiers_<%= index %>">
-            <%= i_f.text_field :body %>
-            <%= i_f.select :identifier_type_id, @identifier_types.collect{|type| [type.display_name, type.id]} %>
-            <%= i_f.hidden_field :position, :value => index %> 
-            <%= button_to_function '+', 'ItemField_identifier.add()' -%>
-            <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 -%><br />
-           </div>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
+    <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation} %>
+  <%- end %> 
 
   <div class="field">
     <%= f.label :start_page -%>

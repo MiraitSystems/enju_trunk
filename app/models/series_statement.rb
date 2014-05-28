@@ -164,7 +164,6 @@ class SeriesStatement < ActiveRecord::Base
     root_manifestation.save!
 
     root_manifestation.subjects = Subject.import_subjects(objs[:subjects], objs[:subject_transcriptions])
-    root_manifestation.work_has_languages = WorkHasLanguage.new_objs(objs[:series_work_has_languages].uniq)
     root_manifestation.creates = Create.new_from_instance(objs[:creates], objs[:del_creators], objs[:add_creators])
     root_manifestation.realizes = Realize.new_from_instance(objs[:realizes], objs[:del_contributors], objs[:add_contributors])
     root_manifestation.produces = Produce.new_from_instance(objs[:produces], objs[:del_publishers], objs[:add_publishers])

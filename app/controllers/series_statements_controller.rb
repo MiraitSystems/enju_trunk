@@ -181,7 +181,6 @@ class SeriesStatementsController < ApplicationController
 
   private
   def set_root_manifestation_instance_vals(root_manifestation)
-    @series_work_has_languages = root_manifestation.work_has_languages
     @creates = root_manifestation.creates.order(:position)
     @realizes = root_manifestation.realizes.order(:position)
     @produces = root_manifestation.produces.order(:position)
@@ -228,8 +227,6 @@ class SeriesStatementsController < ApplicationController
     # set class instance attributes
     @subject = params[:manifestation][:subject]
     @subject_transcription = params[:manifestation][:subject_transcription]
-    @series_work_has_languages = WorkHasLanguage.
-      create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
     set_agent_instance_from_params # Implemented in application_controller.rb
@@ -247,6 +244,6 @@ class SeriesStatementsController < ApplicationController
         creates:  @creates,  del_creators:     @del_creators,     add_creators: @add_creators,
         realizes: @realizes, del_contributors: @del_contributors, add_contributors: @add_contributors,
         produces: @produces, del_publishers:   @del_publishers,   add_publishers: @add_publishers,
-        exinfos: params[:exinfos], extexts: params[:extexts], series_work_has_languages: @series_work_has_languages})
+        exinfos: params[:exinfos], extexts: params[:extexts]})
   end
 end

@@ -20,7 +20,11 @@ class PageController < ApplicationController
       @tags = Bookmark.tag_counts.sort{|a,b| a.count <=> b.count}.reverse[0..49]
     end
     if defined?(EnjuEvent)
-      @events = Event.order('start_at DESC').limit(5)
+      if current_user
+        @events = Event.where("required_role_id <= #{current_user.role.id}").order('start_at DESC').limit(5)
+      else
+        @events = Event.where("required_role_id <= #{Role.where(:name => 'Guest').first.id}").order('start_at DESC').limit(5)
+      end
     end
     @manifestation = Manifestation.pickup rescue nil
     get_libraries

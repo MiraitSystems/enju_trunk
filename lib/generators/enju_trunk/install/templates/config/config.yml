@@ -143,6 +143,10 @@ defaults: &defaults
     open: 8
     hours: 14 
 
+  # 検索キーワード一覧の出力
+  keyword_counts_list_print_tsv:
+    filename: "keyword_counts_list.tsv"
+
   # 検索結果一覧の出力(PDF)
   manifestation_list_print_pdf:
     filename: "manifestation_list.pdf"

@@ -38,15 +38,14 @@ class Manifestation < ActiveRecord::Base
   has_many :work_has_titles, :foreign_key => 'work_id', :order => 'position', :dependent => :destroy
   has_many :manifestation_titles, :through => :work_has_titles
   accepts_nested_attributes_for :work_has_titles, :reject_if => lambda{|attributes| attributes[:title].blank?}, :allow_destroy => true
-  accepts_nested_attributes_for :identifiers, :reject_if => proc {|attributes| attributes['body'].blank?}, :allow_destroy => true
+  accepts_nested_attributes_for :identifiers, :reject_if => lambda{|attributes| attributes[:body].blank?}, :allow_destroy => true
+  accepts_nested_attributes_for :work_has_languages, :allow_destroy => true
 
   has_many :orders
 
   belongs_to :use_license, :foreign_key => 'use_license_id'
 
   belongs_to :catalog
-
-  validates_associated :items
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)
@@ -184,7 +183,7 @@ class Manifestation < ActiveRecord::Base
       items.map{|i| item_library_name(i)}
     end
     string :language, :multiple => true do
-      languages.map{|i| item_language_name(i)}
+      languages.map{|language| language.name}
     end
     string :ndc, :multiple => true do
       if root_of_series? # 雑誌の場合
@@ -1600,12 +1599,6 @@ class Manifestation < ActiveRecord::Base
     def item_library_name(item)
       item_attr(:library_name, item.shelf.library_id) do
         item.shelf.library.name
-      end
-    end
-
-    def item_language_name(item)
-      item_attr(:language_name, item.id) do
-        item.name
       end
     end
 
