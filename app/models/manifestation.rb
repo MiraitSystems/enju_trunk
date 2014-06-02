@@ -254,7 +254,7 @@ class Manifestation < ActiveRecord::Base
     integer :edition, :multiple => true
     integer :volume_number, :multiple => true
     integer :issue_number, :multiple => true
-    integer :serial_number, :multiple => true
+    long :serial_number, :multiple => true
     string :edition_display_value, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の出版日のリストを取得する
