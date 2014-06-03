@@ -1,0 +1,20 @@
+<div class="header_and_footer">
+  <div id="header_mobile">
+    <div id="library_system_name_mobile">
+      <h2 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h2>
+    </div>
+
+    <div id="header_right_mobile">
+      <% if user_signed_in? %>
+        <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete -%>
+      <% else %>
+        <% unless controller_name == 'sessions' %>
+          <%- unless SystemConfiguration.isWebOPAC %>
+            <%= link_to t('page.sign_in'), new_user_session_path -%>
+          <%- end -%>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <hr>
+</div>

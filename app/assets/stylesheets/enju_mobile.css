@@ -1,3 +1,45 @@
 li.mobile_pagination{
   line-height: 100%;
 }
+
+div#header_mobile{
+  width: 600px;
+  height: 65px;
+  margin: 0 auto;
+}
+
+div#header_left_mobile{
+  width: 400px;
+  height: 65px;
+  float: left;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+div#library_system_name_mobile{
+  width: 200px;
+  height: 30px;
+  margin: 0 auto;
+  float: left;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+div#header_right_mobile{
+  width: auto;
+  height: 30px;
+  float: right;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+h1.resource_title_mobile{
+  line-height: 140%;
+  text-align: center
+}

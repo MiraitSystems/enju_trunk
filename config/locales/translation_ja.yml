@@ -1826,6 +1826,7 @@ ja:
     email_and_password: "電子メールとパスワード"
     catalog_search: "資料の検索"
     search: "検索"
+    research: "再検索"
     search_term: "検索語"
     search_for: "検索対象"
     search_local: "ローカル所蔵"

@@ -1,21 +1,52 @@
-  <div data-role="header">
-    <h1><%= @library_group.display_name.localize %></h1>
-    </div>
-  <div data-role="content">
-    <h2 class="title">
-      <% if user_signed_in? %>
-        <%= t('page.user_title', :login_name => current_user.username) -%>
-      <% else %>
+<div id='column_wide_wrapper'>
+  <div id='column_wide'>
+    <div class="portlet" id="search">
+      <h2 class="title">
         <%= t('page.catalog_search') -%>
-      <% end %>
-    </h2>
-    <div id="user_search_form">
-      <%= render 'page/search_form' -%>
-      <p><%= t('page.number_of_manifestations', :numdocs => Manifestation.cached_numdocs, :count => Manifestation.cached_numdocs) -%></p>
-      <h3 style="display: inline"><%= link_to t('page.new_resource'), manifestations_path(:mode => 'recent') -%></h3>
-      <h4 style="display: inline"><%= link_to t('activerecord.models.question'), questions_path %></h4>
-      <% if user_signed_in? %>
-        <h4 style="display: inline"><%= link_to t('activerecord.models.bookmark'), user_bookmarks_path(current_user) %></h4>
-      <% end %>
+      </h2>
+      <div id="user_search_form">
+        <% if current_user %>
+          <% unless current_user.own_password %>
+            <div style="color: red;"><b><%= simple_format(t('activerecord.errors.messages.user.auto_generated_password')) %></b></div>
+          <% end %>
+        <% end %>
+        <p id="notice"><%= notice %></p>
+        <%= render 'page/search_form' -%>     
+      </div>
     </div>
+
+    <% if user_signed_in? -%>
+      <div class="portlet" id="my_basket">
+        <h3 class="title"><%= t('basket.my_status') -%></h3>
+        <div id="my_basket_box">
+          <%= render 'page/my_basket' -%>
+        </div>
+      </div>
+    <%- end -%>
+
+    <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
+      <div class="portlet" id="events">
+        <h3 class="title"><%= t('activerecord.models.event') -%></h3>
+        <div id="tag_cloud_box">
+          <div>
+            <% @events.each do |event| %>
+              <dl>
+                <dt>
+                  <%= event.library.display_name %><br/ >
+                  <%= l(event.start_at, :format => :only_date) %> - <%= l(event.end_at, :format => :only_date) %>
+                </dt>
+                <strong>
+                  <dd><%= event.display_name %></dd>
+                </strong>
+              </dl>
+              <br />
+            <% end %>
+          </div>
+          <% if @events.size > 0 %>
+            <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   </div>
+</div>

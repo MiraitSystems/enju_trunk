@@ -1838,6 +1838,7 @@ en:
     email_and_password: Email and password
     catalog_search: Catalog search
     search: Search
+    research: Research
     search_term: Search term(s)
     search_for: Search for
     search_local: Local
