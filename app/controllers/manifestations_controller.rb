@@ -1528,7 +1528,6 @@ class ManifestationsController < ApplicationController
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
 
-<<<<<<< HEAD
     if params[:creator_agent_ids].blank?
       @add_creator_agent_ids = []
     else
@@ -1546,12 +1545,11 @@ class ManifestationsController < ApplicationController
     else
       @add_publisher_agent_ids = params[:publisher_agent_ids]
     end
-=======
+
     # subjects
     @subjects = [] if @subjects.blank?
     @del_subjects = [] if @del_subjects.blank?
     @add_subjects = [{}] if @add_subjects.blank?
->>>>>>> issue7210
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
