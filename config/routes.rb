@@ -346,6 +346,8 @@ Rails.application.routes.draw do
 
   resources :work_has_subjects
 
+  match 'subjects/search_name' => 'subjects#search_name'
+
   resources :subjects do
     resources :works, :controller => 'manifestations'
     resources :subject_heading_types

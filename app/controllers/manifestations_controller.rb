@@ -815,8 +815,9 @@ class ManifestationsController < ApplicationController
       @creates = original_manifestation.creates.order(:position)
       @realizes = original_manifestation.realizes.order(:position)
       @produces = original_manifestation.produces.order(:position)
-      @subject = original_manifestation.subjects.collect(&:term).join(';')
-      @subject_transcription = original_manifestation.subjects.collect(&:term_transcription).join(';')
+
+      @subjects = original_manifestation.subjects.order(:position)
+
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
@@ -829,7 +830,7 @@ class ManifestationsController < ApplicationController
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
       #TODO refactoring
-      @creates, @realizes, @produces = @manifestation.creates, @manifestation.realizes, @manifestation.produces
+      @creates, @realizes, @produces, @subjects = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.subjects
     end
 
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
@@ -858,8 +859,9 @@ class ManifestationsController < ApplicationController
     @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
-    @subject = @manifestation.subjects.collect(&:term).join(';')
-    @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
+    
+    @subjects = @manifestation.subjects.order(:position)
+    
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
     if defined?(EnjuBookmark)
@@ -896,8 +898,12 @@ class ManifestationsController < ApplicationController
       series_statement = SeriesStatement.find(params[:manifestation][:series_statement_id])
       @manifestation.series_statement = series_statement if  series_statement
     end
-    @subject = params[:manifestation][:subject]
-    @subject_transcription = params[:manifestation][:subject_transcription]
+
+    # subjects
+    @subjects = @manifestation.subjects
+    @add_subjects = params[:add_subjects].blank? ? [{}] : params[:add_subjects]
+    @del_subjects = params[:del_subjects].blank? ? [] : params[:del_subjects]
+
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -914,7 +920,9 @@ class ManifestationsController < ApplicationController
           @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
           @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-          @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
+
+          update_subjects(@subjects, @add_subjects, @del_subjects)
+
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
@@ -958,8 +966,12 @@ class ManifestationsController < ApplicationController
       end
     end
     set_agent_instance_from_params # Implemented in application_controller.rb
-    @subject = params[:manifestation][:subject]
-    @subject_transcription = params[:manifestation][:subject_transcription]
+
+    # subjects
+    @subjects = @manifestation.subjects
+    @add_subjects = params[:add_subjects].blank? ? [{}] : params[:add_subjects]
+    @del_subjects = params[:del_subjects].blank? ? [] : params[:del_subjects]
+    
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -973,7 +985,9 @@ class ManifestationsController < ApplicationController
         @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-        @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
+
+        update_subjects(@subjects, @add_subjects, @del_subjects)
+        
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
@@ -1514,6 +1528,7 @@ class ManifestationsController < ApplicationController
     @add_contributors = [{}] if @add_contributors.blank?
     @add_publishers = [{}] if @add_publishers.blank?
 
+<<<<<<< HEAD
     if params[:creator_agent_ids].blank?
       @add_creator_agent_ids = []
     else
@@ -1531,6 +1546,12 @@ class ManifestationsController < ApplicationController
     else
       @add_publisher_agent_ids = params[:publisher_agent_ids]
     end
+=======
+    # subjects
+    @subjects = [] if @subjects.blank?
+    @del_subjects = [] if @del_subjects.blank?
+    @add_subjects = [{}] if @add_subjects.blank?
+>>>>>>> issue7210
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
@@ -1905,5 +1926,30 @@ class ManifestationsController < ApplicationController
     true
   end
 
+  # 
+  # update subjects
+  # 
+  def update_subjects(subjects, add_subjects, del_subjects)
+    # remove subject
+    del_subjects.each do |del_subject|
+      subject = subjects.where(:id => del_subject.to_i).first
+      subjects.delete(subject) if subject.present?
+    end
+    
+    # add subject
+    add_subjects.each do |add_subject|
+      next if add_subject[:id].blank?
+      if add_subject[:term].blank?
+        subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription], :subject_type_id => 1)
+        subject.required_role = Role.where(:name => 'Guest').first
+        subject.save
+        subjects << subject
+      else
+        subject = Subject.where(:term => add_subject[:term]).first
+        subjects << subject if subjects.where(:id => subject).blank?
+      end
+    end
+  end
+  
 end
 
