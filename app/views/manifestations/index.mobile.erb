@@ -1,14 +1,11 @@
+<%= render 'page/header' %>
+
 <div data-role="header">
-<h1 class="title"><%= t('page.search_result') -%></h1>
+  <h1 class="title"><%= t('page.search_result') -%></h1>
 </div>
-<!--
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
--->
 <div data-role="content">
   <div data-role="fieldcontain">
-    <%= t('page.number_of_manifestations', :numdocs => @count[:query_result]) %>
+    <%= t('page.number_of_search_results', :count => @count[:query_result], :numdocs => Manifestation.cached_numdocs, :seconds => sprintf("%.3f", @seconds)) -%>
     <%= form_for :manifestations, :html => {:method => 'get'} do -%>
       <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%= submit_tag t('page.research') -%>
@@ -17,11 +14,19 @@
 </div>
 <hr>
 
+<%= paginate(@manifestations) %>
+
+<br>
 <ol data-role="listview">
   <% @manifestations.each do |manifestation| %>
     <li>
       <a href="http://172.27.2.18:3008/manifestations/3">
         <%= manifestation.original_title %>
+        <div id="creator_list_<%= manifestation.id -%>">
+          <%= render 'manifestations/show_creators', :manifestation => manifestation -%>
+        </div>
+        <% manifestation_type = ManifestationType.where(:id => manifestation.manifestation_type_id).select([:display_name]).first %>
+        <%= manifestation_type.display_name.localize %>
       </a>
     </li>
   <% end %>

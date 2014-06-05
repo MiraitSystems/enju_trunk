@@ -21,8 +21,6 @@
 //= require jquery.upload-1.0.2
 //= require jquery.simplecalendarjp
 //= require jquery.autoKana
-//= require jquery.mobile-1.1.0.min
-//= require jquery-1.7.1.min
 
 $(document).ready(function() {
   // check checkbox

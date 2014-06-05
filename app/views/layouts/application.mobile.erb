@@ -2,6 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= @locale.to_s -%>" lang="<%= @locale.to_s -%>">
 <meta name="viewport" content="width=685">
 <head>
+  <%= stylesheet_link_tag "enju_trunk_mobile" %>
+  <%= javascript_include_tag "enju_trunk_mobile" %>
   <meta charset="UTF-8" />
   <%= render 'page/include' %>
   <title><%= title(controller.controller_name) %></title>
@@ -26,6 +28,7 @@
 
 </div>
 
+<hr>
 <%#= render 'page/function_general' %>
 <% unless SystemConfiguration.get("not_use_footer") %>
   <%= render 'page/footer' %>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title><%= resource_title(@manifestation, controller.action_name) %></title>
-<%= render 'page/mobile' %>
+  <%= stylesheet_link_tag "enju_trunk_mobile" %>
+  <%= javascript_include_tag "enju_trunk_mobile" %>
+  <title><%= resource_title(@manifestation, controller.action_name) %></title>
+  <%= render 'page/mobile' %>
 </head>
 <body>
 
 <div data-role="page">
-
-<%= yield %>
-
+  <%= yield %>
 </div>
 
 </body>

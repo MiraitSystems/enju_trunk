@@ -124,6 +124,33 @@ module EnjuTrunk
       agents_list.join(" ").html_safe
     end
 
+    def agents_list_mobile(agents = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
+      return nil if agents.blank?
+      agents_list = []
+      exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+      agents.each do |agent|
+        type_name = ''
+        if manifestation_id.present? && SystemConfiguration.get("use_agent_type")
+          case type
+            when 'create'
+              create_type = CreateType.find(agent.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
+              type_name = (create_type and create_type.display) ? create_type.display_name : ''
+            when 'realize'
+              realize_type = RealizeType.find(agent.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
+              type_name = (realize_type and realize_type.display) ? realize_type.display_name : ''
+            when 'produce'
+              produce_type = ProduceType.find(agent.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
+              type_name = (produce_type and produce_type.display) ? produce_type.display_name : ''
+          end
+          type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
+        end
+        full_name = agent.full_name << type_name
+        agent = mode == 'html' ? highlight(full_name) : full_name
+        agents_list << agent
+      end
+      agents_list.join(" ").html_safe
+    end
+
     def agents_short_list(agents = [], options = {})
       return nil if agents.blank?
       agents_list = []
