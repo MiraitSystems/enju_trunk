@@ -19,17 +19,10 @@
           </tr>
         <% end %>
         <%= embed_content(manifestation) -%>
-        <%- if manifestation.try(:external_catalog) && manifestation.external_catalog > 0 -%>
+        <%- if manifestation.try(:catalog_id) && manifestation.catalog_id > 0 -%>
           <tr>
             <td><%= t('activerecord.attributes.manifestation.external_catalog') %>:</td>
-            <td>
-              <%- case manifestation.external_catalog -%>
-              <%- when 1 -%>
-                <%= t('external_catalog.ndl') -%>
-              <%- when 2 -%>
-                <%= t('external_catalog.nacsis') -%>
-              <%- end -%>
-            </td>
+            <td><%= manifestation.catalog.display_name %></td>
           </tr>
         <%- end -%>
         <% if manifestation.bookbinder %>
@@ -142,6 +135,10 @@
           <td style="width: 500px">
             <%= form_icon(manifestation.carrier_type) -%> <%= manifestation.carrier_type.display_name.localize -%>
           </td>
+        </tr>
+        <tr>
+          <td><%= t('activerecord.models.sub_carrier_type') %>:</td>
+          <td><span><%= manifestation.sub_carrier_type.display_name.localize if manifestation.sub_carrier_type %></span></td>
         </tr>
         <tr>
           <td><%= t('activerecord.models.manifestation_type') %>:</td>

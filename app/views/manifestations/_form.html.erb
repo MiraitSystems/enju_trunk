@@ -200,6 +200,13 @@ $(document).keydown(function(e) {
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.models.sub_carrier_type') -%>
+    <%= select2_script "sub_carrier_type_id" %>
+    <%= make_select2(:sub_carrier_type_id, "manifestation[sub_carrier_type_id]", @sub_carrier_types, @manifestation.sub_carrier_type_id, 500, false) %>
+  </div>
+
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
     <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>

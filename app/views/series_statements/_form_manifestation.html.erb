@@ -69,6 +69,11 @@ function displayArticleTitle(article_title) {
   </div>
 
   <div class="field">
+    <%= f_m.label t('activerecord.models.sub_carrier_type') -%>
+    <%= f_m.select(:sub_carrier_type_id, @sub_carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+  </div>
+
+  <div class="field">
     <%= f_m.label t('activerecord.models.manifestation_type') -%>
     <%= f_m.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
   </div>
