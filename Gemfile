@@ -16,7 +16,7 @@ gemspec
 # For the dummy application
 gem 'pg'
 gem 'thinreports', git: 'git://github.com/emiko/thinreports-generator.git'
-gem 'select2-rails', git: 'git@github.com:MiraitSystems/select2-rails.git'
+gem 'select2-rails', git: 'git://github.com/MiraitSystems/select2-rails.git'
 gem 'enju_trunk_event', git: 'git://github.com/MiraitSystems/enju_trunk_event.git', require: 'enju_event'
 gem 'enju_ndl', git: 'git://github.com/MiraitSystems/enju_trunk_ndl.git'
 gem 'enju_trunk_frbr', git: 'git://github.com/emiko/enju_trunk_frbr.git'

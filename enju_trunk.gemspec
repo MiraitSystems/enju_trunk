@@ -67,7 +67,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rmagick'
   s.add_dependency 'rails_autolink'
   s.add_dependency 'parallel'
-  s.add_dependency 'enju_subject', '0.1.0.pre5'
+  s.add_dependency 'enju_trunk_subject'
   s.add_dependency 'enju_manifestation_viewer', '0.1.0.pre3'
   s.add_dependency 'enju_oai', '0.1.0.pre5'
 

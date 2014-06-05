@@ -339,14 +339,7 @@ $(document).keydown(function(e) {
     <%= f.text_area :note, :class => 'resource_textarea' -%>
   </div>
 
-  <div class="field">
-    <%= f.label :subject -%><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :subject, :value => @subject -%>
-  </div>
-  <div class="field">
-    <strong><%= t('manifestation.subject_transcription') -%></strong><%= t('manifestation.delim_semicolon') -%><br />
-    <%= f.text_field :subject_transcription, :value => @subject_transcription, :class => 'resource_url' -%>
-  </div>
+  <%= render :partial => 'form_subject_field', :locals => {:f => f, :manifestation => @manifestation} %>
 
   <% if defined?(EnjuTrunkTheme) %>
     <div class="field">
