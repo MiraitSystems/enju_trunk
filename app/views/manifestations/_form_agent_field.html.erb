@@ -1,4 +1,7 @@
 <script>
+  var addItemKeyCode = 122; // F11
+  var removeItemKeyCode = 123; // F12
+  
   var newAgentSlect2options = {
     multiple: false,
     minimumInputLength: 1,
@@ -127,6 +130,209 @@
         $("#publisher_full_names_" + attribute_number).val(e.object.text);
     }
   });
+
+  /**
+   * select2 フィールドのファンクション対応(オープン時)
+   * 
+   */
+   $(document).on("keydown", ".select2-input", function(e){
+  
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+
+      // creators
+      $("input[name^='creator_agent_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_creator.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_creator.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+      $("input[name^='creator_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_creator_select2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_creator_select2.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+
+      // contributors
+      $("input[name^='contributor_agent_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_contributor.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_contributor.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+      $("input[name^='contributor_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_contributor_select2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_contributor_select2.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+
+      // publishers
+      $("input[name^='publisher_agent_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_publisher.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_publisher.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+      $("input[name^='publisher_ids']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemField_publisher_select2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("name").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemField_publisher_select2.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+
+      // subjects
+      $("input[name^='add_subjects']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldSubjectSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if(currentNumber != "0"){
+              $(this).select2('close');
+              ItemFieldSubjectSelect2.remove(currentNumber);
+            }
+            return false;
+          }
+        }
+      });
+
+    }
+    
+  });
+
+  /**
+   * select2 フィールドのファンクション対応(クローズ時)
+   * 
+   */
+  $(document).on("keydown", "input[id^='s2id_autogen']", function(e){
+
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+      var parentElement = e.target.parentElement;
+      var nextElement = parentElement.nextElementSibling;
+      if(keyCode == addItemKeyCode){
+        if(nextElement.id == "select2_creator") ItemField_creator_select2.add();
+        if(nextElement.id == "select2_new_creator") ItemField_creator.add();
+        if(nextElement.id == "select2_contributor") ItemField_contributor_select2.add();
+        if(nextElement.id == "select2_new_contributor") ItemField_contributor.add();
+        if(nextElement.id == "select2_publisher") ItemField_publisher_select2.add();
+        if(nextElement.id == "select2_new_publisher") ItemField_publisher.add();
+        if(nextElement.id.indexOf("add_subjects") != -1) ItemFieldSubjectSelect2.add();
+        return false;
+      }
+      if(keyCode == removeItemKeyCode){
+        if(nextElement.id.indexOf("add_subjects") != -1){
+          var currentNumber = nextElement.id.match(/\d+/);
+        }
+        else{
+          var currentNumber = nextElement.name.match(/\d+/);
+        }
+        if(currentNumber != "0"){
+          if(nextElement.id == "select2_creator") ItemField_creator_select2.remove(currentNumber);
+          if(nextElement.id == "select2_new_creator") ItemField_creator.remove(currentNumber);
+          if(nextElement.id == "select2_contributor") ItemField_contributor_select2.remove(currentNumber);
+          if(nextElement.id == "select2_new_contributor") ItemField_contributor.remove(currentNumber);
+          if(nextElement.id == "select2_publisher") ItemField_publisher_select2.remove(currentNumber);
+          if(nextElement.id == "select2_new_publisher") ItemField_publisher.remove(currentNumber);
+          if(nextElement.id.indexOf("add_subjects") != -1) ItemFieldSubjectSelect2.remove(currentNumber);
+         }
+        return false;
+      }
+     }
+
+   });
+
+  /**
+   * 件名読み フィールドのファンクション対応
+   * 
+   */
+  $(document).on("keydown", "input[id$='term_transcription']", function(e){
+  
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+      if(keyCode == addItemKeyCode){
+        ItemFieldSubjectSelect2.add();
+        return false;
+      }
+      if(keyCode == removeItemKeyCode){
+        var currentNumber = e.target.id.match(/\d+/);
+        if(currentNumber != "0"){
+          $(e.target).select2('close');
+          ItemFieldSubjectSelect2.remove(currentNumber);
+        }
+        return false;
+      }
+     }
+
+   });
+
 </script>
 <% if SystemConfiguration.get("add_only_exist_agent") %>
   <% select2_str = '_select2' %>
@@ -360,7 +566,7 @@
       + '<td><input type="button" value="+" onClick="ItemField_contributor.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_contributor.remove(__count__);" /></td>',
     add : function () {
-      var $new_field = $("<tr/>").attr("id", "CF" + this.currentNumber);
+      var $new_field = $("<tr/>").attr("id", "RF" + this.currentNumber);
 
       var $clone = $('input[name="contributor_agent_ids[0]"]').clone();
       $clone.attr('name','contributor_agent_ids[' + this.currentNumber + ']');
@@ -407,7 +613,7 @@
       this.currentNumber += 1;
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
+      var field = document.getElementById('RF' + div_num);
       if(field != null){ field.parentNode.removeChild(field); }
     }
   }
@@ -574,7 +780,7 @@
       + '<td><input type="button" value="+" onClick="ItemField_publisher.add();" /></td>'
       + '<td><input type="button" value="-" onClick="ItemField_publisher.remove(__count__);" /></td>',
     add : function () {
-      var $new_field = $("<tr/>").attr("id", "CF" + this.currentNumber);
+      var $new_field = $("<tr/>").attr("id", "PF" + this.currentNumber);
 
       var $clone = $('input[name="publisher_agent_ids[0]"]').clone();
       $clone.attr('name','publisher_agent_ids[' + this.currentNumber + ']');
@@ -621,7 +827,7 @@
       this.currentNumber += 1;
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
+      var field = document.getElementById('PF' + div_num);
       if(field != null){ field.parentNode.removeChild(field); }
     }
   }
