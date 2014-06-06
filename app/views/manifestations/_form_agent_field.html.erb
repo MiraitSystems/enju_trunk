@@ -54,6 +54,16 @@
     }
   };
 
+  function removeItemField(prefix, num){
+    var removeRow = $('#' + prefix + num);
+    if(removeRow[0]){
+      var prevRow = removeRow.prev();
+      var prevElement = prevRow.find('input:first');
+      if(prevElement[0]) prevElement.focus(); // set focus
+      removeRow.remove(); // remove
+    }
+  }
+
   $(document).ready(function() {
     $("#select2_creator,#select2_contributor,#select2_publisher").select2({
       multiple: false,
@@ -398,8 +408,7 @@
       this.currentNumber += 1;
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('CF', div_num);
     }
   }
   var ItemField_creator_select2 = {
@@ -479,8 +488,7 @@
 
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('CF', div_num);
     }
   }
 </script>
@@ -613,8 +621,7 @@
       this.currentNumber += 1;
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('RF', div_num);
     }
   }
 
@@ -693,8 +700,7 @@
       <% end %>
     },
     remove : function (div_num) {
-      var field = document.getElementById('RF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('RF', div_num);
     }
   }
 </script>
@@ -827,8 +833,7 @@
       this.currentNumber += 1;
     },
     remove : function (div_num) {
-      var field = document.getElementById('CF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('PF', div_num);
     }
   }
   var ItemField_publisher_select2 = {
@@ -906,8 +911,7 @@
       <% end %>
     },
     remove : function (div_num) {
-      var field = document.getElementById('PF' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('PF', div_num);
     }
   }
 </script>

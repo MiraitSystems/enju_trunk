@@ -81,8 +81,7 @@
       
     },
     remove : function (trNum) {
-      var field = document.getElementById('SUBJECT' + trNum);
-      if(field != null){ field.parentNode.removeChild(field); }
+      removeItemField('SUBJECT', trNum)
     }
   }
 
