@@ -433,7 +433,6 @@ $(document).keydown(function(e) {
     <%= hidden_field_tag :creators, @creators if @creators -%>
     <%= hidden_field_tag :contributors, @contributors if @contributors -%>
     <%= hidden_field_tag :publishers, @publishers if @publishers -%>
-    <%= hidden_field_tag :subjects, @subjects if @subjects -%>
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
 <%- end -%>

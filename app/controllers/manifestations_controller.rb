@@ -831,6 +831,8 @@ class ManifestationsController < ApplicationController
       @manifestation = @series_statement.new_manifestation
       #TODO refactoring
       @creates, @realizes, @produces, @subjects = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.subjects
+    else
+      @subjects = [Subject.new()]
     end
 
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
@@ -900,9 +902,8 @@ class ManifestationsController < ApplicationController
     end
 
     # subjects
-    @subjects = @manifestation.subjects
-    @add_subjects = params[:add_subjects].blank? ? [{}] : params[:add_subjects]
-    @del_subjects = params[:del_subjects].blank? ? [] : params[:del_subjects]
+    @subjects = params[:subjects]
+    @manifestation.subjects = create_subject_values(@subjects);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
@@ -920,8 +921,6 @@ class ManifestationsController < ApplicationController
           @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
           @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-
-          update_subjects(@subjects, @add_subjects, @del_subjects)
 
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
@@ -968,9 +967,8 @@ class ManifestationsController < ApplicationController
     set_agent_instance_from_params # Implemented in application_controller.rb
 
     # subjects
-    @subjects = @manifestation.subjects
-    @add_subjects = params[:add_subjects].blank? ? [{}] : params[:add_subjects]
-    @del_subjects = params[:del_subjects].blank? ? [] : params[:del_subjects]
+    @subjects = params[:subjects]
+    @manifestation.subjects = create_subject_values(@subjects);
     
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
@@ -986,8 +984,6 @@ class ManifestationsController < ApplicationController
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
 
-        update_subjects(@subjects, @add_subjects, @del_subjects)
-        
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
@@ -1546,11 +1542,6 @@ class ManifestationsController < ApplicationController
       @add_publisher_agent_ids = params[:publisher_agent_ids]
     end
 
-    # subjects
-    @subjects = [] if @subjects.blank?
-    @del_subjects = [] if @del_subjects.blank?
-    @add_subjects = [{}] if @add_subjects.blank?
-
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
       @libraries = Library.real
@@ -1925,29 +1916,25 @@ class ManifestationsController < ApplicationController
   end
 
   # 
-  # update subjects
+  # create subject vaules
   # 
-  def update_subjects(subjects, add_subjects, del_subjects)
-    # remove subject
-    del_subjects.each do |del_subject|
-      subject = subjects.where(:id => del_subject.to_i).first
-      subjects.delete(subject) if subject.present?
-    end
-    
-    # add subject
+  def create_subject_values(add_subjects)
+    subjects = []
     add_subjects.each do |add_subject|
       next if add_subject[:id].blank?
-      if add_subject[:term].blank?
-        subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription], :subject_type_id => 1)
-        subject.required_role = Role.where(:name => 'Guest').first
-        subject.save
-        subjects << subject
+      if add_subject[:id].to_i != 0
+        subject = Subject.where(:id => add_subject[:id]).first
+        subjects << subject if subject.present?
       else
-        subject = Subject.where(:term => add_subject[:term]).first
-        subjects << subject if subjects.where(:id => subject).blank?
+        # new record
+        subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription])
+        subject.subject_type_id = 1
+        subject.required_role = Role.where(:name => 'Guest').first
+        subjects << subject
       end
     end
+    return subjects
   end
-  
+
 end
 
