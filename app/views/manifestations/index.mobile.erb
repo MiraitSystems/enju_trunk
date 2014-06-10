@@ -20,16 +20,19 @@
 <ol data-role="listview">
   <% @manifestations.each do |manifestation| %>
     <li>
-      <a href="http://172.27.2.18:3008/manifestations/3">
+      <%= link_to manifestation do %>
         <%= manifestation.original_title %>
         <div id="creator_list_<%= manifestation.id -%>">
           <%= render 'manifestations/show_creators', :manifestation => manifestation -%>
         </div>
         <% manifestation_type = ManifestationType.where(:id => manifestation.manifestation_type_id).select([:display_name]).first %>
         <%= manifestation_type.display_name.localize %>
-      </a>
+      <% end %>
     </li>
   <% end %>
 </ol>
 
 <%= paginate(@manifestations) %>
+
+<hr>
+<%= render 'page/footer' %>

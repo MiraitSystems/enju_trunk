@@ -3,43 +3,55 @@ li.mobile_pagination{
 }
 
 div#header_mobile{
-  width: 600px;
-  height: 65px;
+  width: 100%;
+  height: 50px;
   margin: 0 auto;
-}
-
-div#header_left_mobile{
-  width: 400px;
-  height: 65px;
-  float: left;
-  padding-left: 2px;
-  padding-right: 2px;
-  padding-top: 5px;
-  padding-bottom: 5px;
 }
 
 div#library_system_name_mobile{
-  width: 200px;
+  width: 150px;
   height: 30px;
-  margin: 0 auto;
   float: left;
   padding-left: 2px;
   padding-right: 2px;
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+div#header_left_mobile{
+  width: 50px;
+  height: 65px;
+  float: left;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+div#content_mobile{
+  padding-top: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+  clear: both;
+  min-width: 200px;
 }
 
 div#header_right_mobile{
   width: auto;
   height: 30px;
   float: right;
-  padding-left: 2px;
-  padding-right: 2px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 h1.resource_title_mobile{
+  line-height: 140%;
+  text-align: center
+}
+
+h2.resource_title_mobile{
   line-height: 140%;
   text-align: center
 }

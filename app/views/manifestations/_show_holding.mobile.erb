@@ -1,38 +1,70 @@
-<table style="width: 100%">
-  <tr>
-    <th><%= t('activerecord.models.library') -%></th>
-    <th><%= t('activerecord.models.shelf') -%></th>
-    <th><%= t('activerecord.attributes.item.call_number') -%></th>
-    <th><%= t('activerecord.attributes.item.item_identifier') -%></th>
-    <th><%= t('activerecord.models.circulation_status') -%></th>
-  </tr>
-  <%- manifestation.items.on_shelf.each do |item| -%>
-    <tr>
-      <td>
-        <%= item.shelf.library.display_name.localize %>
-      </td>
-      <td>
-        <%= item.shelf_display_name.localize -%>
-      </td>
-      <td>
-        <%= call_numberformat(item) -%>
-      </td>
-      <td>
-        <%- if item.item_identifier? -%>
-          <%= link_to item.item_identifier, item -%>
-        <%- else -%>
-          (<%= link_to t('item.no_number'), item -%>)
-        <%- end -%>
-      </td>
-      <td>
-        <%= item.circulation_status.display_name.localize if item.circulation_status -%>
-        <%- if item.rent? -%>
-          (
-            <%= t('activerecord.attributes.checkout.due_date') -%>:
-            <%= l(item.checkouts.first.due_date, :format => :short) -%>
-          )
-        <%- end -%>
-      </td>
-    </tr>
-  <%- end -%>
-</table>
+<% if manifestation.items.exists? %>
+  <div id="holding">
+    <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+    <ol data-role="listview">
+      <% items.each do |item| %>
+        <% next if hide_item?(true, item) %>
+   
+        <%# TODO %> 
+        <li>
+        <div>
+          <th><%= t('activerecord.models.library') %>:</th>
+          <td><%= item.shelf.library.display_name.localize %></td>
+        </div>
+        <div>
+          <th><%= t('activerecord.models.shelf') %>:</th>
+          <td>
+            <%= item.shelf.display_name.localize %>
+            <%= render 'items/shelf_picture', :item => item if item.shelf %>
+          </td>
+        </div>
+        <div>
+          <th><%= t('activerecord.attributes.item.call_number') %>:</th>
+          <td>
+            <%= call_numberformat(item) %>
+          </td>
+        </div>
+        <div>
+          <th><%= t('activerecord.attributes.item.item_identifier') %>:</th>
+          <td>
+            <% if item.item_identifier? %>
+              <%= item.item_identifier %>
+            <% else %>
+              (<%= t('item.no_number') %>)
+            <% end %>
+          </td>
+        </div>
+        <div>
+          <% unless manifestation.article? %>
+            <th><%= t('activerecord.models.circulation_status') %>:</th>
+            <td>
+              <% if item.circulation_status.name != 'Available On Shelf' %>
+                <span class="not_rent_item">
+                  <%= item.circulation_status.display_name.localize if item.circulation_status %>
+                  <% if item.use_restriction.try(:name) == 'Not For Loan' %>
+                    (<%= t('activerecord.attributes.checkout.not_available') %>)
+                  <% end %>
+                </span>
+              <% else %>
+                <% if item.circulation_status %>
+                  <% if item.use_restriction.try(:name) != 'Not For Loan' %>
+                    <%= item.circulation_status.display_name.localize %>
+                  <% else %>
+                    <span class="not_rent_item"><%= t('activerecord.attributes.checkout.not_for_loan') %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </td>
+          <% end %>
+        </div>
+
+        <% if user_signed_in? %>
+          <%- if @manifestation.reservable_with_item?(current_user) -%>
+            <%= link_to t('activerecord.models.reserve'), new_user_reserve_path(current_user, :manifestation_id => @manifestation.id) -%>
+          <%- end -%>
+        <% end %>
+        </li>
+      <% end %>
+    </ol> 
+  </div>
+<% end %>

@@ -1,46 +1,38 @@
-<div id='column_wide_wrapper'>
-  <div id='column_wide'>
-    <h3 class="title">
-      <%= t('page.catalog_search') -%>
-    </h3>
-    <div id="user_search_form">
-      <% if current_user %>
-        <% unless current_user.own_password %>
-          <div style="color: red;"><b><%= simple_format(t('activerecord.errors.messages.user.auto_generated_password')) %></b></div>
-        <% end %>
-      <% end %>
-      <p id="notice"><%= notice %></p>
-      <%= render 'page/search_form' -%>     
-    </div>
-
-    <% if user_signed_in? -%>
-      <h3 class="title"><%= t('basket.my_status') -%></h3>
-      <div id="my_basket_box">
-        <%= render 'page/my_basket' -%>
-      </div>
-    <%- end -%>
-
-    <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
-      <h3 class="title"><%= t('activerecord.models.event') -%></h3>
-      <div id="tag_cloud_box">
-        <div>
-          <% @events.each do |event| %>
-            <dl>
-              <dt>
-                <%= event.library.display_name %><br/ >
-                <%= l(event.start_at, :format => :only_date) %> - <%= l(event.end_at, :format => :only_date) %>
-              </dt>
-              <strong>
-                <dd><%= event.display_name %></dd>
-              </strong>
-            </dl>
-            <br />
-          <% end %>
-        </div>
-        <% if @events.size > 0 %>
-          <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
-        <% end %>
-      </div>
-    </div>
+<h3 class="title">
+  <%= t('page.catalog_search') -%>
+</h3>
+<% if current_user %>
+  <% unless current_user.own_password %>
+    <div style="color: red;"><b><%= simple_format(t('activerecord.errors.messages.user.auto_generated_password')) %></b></div>
   <% end %>
-</div>
+<% end %>
+<p id="notice"><%= notice %></p>
+<%= render 'page/search_form' -%>     
+
+<% if user_signed_in? -%>
+  <h3 class="title"><%= t('basket.my_status') -%></h3>
+  <div id="my_basket_box">
+    <%= render 'page/my_basket' -%>
+  </div>
+<%- end -%>
+
+<% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
+  <h3 class="title"><%= t('activerecord.models.event') -%></h3>
+  <div>
+    <% @events.each do |event| %>
+      <dl>
+        <dt>
+          <%= event.library.display_name %><br/ >
+          <%= l(event.start_at, :format => :only_date) %> - <%= l(event.end_at, :format => :only_date) %>
+        </dt>
+        <strong>
+          <dd><%= event.display_name %></dd>
+        </strong>
+      </dl>
+      <br />
+    <% end %>
+  </div>
+  <% if @events.size > 0 %>
+    <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
+  <% end %>
+<% end %>
