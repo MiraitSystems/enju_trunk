@@ -430,8 +430,6 @@ $(document).keydown(function(e) {
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>
-    <%= hidden_field_tag :contributors, @contributors if @contributors -%>
-    <%= hidden_field_tag :publishers, @publishers if @publishers -%>
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
 <%- end -%>

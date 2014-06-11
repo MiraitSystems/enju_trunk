@@ -53,7 +53,7 @@
     matcher: function(term, text, opt) {
       return text.toUpperCase().indexOf(term.toUpperCase())==0
           || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-    }
+    },
   };
 
   function removeItemField(prefix, num){
@@ -67,83 +67,55 @@
   }
 
   $(document).ready(function() {
-    $("#select2_creator,#select2_contributor,#select2_publisher").select2({
-      multiple: false,
-      minimumInputLength: 1,
-      width: "250px",
-      placeholder: <%= raw t("agent.search_placeholder").to_json %>,
-      formatNoMatches: function(term) {
-        return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
-      },
-      formatSearching: function() {
-        return <%= raw t("agent.search_searching").to_json %>;
-      },
-      formatInputTooShort: function(term, minLength){
-        return <%= raw t("agent.search_placeholder").to_json %>;
-      },
-      ajax: {
-        url: "/agents/search_name.json",
-        dataType: 'json',
-        data: function (term, page) {
-            return {search_phrase: term,
-            };
-        },
-        results: function (data, page) {
-            return {results: data};
-        },
-      },
-      initSelection: function(element, callback) {
-        var id = $(element).val();
-        if (id != "") {
-          $.ajax("/agents/search_name.json?agent_id=" + id, {
-              dataType: "json"
-         }).done(function(data) { callback(data); });
-        }
-      },
+    $(".creator, .contributor, .publisher").select2(agentSlect2options);
+    $("select[name$='[type_id]']").select2(agentTypeSlect2options);
+  });
+
+  /**
+   * select2 選択時の値代入
+   * 
+   */
+  $(document)
+    .on("select2-selecting", ".creator", function(e){
+      var targetId = e.target.id
+      var targetNumber = targetId.match(/_(\d+)_/);
+      if(e.val == parseInt(e.val)){
+          $("#creators_" + targetNumber[1] + "_id").val(e.object.id);
+          $("#creators_" + targetNumber[1] + "_full_name").val(e.object.text);
+          $("#creators_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
+      }
+      else{
+          $("#creators_" + targetNumber[1] + "_id").val('');
+          $("#creators_" + targetNumber[1] + "_full_name").val(e.object.id);
+      }
+    })
+    .on("select2-selecting", ".contributor", function(e){
+      var targetId = e.target.id
+      var targetNumber = targetId.match(/_(\d+)_/);
+      if(e.val == parseInt(e.val)){
+          $("#contributors_" + targetNumber[1] + "_id").val(e.object.id);
+          $("#contributors_" + targetNumber[1] + "_full_name").val(e.object.text);
+          $("#contributors_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
+      }
+      else{
+          $("#contributors_" + targetNumber[1] + "_id").val('');
+          $("#contributors_" + targetNumber[1] + "_full_name").val(e.object.id);
+      }
+    })
+    .on("select2-selecting", ".publisher", function(e){
+      var targetId = e.target.id
+      var targetNumber = targetId.match(/_(\d+)_/);
+      if(e.val == parseInt(e.val)){
+          $("#publishers_" + targetNumber[1] + "_id").val(e.object.id);
+          $("#publishers_" + targetNumber[1] + "_full_name").val(e.object.text);
+          $("#publishers_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
+      }
+      else{
+          $("#publishers_" + targetNumber[1] + "_id").val('');
+          $("#publishers_" + targetNumber[1] + "_full_name").val(e.object.id);
+      }
     });
-    $(".creator, #select2_new_contributor, #select2_new_publisher").select2(agentSlect2options);
-  });
 
-  $(document).on("select2-selecting", ".creator", function(e){
-    var targetId = e.target.id
-    var targetNumber = targetId.match(/_(\d+)_/);
-    if(e.val == parseInt(e.val)){
-        $("#creators_" + targetNumber[1] + "_id").val(e.object.id);
-        $("#creators_" + targetNumber[1] + "_full_name").val(e.object.text);
-        $("#creators_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
-    }
-    else{
-        $("#creators_" + targetNumber[1] + "_id").val('');
-        $("#creators_" + targetNumber[1] + "_full_name").val(e.object.id);
-    }
-  });
-
-  $(document).on("select2-selecting", "#select2_new_contributor", function(e){
-    var attribute_name = e.target.name
-    var attribute_number = attribute_name.match(/\d+/);
-    if(e.val == parseInt(e.val)){
-        $("#contributor_ids_" + attribute_number).val(e.object.id);
-        $("#contributor_full_names_" + attribute_number).val(e.object.text);
-        $("#contributor_full_name_transcriptions_" + attribute_number).val(e.object.full_name_transcription);
-    }
-    else{
-        $("#contributor_ids_" + attribute_number).val("");
-        $("#contributor_full_names_" + attribute_number).val(e.object.text);
-    }
-  });
-  $(document).on("select2-selecting", "#select2_new_publisher", function(e){
-    var attribute_name = e.target.name
-    var attribute_number = attribute_name.match(/\d+/);
-    if(e.val == parseInt(e.val)){
-        $("#publisher_ids_" + attribute_number).val(e.object.id);
-        $("#publisher_full_names_" + attribute_number).val(e.object.text);
-        $("#publisher_full_name_transcriptions_" + attribute_number).val(e.object.full_name_transcription);
-    }
-    else{
-        $("#publisher_ids_" + attribute_number).val("");
-        $("#publisher_full_names_" + attribute_number).val(e.object.text);
-    }
-  });
 
   /**
    * select2 フィールドのファンクション対応(オープン時)
@@ -174,33 +146,17 @@
       });
 
       // contributors
-      $("input[name^='contributor_agent_ids']").each(function(){
+      $("input[name^='contributors']").each(function(){
         if($(this).select2('isFocused') == true){
           if(keyCode == addItemKeyCode){
-            ItemField_contributor.add();
+            ItemFieldContributorSelect2.add();
             return false;
           }
           if(keyCode == removeItemKeyCode){
-            var currentNumber = $(this).attr("name").match(/\d+/);
+            var currentNumber = $(this).attr("id").match(/\d+/);
             if(currentNumber != "0"){
               $(this).select2('close');
-              ItemField_contributor.remove(currentNumber);
-            }
-            return false;
-          }
-        }
-      });
-      $("input[name^='contributor_ids']").each(function(){
-        if($(this).select2('isFocused') == true){
-          if(keyCode == addItemKeyCode){
-            ItemField_contributor_select2.add();
-            return false;
-          }
-          if(keyCode == removeItemKeyCode){
-            var currentNumber = $(this).attr("name").match(/\d+/);
-            if(currentNumber != "0"){
-              $(this).select2('close');
-              ItemField_contributor_select2.remove(currentNumber);
+              ItemFieldContributorSelect2.remove(currentNumber);
             }
             return false;
           }
@@ -208,33 +164,17 @@
       });
 
       // publishers
-      $("input[name^='publisher_agent_ids']").each(function(){
+      $("input[name^='publishers']").each(function(){
         if($(this).select2('isFocused') == true){
           if(keyCode == addItemKeyCode){
-            ItemField_publisher.add();
+            ItemFieldPublisherSelect2.add();
             return false;
           }
           if(keyCode == removeItemKeyCode){
-            var currentNumber = $(this).attr("name").match(/\d+/);
+            var currentNumber = $(this).attr("id").match(/\d+/);
             if(currentNumber != "0"){
               $(this).select2('close');
-              ItemField_publisher.remove(currentNumber);
-            }
-            return false;
-          }
-        }
-      });
-      $("input[name^='publisher_ids']").each(function(){
-        if($(this).select2('isFocused') == true){
-          if(keyCode == addItemKeyCode){
-            ItemField_publisher_select2.add();
-            return false;
-          }
-          if(keyCode == removeItemKeyCode){
-            var currentNumber = $(this).attr("name").match(/\d+/);
-            if(currentNumber != "0"){
-              $(this).select2('close');
-              ItemField_publisher_select2.remove(currentNumber);
+              ItemFieldPublisherSelect2.remove(currentNumber);
             }
             return false;
           }
@@ -276,28 +216,17 @@
       var nextElement = parentElement.nextElementSibling;
       if(keyCode == addItemKeyCode){
         if(nextElement.id.indexOf("creators") != -1) ItemFieldCreatorSelect2.add();
-        if(nextElement.id == "select2_new_creator") ItemField_creator.add();
-        if(nextElement.id == "select2_contributor") ItemField_contributor_select2.add();
-        if(nextElement.id == "select2_new_contributor") ItemField_contributor.add();
-        if(nextElement.id == "select2_publisher") ItemField_publisher_select2.add();
-        if(nextElement.id == "select2_new_publisher") ItemField_publisher.add();
+        if(nextElement.id.indexOf("contributors") != -1) ItemFieldContributorSelect2.add();
+        if(nextElement.id.indexOf("publishers") != -1) ItemFieldPublisherSelect2.add();
         if(nextElement.id.indexOf("subjects") != -1) ItemFieldSubjectSelect2.add();
         return false;
       }
       if(keyCode == removeItemKeyCode){
-        if(nextElement.id.indexOf("add_subjects") != -1){
-          var currentNumber = nextElement.id.match(/\d+/);
-        }
-        else{
-          var currentNumber = nextElement.name.match(/\d+/);
-        }
+        var currentNumber = nextElement.id.match(/\d+/);
         if(currentNumber != "0"){
           if(nextElement.id.indexOf("creators") != -1) ItemFieldCreatorSelect2.remove(currentNumber);
-          if(nextElement.id == "select2_new_creator") ItemField_creator.remove(currentNumber);
-          if(nextElement.id == "select2_contributor") ItemField_contributor_select2.remove(currentNumber);
-          if(nextElement.id == "select2_new_contributor") ItemField_contributor.remove(currentNumber);
-          if(nextElement.id == "select2_publisher") ItemField_publisher_select2.remove(currentNumber);
-          if(nextElement.id == "select2_new_publisher") ItemField_publisher.remove(currentNumber);
+          if(nextElement.id.indexOf("contributors") != -1) ItemFieldContributorSelect2.remove(currentNumber);
+          if(nextElement.id.indexOf("publishers") != -1) ItemFieldPublisherSelect2.remove(currentNumber);
           if(nextElement.id.indexOf("subjects") != -1) ItemFieldSubjectSelect2.remove(currentNumber);
          }
         return false;
@@ -358,7 +287,7 @@
       cloneId.select2(agentSlect2options);
       
       <% if SystemConfiguration.get("use_agent_type") %>
-        var cloneCreatorType = this.cloneFieldWithoutValue('creators_0_create_type_id');
+        var cloneCreatorType = this.cloneFieldWithoutValue('creators_0_type_id');
         newField.append($("<td/>").append(cloneCreatorType));
         cloneCreatorType.select2(agentTypeSlect2options);
       <% end %>
@@ -385,8 +314,119 @@
       removeItemField('CF', div_num);
     }
   }
+
+  /**
+   * 協力者 select2
+   * 
+   */
+  var ItemFieldContributorSelect2 = {
+    currentNumber : <%= raw (@contributors.size).to_json %>,
+    actionTemplate : ''
+      + '<td><%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%></td>'
+      + '<td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(__count__)" -%>',
+    add : function () {
+      var newField = $("<tr/>").attr("id", "RF" + this.currentNumber);
+      
+      var cloneId = this.cloneField('contributors_0_id');
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+
+      <% if SystemConfiguration.get("add_only_exist_agent") %>
+        newField.append($("<td/>").append(cloneId));
+      <% else %>
+        var cloneName = this.cloneField('contributors_0_full_name');
+        var cloneFullNameTranscription = this.cloneField('contributors_0_full_name_transcription');
+        newField.append($("<td/>").append(cloneId).append(cloneName));
+        newField.append($("<td/>").append(cloneFullNameTranscription));
+      <% end %>
+
+      cloneId.select2(agentSlect2options);
+      
+      <% if SystemConfiguration.get("use_agent_type") %>
+        var cloneContributorType = this.cloneFieldWithoutValue('contributors_0_type_id');
+        newField.append($("<td/>").append(cloneContributorType));
+        cloneContributorType.select2(agentTypeSlect2options);
+      <% end %>
+      
+      newField.append(actionButton);
+
+      $("#contributor_field > table > tbody").append(newField);
+
+      this.currentNumber += 1;
+    },
+    cloneField : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+    },
+    cloneFieldWithoutValue : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      });
+    },
+    remove : function (div_num) {
+      removeItemField('RF', div_num);
+    }
+  }
+
+  /**
+   * 出版者 select2
+   * 
+   */
+  var ItemFieldPublisherSelect2 = {
+    currentNumber : <%= raw (@publishers.size).to_json %>,
+    actionTemplate : ''
+      + '<td><%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%></td>'
+      + '<td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(__count__)" -%>',
+    add : function () {
+      var newField = $("<tr/>").attr("id", "PF" + this.currentNumber);
+      
+      var cloneId = this.cloneField('publishers_0_id');
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+
+      <% if SystemConfiguration.get("add_only_exist_agent") %>
+        newField.append($("<td/>").append(cloneId));
+      <% else %>
+        var cloneName = this.cloneField('publishers_0_full_name');
+        var cloneFullNameTranscription = this.cloneField('publishers_0_full_name_transcription');
+        newField.append($("<td/>").append(cloneId).append(cloneName));
+        newField.append($("<td/>").append(cloneFullNameTranscription));
+      <% end %>
+
+      cloneId.select2(agentSlect2options);
+      
+      <% if SystemConfiguration.get("use_agent_type") %>
+        var clonePublisherType = this.cloneFieldWithoutValue('publishers_0_type_id');
+        newField.append($("<td/>").append(clonePublisherType));
+        clonePublisherType.select2(agentTypeSlect2options);
+      <% end %>
+      
+      newField.append(actionButton);
+
+      $("#publisher_field > table > tbody").append(newField);
+
+      this.currentNumber += 1;
+    },
+    cloneField : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+    },
+    cloneFieldWithoutValue : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      });
+    },
+    remove : function (div_num) {
+      removeItemField('PF', div_num);
+    }
+  }
+
 </script>
-<%= @creators.inspect %>
+
 <div class="field" id="creator_field">
   <strong><%= t('agent.creator') %></strong><br />
   <table id="bless">
@@ -406,12 +446,11 @@
         <% end %>
         <% if SystemConfiguration.get("use_agent_type") %>
           <td>
-            <%= select2_script "creators_#{index}_create_type_id" %>
             <%= make_select2(
-              "creators_#{index}_create_type_id", 
-              "creators[][create_type_id]", 
+              "creators_#{index}_type_id", 
+              "creators[][type_id]", 
               @create_types,
-              creator[:create_type_id], 
+              creator[:type_id], 
               250, 
             ) %>
           </td>
@@ -423,427 +462,74 @@
   </table>
 </div>
 
-
-
-<% if SystemConfiguration.get("use_agent_type") %>
-  <select id="select2_contributor_types_hidden" style="display: none;">
-    <%= raw @realize_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
-  </select>
-<% end %>
-<script>
-  var ItemField_contributor = {
-    currentNumber : <%= raw (@add_contributors.blank? ? 1 : @add_contributors.size).to_json %>,
-    itemTemplate : ''
-      + '<td><input type="button" value="+" onClick="ItemField_contributor.add();" /></td>'
-      + '<td><input type="button" value="-" onClick="ItemField_contributor.remove(__count__);" /></td>',
-    add : function () {
-      var $new_field = $("<tr/>").attr("id", "RF" + this.currentNumber);
-
-      var $clone = $('input[name="contributor_agent_ids[0]"]').clone();
-      $clone.attr('name','contributor_agent_ids[' + this.currentNumber + ']');
-      $clone.val('');
-
-      var $contributor_ids_clone = $("#contributor_ids_0").clone();
-      $contributor_ids_clone.attr('id', 'contributor_ids_' + this.currentNumber);
-      $contributor_ids_clone.attr('name', 'contributor_ids[' + this.currentNumber + ']');
-      $contributor_ids_clone.attr('value', "");
-
-      var $contributor_full_names_clone = $("#contributor_full_names_0").clone();
-      $contributor_full_names_clone.attr('id', 'contributor_full_names_' + this.currentNumber);
-      $contributor_full_names_clone.attr('name', 'contributor_full_names[' + this.currentNumber + ']');
-      $contributor_full_names_clone.attr('value', "");
-      
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      $clone.select2(agentSlect2options);
-      $clone_field.append($contributor_ids_clone);
-      $clone_field.append($contributor_full_names_clone);
-      $new_field.append($clone_field);
-
-      var $contributor_full_name_transcriptions_clone = $("#contributor_full_name_transcriptions_0").clone();
-      $contributor_full_name_transcriptions_clone.attr('id', 'contributor_full_name_transcriptions_' + this.currentNumber);
-      $contributor_full_name_transcriptions_clone.attr('name', 'contributor_full_name_transcriptions[' + this.currentNumber + ']');
-      $contributor_full_name_transcriptions_clone.val("");
-      var $contributor_full_name_transcriptions_clone_field = $("<td/>");
-      $contributor_full_name_transcriptions_clone_field.append($contributor_full_name_transcriptions_clone);
-      $new_field.append($contributor_full_name_transcriptions_clone_field);
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        var $contributor_types_clone = $("#contributor_type_ids_0").clone();
-        $contributor_types_clone.attr('id', 'contributor_type_ids_' + this.currentNumber);
-        $contributor_types_clone.attr('name', 'contributor_type_ids[' + this.currentNumber + ']');
-        var $contributor_types_clone_field = $("<td/>");
-        $contributor_types_clone_field.append($contributor_types_clone);
-        $contributor_types_clone.select2(agentTypeSlect2options);
-        $new_field.append($contributor_types_clone_field);
-      <% end %>
-      
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      $new_field.append(newItem);
-      $("#contributor_field > table > tbody").append($new_field);
-      this.currentNumber += 1;
-    },
-    remove : function (div_num) {
-      removeItemField('RF', div_num);
-    }
-  }
-
-  var ItemField_contributor_select2 = {
-    currentNumber : <%= raw (@add_contributors.blank? ? 1 : @add_contributors.size).to_json %>,
-    itemTemplate : ''
-//      <% if SystemConfiguration.get("use_agent_type") %>
-//        + '<td><select id="contributor_type_ids___count__" name="contributor_type_ids[__count__]">'
-//        + <%= raw @realize_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
-//        + '</select></td>'
-//      <% end %>
-      + '<td><input type="button" value="+" onClick="ItemField_contributor_select2.add();" /></td>'
-      + '<td><input type="button" value="-" onClick="ItemField_contributor_select2.remove(__count__);" /></td>',
-    add : function () {
-      var $clone = $("#select2_hidden").clone();
-      $clone[0].id = 'select2_contributor';
-      $clone.show();
-      $clone.attr('name','contributor_ids[' + this.currentNumber + ']');
-      var $contributor_types_clone = $("#select2_contributor_types_hidden").clone();
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        $contributor_types_clone[0].id = 'select2_contributor_types';
-        $contributor_types_clone.show();
-        $contributor_types_clone.attr('name','contributor_type_ids[' + this.currentNumber + ']');
-        var $contributor_types_clone_field = $("<td/>");
-        $contributor_types_clone_field.append($contributor_types_clone);
-      <% end %>
-
-      var $new_field = $("<tr/>").attr("id", "RF" + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      $new_field.append($clone_field);
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        $new_field.append($contributor_types_clone_field);
-      <% end %>
-
-      $new_field.append(newItem);
-      $("#contributor_field > table > tbody").append($new_field);
-      this.currentNumber += 1;
-      $clone.select2({
-        multiple: false,
-        width: "250px",
-        minimumInputLength: 1,
-        placeholder: <%= raw t("agent.search_placeholder").to_json %>,
-        formatNoMatches: function(term) {
-          return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
-        },
-        formatSearching: function() {
-          return <%= raw t("agent.search_searching").to_json %>;
-        },
-        formatInputTooShort: function(term, minLength){
-          return <%= raw t("agent.search_placeholder").to_json %>;
-        },
-        ajax: {
-          url: "/agents/search_name.json",
-          dataType: 'json',
-          data: function (term, page) {
-            return {search_phrase: term,
-            };
-          },
-          results: function (data, page) {
-            return {results: data};
-          },
-        },
-      });
-      <% if SystemConfiguration.get("use_agent_type") %>
-        $contributor_types_clone.select2({
-          width: "250px",
-          matcher: function(term, text, opt) {
-            return text.toUpperCase().indexOf(term.toUpperCase())==0
-                || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-          }
-        });
-      <% end %>
-    },
-    remove : function (div_num) {
-      removeItemField('RF', div_num);
-    }
-  }
-</script>
-
-<div class="field">
+<div class="field" id="contributor_field">
   <strong><%= t('agent.contributor') %></strong><br />
   <table id="bless">
-  <% @realizes.each_with_index do |realize, i| %>
-    <tr>
-    <td><%= link_to realize.agent.full_name, agent_path(realize.agent_id), :target => ["_blank"] -%></td>
-    <% if SystemConfiguration.get("use_agent_type") %>
-      <td>
-        <%#= select_tag "realizes[#{realize.agent_id}]",
-            options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] },
-            :selected => realize.realize_type_id) %>
-        <%= select2_script "realizes_#{ realize.agent_id }" %>
-        <%= make_select2(
-          "realizes_#{ realize.agent_id }", 
-          "realizes[#{ realize.agent_id }]", 
-          @realize_types,
-          realize.realize_type_id, 
-          250, 
-        ) %>
-      </td>
-    <% else %>
-      <%= hidden_field_tag "realizes[#{realize.agent_id}]" %>
+    <% @contributors.each_with_index do |contributor, index| -%>
+      <tr id="RF<%= index %>" >
+        <% if SystemConfiguration.get("add_only_exist_agent") %>
+          <td><%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %></td>
+        <% else %>
+          <td>
+            <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
+            <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
+          </td>
+          <td>
+            <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
+              :id => "contributors_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+          </td>
+        <% end %>
+        <% if SystemConfiguration.get("use_agent_type") %>
+          <td>
+            <%= select2_script "contributors_#{index}_type_id" %>
+            <%= make_select2(
+              "contributors_#{index}_type_id", 
+              "contributors[][type_id]", 
+              @realize_types,
+              contributor[:type_id], 
+              250, 
+            ) %>
+          </td>
+        <% end %>
+        <td><%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" if index > 0 -%></td>
+      </tr>
     <% end %>
-    <td>
-      <%= t('page.destroy') %>
-      <%= check_box_tag 'del_contributor_ids[]', realize.agent_id.to_s, @del_contributors.include?(realize.agent_id.to_s), {} -%>
-    </td>
-    </tr>
-  <% end %>
-  </table>
-</div>
-<div id="contributor_field" class="field">
-  <table id="bless">
-  <% @add_contributors.each_with_index do |contributor, i| %>
-    <tr id="RF<%= i.to_s %>" >
-      <% if SystemConfiguration.get("add_only_exist_agent") %>
-        <td><%= text_field :contributor_ids, i, :id => 'select2_contributor', :value => contributor[:agent_id] %></td>
-      <% else %>
-        <td>
-          <%= text_field_tag "contributor_agent_ids[#{i}]", (@add_contributor_agent_ids.blank? ? nil : @add_contributor_agent_ids[i.to_s]), :id => 'select2_new_contributor', :placeholder => t("activerecord.attributes.agent.full_name") %>
-          <%= hidden_field_tag "contributor_ids[#{i}]", contributor[:agent_id] %>
-          <%= hidden_field_tag "contributor_full_names[#{i}]", contributor[:full_name] %>
-        </td>
-        <td>
-          <%= text_field_tag "contributor_full_name_transcriptions[#{i}]", contributor[:full_name_transcription],
-            :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
-        </td>
-      <% end %>
-      <% if SystemConfiguration.get("use_agent_type") %>
-        <td>
-        <%#= select_tag "contributor_type_ids[#{i}]",
-          options_for_select(@realize_types.collect{ |r| [r.display_name.localize, r.id] }, :selected => contributor[:type_id]) %>
-        <%= select2_script "contributor_type_ids_#{i}" %>
-        <%= make_select2(
-          "contributor_type_ids_#{i}", 
-          "contributor_type_ids[#{i}]", 
-          @realize_types,
-          contributor[:type_id], 
-          250, 
-        ) %>
-        </td>
-      <% end %>
-      <td><%= button_to_function t('page.add_line'), "ItemField_contributor_select2.add()" -%></td>
-      <td><%= button_to_function t('page.del_line'), "ItemField_contributor_select2.remove(#{i})" if i > 0 -%></td>
-    </tr>
-  <% end %>
   </table>
 </div>
 
-<% if SystemConfiguration.get("use_agent_type") %>
-  <select id="select2_publisher_types_hidden" style="display: none;">
-    <%= raw @produce_types.collect{ |r| ["<option alt='" + r.name + "', value='" + r.id.to_s + "'>" + r.display_name.localize + " (" + r.name + ")</option>"] } %>
-  </select>
-<% end %>
-<script>
-  var ItemField_publisher = {
-    currentNumber : <%= raw (@add_publishers.blank? ? 1 : @add_publishers.size).to_json %>,
-    itemTemplate : ''
-      + '<td><input type="button" value="+" onClick="ItemField_publisher.add();" /></td>'
-      + '<td><input type="button" value="-" onClick="ItemField_publisher.remove(__count__);" /></td>',
-    add : function () {
-      var $new_field = $("<tr/>").attr("id", "PF" + this.currentNumber);
-
-      var $clone = $('input[name="publisher_agent_ids[0]"]').clone();
-      $clone.attr('name','publisher_agent_ids[' + this.currentNumber + ']');
-      $clone.val('');
-
-      var $publisher_ids_clone = $("#publisher_ids_0").clone();
-      $publisher_ids_clone.attr('id', 'publisher_ids_' + this.currentNumber);
-      $publisher_ids_clone.attr('name', 'publisher_ids[' + this.currentNumber + ']');
-      $publisher_ids_clone.attr('value', "");
-
-      var $publisher_full_names_clone = $("#publisher_full_names_0").clone();
-      $publisher_full_names_clone.attr('id', 'publisher_full_names_' + this.currentNumber);
-      $publisher_full_names_clone.attr('name', 'publisher_full_names[' + this.currentNumber + ']');
-      $publisher_full_names_clone.attr('value', "");
-      
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      $clone.select2(agentSlect2options);
-      $clone_field.append($publisher_ids_clone);
-      $clone_field.append($publisher_full_names_clone);
-      $new_field.append($clone_field);
-
-      var $publisher_full_name_transcriptions_clone = $("#publisher_full_name_transcriptions_0").clone();
-      $publisher_full_name_transcriptions_clone.attr('id', 'publisher_full_name_transcriptions_' + this.currentNumber);
-      $publisher_full_name_transcriptions_clone.attr('name', 'publisher_full_name_transcriptions[' + this.currentNumber + ']');
-      $publisher_full_name_transcriptions_clone.val("");
-      var $publisher_full_name_transcriptions_clone_field = $("<td/>");
-      $publisher_full_name_transcriptions_clone_field.append($publisher_full_name_transcriptions_clone);
-      $new_field.append($publisher_full_name_transcriptions_clone_field);
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        var $publisher_types_clone = $("#publisher_type_ids_0").clone();
-        $publisher_types_clone.attr('id', 'publisher_type_ids_' + this.currentNumber);
-        $publisher_types_clone.attr('name', 'publisher_type_ids[' + this.currentNumber + ']');
-        var $publisher_types_clone_field = $("<td/>");
-        $publisher_types_clone_field.append($publisher_types_clone);
-        $publisher_types_clone.select2(agentTypeSlect2options);
-        $new_field.append($publisher_types_clone_field);
-      <% end %>
-      
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      $new_field.append(newItem);
-      $("#publisher_field > table > tbody").append($new_field);
-      this.currentNumber += 1;
-    },
-    remove : function (div_num) {
-      removeItemField('PF', div_num);
-    }
-  }
-  var ItemField_publisher_select2 = {
-    currentNumber : <%= raw (@add_publishers.blank? ? 1 : @add_publishers.size).to_json %>,
-    itemTemplate : ''
-//      <% if SystemConfiguration.get("use_agent_type") %>
-//        + '<td><select id="publisher_type_ids___count__" name="publisher_type_ids[__count__]">'
-//        + <%= raw @produce_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.to_json %>
-//        + '</select></td>'
-//      <% end %>
-      + '<td><input type="button" value="+" onClick="ItemField_publisher_select2.add();" /></td>'
-      + '<td><input type="button" value="-" onClick="ItemField_publisher_select2.remove(__count__);" /></td>',
-    add : function () {
-      var $clone = $("#select2_hidden").clone();
-      $clone[0].id = 'select2_publisher';
-      $clone.show();
-      $clone.attr('name','publisher_ids[' + this.currentNumber + ']');
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        var $publisher_types_clone = $("#select2_publisher_types_hidden").clone();
-        $publisher_types_clone[0].id = 'select2_publisher_types';
-        $publisher_types_clone.show();
-        $publisher_types_clone.attr('name','publisher_type_ids[' + this.currentNumber + ']');
-        var $publisher_types_clone_field = $("<td/>");
-        $publisher_types_clone_field.append($publisher_types_clone);
-      <% end %>
-
-      var $new_field = $("<tr/>").attr("id", "PF" + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      $new_field.append($clone_field);
-
-      <% if SystemConfiguration.get("use_agent_type") %>
-        $new_field.append($publisher_types_clone_field);
-      <% end %>
-
-      $new_field.append(newItem);
-      $("#publisher_field > table > tbody").append($new_field);
-      this.currentNumber += 1;
-      $clone.select2({
-        multiple: false,
-        width: "250px",
-        minimumInputLength: 1,
-        placeholder: <%= raw t("agent.search_placeholder").to_json %>,
-        formatNoMatches: function(term) {
-          return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
-        },
-        formatSearching: function() {
-          return <%= raw t("agent.search_searching").to_json %>;
-        },
-        formatInputTooShort: function(term, minLength){
-          return <%= raw t("agent.search_placeholder").to_json %>;
-        },
-        ajax: {
-          url: "/agents/search_name.json",
-          dataType: 'json',
-          data: function (term, page) {
-            return {search_phrase: term,
-            };
-          },
-          results: function (data, page) {
-            return {results: data};
-          },
-        },
-      });
-      <% if SystemConfiguration.get("use_agent_type") %>
-        $publisher_types_clone.select2({
-          width: "250px",
-          matcher: function(term, text, opt) {
-            return text.toUpperCase().indexOf(term.toUpperCase())==0
-                || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-          }
-        });
-      <% end %>
-    },
-    remove : function (div_num) {
-      removeItemField('PF', div_num);
-    }
-  }
-</script>
-
-<div class="field">
+<div class="field" id="publisher_field">
   <strong><%= t('agent.publisher') %></strong><br />
   <table id="bless">
-  <% @produces.each_with_index do |produce, i| %>
-    <tr>
-    <td><%= link_to produce.agent.full_name, agent_path(produce.agent_id), :target => ["_blank"] -%></td>
-    <% if SystemConfiguration.get("use_agent_type") %>
-      <td>
-        <%#= select_tag "produces[#{produce.agent_id}]",
-            options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] },
-            :selected => produce.produce_type_id) %>
-        <%= select2_script "produces_#{produce.agent_id}" %>
-        <%= make_select2(
-          "produces_#{produce.agent_id}", 
-          "produces[#{produce.agent_id}]", 
-          @produce_types,
-          produce.produce_type_id, 
-          250, 
-        ) %>
-      </td>
-    <% else %>
-      <%= hidden_field_tag "produces[#{produce.agent_id}]" %>
+    <% @publishers.each_with_index do |publisher, index| -%>
+      <tr id="PF<%= index %>" >
+        <% if SystemConfiguration.get("add_only_exist_agent") %>
+          <td><%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %></td>
+        <% else %>
+          <td>
+            <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
+            <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
+          </td>
+          <td>
+            <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
+              :id => "publishers_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+          </td>
+        <% end %>
+        <% if SystemConfiguration.get("use_agent_type") %>
+          <td>
+            <%= select2_script "publishers_#{index}_type_id" %>
+            <%= make_select2(
+              "publishers_#{index}_type_id", 
+              "publishers[][type_id]", 
+              @produce_types,
+              publisher[:type_id], 
+              250, 
+            ) %>
+          </td>
+        <% end %>
+        <td><%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" if index > 0 -%></td>
+      </tr>
     <% end %>
-    <td>
-      <%= t('page.destroy') %>
-      <%= check_box_tag 'del_publisher_ids[]', produce.agent_id.to_s, @del_publishers.include?(produce.agent_id.to_s), {} -%>
-    </td>
-    </tr>
-  <% end %>
-  </table>
-</div>
-<div id="publisher_field" class="field">
-  <table id="bless">
-  <% @add_publishers.each_with_index do |publisher, i| %>
-    <tr id="PF<%= i.to_s %>" >
-      <% if SystemConfiguration.get("add_only_exist_agent") %>
-        <td><%= text_field :publisher_ids, i, :id => 'select2_publisher', :value => publisher[:agent_id] %></td>
-      <% else %>
-        <td>
-          <%= text_field_tag "publisher_agent_ids[#{i}]", (@add_publisher_agent_ids.blank? ? nil : @add_publisher_agent_ids[i.to_s]), :id => 'select2_new_publisher', :placeholder => t("activerecord.attributes.agent.full_name") %>
-          <%= hidden_field_tag "publisher_ids[#{i}]", publisher[:agent_id] %>
-          <%= hidden_field_tag "publisher_full_names[#{i}]", publisher[:full_name] %>
-        </td>
-        <td>
-          <%= text_field_tag "publisher_full_name_transcriptions[#{i}]", publisher[:full_name_transcription],
-            :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
-        </td>
-      <% end %>
-      <% if SystemConfiguration.get("use_agent_type") %>
-        <td>
-        <%#= select_tag "publisher_type_ids[#{i}]",
-          options_for_select(@produce_types.collect{ |r| [r.display_name.localize, r.id] }, :selected => publisher[:type_id]) %>
-        <%= select2_script "publisher_type_ids_#{i}" %>
-        <%= make_select2(
-          "publisher_type_ids_#{i}", 
-          "publisher_type_ids[#{i}]", 
-          @produce_types,
-          publisher[:type_id], 
-          250, 
-        ) %>
-        </td>
-      <% end %>
-      <td><%= button_to_function t('page.add_line'), "ItemField_publisher_select2.add()" -%></td>
-      <td><%= button_to_function t('page.del_line'), "ItemField_publisher_select2.remove(#{i})" if i > 0 -%></td>
-    </tr>
-  <% end %>
   </table>
 </div>

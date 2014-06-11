@@ -812,10 +812,10 @@ class ManifestationsController < ApplicationController
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
-      @creates = original_manifestation.creates.order(:position)
-      @realizes = original_manifestation.realizes.order(:position)
-      @produces = original_manifestation.produces.order(:position)
-
+      
+      @creators = original_manifestation.creators.order(:position)
+      @contributors = original_manifestation.contributors.order(:position)
+      @publishers = original_manifestation.publishers.order(:position)
       @subjects = original_manifestation.subjects.order(:position)
 
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
@@ -830,12 +830,14 @@ class ManifestationsController < ApplicationController
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
       #TODO refactoring
-      @creates, @realizes, @produces, @subjects = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.subjects
-    else
-      @subjects = [Subject.new()]
-      @creators = [Agent.new()]
+      @creators, @contributors, @publishers, @subjects = @manifestation.creators, @manifestation.contributors, @manifestation.publishers, @manifestation.subjects
     end
 
+    @creators = get_creator_values(@manifestation)
+    @contributors = get_contributor_values(@manifestation)
+    @publishers = get_publisher_values(@manifestation)
+    @subjects = [Subject.new()] if @subjects.blank?
+    
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
@@ -859,10 +861,10 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @realizes = @manifestation.realizes.order(:position)
-    @produces = @manifestation.produces.order(:position)
     
-    @creators = @manifestation.creators.order(:position).present? ? @manifestation.creators.order(:position) : [Agent.new()]
+    @creators = get_creator_values(@manifestation)
+    @contributors = get_contributor_values(@manifestation)
+    @publishers = get_publisher_values(@manifestation)
     @subjects = @manifestation.subjects.order(:position).present? ? @manifestation.subjects.order(:position) : [Subject.new()]
     
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
@@ -888,7 +890,6 @@ class ManifestationsController < ApplicationController
   # POST /manifestations
   # POST /manifestations.json
   def create
-    set_agent_instance_from_params # Implemented in application_controller.rb
     @manifestation = Manifestation.new(params[:manifestation])
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if @manifestation.respond_to?(:post_to_scribd)
@@ -902,8 +903,10 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = series_statement if  series_statement
     end
 
-    # creators
+    # agents
     @creators = params[:creators]
+    @contributors = params[:contributors]
+    @publishers = params[:publishers]
 
     # subjects
     @subjects = params[:subjects] 
@@ -922,9 +925,10 @@ class ManifestationsController < ApplicationController
           if @manifestation.series_statement and @manifestation.series_statement.periodical
             Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
           end
+
           @manifestation.creates = create_creator_values(@creators)
-          @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-          @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
+          @manifestation.realizes = create_contributor_values(@contributors)
+          @manifestation.produces = create_publisher_values(@publishers)
 
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
@@ -968,10 +972,11 @@ class ManifestationsController < ApplicationController
         end
       end
     end
-    set_agent_instance_from_params # Implemented in application_controller.rb
 
-    # creators
+    # agents
     @creators = params[:creators]
+    @contributors = params[:contributors]
+    @publishers = params[:publishers]
 
     # subjects
     @subjects = params[:subjects]
@@ -986,10 +991,10 @@ class ManifestationsController < ApplicationController
         if @manifestation.series_statement and @manifestation.series_statement.periodical
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
-        #TODO update position to edit agents without destroy
+
         @manifestation.creates = create_creator_values(@creators)
-        @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-        @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
+        @manifestation.realizes = create_contributor_values(@contributors)
+        @manifestation.produces = create_publisher_values(@publishers)
 
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
@@ -1521,33 +1526,6 @@ class ManifestationsController < ApplicationController
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
     end
     @use_licenses = UseLicense.all
-    @creates = [] if @creates.blank?
-    @realizes = [] if @realizes.blank?
-    @produces = [] if @produces.blank?
-    @del_creators = [] if @del_creators.blank?
-    @del_contributors = [] if @del_contributors.blank?
-    @del_publishers = [] if @del_publishers.blank?
-    @add_creators = [{}] if @add_creators.blank?
-    @add_contributors = [{}] if @add_contributors.blank?
-    @add_publishers = [{}] if @add_publishers.blank?
-
-    if params[:creator_agent_ids].blank?
-      @add_creator_agent_ids = []
-    else
-      @add_creator_agent_ids = params[:creator_agent_ids]
-    end
-
-    if params[:contributor_agent_ids].blank?
-      @add_contributor_agent_ids = []
-    else
-      @add_contributor_agent_ids = params[:contributor_agent_ids]
-    end
-
-    if params[:publisher_agent_ids].blank?
-      @add_publisher_agent_ids = []
-    else
-      @add_publisher_agent_ids = params[:publisher_agent_ids]
-    end
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
@@ -1923,6 +1901,63 @@ class ManifestationsController < ApplicationController
   end
 
   # 
+  # get publisher vaules
+  # 
+  def get_publisher_values(manifestation)
+    publishers = []
+    produces = manifestation.produces.order(:position)
+    if produces.present?
+      produces.each do |produce|
+        publishers << {:id => produce.agent.id,
+                       :full_name => produce.agent.full_name,
+                       :full_name_transcription => produce.agent.full_name_transcription,
+                       :type_id => produce.produce_type_id}
+      end
+    else
+      publishers << {}
+    end
+    return publishers
+  end
+
+  # 
+  # get contributor vaules
+  # 
+  def get_contributor_values(manifestation)
+    contributors = []
+    realizes = manifestation.realizes.order(:position)
+    if realizes.present?
+      realizes.each do |realize|
+        contributors << {:id => realize.agent.id,
+                     :full_name => realize.agent.full_name,
+                     :full_name_transcription => realize.agent.full_name_transcription,
+                     :type_id => realize.realize_type_id}
+      end
+    else
+      contributors << {}
+    end
+    return contributors
+  end
+
+  # 
+  # get creator vaules
+  # 
+  def get_creator_values(manifestation)
+    creators = []
+    creates = manifestation.creates.order(:position)
+    if creates.present?
+      creates.each do |create|
+        creators << {:id => create.agent.id,
+                     :full_name => create.agent.full_name,
+                     :full_name_transcription => create.agent.full_name_transcription,
+                     :type_id => create.create_type_id}
+      end
+    else
+      creators << {}
+    end
+    return creators
+  end
+
+  # 
   # create creator vaules
   # 
   def create_creator_values(add_creators)
@@ -1936,7 +1971,7 @@ class ManifestationsController < ApplicationController
           agent.save
           create = Create.new
           create.agent = agent
-          create.create_type_id = add_creator[:create_type_id] if add_creator[:create_type_id].present?
+          create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
           create.save
           creates << create
         end
@@ -1946,11 +1981,73 @@ class ManifestationsController < ApplicationController
         agent.save
         create = Create.new
         create.agent = agent
-        create.create_type_id = add_creator[:create_type_id] if add_creator[:create_type_id].present?
+        create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
         creates << create
       end
     end
     return creates
+  end
+
+  # 
+  # create contributor vaules
+  # 
+  def create_contributor_values(add_contributors)
+    realizes = []
+    add_contributors.each do |add_contributor|
+      next if add_contributor[:id].blank?
+      if add_contributor[:id].to_i != 0
+        agent = Agent.where(:id => add_contributor[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_contributor[:full_name_transcription] if add_contributor[:full_name_transcription].present?
+          agent.save
+          realize = Realize.new
+          realize.agent = agent
+          realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+          realize.save
+          realizes << realize
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
+        agent.save
+        realize = Realize.new
+        realize.agent = agent
+        realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+        realizes << realize
+      end
+    end
+    return realizes
+  end
+
+  # 
+  # create publisher vaules
+  # 
+  def create_publisher_values(add_publishers)
+    produces = []
+    add_publishers.each do |add_publisher|
+      next if add_publisher[:id].blank?
+      if add_publisher[:id].to_i != 0
+        agent = Agent.where(:id => add_publisher[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_publisher[:full_name_transcription] if add_publisher[:full_name_transcription].present?
+          agent.save
+          produce = Produce.new
+          produce.agent = agent
+          produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+          produce.save
+          produces << produce
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
+        agent.save
+        produce = Produce.new
+        produce.agent = agent
+        produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+        produces << produce
+      end
+    end
+    return produces
   end
 
   # 
