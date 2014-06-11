@@ -833,6 +833,7 @@ class ManifestationsController < ApplicationController
       @creates, @realizes, @produces, @subjects = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.subjects
     else
       @subjects = [Subject.new()]
+      @creators = [Agent.new()]
     end
 
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
@@ -858,11 +859,11 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @creates = @manifestation.creates.order(:position)
     @realizes = @manifestation.realizes.order(:position)
     @produces = @manifestation.produces.order(:position)
     
-    @subjects = @manifestation.subjects.order(:position)
+    @creators = @manifestation.creators.order(:position).present? ? @manifestation.creators.order(:position) : [Agent.new()]
+    @subjects = @manifestation.subjects.order(:position).present? ? @manifestation.subjects.order(:position) : [Subject.new()]
     
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
@@ -901,8 +902,11 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = series_statement if  series_statement
     end
 
+    # creators
+    @creators = params[:creators]
+
     # subjects
-    @subjects = params[:subjects]
+    @subjects = params[:subjects] 
     @manifestation.subjects = create_subject_values(@subjects);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
@@ -918,7 +922,7 @@ class ManifestationsController < ApplicationController
           if @manifestation.series_statement and @manifestation.series_statement.periodical
             Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
           end
-          @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
+          @manifestation.creates = create_creator_values(@creators)
           @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
           @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
 
@@ -966,6 +970,9 @@ class ManifestationsController < ApplicationController
     end
     set_agent_instance_from_params # Implemented in application_controller.rb
 
+    # creators
+    @creators = params[:creators]
+
     # subjects
     @subjects = params[:subjects]
     @manifestation.subjects = create_subject_values(@subjects);
@@ -980,7 +987,7 @@ class ManifestationsController < ApplicationController
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
         #TODO update position to edit agents without destroy
-        @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
+        @manifestation.creates = create_creator_values(@creators)
         @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
         @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
 
@@ -1916,6 +1923,37 @@ class ManifestationsController < ApplicationController
   end
 
   # 
+  # create creator vaules
+  # 
+  def create_creator_values(add_creators)
+    creates = []
+    add_creators.each do |add_creator|
+      next if add_creator[:id].blank?
+      if add_creator[:id].to_i != 0
+        agent = Agent.where(:id => add_creator[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
+          agent.save
+          create = Create.new
+          create.agent = agent
+          create.create_type_id = add_creator[:create_type_id] if add_creator[:create_type_id].present?
+          create.save
+          creates << create
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
+        agent.save
+        create = Create.new
+        create.agent = agent
+        create.create_type_id = add_creator[:create_type_id] if add_creator[:create_type_id].present?
+        creates << create
+      end
+    end
+    return creates
+  end
+
+  # 
   # create subject vaules
   # 
   def create_subject_values(add_subjects)
@@ -1924,6 +1962,7 @@ class ManifestationsController < ApplicationController
       next if add_subject[:id].blank?
       if add_subject[:id].to_i != 0
         subject = Subject.where(:id => add_subject[:id]).first
+        subject.term_transcription = add_subject[:term_transcription]
         subjects << subject if subject.present?
       else
         # new record
