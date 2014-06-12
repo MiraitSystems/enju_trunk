@@ -1078,6 +1078,7 @@ class ManifestationsController < ApplicationController
     end.execute!.results
     manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
     return nil unless manifestations.present?
+
     manifestation_urls = []
     manifestations.each do |m|
       str = "#{t('activerecord.attributes.manifestation.identifier')}:"
@@ -1349,6 +1350,10 @@ class ManifestationsController < ApplicationController
     #
     # params['mode']に関係なく設定するフィルタ
     #
+    with << [
+      :shelf_required_role_id, :less_than_or_equal_to,
+      (current_user.try(:role) || Role.default_role).id
+    ]
 
     with << [
       :required_role_id, :less_than_or_equal_to,

@@ -78,10 +78,12 @@ class ShelvesController < ApplicationController
   # GET /shelves/new.json
   def new
     @shelf = Shelf.new
+    @roles = Role.all
   end
 
   # GET /shelves/1/edit
   def edit
+    @roles = Role.all
   end
 
   # POST /shelves

@@ -68,6 +68,9 @@ class Manifestation < ActiveRecord::Base
   }
 
   searchable(SUNSPOT_EAGER_LOADING) do
+    integer :shelf_required_role_id do
+      shelf_required_role_id
+    end
     text :extexts do
       if root_of_series? # 雑誌の場合
         series_manifestations.each do |m|
@@ -564,6 +567,12 @@ class Manifestation < ActiveRecord::Base
   def index
     reload if reload_for_index
     solr_index
+  end
+
+  def shelf_required_role_id 
+    shelf = Shelf.find(:first, :select => "required_role_id")
+    logger.error "########## shelf.required_role_id = #{shelf.required_role_id} ##########"
+    return shelf.required_role_id
   end
 
   def check_rank

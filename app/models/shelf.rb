@@ -1,5 +1,5 @@
 class Shelf < ActiveRecord::Base
-  attr_accessible  :name, :display_name, :note, :library_id, :open_access
+  attr_accessible  :name, :display_name, :note, :library_id, :open_access, :required_role_id
 
   include MasterModel
   self.extend ItemsHelper
