@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :tax_rates
+
+
   resources :sequence_patterns
   resources :publication_statuses
   resources :claim_types
