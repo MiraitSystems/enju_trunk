@@ -1,5 +1,6 @@
 class TaxRatesController < ApplicationController
   before_filter :prepare_options 
+  load_and_authorize_resource
 
   # GET /tax_rates
   # GET /tax_rates.json
@@ -46,8 +47,8 @@ class TaxRatesController < ApplicationController
 
     respond_to do |format|
       if @tax_rate.save
-        format.html { redirect_to @tax_rate, notice: 'Tax rate was successfully created.' }
-        format.json { render json: @tax_rate, status: :created, location: @tax_rate }
+        format.html { redirect_to @tax_rate, :notice => t('controller.successfully_created', :model => t('activerecord.models.tax_rate')) }
+	format.json { render :json => @tax_rate, :status => :created, :location => @tax_rate }
       else
         format.html { render action: "new" }
         format.json { render json: @tax_rate.errors, status: :unprocessable_entity }
@@ -62,8 +63,8 @@ class TaxRatesController < ApplicationController
 
     respond_to do |format|
       if @tax_rate.update_attributes(params[:tax_rate])
-        format.html { redirect_to @tax_rate, notice: 'Tax rate was successfully updated.' }
-        format.json { head :no_content }
+        format.html { redirect_to @tax_rate, :notice => t('controller.successfully_updated', :model => t('activerecord.models.tax_rate')) }
+	format.json { head :no_content }
       else
         format.html { render action: "edit" }
         format.json { render json: @tax_rate.errors, status: :unprocessable_entity }

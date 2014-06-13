@@ -4,8 +4,8 @@ class TaxRate < ActiveRecord::Base
 
   validates_uniqueness_of :name
   validates :name, presence: true
-  validates :rate, presence: true, format: { with: /^[+-]?[0-9]*[\.]?[0-9]+$/ }
-  validates :rate, format: { with: /^[+-]?[0-9]*[\.]?[0-9]+$/ }
+  validates :display_name, presence: true
+  validates :rate, presence: true, format: { with: /\A\d+(\.\d)?\z/ }
   validates :rounding, presence: true
 
   ROUNDING_TYPES = {0 => "切り捨て", 1 => "四捨五入", 2 => "切り上げ"}
