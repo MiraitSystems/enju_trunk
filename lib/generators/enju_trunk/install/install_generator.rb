@@ -33,6 +33,9 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       %w(
         EnjuTrunk
         EnjuEvent
+        EnjuTrunkCirculation
+        EnjuTrunkSubject
+        EnjuTrunkIll
         EnjuManifestationViewer
         JppCustomercodeTransfer
       ).each do |name|
@@ -45,6 +48,9 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
         jpp_customercode_transfer
         enju_event_engine
         enju_trunk_engine
+        enju_trunk_circulation_engine
+        enju_trunk_subject_engine
+        enju_trunk_ill_engine
         enju_manifestation_viewer_engine
      ).each do |name|
         rake "#{name}:install:migrations"
