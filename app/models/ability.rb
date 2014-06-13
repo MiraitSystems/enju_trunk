@@ -183,7 +183,8 @@ class Ability
         Wareki,
         WorkHasSubject,
         WorkHasTitle,
-        LanguageType
+        LanguageType,
+	TaxRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -400,7 +401,8 @@ class Ability
         UserGroup,
         UserGroupHasCheckoutType,
         UserRequestLog,
-        Wareki
+        Wareki,
+	TaxRate
       ]
     when 'User'
       can [:index, :create], Answer
@@ -512,7 +514,8 @@ class Ability
         UserStatus,
         UserGroup,
         Wareki,
-        WorkHasSubject
+        WorkHasSubject,
+	TaxRate
       ]
     else
       can :index, Agent
@@ -567,7 +570,8 @@ class Ability
         UserGroup,
         UserReserveStat,
         Wareki,
-        WorkHasSubject
+        WorkHasSubject,
+        TaxRate
       ]
     end
 

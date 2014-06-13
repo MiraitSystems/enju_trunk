@@ -1,0 +1,44 @@
+<script>
+$(function(){
+  $('#tax_rate_start_date').setCalendar({src:'/assets/calendar.png'});
+  $('#tax_rate_end_date').setCalendar({src:'/assets/calendar.png'});
+});
+</script>
+
+<%= form_for(@tax_rate) do |f| -%>
+  <%= f.error_messages -%>
+
+  <div class="field">
+    <%= f.label :name -%><br />
+    <%= f.text_field :name -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :display_name -%><br />
+    <%= f.text_field :display_name -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :rate -%><br />
+    <%= f.text_field :rate -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :rounding -%><br />
+    <%= f.select :rounding, options_for_select(@rounding_types) -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :start_date -%><br />
+    <%= f.text_field :start_date, :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :end_date -%><br />
+    <%= f.text_field :end_date, :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<%- end -%>

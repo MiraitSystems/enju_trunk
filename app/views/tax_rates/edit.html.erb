@@ -1,0 +1,18 @@
+<script type="text/javascript">
+$(document).ready( function(){
+  $('#tax_rate_name').focus();
+});
+</script>
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.editing', :model => t('activerecord.models.tax_rate')) -%></h1>
+<div id="content_list">
+  <%= render 'form' %>
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.show'), @tax_rate -%></li>
+    <li><%= link_to t('page.back'), tax_rates_path -%></li>
+  </ul>
+</div>

@@ -216,6 +216,7 @@ ja:
       sequence_pattern: 刊行パターン
       catalog: カタログ
       sub_carrier_type: 特定資料種別
+      tax_rate: 消費税
 
     attributes:
       use_license:
@@ -1814,6 +1815,13 @@ ja:
         carrier_type_id: 資料の形態
         note: 注記
         position: 位置
+      tax_rate:
+        name: 名前
+        display_name: 表示名
+        rate: 税率
+        rounding: 端数処理方式
+        start_date: 適用開始日
+        end_date: 適用終了日     
 
   page:
     user_title: "ようこそ %{login_name} さん"
