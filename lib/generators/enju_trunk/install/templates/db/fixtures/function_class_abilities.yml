@@ -101,16 +101,24 @@ function_class_ability_38:
   function_class_id: 3 # User
   function_id: 8
   ability: 1 # can read
+function_calss_ability_311:
+  function_class_id: 3 # User
+  function_id: 11
+  ability: 1 # can read
 
 function_class_ability_44:
-  function_class_id: 4 # Gust(nobody)
+  function_class_id: 4 # Guest(nobody)
   function_id: 4
   ability: 1 # can read
 function_class_ability_45:
-  function_class_id: 4 # Gust(nobody)
+  function_class_id: 4 # Guest(nobody)
   function_id: 5
   ability: 1 # can read
 function_class_ability_48:
-  function_class_id: 4 # Gust(nobody)
+  function_class_id: 4 # Guest(nobody)
   function_id: 8
+  ability: 1 # can read
+function_calss_ability_411:
+  function_class_id: 4 # Guest
+  function_id: 11
   ability: 1 # can read

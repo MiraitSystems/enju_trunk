@@ -1,3 +1,4 @@
+# encoding: utf-8
 class KeywordCount < ActiveRecord::Base
   validates_uniqueness_of :date, :scope => [:keyword]
   attr_accessible :count, :date, :keyword

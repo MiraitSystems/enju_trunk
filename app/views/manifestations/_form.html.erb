@@ -170,7 +170,7 @@ $(document).keydown(function(e) {
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 
-  <%= render 'form_agent_field' %>
+  <%= render 'form_agent_field', :f => f %>
   <div class="field">
     <%= f.label t('page.file') -%><br />
     <%= f.file_field :attachment -%>
