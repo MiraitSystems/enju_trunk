@@ -40,7 +40,8 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :work_has_titles, :reject_if => lambda{|attributes| attributes[:title].blank?}, :allow_destroy => true
   accepts_nested_attributes_for :identifiers, :reject_if => lambda{|attributes| attributes[:body].blank?}, :allow_destroy => true
   accepts_nested_attributes_for :work_has_languages, :allow_destroy => true
-  accepts_nested_attributes_for :subjects, :allow_destroy => true
+#  accepts_nested_attributes_for :subjects, :allow_destroy => true
+  accepts_nested_attributes_for :work_has_subjects, :allow_destroy => true
   
   has_many :orders
 
