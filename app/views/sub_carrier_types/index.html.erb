@@ -22,7 +22,7 @@
               <%= move_position(sub_carrier_type) %>
             <% end %>
           </td>
-          <td><%= link_to sub_carrier_type.carrier_type.display_name.localize, sub_carrier_type if sub_carrier_type.carrier_type %></td>
+          <td><%= link_to sub_carrier_type.carrier_type.display_name.localize, carrier_type_path(sub_carrier_type.carrier_type_id) if sub_carrier_type.carrier_type %></td>
           <td><%= link_to sub_carrier_type.nacsis_identifier, sub_carrier_type %></td>
           <td><%= link_to sub_carrier_type.name, sub_carrier_type %></td>
           <td><%= link_to sub_carrier_type.display_name, sub_carrier_type %></td>
