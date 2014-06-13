@@ -569,10 +569,14 @@ class Manifestation < ActiveRecord::Base
     solr_index
   end
 
-  def shelf_required_role_id 
-    shelf = Shelf.find(:first, :select => "required_role_id")
-    logger.error "########## shelf.required_role_id = #{shelf.required_role_id} ##########"
-    return shelf.required_role_id
+  # def self.shelf_required_role_id(items) 
+  def self.shelf_required_role_id
+    ids = []
+    items.each do |i|
+      shelf = Shelf.find(:first, :conditions => { :id => i.shelf_id }, :select => "required_role_id")
+      ids << shelf.required_role_id
+    end
+    return ids.min
   end
 
   def check_rank

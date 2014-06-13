@@ -559,7 +559,6 @@ class Ability
         RemoveReason,
         SeriesStatement,
         SeriesHasManifestation,
-        Shelf,
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,

@@ -1350,10 +1350,25 @@ class ManifestationsController < ApplicationController
     #
     # params['mode']に関係なく設定するフィルタ
     #
-    with << [
-      :shelf_required_role_id, :less_than_or_equal_to,
-      (current_user.try(:role) || Role.default_role).id
-    ]
+=begin
+    logger.error "######## current_id = #{(current_user.try(:role) || Role.default_role).id} ##########"
+    logger.error "######## current_id = #{(current_user.try(:role) || Role.default_role).id.class.name} ##########"
+    logger.error "----------------------------------------"
+    manifestations = Manifestation.find(:all, :select => "id, original_title")
+    manifestations.each do |m|
+      items = m.items
+      id = Manifestation.shelf_required_role_id(items)
+      logger.error "######## shelf_require_role_id = #{id} ##########"
+      logger.error "######## shelf_require_role_id = #{id.class.name} ##########"
+    end
+=end
+
+    if SystemConfiguration.get('manifestation.search.hide_manifestations_has_not_reading_items')
+      with << [
+        :shelf_required_role_id, :equal_to,
+        (current_user.try(:role) || Role.default_role).id
+      ]
+    end
 
     with << [
       :required_role_id, :less_than_or_equal_to,

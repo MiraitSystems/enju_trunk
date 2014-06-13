@@ -225,8 +225,10 @@
       </table>
     <%# end %>
       <%# - if manifestation.items.on_shelf.exists? -%>
-      <%- if manifestation.items.exists? -%>
-        <%= render 'manifestations/show_holding', :manifestation => manifestation -%>
+      <%- if user_signed_in? -%>
+        <%- if manifestation.items.exists? -%>
+          <%= render 'manifestations/show_holding', :manifestation => manifestation -%>
+        <%- end -%>
       <%- end -%>
     </div>
     <%= render 'manifestations/tab_list', :manifestation => manifestation %>
