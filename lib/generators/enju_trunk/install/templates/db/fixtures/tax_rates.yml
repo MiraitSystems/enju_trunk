@@ -1,0 +1,38 @@
+---
+tax_rate_00001:
+  id: 1
+  name: '00'
+  display_name: '３％'
+  rate: 3.00
+  rounding: 2
+  start_date: 1989-4-1
+  end_date: 1997-3-31
+tax_rate_00002:
+  id: 2
+  name: '01'
+  display_name: '５％'
+  rate: 5.00
+  rounding: 2
+  start_date: 1997-4-1
+  end_date: 2014-3-31
+tax_rate_00003:
+  id: 3
+  name: '02'
+  display_name: '８％'
+  rate: 8.00
+  rounding: 2
+  start_date: 2014-4-1
+  end_date: 2030-3-31
+tax_rate_00098:
+  id: 4
+  name: '98'
+  display_name: '対象外'
+  rate: 0.00
+  rounding: 0
+tax_rate_00099:
+  id: 5
+  name: '99'
+  display_name: '非課税'
+  rate: 0.00
+  rounding: 0
+
