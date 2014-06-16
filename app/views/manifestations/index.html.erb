@@ -220,10 +220,20 @@ $(document).ready(function() {
           <%- else -%>
             <%= link_to t('agent.creator'), params.merge(:sort_by => 'author') -%>
           <%- end -%>
+          <%- if params[:sort_by] == 'publisher' -%>
+            <strong><%= t('agent.publisher') -%></strong>
+          <%- else -%>
+            <%= link_to t('agent.publisher'), params.merge(:sort_by => 'publisher') -%>
+          <%- end -%>
           <%- if params[:sort_by] == 'carrier_type' -%>
             <strong><%= t('activerecord.models.carrier_type') -%></strong>
           <%- else -%>
             <%= link_to t('activerecord.models.carrier_type'), params.merge(:sort_by => 'carrier_type') -%>
+          <%- end -%>
+          <%- if params[:sort_by] == 'manifestation_type' -%>
+            <strong><%= t('activerecord.models.manifestation_type') -%></strong>
+          <%- else -%>
+            <%= link_to t('activerecord.models.manifestation_type'), params.merge(:sort_by => 'manifestation_type') -%>
           <%- end -%>
         </p>
       </div>

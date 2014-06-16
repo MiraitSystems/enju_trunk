@@ -1454,10 +1454,18 @@ class ManifestationsController < ApplicationController
     when 'carrier_type'
       sort[:sort_by] = 'carrier_type'
       sort[:order] = 'desc'
+    when 'manifestation_type'
+      sort[:sort_by] = 'manifestation_type'
+      sort[:order] = 'desc'
     when 'author'
       sort[:sort_by] = 'author'
       sort[:order] = 'asc'
+    when 'publisher'
+      logger.error "######### publisher #########"
+      sort[:sort_by] = 'publisher_transcription'
+      sort[:order] = 'asc'
     else
+      logger.error "######### created_at #########"
       # デフォルトの並び方
       sort[:sort_by] = 'created_at'
       sort[:order] = 'desc'
@@ -1468,6 +1476,8 @@ class ManifestationsController < ApplicationController
     elsif order == 'desc'
       sort[:order] = 'desc'
     end
+    logger.error "######### #{sort[:sort_by]} #########"
+    logger.error "######### #{sort[:order]} #########"
 
     sort
   end
