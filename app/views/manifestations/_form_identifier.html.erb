@@ -1,0 +1,46 @@
+<script>
+  var ItemField_identifier = {
+    itemTemplate : ''
+      + '<input id="manifestation_identifiers_attributes___count___body" name="manifestation[identifiers_attributes][__count__][body]" size="30" type="text" />&#10'
+      + '<select id="manifestation_identifiers_attributes___count___identifier_type_id" name="manifestation[identifiers_attributes][__count__][identifier_type_id]"> '
+      + <%= raw @identifier_types.collect{ |identifier_type| ["<option value='" + identifier_type.id.to_s + "'>" + identifier_type.display_name.localize + "</option>"] }.join().to_json %>
+      + '</select>&#10'
+      + '<input id="manifestation_identifiers_attributes___count___position" name="manifestation[identifiers_attributes][__count__][position]" type="hidden" value=__position__ />'
+      + '<input type="button" value="+" onClick="ItemField_identifier.add();" /> '
+      + '<input type="button" value="-" onClick="ItemField_identifier.remove(__count__);" />',
+    add : function () {
+      var current = $("[id^='identifiers']").length;
+      var field = document.getElementById('identifiers');
+      var new_area = document.createElement("div");
+      new_area.setAttribute("class", "field");
+      new_area.setAttribute("id", "identifiers_" + current);
+      var newItem = this.itemTemplate.replace(/__count__/mg, current).replace(/__position__/mg, current);
+      new_area.innerHTML = newItem;
+      field.appendChild(new_area);
+    },
+    remove : function (currentNumber) {
+      if ( currentNumber == 0) { return; }
+      var field = document.getElementById('identifiers_' + currentNumber);
+      var new_area = document.createElement("input");
+      new_area.setAttribute("type", "hidden");
+      new_area.setAttribute("name", "manifestation[identifiers_attributes][" + currentNumber + "][_destroy]");
+      new_area.setAttribute("value", 1);
+      field.appendChild(new_area);
+      field.style.display = 'none';
+    }
+  }
+</script>
+<div id="identifiers">
+  <%= f.label t('activerecord.models.identifier') -%><br />
+  <% manifestation.identifiers << Identifier.new if manifestation.identifiers.blank? %>
+  <% manifestation.identifiers.each_with_index do |identifier, index| %>
+    <%= f.fields_for :identifiers, identifier do |i_f| %>
+       <div class="field" id="identifiers_<%= index %>">
+         <%= i_f.text_field :body %>
+         <%= i_f.select :identifier_type_id, @identifier_types.collect{|type| [type.display_name, type.id]} %>
+         <%= button_to_function '+', 'ItemField_identifier.add()' -%>
+         <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 -%><br />
+       </div>
+    <% end %>
+  <% end %>
+</div>

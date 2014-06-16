@@ -1,5 +1,7 @@
 = Next-L Enju Leaf公共図書館拡張版
 
+{<img src="https://codeclimate.com/github/MiraitSystems/enju_trunk.png" />}[https://codeclimate.com/github/MiraitSystems/enju_trunk]
+
 Next-L Enju Leaf は、{Project Next-L}[http://www.next-l.jp] で開発している図書館管理システムです。
 公共図書館拡張版は、株式会社三菱総合研究所と株式会社ミライト情報システムによって、公共図書館向けに機能強化したものです。
 

@@ -9,8 +9,7 @@ class Item < ActiveRecord::Base
                   :use_restriction, :manifestation_id, :manifestation,
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
-                  :non_searchable,
-                  :item_has_operators_attributes,
+                  :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id 
 
   self.extend ItemsHelper
@@ -80,10 +79,10 @@ class Item < ActiveRecord::Base
   belongs_to :binder_item, :class_name => 'Item', :foreign_key => 'bookbinder_id'
   has_many :item_has_operators, :dependent => :destroy, :validate => true
   has_many :operators, :through => :item_has_operators, :source => :user
-  accepts_nested_attributes_for :item_has_operators
+  accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
-  accepts_nested_attributes_for :claim
+  accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
@@ -112,16 +111,6 @@ class Item < ActiveRecord::Base
     end
   end
 
-  before_validation :check_destroy_operator
-  def check_destroy_operator
-    item_has_operators.each do |operator|
-      if operator.user_number.blank? || operator.operated_at.blank? || operator.library_id.blank?
-        operator.delete_flg = true
-        operator.destroy 
-      end
-    end
-  end
-
   #enju_union_catalog
   has_paper_trail
 
@@ -142,7 +131,9 @@ class Item < ActiveRecord::Base
     integer :circulation_status_id
     integer :accept_type_id
     integer :retention_period_id
-    integer :manifestation_id
+    integer :manifestation_id do
+      manifestation.try(:id)
+    end
     integer :shelf_id
     integer :agent_ids, :multiple => true
     integer :rank
@@ -489,7 +480,7 @@ class Item < ActiveRecord::Base
       end
       # pdf
       if file_type.nil? || file_type == "pdf"
-        report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'removing_list.tlf') 
+        report = EnjuTrunk.new_report('removing_list.tlf')
         report.events.on :page_create do |e|
           e.page.item(:page).value(e.page.no)
         end
@@ -691,7 +682,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.make_item_register_pdf(pdf_file, items, list_title = nil)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', 'item_register.tlf') 
+    report = EnjuTrunk.new_report('item_register.tlf')
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
     end
@@ -737,7 +728,7 @@ class Item < ActiveRecord::Base
 
   def self.make_audio_list_pdf(pdf_file, items)
     filename = I18n.t('item_register.audio_list')
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/item_list"
+    report = EnjuTrunk.new_item_list('item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -768,7 +759,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_item_list_pdf(items, filename)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/item_list"
+    report = EnjuTrunk.new_book_list('item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -839,7 +830,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_new_item_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/new_item_list"
+    report = EnjuTrunk.new_book_list('new_item_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -920,7 +911,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_removed_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/removed_list"
+    report = EnjuTrunk.new_book_term('removed_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -998,7 +989,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_new_book_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/new_book_list"
+    report = EnjuTrunk.new_report('new_book_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1079,7 +1070,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_series_statements_latest_list_pdf(items)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/series_statements_latest_list"
+    report = EnjuTrunk.new_report('series_statements_latest_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1154,7 +1145,7 @@ class Item < ActiveRecord::Base
 
   def self.make_export_series_statements_list_pdf(items, acquired_at)
     return false if items.blank?
-    report = ThinReports::Report.new :layout => "#{Rails.root.to_s}/report/series_statements_list"
+    report = EnjuTrunk.new_report('series_statements_list')
 
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)
@@ -1259,7 +1250,7 @@ if type == 'title'
   end
 
   def self.make_catalog_pdf(pdf_file, manifestations, list_title = nil)
-    report = ThinReports::Report.new :layout => File.join(Rails.root, 'report', "#{list_title}.tlf")
+    report = EnjuTrunk.new_report("#{list_title}.tlf")
     #report page
     report.events.on :page_create do |e|
       e.page.item(:page).value(e.page.no)

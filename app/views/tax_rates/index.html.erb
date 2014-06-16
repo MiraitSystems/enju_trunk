@@ -1,0 +1,45 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.tax_rate')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.attributes.tax_rate.name') -%></th>
+    <th><%= t('activerecord.attributes.tax_rate.display_name') -%></th>
+    <th><%= t('activerecord.attributes.tax_rate.rate') -%></th>
+    <th><%= t('activerecord.attributes.tax_rate.rounding') -%></th>
+    <th><%= t('activerecord.attributes.tax_rate.start_date') -%></th>
+    <th><%= t('activerecord.attributes.tax_rate.end_date') -%></th>
+    <th>&nbsp;</th>
+  </tr>
+
+<%- @tax_rates.each_with_index do |tax_rate, i| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to tax_rate.name, tax_rate -%> </td>
+    <td><%= tax_rate.display_name -%> </td>
+    <td><%= tax_rate.rate -%></td>
+    <td><%= rounding_type_name(tax_rate.rounding) -%></td>
+    <td><%= tax_rate.start_date -%></td>
+    <td><%= tax_rate.end_date -%></td>
+    <td>
+      <%- if can? :update, tax_rate -%>
+        <%= link_to t('page.edit'), edit_tax_rate_path(tax_rate) -%>
+      <% end %>
+      <%- if can? :destroy, tax_rate -%>
+        <%= link_to t('page.destroy'), tax_rate, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <%- if can? :create, Wareki -%>
+    <ul>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.tax_rate')), new_tax_rate_path -%></li>
+    </ul>
+  <%- end -%>
+</div>

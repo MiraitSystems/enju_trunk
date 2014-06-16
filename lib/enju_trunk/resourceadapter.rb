@@ -1,0 +1,8 @@
+require 'enju_trunk/resourceadapter/base'
+require 'enju_trunk/resourceadapter/dummy_adapter'
+require 'enju_trunk/resourceadapter/excelfile_adapter'
+require 'enju_trunk/resourceadapter/import_article'
+require 'enju_trunk/resourceadapter/import_book'
+require 'enju_trunk/resourceadapter/resource_import'
+require 'enju_trunk/resourceadapter/template_adapter'
+require 'enju_trunk/resourceadapter/tsvfile_adapter'

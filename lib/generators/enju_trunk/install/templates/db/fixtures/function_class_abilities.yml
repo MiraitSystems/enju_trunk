@@ -1,0 +1,124 @@
+---
+function_class_ability_11:
+  function_class_id: 1 # Administrator
+  function_id: 1
+  ability: 3 # can delete
+function_class_ability_12:
+  function_class_id: 1 # Administrator
+  function_id: 2
+  ability: 3 # can delete
+function_class_ability_13:
+  function_class_id: 1 # Administrator
+  function_id: 3
+  ability: 3 # can delete
+function_class_ability_14:
+  function_class_id: 1 # Administrator
+  function_id: 4
+  ability: 3 # can delete
+function_class_ability_15:
+  function_class_id: 1 # Administrator
+  function_id: 5
+  ability: 3 # can delete
+function_class_ability_16:
+  function_class_id: 1 # Administrator
+  function_id: 6
+  ability: 3 # can delete
+function_class_ability_17:
+  function_class_id: 1 # Administrator
+  function_id: 7
+  ability: 3 # can delete
+function_class_ability_18:
+  function_class_id: 1 # Administrator
+  function_id: 8
+  ability: 3 # can delete
+function_class_ability_19:
+  function_class_id: 1 # Administrator
+  function_id: 9
+  ability: 3 # can delete
+function_class_ability_110:
+  function_class_id: 1 # Administrator
+  function_id: 10
+  ability: 3 # can delete
+function_class_ability_111:
+  function_class_id: 1 # Administrator
+  function_id: 11
+  ability: 3 # can delete
+
+function_class_ability_21:
+  function_class_id: 2 # Librarian
+  function_id: 1
+  ability: 3 # can delete
+function_class_ability_22:
+  function_class_id: 2 # Librarian
+  function_id: 2
+  ability: 3 # can delete
+function_class_ability_23:
+  function_class_id: 2 # Librarian
+  function_id: 3
+  ability: 3 # can delete
+function_class_ability_24:
+  function_class_id: 2 # Librarian
+  function_id: 4
+  ability: 3 # can delete
+function_class_ability_25:
+  function_class_id: 2 # Librarian
+  function_id: 5
+  ability: 3 # can delete
+function_class_ability_26:
+  function_class_id: 2 # Librarian
+  function_id: 6
+  ability: 3 # can delete
+function_class_ability_27:
+  function_class_id: 2 # Librarian
+  function_id: 7
+  ability: 3 # can delete
+function_class_ability_28:
+  function_class_id: 2 # Librarian
+  function_id: 8
+  ability: 3 # can delete
+function_class_ability_29:
+  function_class_id: 2 # Librarian
+  function_id: 9
+  ability: 3 # can delete
+function_class_ability_210:
+  function_class_id: 2 # Librarian
+  function_id: 10
+  ability: 3 # can delete
+function_class_ability_211:
+  function_class_id: 2 # Librarian
+  function_id: 11
+  ability: 3 # can delete
+
+function_class_ability_34:
+  function_class_id: 3 # User
+  function_id: 4
+  ability: 1 # can read
+function_class_ability_35:
+  function_class_id: 3 # User
+  function_id: 5
+  ability: 1 # can read
+function_class_ability_38:
+  function_class_id: 3 # User
+  function_id: 8
+  ability: 1 # can read
+function_calss_ability_311:
+  function_class_id: 3 # User
+  function_id: 11
+  ability: 1 # can read
+
+function_class_ability_44:
+  function_class_id: 4 # Guest(nobody)
+  function_id: 4
+  ability: 1 # can read
+function_class_ability_45:
+  function_class_id: 4 # Guest(nobody)
+  function_id: 5
+  ability: 1 # can read
+function_class_ability_48:
+  function_class_id: 4 # Guest(nobody)
+  function_id: 8
+  ability: 1 # can read
+function_calss_ability_411:
+  function_class_id: 4 # Guest
+  function_id: 11
+  ability: 1 # can read

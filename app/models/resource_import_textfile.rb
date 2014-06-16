@@ -1,3 +1,5 @@
+require 'roo'
+
 class ResourceImportTextfile < ActiveRecord::Base
   attr_accessible :adapter_name, :resource_import_text, :extraparams
 

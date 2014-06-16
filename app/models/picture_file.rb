@@ -1,3 +1,5 @@
+require 'file_wrapper'
+
 class PictureFile < ActiveRecord::Base
   attr_accessible :picture_attachable_id, :picture_attachable_type, :picture
 

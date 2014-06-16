@@ -1,0 +1,5 @@
+Description:
+    Install enju_trunk files
+
+Example:
+    rails generate enju_trunk:install

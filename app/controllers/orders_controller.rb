@@ -499,7 +499,7 @@ class OrdersController < ApplicationController
     @orders.each do |order|
       if order.order_form && order.order_form.v == '1'
         @new_order = order.dup
-        @new_order.set_probisional_identifier(Date.today.year.to_i + 1)
+        @new_order.order_identifier = Order.set_order_identifier
         @new_order.ordered_at = Date.new((Date.today + 1.years).year, order.ordered_at.month, order.ordered_at.day)
         @new_order.order_year = Date.today.year.to_i + 1
         @new_order.paid_flag = 0

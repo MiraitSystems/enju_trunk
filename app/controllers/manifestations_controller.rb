@@ -238,8 +238,12 @@ class ManifestationsController < ApplicationController
       end
 
       def setup_facet!
-        @search[:all].build do
-          facet_fields.each {|f| facet f }
+        [:all, :book].each do |key| 
+          if @search[key]
+            @search[key].build do
+              facet_fields.each {|f| facet f }
+            end
+          end
         end
       end
 
@@ -348,7 +352,7 @@ class ManifestationsController < ApplicationController
         search.data_accessor_for(Manifestation).select = [
           :id, :original_title, :title_transcription, :required_role_id,
           :manifestation_type_id, :carrier_type_id, :access_address,
-          :volume_number_string, :issue_number_string, :serial_number_string,
+          :volume_number_string, :issue_number_string, :serial_number_string, :serial_number,
           :date_of_publication, :pub_date, :periodical_master,
           :carrier_type_id, :created_at, :note, :missing_issue, :article_title,
           :start_page, :end_page, :exinfo_1, :exinfo_6, :identifier
@@ -596,7 +600,9 @@ class ManifestationsController < ApplicationController
       @count[:query_result] = sum
       @collation = search_all_result.collation if @count[:query_result] == 0
 
-      save_search_history(@solr_query, @manifestations.limit_value, @count[:query_result], current_user)
+      if current_user.nil? or !current_user.has_role?('Librarian') 
+        save_search_history(@solr_query, @manifestations.limit_value, @count[:query_result], current_user)
+      end
 
       if @manifestations_all.blank?
         # 分割表示していない場合
@@ -735,6 +741,20 @@ class ManifestationsController < ApplicationController
       @reserve = current_user.reserves.where(:manifestation_id => @manifestation.id).last if user_signed_in?
     end
 
+    store_location
+
+    if @manifestation.attachment.path
+      if Setting.uploaded_file.storage == :s3
+        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
+      else
+        file = @manifestation.attachment.path
+      end
+    end
+
+    if @manifestation.bookbinder
+      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
+    end
+
     if @manifestation.periodical_master?
       if params[:opac]
         redirect_to series_statement_manifestations_url(@manifestation.series_statement, :opac => true)
@@ -751,19 +771,6 @@ class ManifestationsController < ApplicationController
       return
     end
 
-    store_location
-
-    if @manifestation.attachment.path
-      if Setting.uploaded_file.storage == :s3
-        data = open(@manifestation.attachment.url) {|io| io.read }.force_encoding('UTF-8')
-      else
-        file = @manifestation.attachment.path
-      end
-    end
-
-    if @manifestation.bookbinder
-      @binder = @manifestation.items.where(:bookbinder => true).first rescue nil
-    end
 
     respond_to do |format|
       format.html { render :template => 'opac/manifestations/show', :layout => 'opac' } if params[:opac]
@@ -802,21 +809,18 @@ class ManifestationsController < ApplicationController
   def new
     @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects if defined?(EnjuTrunkTheme)
-    @work_has_languages = []
-    @manifestation_has_classifications = []
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
-      @creates = original_manifestation.creates.order(:position)
-      @realizes = original_manifestation.realizes.order(:position)
-      @produces = original_manifestation.produces.order(:position)
-      @subject = original_manifestation.subjects.collect(&:term).join(';')
-      @subject_transcription = original_manifestation.subjects.collect(&:term_transcription).join(';')
+      
+      @creators = original_manifestation.creators.order(:position)
+      @contributors = original_manifestation.contributors.order(:position)
+      @publishers = original_manifestation.publishers.order(:position)
+      @subjects = original_manifestation.subjects.order(:position)
+
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
-      @work_has_languages = original_manifestation.work_has_languages
-      @manifestation_has_classifications = original_manifestation.manifestation_has_classifications
       if original_manifestation.manifestation_exinfos
         original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") }
       end
@@ -826,13 +830,17 @@ class ManifestationsController < ApplicationController
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
       #TODO refactoring
-      @creates, @realizes, @produces, @work_has_languages = @manifestation.creates, @manifestation.realizes, @manifestation.produces, @manifestation.work_has_languages
+      @creators, @contributors, @publishers, @subjects = @manifestation.creators, @manifestation.contributors, @manifestation.publishers, @manifestation.subjects
     end
 
+    @creators = get_creator_values(@manifestation)
+    @contributors = get_contributor_values(@manifestation)
+    @publishers = get_publisher_values(@manifestation)
+    @subjects = [Subject.new()] if @subjects.blank?
+    
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
-    @manifestation.identifiers << Identifier.new
 
     if SystemConfiguration.get("manifestation.has_one_item") == true
       @manifestation.items.build
@@ -853,13 +861,12 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    @work_has_languages = @manifestation.work_has_languages
-    @manifestation_has_classifications = @manifestation.classifications
-    @creates = @manifestation.creates.order(:position)
-    @realizes = @manifestation.realizes.order(:position)
-    @produces = @manifestation.produces.order(:position)
-    @subject = @manifestation.subjects.collect(&:term).join(';')
-    @subject_transcription = @manifestation.subjects.collect(&:term_transcription).join(';')
+    
+    @creators = get_creator_values(@manifestation)
+    @contributors = get_contributor_values(@manifestation)
+    @publishers = get_publisher_values(@manifestation)
+    @subjects = @manifestation.subjects.order(:position).present? ? @manifestation.subjects.order(:position) : [Subject.new()]
+    
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
     if defined?(EnjuBookmark)
@@ -883,7 +890,6 @@ class ManifestationsController < ApplicationController
   # POST /manifestations
   # POST /manifestations.json
   def create
-    set_agent_instance_from_params # Implemented in application_controller.rb
     @manifestation = Manifestation.new(params[:manifestation])
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if @manifestation.respond_to?(:post_to_scribd)
@@ -896,20 +902,19 @@ class ManifestationsController < ApplicationController
       series_statement = SeriesStatement.find(params[:manifestation][:series_statement_id])
       @manifestation.series_statement = series_statement if  series_statement
     end
-    @subject = params[:manifestation][:subject]
-    @subject_transcription = params[:manifestation][:subject_transcription]
+
+    # agents
+    @creators = params[:creators]
+    @contributors = params[:contributors]
+    @publishers = params[:publishers]
+
+    # subjects
+    @subjects = params[:subjects] 
+    @manifestation.subjects = create_subject_values(@subjects);
+
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
-    @manifestation_has_classifications = ManifestationHasClassification.create_attrs(params[:classification_id].try(:values), params[:classification_type].try(:values))
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
-      end
-    end
 
     respond_to do |format|
       if @manifestation.save
@@ -920,13 +925,12 @@ class ManifestationsController < ApplicationController
           if @manifestation.series_statement and @manifestation.series_statement.periodical
             Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
           end
-          @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
-          @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-          @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-          @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription) unless @subject.blank?
+
+          @manifestation.creates = create_creator_values(@creators)
+          @manifestation.realizes = create_contributor_values(@contributors)
+          @manifestation.produces = create_publisher_values(@publishers)
+
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
-          @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
-          @manifestation.classifications = ManifestationHasClassification.new_objs(@manifestaion_has_classifications.uniq)
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
           @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
@@ -954,40 +958,48 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
-    set_agent_instance_from_params # Implemented in application_controller.rb
-    @subject = params[:manifestation][:subject]
-    @subject_transcription = params[:manifestation][:subject_transcription]
-    @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    @work_has_languages = WorkHasLanguage.create_attrs(params[:language_id].try(:values), params[:language_type].try(:values))
-    @manifestation_has_classifications = ManifestationHasClassification.create_attrs(params[:classification_id].try(:values), params[:classification_type].try(:values))
-    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-
-    if SystemConfiguration.get('manifestation.use_titles')
-      titles = params[:manifestation][:work_has_titles_attributes]
-      titles.each do |key, value|
-        @manifestation.set_title(key,params["work_has_titles_attributes_#{key}_title_str"])
+    if params[:manifestation][:work_has_titles_attributes]
+      params[:manifestation][:work_has_titles_attributes].each do |key, title_attributes|
+        if title_attributes[:title].blank? && title_attributes[:title_transcription].blank? && title_attributes[:title_alternative].blank?
+          params[:manifestation][:work_has_titles_attributes]["#{key}"][:_destroy] = 1
+        end
       end
     end
+    if params[:manifestation][:identifiers_attributes]
+      params[:manifestation][:identifiers_attributes].each do |key, identifier_attributes|
+        if identifier_attributes[:body].blank?
+          params[:manifestation][:identifiers_attributes]["#{key}"][:_destroy] = 1
+        end
+      end
+    end
+
+    # agents
+    @creators = params[:creators]
+    @contributors = params[:contributors]
+    @publishers = params[:publishers]
+
+    # subjects
+    @subjects = params[:subjects]
+    @manifestation.subjects = create_subject_values(@subjects);
+    
+    @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
+    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
         if @manifestation.series_statement and @manifestation.series_statement.periodical
           Manifestation.find(@manifestation.series_statement.root_manifestation_id).index
         end
-        #TODO update position to edit agents without destroy
-        @manifestation.creates = Create.new_from_instance(@creates, @del_creators, @add_creators)
-        @manifestation.realizes = Realize.new_from_instance(@realizes, @del_contributors, @add_contributors)
-        @manifestation.produces = Produce.new_from_instance(@produces, @del_publishers, @add_publishers)
-        @manifestation.subjects = Subject.import_subjects(@subject, @subject_transcription)
+
+        @manifestation.creates = create_creator_values(@creators)
+        @manifestation.realizes = create_contributor_values(@contributors)
+        @manifestation.produces = create_publisher_values(@publishers)
+
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
         end
-        @manifestation.work_has_languages.destroy_all;
-        @manifestation.classifications.destroy_all;
-        @manifestation.work_has_languages = WorkHasLanguage.new_objs(@work_has_languages.uniq)
-        @manifestation.classifications = ManifestationHasClassification.new_objs(@manifestation_has_classifications.uniq)
         if params[:exinfos]
           @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
         end
@@ -1492,6 +1504,7 @@ class ManifestationsController < ApplicationController
 
   def prepare_options
     @carrier_types = CarrierType.all
+    @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.all
     @roles = Role.all
     @languages = Language.all_cache
@@ -1506,25 +1519,15 @@ class ManifestationsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+#TODO starts
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @manifestation.work_has_titles
+#TODO end
     @numberings = Numbering.get_manifestation_numbering
     if SystemConfiguration.get('manifestation.use_identifiers')
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
-      @manifestation.identifiers << Identifier.new if @manifestation.identifiers.blank?
-    else
-      @identifier_types = []
     end
     @use_licenses = UseLicense.all
-    @creates = [] if @creates.blank?
-    @realizes = [] if @realizes.blank?
-    @produces = [] if @produces.blank?
-    @del_creators = [] if @del_creators.blank?
-    @del_contributors = [] if @del_contributors.blank?
-    @del_publishers = [] if @del_publishers.blank?
-    @add_creators = [{}] if @add_creators.blank?
-    @add_contributors = [{}] if @add_contributors.blank?
-    @add_publishers = [{}] if @add_publishers.blank?
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
@@ -1560,18 +1563,8 @@ class ManifestationsController < ApplicationController
       @use_restriction_id = @item.use_restriction.present? ? @item.use_restriction.id : nil
       if SystemConfiguration.get('manifestation.use_item_has_operator')
         @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", @item])
-        if @countoperators == 0
-          operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @library)
-          operator.user_number = ""
-          @item.item_has_operators << operator
-          @countoperators = 1
-        end
-      end
-      if @item.item_has_operators.present?
-        @item.item_has_operators.each do |item_has_operator|
-          unless item_has_operator.user.blank?
-            item_has_operator.user_number = item_has_operator.user.user_number
-          end
+        if @item.item_has_operators.blank?
+          @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @library)
         end
       end
     end
@@ -1909,4 +1902,177 @@ class ManifestationsController < ApplicationController
     true
   end
 
+  # 
+  # get publisher vaules
+  # 
+  def get_publisher_values(manifestation)
+    publishers = []
+    produces = manifestation.produces.order(:position)
+    if produces.present?
+      produces.each do |produce|
+        publishers << {:id => produce.agent.id,
+                       :full_name => produce.agent.full_name,
+                       :full_name_transcription => produce.agent.full_name_transcription,
+                       :type_id => produce.produce_type_id}
+      end
+    else
+      publishers << {}
+    end
+    return publishers
+  end
+
+  # 
+  # get contributor vaules
+  # 
+  def get_contributor_values(manifestation)
+    contributors = []
+    realizes = manifestation.realizes.order(:position)
+    if realizes.present?
+      realizes.each do |realize|
+        contributors << {:id => realize.agent.id,
+                     :full_name => realize.agent.full_name,
+                     :full_name_transcription => realize.agent.full_name_transcription,
+                     :type_id => realize.realize_type_id}
+      end
+    else
+      contributors << {}
+    end
+    return contributors
+  end
+
+  # 
+  # get creator vaules
+  # 
+  def get_creator_values(manifestation)
+    creators = []
+    creates = manifestation.creates.order(:position)
+    if creates.present?
+      creates.each do |create|
+        creators << {:id => create.agent.id,
+                     :full_name => create.agent.full_name,
+                     :full_name_transcription => create.agent.full_name_transcription,
+                     :type_id => create.create_type_id}
+      end
+    else
+      creators << {}
+    end
+    return creators
+  end
+
+  # 
+  # create creator vaules
+  # 
+  def create_creator_values(add_creators)
+    creates = []
+    add_creators.each do |add_creator|
+      next if add_creator[:id].blank?
+      if add_creator[:id].to_i != 0
+        agent = Agent.where(:id => add_creator[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
+          agent.save
+          create = Create.new
+          create.agent = agent
+          create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
+          create.save
+          creates << create
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
+        agent.save
+        create = Create.new
+        create.agent = agent
+        create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
+        creates << create
+      end
+    end
+    return creates
+  end
+
+  # 
+  # create contributor vaules
+  # 
+  def create_contributor_values(add_contributors)
+    realizes = []
+    add_contributors.each do |add_contributor|
+      next if add_contributor[:id].blank?
+      if add_contributor[:id].to_i != 0
+        agent = Agent.where(:id => add_contributor[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_contributor[:full_name_transcription] if add_contributor[:full_name_transcription].present?
+          agent.save
+          realize = Realize.new
+          realize.agent = agent
+          realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+          realize.save
+          realizes << realize
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
+        agent.save
+        realize = Realize.new
+        realize.agent = agent
+        realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+        realizes << realize
+      end
+    end
+    return realizes
+  end
+
+  # 
+  # create publisher vaules
+  # 
+  def create_publisher_values(add_publishers)
+    produces = []
+    add_publishers.each do |add_publisher|
+      next if add_publisher[:id].blank?
+      if add_publisher[:id].to_i != 0
+        agent = Agent.where(:id => add_publisher[:id]).first
+        if agent.present?
+          agent.full_name_transcription = add_publisher[:full_name_transcription] if add_publisher[:full_name_transcription].present?
+          agent.save
+          produce = Produce.new
+          produce.agent = agent
+          produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+          produce.save
+          produces << produce
+        end
+      else
+        # new record
+        agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
+        agent.save
+        produce = Produce.new
+        produce.agent = agent
+        produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+        produces << produce
+      end
+    end
+    return produces
+  end
+
+  # 
+  # create subject vaules
+  # 
+  def create_subject_values(add_subjects)
+    subjects = []
+    add_subjects.each do |add_subject|
+      next if add_subject[:id].blank?
+      if add_subject[:id].to_i != 0
+        subject = Subject.where(:id => add_subject[:id]).first
+        subject.term_transcription = add_subject[:term_transcription]
+        subjects << subject if subject.present?
+      else
+        # new record
+        subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription])
+        subject.subject_type_id = 1
+        subject.required_role = Role.where(:name => 'Guest').first
+        subjects << subject
+      end
+    end
+    return subjects
+  end
+
 end
+

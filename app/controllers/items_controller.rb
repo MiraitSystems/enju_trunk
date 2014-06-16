@@ -10,7 +10,6 @@ class ItemsController < ApplicationController
   before_filter :get_agent, :get_manifestation
   helper_method :get_shelf
   helper_method :get_library
-  before_filter :prepare_options, :only => [:new, :edit]
   before_filter :get_version, :only => [:show]
   before_filter :check_status, :only => [:edit]
   #before_filter :store_location
@@ -137,11 +136,7 @@ class ItemsController < ApplicationController
       @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
-
-    if SystemConfiguration.get('manifestation.use_item_has_operator')
-      @countoperators = 1
-      @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
-    end
+    prepare_options
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @item }
@@ -152,25 +147,12 @@ class ItemsController < ApplicationController
   def edit
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
-
-    if SystemConfiguration.get('manifestation.use_item_has_operator')
-      @countoperators = ItemHasOperator.count(:conditions => ["item_id = ?", params[:id]])
-      if @countoperators == 0
-        operator = ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
-        operator.user_number = ""
-        @item.item_has_operators << operator
-        @countoperators = 1
-      end
-    end
-
+    prepare_options
   end
 
   # POST /items
   # POST /items.json
   def create
-    if params[:item][:claim_attributes]
-      params[:item].delete("claim_attributes") if params[:item][:claim_attributes][:claim_type_id].blank?
-    end
     @item = Item.new(params[:item])
 
     @manifestation = Manifestation.find(@item.manifestation_id)
@@ -214,10 +196,15 @@ class ItemsController < ApplicationController
   # PUT /items/1.json
   def update
     if params[:item][:claim_attributes]
-      if params[:item][:claim_attributes][:claim_type_id].blank?
-        params[:item].delete("claim_attributes")
-        @item.claim.destroy unless @item.claim_id.blank? && @item.claim.blank?
-        @item.claim_id = nil unless @item.claim_id.blank?
+      if params[:item][:claim_attributes][:claim_type_id].blank? && params[:item][:claim_attributes][:note].blank?
+        params[:item][:claim_attributes][:_destroy] = 1
+      end
+    end
+    if params[:item][:item_has_operators_attributes]
+      params[:item][:item_has_operators_attributes].each do |key, operator_attributes|
+        if operator_attributes[:username].blank? && operator_attributes[:note].blank?
+          params[:item][:item_has_operators_attributes]["#{key}"][:_destroy] = 1
+        end
       end
     end
 
@@ -237,9 +224,6 @@ class ItemsController < ApplicationController
         format.html { redirect_to @item }
         format.json { head :no_content }
       else
-        if SystemConfiguration.get('manifestation.use_item_has_operator')
-          @countoperators = @item.item_has_operators.size
-        end
         prepare_options
         unless params[:item][:remove_reason_id]
           format.html { render :action => "edit" }
@@ -360,6 +344,11 @@ class ItemsController < ApplicationController
       @shelves = @library.shelves
     end
     @claim_types = ClaimType.all
+    if SystemConfiguration.get('manifestation.use_item_has_operator')
+      if @item.item_has_operators.blank?
+        @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
+      end
+    end
   end
 
   def check_status

@@ -211,6 +211,8 @@ en:
       output_column_list: Setting of output column
       publication_status: Publication status
       sequence_pattern: Sequence Pattern
+      catalog: Catalog
+      sub_carrier_type: Sub Carrier Type
 
     attributes:
       use_license:
@@ -894,6 +896,7 @@ en:
         repository_content: Repository content
         lock_version: Lock version
         carrier_type: Manifestation form
+        sub_carrier_type: Sub Carrier Type
         language: Language
         lccn: LCCN
         issn: ISSN
@@ -950,6 +953,14 @@ en:
         manifestation_identifier: manifestation_identifier
         titles: Titles
         use_license_id: UseLicense
+        nacsis_identifier: NACSIS ID
+      manifestation/identifiers:
+        body: Other identifier
+        identifier_type_id: Other identifier type
+      manifestation/items/claim:
+        claim_type_id: Claim type
+      manifestatioin/items/item_has_operators:
+        user: User
       user_group:
         name: Name
         display_name: Display name
@@ -1603,6 +1614,20 @@ en:
         budget_type: Budget type
         amount: Amount
         note: Note
+        name: Name
+        user_id: Executor
+        budget_class: Budget Class
+        budget_classes:
+          usual: Usual
+          revised: Revised
+          provisional: Provisional
+        start_date: Start date
+        end_date: End date
+        transferred: Carried over
+        actual: Actual
+        implementation: Implementation
+        estimated_implementation: Estimated
+        remaining: Remaining
       budget_type:
         id: ID
         name: Name
@@ -1789,6 +1814,18 @@ en:
         volume_param: Volume Number Param
         issue_param: Issue Number Param
         sequence_type: Issue Number Type
+      catalog:
+        display_name: Display name
+        name: Name
+        nacsis_identifier: NCID
+        note: Note
+      sub_carrier_type:
+        name: Name
+        display_name: Display name
+        nacsis_identifier: NCID
+        carrier_type_id: Carrier Type
+        note: Note
+        position: Position
 
   page:
     user_title: Welcome %{login_name}
@@ -1966,7 +2003,6 @@ en:
     output_layout: Output layout
     output_request: Request
     output_label: Label
-    output_list: Output template list
     output_select_all: Select all
     output_cansel_all: Cancel all
     batch_change: "Batch Change"
@@ -3029,7 +3065,7 @@ en:
   budget:
     yen: '%{amount} yen'
     yent: yen
-    sum: Total budget(include supplementary)
+    sum: Total budget(supplementary)
     balance: Balance
     all_budgets: All budgets
     all_libraries: All libraries
@@ -3043,6 +3079,8 @@ en:
   expense:
     yen: ! '%{price} yen'
     export: Export 
+    export_excelx: Excel(2007 and more)
+    export_csv: CSV
     export_tsv: TSV
     export_pdf: PDF
     term: Term to calcurate

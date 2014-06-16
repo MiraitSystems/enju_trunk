@@ -1,0 +1,960 @@
+sub_carrier_type_0001:
+  id: 1
+  name: 'other'
+  display_name: '下記のいずれでもないもの'
+  carrier_type_id: '1'
+  nacsis_identifier: ''
+  note: ''
+  position: 1
+sub_carrier_type_0002:
+  id: 2
+  name: 'largeprint'
+  display_name: '大活字本'
+  carrier_type_id: '1'
+  nacsis_identifier: 'l'
+  note: ''
+  position: 2
+sub_carrier_type_0003:
+  id: 3
+  name: 'tactil'
+  display_name: '触知資料'
+  carrier_type_id: '1'
+  nacsis_identifier: 't'
+  note: ''
+  position: 3
+sub_carrier_type_0004:
+  id: 4
+  name: 'celestial globe'
+  display_name: '天体儀'
+  carrier_type_id: '2'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 4
+sub_carrier_type_0005:
+  id: 5
+  name: 'planetary or lunar globe'
+  display_name: '惑星儀 / 月球儀'
+  carrier_type_id: '2'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 5
+sub_carrier_type_0006:
+  id: 6
+  name: 'terrestrial globe'
+  display_name: '地球儀'
+  carrier_type_id: '2'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 6
+sub_carrier_type_0007:
+  id: 7
+  name: 'diagram'
+  display_name: 'ダイアグラム'
+  carrier_type_id: '2'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 7
+sub_carrier_type_0008:
+  id: 8
+  name: 'map'
+  display_name: '地図'
+  carrier_type_id: '2'
+  nacsis_identifier: 'j'
+  note: ''
+  position: 8
+sub_carrier_type_0009:
+  id: 9
+  name: 'profile'
+  display_name: '側面図'
+  carrier_type_id: '2'
+  nacsis_identifier: 'k'
+  note: ''
+  position: 9
+sub_carrier_type_0010:
+  id: 10
+  name: 'model'
+  display_name: '模型'
+  carrier_type_id: '2'
+  nacsis_identifier: 'q'
+  note: ''
+  position: 10
+sub_carrier_type_0011:
+  id: 11
+  name: 'remote-sensing image'
+  display_name: 'リモート・センシング画像'
+  carrier_type_id: '2'
+  nacsis_identifier: 'r'
+  note: ''
+  position: 11
+sub_carrier_type_0012:
+  id: 12
+  name: 'section'
+  display_name: '断面図'
+  carrier_type_id: '2'
+  nacsis_identifier: 's'
+  note: ''
+  position: 12
+sub_carrier_type_0013:
+  id: 13
+  name: 'view'
+  display_name: '景観図'
+  carrier_type_id: '2'
+  nacsis_identifier: 'y'
+  note: ''
+  position: 13
+sub_carrier_type_0014:
+  id: 14
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '2'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 14
+sub_carrier_type_0015:
+  id: 15
+  name: 'unknown'
+  display_name: 'なし'
+  carrier_type_id: '3'
+  nacsis_identifier: ''
+  note: ''
+  position: 15
+sub_carrier_type_0016:
+  id: 16
+  name: 'full score'
+  display_name: 'スコア'
+  carrier_type_id: '4'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 16
+sub_carrier_type_0017:
+  id: 17
+  name: 'full score, miniature or study size'
+  display_name: 'ミニチュアスコア'
+  carrier_type_id: '4'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 17
+sub_carrier_type_0018:
+  id: 18
+  name: 'accompaniment reduced for keyboard'
+  display_name: '鍵盤楽器伴奏譜'
+  carrier_type_id: '4'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 18
+sub_carrier_type_0019:
+  id: 19
+  name: 'voice score'
+  display_name: 'ヴォイススコア'
+  carrier_type_id: '4'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 19
+sub_carrier_type_0020:
+  id: 20
+  name: 'condensed score or piano-conductor score'
+  display_name: 'コンデンススコア / ピアノコンダクタースコア'
+  carrier_type_id: '4'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 20
+sub_carrier_type_0021:
+  id: 21
+  name: 'close score'
+  display_name: 'クローススコア'
+  carrier_type_id: '4'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 21
+sub_carrier_type_0022:
+  id: 22
+  name: 'japanese'
+  display_name: '邦楽譜'
+  carrier_type_id: '4'
+  nacsis_identifier: 'h'
+  note: ''
+  position: 22
+sub_carrier_type_0023:
+  id: 23
+  name: 'multiple score format'
+  display_name: '複合形態の楽譜'
+  carrier_type_id: '4'
+  nacsis_identifier: 'm'
+  note: ''
+  position: 23
+sub_carrier_type_0024:
+  id: 24
+  name: 'unknown'
+  display_name: '不明'
+  carrier_type_id: '4'
+  nacsis_identifier: 'u'
+  note: ''
+  position: 24
+sub_carrier_type_0025:
+  id: 25
+  name: 'other than score format'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '4'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 25
+sub_carrier_type_0026:
+  id: 26
+  name: 'other'
+  display_name: '下記のいずれでもないもの'
+  carrier_type_id: '5'
+  nacsis_identifier: ''
+  note: ''
+  position: 26
+sub_carrier_type_0027:
+  id: 27
+  name: 'largeprint'
+  display_name: '大活字本'
+  carrier_type_id: '5'
+  nacsis_identifier: 'l'
+  note: ''
+  position: 27
+sub_carrier_type_0028:
+  id: 28
+  name: 'tactil'
+  display_name: '触知資料'
+  carrier_type_id: '5'
+  nacsis_identifier: 't'
+  note: ''
+  position: 28
+sub_carrier_type_0029:
+  id: 29
+  name: 'celestial globe'
+  display_name: '天体儀'
+  carrier_type_id: '6'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 29
+sub_carrier_type_0030:
+  id: 30
+  name: 'planetary or lunar globe'
+  display_name: '惑星儀 / 月球儀'
+  carrier_type_id: '6'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 30
+sub_carrier_type_0031:
+  id: 31
+  name: 'terrestrial globe'
+  display_name: '地球儀'
+  carrier_type_id: '6'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 31
+sub_carrier_type_0032:
+  id: 32
+  name: 'diagram'
+  display_name: 'ダイアグラム'
+  carrier_type_id: '6'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 32
+sub_carrier_type_0033:
+  id: 33
+  name: 'map'
+  display_name: '地図'
+  carrier_type_id: '6'
+  nacsis_identifier: 'j'
+  note: ''
+  position: 33
+sub_carrier_type_0034:
+  id: 34
+  name: 'profile'
+  display_name: '側面図'
+  carrier_type_id: '6'
+  nacsis_identifier: 'k'
+  note: ''
+  position: 34
+sub_carrier_type_0035:
+  id: 35
+  name: 'model'
+  display_name: '模型'
+  carrier_type_id: '6'
+  nacsis_identifier: 'q'
+  note: ''
+  position: 35
+sub_carrier_type_0036:
+  id: 36
+  name: 'remote-sensing image'
+  display_name: 'リモート・センシング画像'
+  carrier_type_id: '6'
+  nacsis_identifier: 'r'
+  note: ''
+  position: 36
+sub_carrier_type_0037:
+  id: 37
+  name: 'section'
+  display_name: '断面図'
+  carrier_type_id: '6'
+  nacsis_identifier: 's'
+  note: ''
+  position: 37
+sub_carrier_type_0038:
+  id: 38
+  name: 'view'
+  display_name: '景観図'
+  carrier_type_id: '6'
+  nacsis_identifier: 'y'
+  note: ''
+  position: 38
+sub_carrier_type_0039:
+  id: 39
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '6'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 39
+sub_carrier_type_0040:
+  id: 40
+  name: 'full score'
+  display_name: 'スコア'
+  carrier_type_id: '7'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 40
+sub_carrier_type_0041:
+  id: 41
+  name: 'full score, miniature or study size'
+  display_name: 'ミニチュアスコア'
+  carrier_type_id: '7'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 41
+sub_carrier_type_0042:
+  id: 42
+  name: 'accompaniment reduced for keyboard'
+  display_name: '鍵盤楽器伴奏譜'
+  carrier_type_id: '7'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 42
+sub_carrier_type_0043:
+  id: 43
+  name: 'voice score'
+  display_name: 'ヴォイススコア'
+  carrier_type_id: '7'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 43
+sub_carrier_type_0044:
+  id: 44
+  name: 'condensed score or piano-conductor score'
+  display_name: 'コンデンススコア / ピアノコンダクタースコア'
+  carrier_type_id: '7'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 44
+sub_carrier_type_0045:
+  id: 45
+  name: 'close score'
+  display_name: 'クローススコア'
+  carrier_type_id: '7'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 45
+sub_carrier_type_0046:
+  id: 46
+  name: 'japanese'
+  display_name: '邦楽譜'
+  carrier_type_id: '7'
+  nacsis_identifier: 'h'
+  note: ''
+  position: 46
+sub_carrier_type_0047:
+  id: 47
+  name: 'multiple score format'
+  display_name: '複合形態の楽譜'
+  carrier_type_id: '7'
+  nacsis_identifier: 'm'
+  note: ''
+  position: 47
+sub_carrier_type_0048:
+  id: 48
+  name: 'unknown'
+  display_name: '不明'
+  carrier_type_id: '7'
+  nacsis_identifier: 'u'
+  note: ''
+  position: 48
+sub_carrier_type_0049:
+  id: 49
+  name: 'other than score format'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '7'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 49
+sub_carrier_type_0050:
+  id: 50
+  name: 'filmstrip cartridge'
+  display_name: 'フィルムストリップ (カートリッジ)'
+  carrier_type_id: '8'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 50
+sub_carrier_type_0051:
+  id: 51
+  name: 'filmstrip'
+  display_name: 'フィルムストリップ'
+  carrier_type_id: '8'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 51
+sub_carrier_type_0052:
+  id: 52
+  name: 'other filmstrip type'
+  display_name: 'フィルムストリップ (その他)'
+  carrier_type_id: '8'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 52
+sub_carrier_type_0053:
+  id: 53
+  name: 'filmstrip roll'
+  display_name: 'フィルムストリップ (ロール)'
+  carrier_type_id: '8'
+  nacsis_identifier: 'o'
+  note: ''
+  position: 53
+sub_carrier_type_0054:
+  id: 54
+  name: 'slide'
+  display_name: 'スライド'
+  carrier_type_id: '8'
+  nacsis_identifier: 's'
+  note: ''
+  position: 54
+sub_carrier_type_0055:
+  id: 55
+  name: 'transparency'
+  display_name: 'トランスペアレンシー'
+  carrier_type_id: '8'
+  nacsis_identifier: 't'
+  note: ''
+  position: 55
+sub_carrier_type_0056:
+  id: 56
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '8'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 56
+sub_carrier_type_0057:
+  id: 57
+  name: 'aperture card'
+  display_name: 'アパチャー・カード'
+  carrier_type_id: '9'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 57
+sub_carrier_type_0058:
+  id: 58
+  name: 'microfilm cartridge'
+  display_name: 'マイクロフィルム (カートリッジ)'
+  carrier_type_id: '9'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 58
+sub_carrier_type_0059:
+  id: 59
+  name: 'microfilm cassette'
+  display_name: 'マイクロフィルム (カセット)'
+  carrier_type_id: '9'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 59
+sub_carrier_type_0060:
+  id: 60
+  name: 'microfilm reel'
+  display_name: 'マイクロフィルム (リール)'
+  carrier_type_id: '9'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 60
+sub_carrier_type_0061:
+  id: 61
+  name: 'microfiche'
+  display_name: 'マイクロフィッシュ'
+  carrier_type_id: '9'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 61
+sub_carrier_type_0062:
+  id: 62
+  name: 'microfiche cassette'
+  display_name: 'マイクロフィッシュ (カセット)'
+  carrier_type_id: '9'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 62
+sub_carrier_type_0063:
+  id: 63
+  name: 'microopaque'
+  display_name: 'マイクロオペーク'
+  carrier_type_id: '9'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 63
+sub_carrier_type_0064:
+  id: 64
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '9'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 64
+sub_carrier_type_0065:
+  id: 65
+  name: 'collage'
+  display_name: 'コラージュ'
+  carrier_type_id: '10'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 65
+sub_carrier_type_0066:
+  id: 66
+  name: 'drawing'
+  display_name: '図画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 66
+sub_carrier_type_0067:
+  id: 67
+  name: 'painting'
+  display_name: '絵画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 67
+sub_carrier_type_0068:
+  id: 68
+  name: 'photomechanical print'
+  display_name: '写真製版画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 68
+sub_carrier_type_0069:
+  id: 69
+  name: 'photonegative'
+  display_name: 'ネガ'
+  carrier_type_id: '10'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 69
+sub_carrier_type_0070:
+  id: 70
+  name: 'photoprint'
+  display_name: '写真印画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'h'
+  note: ''
+  position: 70
+sub_carrier_type_0071:
+  id: 71
+  name: 'picture'
+  display_name: '画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'i'
+  note: ''
+  position: 71
+sub_carrier_type_0072:
+  id: 72
+  name: 'printing'
+  display_name: '版画'
+  carrier_type_id: '10'
+  nacsis_identifier: 'j'
+  note: ''
+  position: 72
+sub_carrier_type_0073:
+  id: 73
+  name: 'technicaldrawing'
+  display_name: '設計図表類'
+  carrier_type_id: '10'
+  nacsis_identifier: 'l'
+  note: ''
+  position: 73
+sub_carrier_type_0074:
+  id: 74
+  name: 'chart'
+  display_name: '図表'
+  carrier_type_id: '10'
+  nacsis_identifier: 'n'
+  note: ''
+  position: 74
+sub_carrier_type_0075:
+  id: 75
+  name: 'flash card'
+  display_name: 'フラッシュ・カード'
+  carrier_type_id: '10'
+  nacsis_identifier: 'o'
+  note: ''
+  position: 75
+sub_carrier_type_0076:
+  id: 76
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '10'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 76
+sub_carrier_type_0077:
+  id: 77
+  name: 'film cartridge'
+  display_name: 'フィルム (カートリッジ)'
+  carrier_type_id: '11'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 77
+sub_carrier_type_0078:
+  id: 78
+  name: 'film cassette'
+  display_name: 'フィルム (カセット)'
+  carrier_type_id: '11'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 78
+sub_carrier_type_0079:
+  id: 79
+  name: 'film reel'
+  display_name: 'フィルム (リール)'
+  carrier_type_id: '11'
+  nacsis_identifier: 'r'
+  note: ''
+  position: 79
+sub_carrier_type_0080:
+  id: 80
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '11'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 80
+sub_carrier_type_0081:
+  id: 81
+  name: 'sound disc,33 1/3 rpm'
+  display_name: 'LPレコード盤'
+  carrier_type_id: '12'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 81
+sub_carrier_type_0082:
+  id: 82
+  name: 'compact audio disc'
+  display_name: 'CD'
+  carrier_type_id: '12'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 82
+sub_carrier_type_0083:
+  id: 83
+  name: 'other sound disc type'
+  display_name: 'その他のレコード盤'
+  carrier_type_id: '12'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 83
+sub_carrier_type_0084:
+  id: 84
+  name: 'cylinder'
+  display_name: 'ろう管'
+  carrier_type_id: '12'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 84
+sub_carrier_type_0085:
+  id: 85
+  name: 'sound cartridge'
+  display_name: 'テープ (カートリッジ)'
+  carrier_type_id: '12'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 85
+sub_carrier_type_0086:
+  id: 86
+  name: 'sound-track film'
+  display_name: 'フィルム (サウンド・トラック)'
+  carrier_type_id: '12'
+  nacsis_identifier: 'i'
+  note: ''
+  position: 86
+sub_carrier_type_0087:
+  id: 87
+  name: 'roll'
+  display_name: 'ロール'
+  carrier_type_id: '12'
+  nacsis_identifier: 'q'
+  note: ''
+  position: 87
+sub_carrier_type_0088:
+  id: 88
+  name: 'sound cassette'
+  display_name: 'テープ (カセット)'
+  carrier_type_id: '12'
+  nacsis_identifier: 's'
+  note: ''
+  position: 88
+sub_carrier_type_0089:
+  id: 89
+  name: 'sound-tape reel'
+  display_name: 'テープ (オープン・リール)'
+  carrier_type_id: '12'
+  nacsis_identifier: 't'
+  note: ''
+  position: 89
+sub_carrier_type_0090:
+  id: 90
+  name: 'wire recording'
+  display_name: '針金磁気録音'
+  carrier_type_id: '12'
+  nacsis_identifier: 'w'
+  note: ''
+  position: 90
+sub_carrier_type_0091:
+  id: 91
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '12'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 91
+sub_carrier_type_0092:
+  id: 92
+  name: 'sound disc,33 1/3 rpm'
+  display_name: 'LPレコード盤'
+  carrier_type_id: '13'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 92
+sub_carrier_type_0093:
+  id: 93
+  name: 'compact audio disc'
+  display_name: 'CD'
+  carrier_type_id: '13'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 93
+sub_carrier_type_0094:
+  id: 94
+  name: 'other sound disc type'
+  display_name: 'その他のレコード盤'
+  carrier_type_id: '13'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 94
+sub_carrier_type_0095:
+  id: 95
+  name: 'cylinder'
+  display_name: 'ろう管'
+  carrier_type_id: '13'
+  nacsis_identifier: 'e'
+  note: ''
+  position: 95
+sub_carrier_type_0096:
+  id: 96
+  name: 'sound cartridge'
+  display_name: 'テープ (カートリッジ)'
+  carrier_type_id: '13'
+  nacsis_identifier: 'g'
+  note: ''
+  position: 96
+sub_carrier_type_0097:
+  id: 97
+  name: 'sound-track film'
+  display_name: 'フィルム (サウンド・トラック)'
+  carrier_type_id: '13'
+  nacsis_identifier: 'i'
+  note: ''
+  position: 97
+sub_carrier_type_0098:
+  id: 98
+  name: 'roll'
+  display_name: 'ロール'
+  carrier_type_id: '13'
+  nacsis_identifier: 'q'
+  note: ''
+  position: 98
+sub_carrier_type_0099:
+  id: 99
+  name: 'sound cassette'
+  display_name: 'テープ (カセット)'
+  carrier_type_id: '13'
+  nacsis_identifier: 's'
+  note: ''
+  position: 99
+sub_carrier_type_0100:
+  id: 100
+  name: 'sound-tape reel'
+  display_name: 'テープ (オープン・リール)'
+  carrier_type_id: '13'
+  nacsis_identifier: 't'
+  note: ''
+  position: 100
+sub_carrier_type_0101:
+  id: 101
+  name: 'wire recording'
+  display_name: '針金磁気録音'
+  carrier_type_id: '13'
+  nacsis_identifier: 'w'
+  note: ''
+  position: 101
+sub_carrier_type_0102:
+  id: 102
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '13'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 102
+sub_carrier_type_0103:
+  id: 103
+  name: 'videocartridge'
+  display_name: 'ビデオ (カートリッジ)'
+  carrier_type_id: '14'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 103
+sub_carrier_type_0104:
+  id: 104
+  name: 'videodisc'
+  display_name: 'ビデオ (ディスク)'
+  carrier_type_id: '14'
+  nacsis_identifier: 'd'
+  note: ''
+  position: 104
+sub_carrier_type_0105:
+  id: 105
+  name: 'videocassette'
+  display_name: 'ビデオ (カセット)'
+  carrier_type_id: '14'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 105
+sub_carrier_type_0106:
+  id: 106
+  name: 'videoreel'
+  display_name: 'ビデオ (リール)'
+  carrier_type_id: '14'
+  nacsis_identifier: 'r'
+  note: ''
+  position: 106
+sub_carrier_type_0107:
+  id: 107
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '14'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 107
+sub_carrier_type_0108:
+  id: 108
+  name: 'tape cartridge'
+  display_name: 'テープカートリッジ'
+  carrier_type_id: '15'
+  nacsis_identifier: 'a'
+  note: ''
+  position: 108
+sub_carrier_type_0109:
+  id: 109
+  name: 'chip cartridge'
+  display_name: '電子チップカートリッジ'
+  carrier_type_id: '15'
+  nacsis_identifier: 'b'
+  note: ''
+  position: 109
+sub_carrier_type_0110:
+  id: 110
+  name: 'computer optical disc cartridge'
+  display_name: '光学ディスクカートリッジ'
+  carrier_type_id: '15'
+  nacsis_identifier: 'c'
+  note: ''
+  position: 110
+sub_carrier_type_0111:
+  id: 111
+  name: 'tape cassette'
+  display_name: 'テープカセット'
+  carrier_type_id: '15'
+  nacsis_identifier: 'f'
+  note: ''
+  position: 111
+sub_carrier_type_0112:
+  id: 112
+  name: 'tape reel'
+  display_name: 'テープリール'
+  carrier_type_id: '15'
+  nacsis_identifier: 'h'
+  note: ''
+  position: 112
+sub_carrier_type_0113:
+  id: 113
+  name: 'magnetic disk'
+  display_name: '磁気ディスク'
+  carrier_type_id: '15'
+  nacsis_identifier: 'j'
+  note: ''
+  position: 113
+sub_carrier_type_0114:
+  id: 114
+  name: 'magneto-optical disc'
+  display_name: '光磁気ディスク'
+  carrier_type_id: '15'
+  nacsis_identifier: 'm'
+  note: ''
+  position: 114
+sub_carrier_type_0115:
+  id: 115
+  name: 'optical disc'
+  display_name: '光ディスク'
+  carrier_type_id: '15'
+  nacsis_identifier: 'o'
+  note: ''
+  position: 115
+sub_carrier_type_0116:
+  id: 116
+  name: 'remote'
+  display_name: 'リモートファイル'
+  carrier_type_id: '15'
+  nacsis_identifier: 'r'
+  note: ''
+  position: 116
+sub_carrier_type_0117:
+  id: 117
+  name: 'unspecified'
+  display_name: '不定'
+  carrier_type_id: '15'
+  nacsis_identifier: 'u'
+  note: ''
+  position: 117
+sub_carrier_type_0118:
+  id: 118
+  name: 'other'
+  display_name: '上記のいずれでもないもの'
+  carrier_type_id: '15'
+  nacsis_identifier: 'z'
+  note: ''
+  position: 118
+sub_carrier_type_0119:
+  id: 119
+  name: 'unknown'
+  display_name: '未定(特定資料種別コードを記入しない)'
+  carrier_type_id: '16'
+  nacsis_identifier: ''
+  note: ''
+  position: 119
+sub_carrier_type_0120:
+  id: 120
+  name: 'unknown'
+  display_name: '未定(特定資料種別コードを記入しない)'
+  carrier_type_id: '17'
+  nacsis_identifier: ''
+  note: ''
+  position: 120

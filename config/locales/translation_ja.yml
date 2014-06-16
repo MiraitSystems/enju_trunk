@@ -210,10 +210,13 @@ ja:
       title: 書名
       identifier: その他の識別子
       item_has_operator: 受入作業者
-      claim_type: クレーム
+      claim_type: クレームタイプ
       output_column_list: 出力項目設定
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
+      catalog: カタログ
+      sub_carrier_type: 特定資料種別
+      tax_rate: 消費税
 
     attributes:
       use_license:
@@ -395,7 +398,6 @@ ja:
         full_name_alternative: フルネーム代替
         full_name_note: 未入力の場合、保存時に自動的に 姓＋" "＋名 が設定されます。
         agent_alias: 別名(を見よ参照)
-        agent_aliases_attributes: フルネーム, フルネーム（ヨミ）, フルネーム代替
         deleted_at: 削除時刻
         zip_code_1: 郵便番号1
         zip_code_2: 郵便番号2
@@ -695,7 +697,7 @@ ja:
       subscribe:
         started_on: 開始日
         ended_on: 終了日
-      item:
+      item: 
         call_number: 請求記号
         item_identifier: 所蔵情報ID
         deleted_at: 削除時刻
@@ -981,6 +983,7 @@ ja:
         repository_content: リポジトリのコンテンツ
         lock_version: ロックバージョン
         carrier_type: 資料の形態
+        sub_carrier_type: 特定資料種別
         language: 言語
         lccn: LCCN
         issn: ISSN
@@ -1025,6 +1028,14 @@ ja:
         manifestation_identifier: 資料番号
         titles: その他の書名
         use_license_id: 著者抄録許諾(許諾機関名称)
+        nacsis_identifier: NACSIS書誌レコードID
+      manifestation/identifiers:
+        body: その他の識別子
+        identifier_type_id: その他の識別子の種類
+      manifestation/items/claim:
+        claim_type_id: クレームタイプ
+      manifestatioin/items/item_has_operators:
+        user: 作業者
       user_group:
         name: 名前
         display_name: 表示名
@@ -1484,6 +1495,20 @@ ja:
         budget_type: 予算区分
         amount: 金額
         note: 説明
+        name: 予算名
+        user_id: 執行者
+        budget_class: 予算分類
+        budget_classes:
+          usual: 通常
+          revised: 補正
+          provisional: 臨時
+        start_date: 期間開始日
+        end_date: 期間終了日
+        transferred: 繰越額
+        actual: 実予算額
+        implementation: 執行額
+        estimated_implementation: 執行予定額
+        remaining: 残高
       budget_type:
         id: ID
         name: 区分名
@@ -1778,6 +1803,25 @@ ja:
         volume_param: 巻が増える号数
         issue_param: 号の増加数
         sequence_type: 号の種類
+      catalog:
+        display_name: 表示名
+        name: 名前
+        nacsis_identifier: NCID
+        note: 注記
+      sub_carrier_type:
+        name: 名前
+        display_name: 表示名
+        nacsis_identifier: NCID
+        carrier_type_id: 資料の形態
+        note: 注記
+        position: 位置
+      tax_rate:
+        name: 名前
+        display_name: 表示名
+        rate: 税率
+        rounding: 端数処理方式
+        start_date: 適用開始日
+        end_date: 適用終了日     
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1957,7 +2001,6 @@ ja:
     output_layout: "出力対象"
     output_request: "欠号未請求リスト"
     output_label: "図書ラベル"
-    output_list: 出力リスト
     output_select_all: すべて選択
     output_cancel_all: すべて解除
     batch_change: "一括更新"
@@ -2862,7 +2905,7 @@ ja:
   budget:
     yen: "%{amount} 円"
     yent: 円
-    sum: 予算全額(補正予算を含む)
+    sum: 予算全額(うち補正予算)
     balance: 残金
     all_budgets: 全ての予算
     all_libraries: 全ての図書館
@@ -2876,6 +2919,8 @@ ja:
   expense:
     yen: "%{price} 円"
     export: 帳票の出力
+    export_excelx: Excel(2007以降)出力
+    export_csv: CSV出力
     export_tsv: TSV出力
     export_pdf: PDF出力
     term: 集計対象期間

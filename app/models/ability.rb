@@ -27,10 +27,6 @@ class Ability
       can :destroy, ClassificationType do |classification_type|
         classification_type.classifications.empty?
       end
-      can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-      can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
-        inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
-      end
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
@@ -99,11 +95,11 @@ class Ability
         Approval,
         ApprovalExtext,
         Basket,
-        Barcode,
         BarcodeList,
         BindingItem,
         Bookbinding,
         CarrierTypeHasCheckoutType,
+        Catalog,
         CheckedItem,
         Checkoutlist,
         CheckoutStatHasManifestation,
@@ -165,6 +161,7 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
+        SubCarrierType,
         Subject,
         SubjectHasClassification,
         SubjectHeadingType,
@@ -186,7 +183,8 @@ class Ability
         Wareki,
         WorkHasSubject,
         WorkHasTitle,
-        LanguageType
+        LanguageType,
+	TaxRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -228,10 +226,6 @@ class Ability
       can [:read, :create, :update], BudgetType
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
-      end
-      can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-      can [:update, :update, :destroy], InterLibraryLoan do |inter_library_loan|
-        inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
       end
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
@@ -294,10 +288,10 @@ class Ability
         Approval,
         ApprovalExtext,
         Basket,
-        Barcode,
         BarcodeList,
         BindingItem,
         Bookbinding,
+        Catalog,
         CheckedItem,
         Checkoutlist,
         ClaimType,
@@ -306,7 +300,7 @@ class Ability
         Create,
         CreateType,
         Currency,
-	Department,
+        Department,
         Donate,
         ExchangeRate,
         Exemplify,
@@ -407,7 +401,8 @@ class Ability
         UserGroup,
         UserGroupHasCheckoutType,
         UserRequestLog,
-        Wareki
+        Wareki,
+	TaxRate
       ]
     when 'User'
       can [:index, :create], Answer
@@ -519,7 +514,8 @@ class Ability
         UserStatus,
         UserGroup,
         Wareki,
-        WorkHasSubject
+        WorkHasSubject,
+	TaxRate
       ]
     else
       can :index, Agent
@@ -574,7 +570,8 @@ class Ability
         UserGroup,
         UserReserveStat,
         Wareki,
-        WorkHasSubject
+        WorkHasSubject,
+        TaxRate
       ]
     end
 
@@ -696,6 +693,21 @@ class Ability
       when 'Librarian'     then can :manage, [Theme]
       when 'User'          then can :read,   [Theme]
       else                      can :read,   [Theme]
+      end
+    end
+
+    if defined?(EnjuTrunkIll)
+      case user.try(:role).try(:name)
+      when 'Administrator' 
+        can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
+        can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
+          inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
+        end
+      when 'Librarian'
+        can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
+        can [:update, :update, :destroy], InterLibraryLoan do |inter_library_loan|
+          inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
+        end
       end
     end
 

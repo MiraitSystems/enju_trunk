@@ -1,0 +1,54 @@
+<script id="script_add_title">
+  function add_field(obj, parent_id, id_name) {
+    var new_area = document.createElement("div");
+    new_area.setAttribute("id", id_name + obj.currentNumber);
+    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
+    document.getElementById(parent_id).appendChild(new_area);
+    obj.currentNumber += 1;
+  }
+  function remove_field(div_num, id_name) {
+    var field = $("div#" + id_name + div_num);
+    if(field != null){
+      field.append('<input name=manifestation[work_has_titles_attributes][' + div_num + '][_destroy] style="display:none" value="1" />');
+      field.hide();
+    }
+  }
+
+  var ItemField_title = {
+    currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
+    template : ''
+      + '<div class="field">'
+      + '<input id="work_has_titles_attributes___count___title" name="manifestation[work_has_titles_attributes][__count__][title]" placeholder=<%= t('activerecord.models.title') %> type="text" class="resource_title" /> '
+      + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
+      <% @title_types.collect do |m| %>
+        + '<option value="<%= m.id %>"><%= m.display_name.localize %></option>'
+      <% end %>
+      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> '
+      + '<input id="manifestation_work_has_titles_attributes___count___nested" name="manifestation[work_has_titles_attributes][__count__][nested]" type="hidden" value=""/>'
+      + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
+      + '<input type="button" value="-" onClick="ItemField_title.remove(__count__);" /> '
+      + '</div>',
+    add : function () { add_field(this, 'titles', 'VF'); },
+    remove : function (div_num) { remove_field(div_num, 'VF'); }
+  };
+</script>
+
+<div class="field" id='titles'>
+  <%= f.label :other_titles %><br /> 
+  <% manifestation.work_has_titles << WorkHasTitle.new if manifestation.work_has_titles.blank? %>
+  <% manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
+    <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
+       <div class="field" id="VF<%= index %>">
+         <% unless work_has_title.manifestation_title %>
+           <%= w_f.text_field :title, :class => 'resource_title', :placeholder => t('activerecord.models.title') %>
+         <% else %>
+           <%= w_f.text_field :title, :value => work_has_title.try(:manifestation_title).try(:title), :class => 'resource_title' %>
+         <% end %>
+         <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name.localize, m.id]} %>
+         <%= w_f.hidden_field :nested %>
+         <%= button_to_function '+', 'ItemField_title.add()' %>
+         <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -32,64 +32,6 @@ function displayArticleTitle(article_title) {
     $("#article_title_field").html("");
   }
 }
-
-var ItemField_language = {
-  currentNumber : <%= raw (@series_work_has_languages.blank? ? 1 : @series_work_has_languages.size).to_json %>,
-  itemTemplate : ''
-    + '<select id="language_id___count__" name="language_id[__count__]">'
-    + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
-    + '</select>&#10'
-    + '<select id="language_type___count__" name="language_type[__count__]">'
-    + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
-    + '</select>&#10'
-    + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
-    + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
-  add : function () {
-    var field = document.getElementById('language');
-    var new_area = document.createElement("div");
-    new_area.setAttribute("id", "LANG" + this.currentNumber);
-    var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-    new_area.innerHTML = newItem;
-    field.appendChild(new_area);
-    this.currentNumber += 1;
-  },
-  remove : function (div_num) {
-    var field = document.getElementById('LANG' + div_num);
-    if(field != null){ field.parentNode.removeChild(field); }
-  }
-}
-</script>
-
-<script id="script_add_title">
-  function add_field(obj, parent_id, id_name) {
-    var new_area = document.createElement("div");
-    new_area.setAttribute("id", id_name + obj.currentNumber);
-    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
-    document.getElementById(parent_id).appendChild(new_area);
-    obj.currentNumber += 1;
-  }
-  function remove_field(div_num, id_name) {
-    var field = document.getElementById(id_name + div_num);
-    if(field != null){ field.parentNode.removeChild(field); }
-  }
-
-  var ItemField_title = {
-    currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
-    template : ''
-      + '<div class="field">'
-      + '<input id="work_has_titles_attributes___count___title_str" name="work_has_titles_attributes___count___title_str" placeholder=<%= t('activerecord.models.title') %> type="text" class="resource_title" /> '
-      + '<select id="manifestation_work_has_titles_attributes___count___title_type_id" name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
-      <% @title_types.collect do |m| %>
-        + '<option value="<%= m.id %>"><%= m.display_name.localize %></option>'
-      <% end %>
-      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][title_id]" type="hidden" value="" /> '
-      + '<input id="manifestation_work_has_titles_attributes___count___title_id" name="manifestation[work_has_titles_attributes][__count__][position]" type="hidden" value="__count__" />'
-      + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
-      + '<input type="button" value="-" onClick="ItemField_title.remove(__count__);" /> '
-      + '</div>',
-    add : function () { add_field(this, 'titles', 'VF'); },
-    remove : function (div_num) { remove_field(div_num, 'VF'); }
-  };
 </script>
 
   <%= render 'manifestations/observe_field' %>
@@ -100,31 +42,7 @@ var ItemField_language = {
   </div>
 
   <% if SystemConfiguration.get('manifestation.use_titles') %>
-    <div class="field" id='titles'>
-      <% @work_manifestation.work_has_titles << WorkHasTitle.new(:position => 0) if @work_manifestation.work_has_titles.blank? %>
-      <% @work_manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
-        <%= f_m.fields_for :work_has_titles, work_has_title do |w_f| %>
-          <div class="field" id="VF<%= index %>">
-            <% if work_has_title.manifestation_title %>
-              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str",
-                work_has_title.manifestation_title.title,
-                :placeholder => t('activerecord.models.title'),
-                :class => 'resource_title' %>
-            <% else %>
-              <%= text_field_tag "work_has_titles_attributes_#{index}_title_str",
-                params["work_has_titles_attributes_#{index}_title_str"],
-                :placeholder => t('activerecord.models.title'),
-                :class => 'resource_title' %>
-            <% end %>
-            <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name.localize, m.id]} %>
-            <%= w_f.hidden_field :title_id -%>
-            <%= w_f.hidden_field :position -%>
-            <%= button_to_function '+', 'ItemField_title.add()' %>
-            <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
+    <%= render :partial => 'manifestations/form_work_has_title', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation} %>
   <% end %>
 
   <div class="field">
@@ -151,13 +69,20 @@ var ItemField_language = {
   </div>
 
   <div class="field">
+    <%= f_m.label t('activerecord.models.sub_carrier_type') -%>
+    <%= f_m.select(:sub_carrier_type_id, @sub_carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+  </div>
+
+  <div class="field">
     <%= f_m.label t('activerecord.models.manifestation_type') -%>
     <%= f_m.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
   </div>
 
   <div class="field">
     <%= f_m.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%= f_m.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%#= f_m.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
+    <%= select2_script "jpn_or_foreign" %>
+    <%= make_select2_struct(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, 200, true, false) %>
   </div>
 
   <div class="field">
@@ -180,32 +105,7 @@ var ItemField_language = {
     <%= f_m.text_field :place_of_publication %>
   </div>
 
-  <div class="field" id="language">
-    <%= f_m.label t('activerecord.models.language') -%>
-    <% if @series_work_has_languages.blank? %>
-      <div id="LANG0">
-        <%= select_tag 'language_id[0]',
-            options_for_select(@languages.collect{|l| [l.display_name.localize, l.id]},
-            :selected => @default_language.id ) %>
-        <%= select_tag 'language_type[0]',
-            options_for_select(@language_types.collect{|t| [t.display_name.localize, t.id]}) %>
-        <%= button_to_function '+', 'ItemField_language.add()' -%>
-      </div>
-    <% else %>
-      <% @series_work_has_languages.each_with_index do |whl, i| %>
-        <div id="LANG<%= i.to_s %>">
-          <%= select_tag 'language_id[' + i.to_s + ']',
-              options_for_select(@languages.collect{|l| [l.display_name.localize, l.id]},
-              :selected => whl[:language_id] ) %>
-          <%= select_tag 'language_type[' + i.to_s + ']',
-              options_for_select(@language_types.collect{|t| [t.display_name.localize, t.id]},
-              :selected => whl[:language_type_id] ) %>
-          <%= button_to_function '+', 'ItemField_language.add()' -%>
-          <%= button_to_function '-', 'ItemField_language.remove(' + i.to_s + ')' if i > 0 -%>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
+  <%= render :partial => 'manifestations/form_work_has_language', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation} %>
 
   <div class="field">
     <%= f_m.label :edition_display_value -%>

@@ -2,9 +2,10 @@ class Identifier < ActiveRecord::Base
   default_scope :order => 'position'
   attr_accessible :body, :identifier_type_id, :manifestation_id, :primary, :position, :_delete
   belongs_to :identifier_type
+  belongs_to :manifestation
 
   validates_presence_of :body
-  validates_uniqueness_of :body, :scope => [:identifier_type_id, :manifestation_id]
+  validates :identifier_type_id, :uniqueness => {:scope => :manifestation_id, :message => I18n.t('activerecord.errors.attributes.identifier.duplicate_identifier_type')}
   validate :check_identifier
   before_save :convert_isbn
 
@@ -15,17 +16,17 @@ class Identifier < ActiveRecord::Base
     case identifier_type.try(:name)
     when 'isbn'
       unless StdNum::ISBN.valid?(body)
-        errors.add(:body)
+        errors.add(:body, I18n.t('activerecord.errors.attributes.identifier.invalid_body', :body => self.body))
       end
 
     when 'issn'
       unless StdNum::ISSN.valid?(body)
-        errors.add(:body)
+        errors[:base] << I18n.t('activerecord.errors.attributes.identifier.invalid_body', :body => self.body)
       end
 
     when 'lccn'
       unless StdNum::LCCN.valid?(body)
-        errors.add(:body)
+        errors[:base] << I18n.t('activerecord.errors.attributes.identifier.invalid_body', :body => self.body)
       end
     end
   end

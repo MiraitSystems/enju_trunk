@@ -1,0 +1,51 @@
+<div id="content_detail" class="ui-corner-all">
+
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.sub_carrier_type')) -%></h1>
+  <div id="content_list">
+
+    <table class="index">
+      <tr>
+        <th id="position"></th>
+        <th><%= t('activerecord.attributes.sub_carrier_type.carrier_type_id') %></th>
+        <th><%= t('activerecord.attributes.sub_carrier_type.nacsis_identifier') %></th>
+        <th><%= t('activerecord.attributes.sub_carrier_type.name') %></th>
+        <th><%= t('activerecord.attributes.sub_carrier_type.display_name') %></th>
+        <% if can? :edit, SubCarrierType %>
+          <th></th>
+        <% end %>
+      </tr>
+
+      <% @sub_carrier_types.each do |sub_carrier_type| %>
+        <tr class="line<%= cycle("0", "1") -%>">
+          <td>
+            <% if can? :update, sub_carrier_type %>
+              <%= move_position(sub_carrier_type) %>
+            <% end %>
+          </td>
+          <td><%= link_to sub_carrier_type.carrier_type.display_name.localize, carrier_type_path(sub_carrier_type.carrier_type_id) if sub_carrier_type.carrier_type %></td>
+          <td><%= link_to sub_carrier_type.nacsis_identifier, sub_carrier_type %></td>
+          <td><%= link_to sub_carrier_type.name, sub_carrier_type %></td>
+          <td><%= link_to sub_carrier_type.display_name, sub_carrier_type %></td>
+          <% if can? :edit, SubCarrierType %>
+            <td>
+              <%= link_to t('page.edit'), edit_sub_carrier_type_path(sub_carrier_type) %>
+              <%= link_to t('page.destroy'), sub_carrier_type, method: :delete, data: { confirm: t('page.are_you_sure') } %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+
+    <br />
+    <%= paginate(@sub_carrier_types) -%>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <% if can? :edit, SubCarrierType %>
+      <li><%= link_to t('page.new', :model => t('activerecord.models.sub_carrier_type')), new_sub_carrier_type_path %></li>
+    <% end %>
+  </ul>
+</div>
+
