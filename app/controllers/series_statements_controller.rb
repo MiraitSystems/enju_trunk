@@ -159,7 +159,7 @@ class SeriesStatementsController < ApplicationController
   # DELETE /series_statements/1.json
   def destroy
     SeriesStatement.transaction do
-      @series_statement.root_manifestation.destroy
+      @series_statement.root_manifestation.destroy if @series_statement.root_manifestation
       @series_statement.destroy
       respond_to do |format|
         format.html { redirect_to series_statements_url }

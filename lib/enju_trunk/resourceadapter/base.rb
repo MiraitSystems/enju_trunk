@@ -5,12 +5,7 @@ module EnjuTrunk
       attr_accessor :logger
 
       def logger
-        @logger ||= begin
-           @logger = ::Logger.new(STDOUT)
-           @logger.level = ($DEBUG)?(::Logger.const_get((:debug).to_s.upcase)):(::Logger.const_get((:info).to_s.upcase))
-           @logger.datetime_format = "%Y-%m-%d %H:%M:%S"
-           @logger
-        end
+        @logger ||= self.class.logger
       end
 
       def languages
@@ -25,12 +20,10 @@ module EnjuTrunk
 
       class << self
         def logger
-          @logger ||= begin
-                        @logger = ::Logger.new(STDOUT)
-                        @logger.level = ($DEBUG)?(::Logger.const_get((:debug).to_s.upcase)):(::Logger.const_get((:info).to_s.upcase))
-                        @logger.datetime_format = "%Y-%m-%d %H:%M:%S"
-                        @logger
-                      end
+          @logger ||= ::Logger.new(STDOUT).tap do |logger|
+            logger.level = ($DEBUG || ENV['RESOURCE_ADAPTER_DEBUG'].present?) ? ::Logger::DEBUG : ::Logger::INFO
+            logger.datetime_format = "%Y-%m-%d %H:%M:%S"
+          end
         end
 
         def logger=(value)

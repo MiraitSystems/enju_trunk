@@ -700,6 +700,7 @@ ja:
       item: 
         call_number: 請求記号
         item_identifier: 所蔵情報ID
+        nacsis_identifier: NACSIS所蔵レコードID
         deleted_at: 削除時刻
         include_supplements: 付録を含む
         note: 注記
@@ -1858,7 +1859,7 @@ ja:
     has_relationships: "関連あり"
     advanced_search: "条件を詳しく指定して検索"
     normal_search: "詳細条件を解除して検索"
-    advanced_search_summary_delimiter: "、"
+    list_delimiter: "、"
     created_at: "登録日"
     pub_date: "出版日"
     title: "タイトル"
@@ -2740,98 +2741,16 @@ ja:
     wrong_content_type: "にはTSVファイルまたはXLSXファイル以外を指定しないでください。"
     importing_please_wait: "ファイルを読み込み中です。しばらくお待ちください。。。"
     auto_numbering: "所蔵情報IDを自動採番する"
-    excel:
-      series:
-        issn: ISSN
-        nacsis_identifier: NCID
-        nbn: NBN
-        jpno: JPNO
-        original_title: シリーズ名
-        title_transcription: シリーズ名（ヨミ）
-        periodical: 定期刊行物
-        series_statement_identifier: シリーズ識別子
-        note: 雑誌注記
-      book:
-        manifestation_type: 資料区分
-        original_title: タイトル
-        title_transcription: タイトル（ヨミ）
-        title_alternative: 代替タイトル
-        nacsis_identifier: NCID
-        nbn: NBN
-        isbn: ISBN
-        lccn: LCCN
-        marc_number: MARC番号
-        ndc: NDC
-        carrier_type: 資料の形態
-        jpn_or_foreign: 和洋区分
-        frequency: 発行頻度
-        pub_date: 出版日
-        country_of_publication: 出版国
-        place_of_publication: 出版地
-        language: 言語
-        edition_display_value: 版表示
-        volume_number_string: 巻
-        issue_number_string: 号
-        serial_number_string: 通号
-        start_page: 最初のページ
-        end_page: 最後のページ
-        height: 高さ(cm) 
-        width: 幅(cm) 
-        depth: 奥行き(cm)
-        size: サイズ
-        price: 価格
-        price_string: 価格
-        access_address: アクセスアドレス
-        repository_content: リポジトリのコンテンツ
-        required_role: 参照に必要な権限
-        except_recent: 新刊対象から除外
-        acceptance_number: 受入部数
-        description: 説明
-        supplement: 付録
-        note: 注記
-        creator: 著者
-        contributor: 編者
-        publisher: 出版者
-        subject: 件名
-        accept_type: 受入区分
-        acquired_at: 受入日
-        acquired_at_string: 受入日
-        bookstore: 寄贈・購入先
-        library: 図書館
-        shelf: 本棚
-        checkout_type: 貸出区分
-        circulation_status: 貸出状態
-        retention_period: 保存種別
-        call_number: 請求記号
-        item_price: 購入価格
-        item_price_string: 購入価格
-        url: URL
-        include_supplements: 付録を含む
-        use_restriction: 利用制限
-        item_note: 所蔵注記
-        rank: 正本区分
-        item_identifier: 所蔵情報ID
-        remove_reason: 除籍理由
-        non_searchable: 検索対象から除外
-        missing_issue: 欠号管理
-        del_flg: 削除フラグ
-      article: 
-        creator: 著者
-        original_title: 表題
-        title: 誌名
-        volume_number_string: 巻号
-        number_of_page: ページ
-        pub_date: 刊行年
-        call_number: 請求記号 
-        access_address: ＵＲＬ
-        subject: 件名 
+    not_set_serial_number: "通号を上書きしない"
+    root_prefix: "シリーズ"
     message:
       read_start: "読み取りを開始します。"
       read_end: "読み取りが完了しました。"
       sheet_info: "シート: 『%{sheet}』"
-      deleted: "削除完了  所蔵情報ID: %{item_identifier}"
-      deleted_manifestation: "タイトル：%{original_title}"
-      deleted_series_statement: "シリーズタイトル：%{series_original_title}"
+      deleted: "削除完了"
+      deleted_item: "所蔵情報ID: %{identifier}"
+      deleted_manifestation: "タイトル: %{original_title}"
+      deleted_series_statement: "シリーズタイトル: %{original_title}"
       out_of_manage: "<br />ヘッダーに管理外のカラム名が存在しています: %{columns}"
       without_item: "所蔵情報IDカラムが存在しないので、所蔵情報はインポート対象外です。"
       manifestation_imported: 新規資料数
@@ -2844,24 +2763,24 @@ ja:
         <br />シート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。\r\n"
       manifestation_type_is_nil: "資料区分が設定されていません。"
       blank_sheet: "データが記述されていません。"
-      overlap: "ヘッダーに重複したフィールド名が存在しています。"
+      overlap: "ヘッダーに重複したフィールド名(%{name})が存在しています。"
       head_require_manifestation_type: "1行目には資料区分が必須です。"
       wrong_data: "指定の%{field}は不正です。 %{field}: %{data}"
       delete_requre_item_identifier: "所蔵情報IDが入力されていないため削除を実行できませんでした。"
       failed_delete_not_find: "対象の資料が見つからなかったため削除を実行できませんでした。"
       duplicate_item_identifier: "所蔵情報IDが重複しています: %{item_identifier}"
-      no_item_identifier: "所蔵情報IDが指定されていません。"
+      no_item_identifier: "所蔵情報IDが指定されていないため、所蔵情報の処理を行いません。"
       cell_require_manifestation_type: "資料区分を指定してください。"
       wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
       wrong_format: "インポートのファイル形式が不正です。"
       series:
-        head_is_blank: "1行目にはシリーズ名あるいはISSN, またタイトルあるいはISBNが必須です。"
-        cell_is_blank: "シリーズ名またはISSN,タイトルまたはISBNを指定してください。"
+        head_is_blank: "1行目には%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかが必須です。"
+        cell_is_blank: "%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかを指定してください。"
         wrong_issn: "指定のISSNは不正です。"
         exist_same_series: "更新しようとしている内容と同一のシリーズ情報が既に存在しています。資料の編集画面より更新する資料のシリーズ情報を付け替えてください。"
       book:
-        head_is_blank: "1行目にはタイトルまたはISBNが必須です。"
-        cell_is_blank: "タイトルまたはISBNを指定してください。"
+        head_is_blank: "1行目には%{fields}のいずれかが必須です。"
+        cell_is_blank: "%{fields}のいずれかを指定してください。"
         only_integer: "%{field}には整数以外の値を指定しないでください。 %{field}: %{data}"
         only_numeric: "%{field}には数値以外の値を指定しないでください。 %{field}: %{data}"
         only_date: "%{field}には日時以外の値を指定しないでください。 %{field}: %{data}"
@@ -2870,7 +2789,7 @@ ja:
         wrong_rank: "指定の正本区分は不正です。 正本区分: %{data}"
         wrong_isbn: "指定のISBNは不正です。"
         wrong_missing_issue: "指定の欠号管理は不正です。 欠号管理: %{data}"
-        not_delete: "タイトルを空白登録することはできません。"
+        no_title: "タイトルを空白登録することはできません。"
         has_original: "既に正本登録済みの資料に、正本資料の追加はできません。"
         has_not_shelf: "図書館が保持していない本棚が指定されています。"
         exist_multiple_same_manifestations: "書誌同定された資料が複数存在します。インポートデータを新規作成しました。"

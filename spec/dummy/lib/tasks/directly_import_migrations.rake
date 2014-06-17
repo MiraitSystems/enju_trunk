@@ -14,9 +14,6 @@ namespace :enju do
         %w(
           EnjuTrunk 
           EnjuEvent 
-          EnjuTrunkCirculation
-          EnjuTrunkSubject
-          EnjuTrunkIll
           EnjuManifestationViewer
           JppCustomercodeTransfer 
         ).each do |name|
@@ -32,21 +29,6 @@ namespace :enju do
       desc 'Directly import enju_event migrations'
       task :enju_event => :environment do
         import_migrations("EnjuEvent")
-      end
-
-      desc 'Directly import enju_trunk_circulation migrations'
-      task :enju_trunk_circulation => :environment do
-        import_migrations("EnjuTrunkCirculation")
-      end
-
-      desc 'Directly import enju_trunk_subject migrations'
-      task :enju_trunk_subject => :environment do
-        import_migrations("EnjuSubject")
-      end
-
-      desc 'Directly import enju_trunk_ill migrations'
-      task :enju_trunk_ill => :environment do
-        import_migrations("EnjuTrunkIll")
       end
 
       desc 'Directly import enju_manifestation_viewer migrations'
