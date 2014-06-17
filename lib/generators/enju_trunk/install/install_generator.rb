@@ -34,7 +34,7 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
         EnjuTrunk
         EnjuEvent
         EnjuTrunkCirculation
-        EnjuTrunkSubject
+        EnjuSubject
         EnjuTrunkIll
         EnjuManifestationViewer
         JppCustomercodeTransfer
@@ -49,7 +49,7 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
         enju_event_engine
         enju_trunk_engine
         enju_trunk_circulation_engine
-        enju_trunk_subject_engine
+        enju_subject_engine
         enju_trunk_ill_engine
         enju_manifestation_viewer_engine
      ).each do |name|
