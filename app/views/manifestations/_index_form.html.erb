@@ -4,10 +4,10 @@
   end
 
   if form_pos == :top
-    cols_book = Manifestation::BOOK_COLUMNS.call.map{|c| "book.#{c}"}
-    cols_series = Manifestation::SERIES_COLUMNS.map{|c| "series.#{c}"}
-    cols_article = Manifestation::ARTICLE_COLUMNS.map{|c| "article.#{c}"}
-    cols_all = Manifestation::ALL_COLUMNS
+    cols_book = Manifestation.book_output_columns
+    cols_series = Manifestation.series_output_columns
+    cols_article = Manifestation.article_output_columns
+    cols_all = Manifestation.all_output_columns
   end
 
   form_sub_header = nil
@@ -119,7 +119,7 @@
       <%- if SystemConfiguration.get("manifestations.users_show_output_button") or (user_signed_in? and current_user.has_role?('Librarian')) -%>
         <% if method == :post %>
           <!-- start hidden checkboxes for selecting excel columns -->
-          <%- Manifestation::ALL_COLUMNS.each do |x| -%>
+          <%- cols_all.each do |x| -%>
             <%= check_box_tag 'cols[]', x, false, :id => "chkbox_#{x.gsub('.','_')}", :style => "display: none;" -%>
           <%- end -%>
           <!-- end hidden checkboxes for selecting excel columns -->
@@ -315,40 +315,19 @@ function BoxChecked(check){
       <div style="width: 33%; float: left;">
         <% cols_book[0, cols_book.length / 2].each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-          <% split_cols = x.split('.') %>
-          <% if split_cols[1] == 'manifestation_exinfo' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-          <% elsif split_cols[1] == 'manifestation_extext' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-          <% else %>
-            <%= t("resource_import_textfile.excel.#{x}") %><br />
-          <% end %>
+          <%= ResourceImport::Sheet.field_name(x) %><br />
         <% end %>
       </div>
       <div style="width: 34%; float: left;">
         <% cols_book[cols_book.length / 2, cols_book.length - (cols_book.length / 2)].each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-          <% split_cols = x.split('.') %>
-          <% if split_cols[1] == 'manifestation_exinfo' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-          <% elsif split_cols[1] == 'manifestation_extext' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-          <% else %>
-            <%= t("resource_import_textfile.excel.#{x}") %><br />
-          <% end %>
+          <%= ResourceImport::Sheet.field_name(x) %><br />
         <% end %>
       </div>
       <div style="width: 33%; float: left;">
         <% cols_series.each do |x| %>
           <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-          <% split_cols = x.split('.') %>
-          <% if split_cols[1] == 'manifestation_exinfo' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-          <% elsif split_cols[1] == 'manifestation_extext' %>
-            <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-          <% else %>
-            <%= t("resource_import_textfile.excel.#{x}") %><br />
-          <% end %>
+          <%= ResourceImport::Sheet.field_name(x) %><br />
         <% end %>
       </div>
     </div>
@@ -370,7 +349,7 @@ function BoxChecked(check){
       <br />
       <strong><%= t('page.output_excelx_dialog') %></strong><br />
       <% cols_article.each do |x| %>
-        <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %><%= t("resource_import_textfile.excel.#{x}") %><br />
+        <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}" %><%= ResourceImport::Sheet.field_name(x) %><br />
       <% end %>
     </div>
     <div><br /><button id="excelx_article_trigger"><%= t('page.output_excelx_detail') -%></button></div>

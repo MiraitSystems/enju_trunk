@@ -380,7 +380,9 @@ class Item < ActiveRecord::Base
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
-  def excel_worksheet_value(ws_type, ws_col)
+  # sep_flg: 分割指定(ONのときture)
+  # ccount: 分割指定OKのときのカラム数
+  def excel_worksheet_value(ws_type, ws_col, sep_flg, ccount)
     helper = Object.new
     helper.extend(ItemsHelper)
     helper.instance_eval { def t(*a) I18n.t(*a) end } # NOTE: ItemsHelper#i18n_rankの中でtを呼び出しているが、ヘルパーを直接利用しようとするとRedCloth由来のtが見えてしまうため、その回避策

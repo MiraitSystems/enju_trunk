@@ -43,6 +43,8 @@ prefork = lambda do
 
     # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
     config.fixture_path = "#{EnjuTrunk::Engine.root}/spec/fixtures"
+    FactoryGirl.definition_file_paths = ["#{EnjuTrunk::Engine.root}/spec/factories"]
+    FactoryGirl.find_definitions
 
     # If you're not using ActiveRecord, or you'd prefer not to run each of your
     # examples within a transaction, remove the following line or assign false

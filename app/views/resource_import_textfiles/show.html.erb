@@ -45,6 +45,7 @@
     <% end %>
     <th style="<%= line_style%>"><%= t('activerecord.models.numbering') %></th>
     <th style="<%= line_style%>"><%= t('resource_import_textfile.auto_numbering') %></th>
+    <th style="<%= line_style%>"><%= t('resource_import_textfile.not_set_serial_number') %></th>
   </tr>
 
   <% if SystemConfiguration.get('manifestations.split_by_type') %>
@@ -52,6 +53,7 @@
   <% end %>
   <% numberings = eval(@resource_import_textfile.extraparams)["numbering"] %>
   <% auto_numberings = eval(@resource_import_textfile.extraparams)["auto_numbering"] %>
+  <% not_set_serial_number = eval(@resource_import_textfile.extraparams)["not_set_serial_number"] %>
   <% if @resource_import_textfile.adapter_name == 'Excelfile_Adapter' %> 
     <% sheets = eval(@resource_import_textfile.extraparams)["sheet"] %>
     <% sheets.each_with_index do |sheet, i| %>
@@ -64,6 +66,7 @@
           <td style="<%= line_style%>"><%= get_numbering_display_name(numberings[i]) rescue nil %></td>
         <% end %>
         <td style="<%= line_style%>"><%= t("page.boolean.#{auto_numberings[i]}") if auto_numberings %></td>
+        <td style="<%= line_style%>"><%= t("page.boolean.#{not_set_serial_number[i]}") if not_set_serial_number %></td>
       </tr>
     <% end %>
   <% else %>

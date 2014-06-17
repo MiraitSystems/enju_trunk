@@ -473,7 +473,7 @@ module EnjuTrunk
 
         label = label_id.is_a?(Symbol) ? advanced_search_label(label_id) : label_id
         "#{label}: #{data}"
-      end.join(I18n.t('page.advanced_search_summary_delimiter')) + omission + ')'
+      end.join(I18n.t('page.list_delimiter')) + omission + ')'
     end
 
     def advanced_search_merge_tag(name)

@@ -1867,8 +1867,9 @@ en:
     tag: Tag
     call_number: Call number
     holding: Holding
-    advanced_search: Normal search
-    advanced_search_summary_delimiter: ', '
+    advanced_search: Advanced search
+    normal_search: Clear advanced search and search
+    list_delimiter: ', '
     title: Title
     exact_title: Exact match
     startwith_title: Start with
@@ -2098,7 +2099,6 @@ en:
       over_end_date: The end date should over the start date
     search_clear: Clear
     has_relationships: Has relationships
-    normal_search: Clear advanced search and search
     pub_date: Date of publication
     carrier_type: Carrier Type
     item_identifier: Item identifier
@@ -2724,6 +2724,8 @@ en:
     exinfo: Other
     wrong_content_type: was invalid type. TSV or EXLSX are available. 
     auto_numbering: Auto numbering for item identifier
+    not_set_serial_number: Keep serial number
+    root_prefix: 'Series '
     excel:
       series:
         issn: ISSN
@@ -2740,6 +2742,7 @@ en:
         original_title: Title
         title_transcription: Title（transcription）
         title_alternative: Alternative title
+        identifier: Identifier
         nacsis_identifier: NCID
         nbn: NBN
         isbn: ISBN
@@ -2813,9 +2816,10 @@ en:
       read_start: Started to read.
       read_end: End to read.
       sheet_info: 'sheet: %{sheet}'
-      deleted: 'Deleted Item identifier: %{item_identifier}'
-      deleted_manifestation: Title：%{original_title}
-      deleted_series_statement: Series title：%{series_original_title}
+      deleted: 'Deleted'
+      deleted_item: 'Item identifier: %{identifier}'
+      deleted_manifestation: 'Title: %{original_title}'
+      deleted_series_statement: 'Series title: %{original_title}'
       out_of_manage: '<br />Header has unmanaged colum name: %{columns}'
       without_item: Item won't be created withou item identifier column.
       manifestation_imported: Manifestation imported
@@ -2827,7 +2831,7 @@ en:
       failed_to_read_sheet: "Failed to read %{sheet} sheet.\r\n"
       manifestation_type_is_nil: Manifestation type is not selected.
       blank_sheet: No date in the sheet.
-      overlap: Header has duplicate column name.
+      overlap: Header has duplicate column name (%{name}).
       head_require_manifestation_type: Manifestation type id required in first line.
       wrong_data: 'Invalid data %{field}: %{data}'
       delete_requre_item_identifier: Cannnot delete item without item identifier.
@@ -2838,13 +2842,13 @@ en:
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
       wrong_format: Wrong format type.
       series:
-        head_is_blank: "One of series name, ISSN, title or ISBN is required."
-        cell_is_blank: One of series name, ISSN, title or ISBN is required.
+        head_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required in the first line.'
+        cell_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required.'
         wrong_issn: ISSN is invalid.
         exist_same_series: Series statement may already registered. Select series statement in manifestation editting screen.
       book:
-        head_is_blank: "Title or ISBN is required in first line."
-        cell_is_blank: Select title or ISBN.
+        head_is_blank: 'One of %{fields} is required in the first line.'
+        cell_is_blank: 'One of %{fields} is required.'
         only_integer: 'Only integer is available for %{field} %{field}: %{data}'
         only_numeric: 'Only number is available for %{field} %{field}: %{data}'
         only_date: 'Only datetime is available for %{field} %{field}: %{data}'
@@ -2853,7 +2857,7 @@ en:
         wrong_rank: 'Item rank is invalid rank: %{data}'
         wrong_isbn: ISBN is invalid.
         wrong_missing_issue: 'Missing issue is invalid. Missing issue: %{data}'
-        not_delete: Title is required field and cannot delete title.
+        no_title: Title is required field and cannot delete title.
         has_original: Manifestaion cannot have 2 original items.
         has_not_shelf: There is not specific shelf.
         exist_multiple_same_manifestations: There are multiple identifier manifestations. New data is created.

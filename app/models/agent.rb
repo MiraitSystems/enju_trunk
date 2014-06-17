@@ -309,79 +309,64 @@ class Agent < ActiveRecord::Base
     owns.where(:item_id => item.id)
   end
 
-  def self.import_agents(agent_lists)
+  def self.import_agents(agent_lists, options = {})
     list = []
-    agent_lists.uniq.compact.each do |agent_list|
-      next if agent_list[:full_name].blank?
-      agent = Agent.where(:full_name => agent_list[:full_name].exstrip_with_full_size_space).first
-      unless agent
-        agent = Agent.new(
-          :full_name => agent_list[:full_name].exstrip_with_full_size_space,
-          :language_id => 1
-        )
-        if agent_list[:full_name_transcription].present?
-          agent.full_name_transcription = agent_list[:full_name_transcription].exstrip_with_full_size_space
-        end
-        exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-        agent.exclude_state = 1 if exclude_agents.include?(agent_list[:full_name].exstrip_with_full_size_space)
-        agent.required_role = Role.where(:name => 'Guest').first
-        agent.save
-      end
-      list << agent
+    return list if agent_lists.blank?
+
+    options[:language_id] ||= 1
+
+    agent_lists.uniq.compact.each do |attrs|
+      agent = add_agent(attrs[:full_name], attrs[:full_name_transcription], options)
+      next if agent.blank?
+      list << agent if agent
     end
     list
   end
 
-  def self.add_agents(agent_names, agent_transcriptions = nil)
+  def self.add_agents(agent_names, agent_transcriptions = nil, options = {})
     return [] if agent_names.blank?
     names = agent_names.gsub('；', ';').split(/;/)
-    transcriptions = []
-    if agent_transcriptions.present?
-      transcriptions = agent_transcriptions.gsub('；', ';').split(/;/) 
-      transcriptions = transcriptions.uniq.compact
+    if agent_transcriptions.nil?
+      transcriptions = []
+    elsif agent_transcriptions == ''
+      transcriptions = ['']
+    else
+      transcriptions = agent_transcriptions.gsub('；', ';').split(/;/, -names.size)
     end
     list = []
-    names.uniq.compact.each_with_index do |name, i|
-      name = name.exstrip_with_full_size_space
-      next if name.empty?
-      agent = Agent.find(:first, :conditions => ["full_name=?", name])
-      full_name_transcription = transcriptions[i].exstrip_with_full_size_space rescue nil
-      if agent.nil?
-        agent = Agent.new
-        agent.full_name = name
-        agent.full_name_transcription = full_name_transcription
-        exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-        agent.exclude_state = 1 if exclude_agents.include?(name)
-        agent.save
-      else
-        if full_name_transcription
-          agent.full_name_transcription = full_name_transcription
-          agent.save
-        end
-      end
+    names.compact.each_with_index do |name, i|
+      agent = add_agent(name, transcriptions[i], options)
+      next if agent.blank?
       list << agent
     end
-    list
+    list.uniq
   end
 
-  def self.add_agent(name, transcription)
+  # options:
+  #   :create_new: 新規作成をするかどうかの指定(デフォルトはtrue)
+  #   その他: 新規作成時の属性値(更新には使用されない)
+  def self.add_agent(name, transcription = nil, options = {})
+    if options.include?(:create_new)
+      create_new = options.delete(:create_new)
+    else
+      create_new = true # 特に指定がなければ新規作成もする
+    end
+
+    name = name.try(:exstrip_with_full_size_space)
     return {} if name.blank?
-    name = name.exstrip_with_full_size_space
-    unless name.empty?
-      agent = Agent.find(:first, :conditions => ["full_name=?", name])
-      transcription = transcription.exstrip_with_full_size_space rescue nil
-      if agent.nil?
-        agent = Agent.new
-        agent.full_name = name
+
+    agent = Agent.where(full_name: name).first
+    transcription = transcription.try(:exstrip_with_full_size_space)
+    if agent.blank? && create_new
+      agent = Agent.new(options.merge(full_name: name))
+      agent.full_name_transcription = transcription if transcription
+      exclude_agents = SystemConfiguration.get("exclude_agents").split(',').map {|word| word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
+      agent.exclude_state = 1 if exclude_agents.include?(name)
+      agent.save
+    else
+      if transcription
         agent.full_name_transcription = transcription
-        exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-        agent.exclude_state = 1 if exclude_agents.include?(name)
         agent.save
-      else
-        if transcription
-          agent.full_name_transcription = transcription
-          agent.save
-        end
       end
     end
     agent
