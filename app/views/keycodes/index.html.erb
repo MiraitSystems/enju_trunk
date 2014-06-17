@@ -2,6 +2,13 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.keycode')) -%></h1>
 <div id="content_list">
 <div style="color: red"><%= flash[:message].to_s -%></div>
+
+<%= form_tag(keycodes_path, :method => :get) do %>
+  <b><%= t('activerecord.attributes.keycode.filter') %>:</b>
+  <%= select_tag('name', options_from_collection_for_select(@keycode_names, :name, :display_name, @name), :include_blank => true) %>
+  <%= button_tag t('activerecord.attributes.keycode.execute') %>
+<% end %>
+
 <table class="index">
   <tr>
     <th><%= t('activerecord.attributes.keycode.name') -%></th>

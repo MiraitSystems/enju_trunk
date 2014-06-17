@@ -1681,6 +1681,8 @@ ja:
         started_at: 開始年月日
         ended_at: 終了年月日
         ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
+        filter: 絞り込み
+        execute: 実行
       approval:
         manifestation_id: タイトル 
         created_by: データ登録者名 
