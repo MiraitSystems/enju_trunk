@@ -15,7 +15,7 @@ namespace :enju do
           EnjuTrunk 
           EnjuEvent 
           EnjuTrunkCirculation
-          EnjuTrunkSubject
+          EnjuSubject
           EnjuTrunkIll
           EnjuManifestationViewer
           JppCustomercodeTransfer 
