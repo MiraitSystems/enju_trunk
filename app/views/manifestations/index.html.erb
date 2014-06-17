@@ -230,10 +230,10 @@ $(document).ready(function() {
           <%- else -%>
             <%= link_to t('activerecord.models.carrier_type'), params.merge(:sort_by => 'carrier_type') -%>
           <%- end -%>
-          <%- if params[:sort_by] == 'manifestation_type' -%>
+          <%- if params[:sort_by] == 'manifestation_type_id' -%>
             <strong><%= t('activerecord.models.manifestation_type') -%></strong>
           <%- else -%>
-            <%= link_to t('activerecord.models.manifestation_type'), params.merge(:sort_by => 'manifestation_type') -%>
+            <%= link_to t('activerecord.models.manifestation_type'), params.merge(:sort_by => 'manifestation_type_id') -%>
           <%- end -%>
         </p>
       </div>

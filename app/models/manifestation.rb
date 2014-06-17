@@ -173,10 +173,7 @@ class Manifestation < ActiveRecord::Base
     string :carrier_type do
       carrier_type.name
     end
-    string :manifestation_type do
-      manifestation_type.name
-    end
-=begin
+    integer :manifestation_type_id 
     string :manifestation_type, :multiple => true do
       manifestation_type.try(:name)
       #if series_statement.try(:id) 
@@ -185,7 +182,6 @@ class Manifestation < ActiveRecord::Base
       #  0
       #end
     end
-=end
     string :library, :multiple => true do
       items.map{|i| item_library_name(i)}
     end
