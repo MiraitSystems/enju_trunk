@@ -293,4 +293,33 @@ keycodes_41:
   v: '34'
   keyname: '教員著作物コーナー'
   started_at: 2000-04-01
+keycodes_42:
+  id: 42
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '0'
+  keyname: '不明'
+  started_at: 2000-04-01
+keycodes_43:
+  id: 43
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '1'
+  keyname: '男性'
+  started_at: 2000-04-01
+keycodes_44:
+  id: 44
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '2'
+  keyname: '女性'
+  started_at: 2000-04-01
+keycodes_45:
+  id: 45
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '9'
+  keyname: '適用不能'
+  started_at: 2000-04-01
+
 
