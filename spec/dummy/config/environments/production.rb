@@ -82,4 +82,8 @@ Dummy::Application.configure do
   # hostname write here.
   #routes.default_url_options[:host] = "www.example.jp"
   #routes.default_url_options[:host] = "192.168.26.159"
+
+  config.colorize_logging = false
+
+  # config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 end

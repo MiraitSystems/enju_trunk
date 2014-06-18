@@ -39,6 +39,7 @@ class ResourceImportTextfilesController < ApplicationController
     manifestation_types = []
     numberings          = []
     auto_numberings     = []
+    not_set_serial_number = []
     external_resource   = []
     params = Hash::new
     case @resource_import_textfile.adapter_name
@@ -49,7 +50,8 @@ class ResourceImportTextfilesController < ApplicationController
           manifestation_types << value["manifestation_type"]
           numberings          << value["numbering"]
           auto_numberings     << (value["auto_numbering"] ? true : false)
-          external_resource   << value["external_resource"]
+          not_set_serial_number << (value["not_set_serial_number"] ? true : false)
+          external_resource   << extraparams["external_resource"]
         end
       end
       params["sheet"] = sheets
@@ -57,11 +59,13 @@ class ResourceImportTextfilesController < ApplicationController
       manifestation_types << extraparams["manifestation_type"]
       numberings          << (extraparams["numbering"] || "")
       auto_numberings     << (extraparams["auto_numbering"] ? true : false)
+      not_set_serial_number << (extraparams["not_set_serial_number"] ? true : false)
       external_resource   << extraparams["external_resource"]
     end
     params["manifestation_type"] = manifestation_types
     params["numbering"]          = numberings
     params["auto_numbering"]     = auto_numberings
+    params["not_set_serial_number"] = not_set_serial_number
     params["external_resource"]  = external_resource
     @resource_import_textfile.extraparams = params.to_s
 

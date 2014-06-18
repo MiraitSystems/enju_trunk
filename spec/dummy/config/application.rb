@@ -13,6 +13,9 @@ require "enju_trunk"
 
 module Dummy
   class Application < Rails::Application
+    Rails.application.config.railties_order = [
+      EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
+    ]
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.

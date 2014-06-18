@@ -1,7 +1,11 @@
 class KeycodesController < ApplicationController
+  before_filter :prepare_options
 
   def index
     @keycodes = Keycode.page(params[:page])
+    if params[:name].present?
+      @keycodes = @keycodes.where(:name => params[:name])
+    end
   end
 
   def new
@@ -51,5 +55,11 @@ class KeycodesController < ApplicationController
       format.html { redirect_to(keycodes_url) }
       format.json { head :no_content }
     end
+  end
+
+  private
+  def prepare_options
+    @keycode_names = Keycode.unscoped.group(:name, :display_name).select([:name, :display_name])
+    @name = params[:name]
   end
 end

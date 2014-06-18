@@ -54,8 +54,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.size == 1 and 
-          series_statement.root_manifestation = series_statement.manifestations.first
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:read, :create, :update], Agent
       can :destroy, Agent do |agent|
@@ -241,8 +241,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.size == 1 and 
-          series_statement.root_manifestation = series_statement.manifestations.first
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:output], Shelf
       can [:index, :create], Agent

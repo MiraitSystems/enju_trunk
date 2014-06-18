@@ -3,7 +3,16 @@ require 'spec_helper'
 
 describe Agent do
   #pending "add some examples to (or delete) #{__FILE__}"
-  fixtures :all
+  fixtures :agents, :languages, :countries, :agent_types, :roles, :users
+
+  before do
+    add_system_configuration({
+      'exclude_agents' => '',
+      'agent.check_duplicate_user' => false,
+      'family_name_first' => true,
+      'auto_user_number' => false,
+    })
+  end
 
   describe 'validates' do
     context 'is correct' do
@@ -195,11 +204,8 @@ describe Agent do
         it { should_not be_valid }
       end
       context 'system configuration was set check duplicate user' do
-        before(:all) do
-          system_configuration = SystemConfiguration.find_by_keyname('agent.check_duplicate_user')
-          system_configuration.v = "true"
-          system_configuration.save
-          Rails.cache.clear
+        before do
+          add_system_configuration('agent.check_duplicate_user' => true)
         end
         context 'has duplicate user' do
           it_behaves_like 'failed create duplicate agent'
@@ -218,11 +224,8 @@ describe Agent do
         end
       end
       context 'system configuration was not set check duplicate user' do
-        before(:all) do
-          system_configuration = SystemConfiguration.find_by_keyname('agent.check_duplicate_user')
-          system_configuration.v = "false"
-          system_configuration.save
-          Rails.cache.clear
+        before do
+          add_system_configuration('agent.check_duplicate_user' => false)
         end
         context 'has duplicate user' do
           it_behaves_like 'successfully create duplicate agent'
@@ -298,10 +301,7 @@ describe Agent do
     end 
     context "システム設定で姓を先に表示するよう設定しており" do
       before(:each) do
-        system_configuration = SystemConfiguration.find_by_keyname('family_name_first')
-        system_configuration.v = "true"
-        system_configuration.save 
-        Rails.cache.clear 
+        add_system_configuration('family_name_first' => true)
       end
       context "full_name が空かつ" do
         before(:each) do
@@ -412,10 +412,7 @@ describe Agent do
     end
     context "システム設定で姓を先に表示するよう設定しておらず" do
       before(:each) do
-        system_configuration = SystemConfiguration.find_by_keyname('family_name_first')
-        system_configuration.v = "false"
-        system_configuration.save 
-        Rails.cache.clear 
+        add_system_configuration('family_name_first' => false)
       end
       context "full_name が空かつ" do
         before(:each) do
@@ -844,10 +841,7 @@ describe Agent do
           list[2][:required_role_id].should eq Role.find_by_name('Guest').id
         end
         it "set exclude_state" do
-          system_configuration = SystemConfiguration.find_by_keyname('exclude_agents')
-          system_configuration.v = "#{system_configuration.v}, p_#{@time}_3"
-          system_configuration.save
-          Rails.cache.clear
+          add_system_configuration('exclude_agents' => "FooBarBaz, p_#{@time}_3")
           @agent_lists << { full_name: " 　p_#{@time}_3 　", full_name_transcription: " 　p_#{@time}_yomi_3 　" }    
           list = Agent.import_agents(@agent_lists)
           list[0][:exclude_state].should eq 0
@@ -1289,10 +1283,7 @@ describe Agent do
             @list[2][:required_role_id].should eq Role.find_by_name('Guest').id
           end
           it "set exclude_state" do
-            system_configuration = SystemConfiguration.find_by_keyname('exclude_agents')
-            system_configuration.v = "#{system_configuration.v}, p_#{@time}_4"
-            system_configuration.save
-            Rails.cache.clear
+            add_system_configuration('exclude_agents' => "FooBarBaz, p_#{@time}_4")
             @agent_names += "; 　p_#{@time}_4 　"
             list = Agent.add_agents(@agent_names)
             list[0][:exclude_state].should eq 0
@@ -1305,7 +1296,7 @@ describe Agent do
           end
         end
       end
-      context "not has transcriptions " do
+      context "has transcriptions " do
         before(:each) do
           @agent_transcriptions = "#{@agent1[:full_name_transcription]}_test;#{@agent2[:full_name_transcription]}_test;#{@agent3[:full_name_transcription]}_test"
         end
@@ -1350,10 +1341,7 @@ describe Agent do
             @list[2][:required_role_id].should eq Role.find_by_name('Guest').id
           end
           it "set exclude_state" do
-            system_configuration = SystemConfiguration.find_by_keyname('exclude_agents')
-            system_configuration.v = "#{system_configuration.v}, p_#{@time}_4"
-            system_configuration.save
-            Rails.cache.clear
+            add_system_configuration('exclude_agents' => "FooBarBaz, p_#{@time}_4")
             @agent_names += "; 　p_#{@time}_4 　"
             @agent_transcriptions += "; 　p_#{@time}_yomi_4 　"
             list = Agent.add_agents(@agent_names, @agent_transcriptions)

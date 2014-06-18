@@ -1,8 +1,8 @@
 <%-
-  cols_book = Manifestation::BOOK_COLUMNS.call.map{|c| "book.#{c}"}
-  cols_series = Manifestation::SERIES_COLUMNS.map{|c| "series.#{c}"}
-  cols_article = Manifestation::ARTICLE_COLUMNS.map{|c| "article.#{c}"}
-  cols_all = Manifestation::ALL_COLUMNS
+  cols_book = Manifestation.book_output_columns
+  cols_series = Manifestation.series_output_columns
+  cols_article = Manifestation.article_output_columns
+  cols_all = Manifestation.all_output_columns
 
   need_to_render_add_mode_tags = false
 
@@ -86,40 +86,19 @@ $(document).ready(function(){
         <div style="width: 33%; float: left;">
           <% cols_book[0, cols_book.length / 2].each do |x| %>
             <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-            <% split_cols = x.split('.') %>
-            <% if split_cols[1] == 'manifestation_exinfo' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-            <% elsif split_cols[1] == 'manifestation_extext' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-            <% else %>
-              <%= t("resource_import_textfile.excel.#{x}") %><br />
-            <% end %>
+            <%= ResourceImport::Sheet.field_name(x) %><br />
           <% end %>
         </div>
         <div style="width: 34%; float: left;">
           <% cols_book[cols_book.length / 2, cols_book.length - (cols_book.length / 2)].each do |x| %>
             <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-            <% split_cols = x.split('.') %>
-            <% if split_cols[1] == 'manifestation_exinfo' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-            <% elsif split_cols[1] == 'manifestation_extext' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-            <% else %>
-              <%= t("resource_import_textfile.excel.#{x}") %><br />
-            <% end %>
+            <%= ResourceImport::Sheet.field_name(x) %><br />
           <% end %>
         </div>
         <div style="width: 33%; float: left;">
           <% cols_series.each do |x| %>
             <%= check_box_tag '', '', true, :id => "chkbox2_#{x.gsub('.','_')}", :name => "col_check" %>
-            <% split_cols = x.split('.') %>
-            <% if split_cols[1] == 'manifestation_exinfo' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_exinfo.#{split_cols[2]}") %><br />
-            <% elsif split_cols[1] == 'manifestation_extext' %>
-              <%= t("resource_import_textfile.excel.book.manifestation_extext.#{split_cols[2]}") %><br />
-            <% else %>
-              <%= t("resource_import_textfile.excel.#{x}") %><br />
-            <% end %>
+            <%= ResourceImport::Sheet.field_name(x) %><br />
           <% end %>
         </div>
         <br style='clear: both' />

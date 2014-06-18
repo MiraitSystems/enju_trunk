@@ -41,4 +41,285 @@ keycodes_6:
   v: 'other'
   keyname: 'その他'
   started_at: 2014-03-01 
+keycodes_7:
+  id: 6
+  name: 'collection_status_code'
+  display_name: '収集ステータスコード'
+  v: 'other'
+  keyname: 'その他'
+  started_at: 2014-03-01 
+keycodes_7:
+  id: 7
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '0'
+  keyname: 'その他'
+  started_at: 2000-04-01
+keycodes_8:
+  id: 8
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '1'
+  keyname: '参考図書'
+  started_at: 2000-04-01
+keycodes_9:
+  id: 9
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '2'
+  keyname: '参考図書の書誌・索引'
+  started_at: 2000-04-01
+keycodes_10:
+  id: 10
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '3'
+  keyname: '大型本'
+  started_at: 2000-04-01
+keycodes_11:
+  id: 11
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '4'
+  keyname: '地図'
+  started_at: 2000-04-01
+keycodes_12:
+  id: 12
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '5'
+  keyname: '指定図書'
+  started_at: 2000-04-01
+keycodes_13:
+  id: 13
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '6'
+  keyname: '岩波文庫'
+  started_at: 2000-04-01
+keycodes_14:
+  id: 14
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '7'
+  keyname: 'その他'
+  started_at: 2000-04-01
+keycodes_15:
+  id: 15
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '8'
+  keyname: '岩波新書'
+  started_at: 2000-04-01
+keycodes_16:
+  id: 16
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '9'
+  keyname: '講談社学術文庫'
+  started_at: 2000-04-01
+keycodes_17:
+  id: 17
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '10'
+  keyname: '就職'
+  started_at: 2000-04-01
+keycodes_18:
+  id: 18
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '11'
+  keyname: '岩波ジュニア新書'
+  started_at: 2000-04-01
+keycodes_19:
+  id: 19
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '12'
+  keyname: 'オセアニア'
+  started_at: 2000-04-01
+keycodes_20:
+  id: 20
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '13'
+  keyname: 'その他'
+  started_at: 2000-04-01
+keycodes_21:
+  id: 21
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '14'
+  keyname: '旅行ガイドブック'
+  started_at: 2000-04-01
+keycodes_22:
+  id: 22
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '15'
+  keyname: '留学'
+  started_at: 2000-04-01
+keycodes_23:
+  id: 23
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '16'
+  keyname: '女性'
+  started_at: 2000-04-01
+keycodes_24:
+  id: 24
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '17'
+  keyname: '大学入試問題集'
+  started_at: 2000-04-01
+keycodes_25:
+  id: 25
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '18'
+  keyname: '購読図書'
+  started_at: 2000-04-01
+keycodes_26:
+  id: 26
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '19'
+  keyname: '関西圏関係図書'
+  started_at: 2000-04-01
+keycodes_27:
+  id: 27
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '20'
+  keyname: 'グループ閲覧室復刻版'
+  started_at: 2000-04-01
+keycodes_28:
+  id: 28
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '21'
+  keyname: '書庫'
+  started_at: 2000-04-01
+keycodes_29:
+  id: 29
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '22'
+  keyname: 'カウンター'
+  started_at: 2000-04-01
+keycodes_30:
+  id: 30
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '23'
+  keyname: 'カセット'
+  started_at: 2000-04-01
+keycodes_31:
+  id: 31
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '24'
+  keyname: 'ＣＤ'
+  started_at: 2000-04-01
+keycodes_32:
+  id: 32
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '25'
+  keyname: 'ビデオ'
+  started_at: 2000-04-01
+keycodes_33:
+  id: 33
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '26'
+  keyname: 'ＬＤ・ＤＶＤ'
+  started_at: 2000-04-01
+keycodes_34:
+  id: 34
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '27'
+  keyname: 'ＣＤ－ＲＯＭ'
+  started_at: 2000-04-01
+keycodes_35:
+  id: 35
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '28'
+  keyname: 'ＣＤ就職'
+  started_at: 2000-04-01
+keycodes_36:
+  id: 36
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '29'
+  keyname: 'カセット就職'
+  started_at: 2000-04-01
+keycodes_37:
+  id: 37
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '30'
+  keyname: 'ＤＶＤ－ＲＯＭ'
+  started_at: 2000-04-01
+keycodes_38:
+  id: 38
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '31'
+  keyname: '北校舎書庫'
+  started_at: 2000-04-01
+keycodes_39:
+  id: 39
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '32'
+  keyname: '学習サポートセンター'
+  started_at: 2000-04-01
+keycodes_40:
+  id: 40
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '33'
+  keyname: '図書館2階'
+  started_at: 2000-04-01
+keycodes_41:
+  id: 41
+  name: 'manifestation.location_category'
+  display_name: '書誌別置区分'
+  v: '34'
+  keyname: '教員著作物コーナー'
+  started_at: 2000-04-01
+keycodes_42:
+  id: 42
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '0'
+  keyname: '不明'
+  started_at: 2000-04-01
+keycodes_43:
+  id: 43
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '1'
+  keyname: '男性'
+  started_at: 2000-04-01
+keycodes_44:
+  id: 44
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '2'
+  keyname: '女性'
+  started_at: 2000-04-01
+keycodes_45:
+  id: 45
+  name: 'agent.gender'
+  display_name: '性別'
+  v: '9'
+  keyname: '適用不能'
+  started_at: 2000-04-01
+
 

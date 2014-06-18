@@ -154,13 +154,19 @@ class SeriesStatement < ActiveRecord::Base
     return manifestation
   end
 
+  def initialize_root_manifestation(manifestation = nil)
+    manifestation ||= build_root_maifestation
+    manifestation.periodical_master   = true
+    manifestation.periodical          = self.periodical
+    manifestation.original_title      = self.original_title
+    manifestation.title_transcription = self.title_transcription
+    manifestation.title_alternative   = self.title_alternative
+    manifestation
+  end
+
   def self.create_root_manifestation(series_statement, objs)
     root_manifestation = series_statement.root_manifestation
-    root_manifestation.periodical_master   = true
-    root_manifestation.periodical          = series_statement.periodical
-    root_manifestation.original_title      = series_statement.original_title
-    root_manifestation.title_transcription = series_statement.title_transcription
-    root_manifestation.title_alternative   = series_statement.title_alternative
+    root_manifestation = series_statement.initialize_root_manifestation(root_manifestation)
     root_manifestation.save!
 
     root_manifestation.subjects = Subject.import_subjects(objs[:subjects], objs[:subject_transcriptions])
@@ -177,7 +183,9 @@ class SeriesStatement < ActiveRecord::Base
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
-  def excel_worksheet_value(ws_type, ws_col)
+  # sep_flg: 分割指定(ONのときture)
+  # ccount: 分割指定OKのときのカラム数
+  def excel_worksheet_value(ws_type, ws_col, sep_flg, ccount)
     val = nil
 
     case ws_col

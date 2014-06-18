@@ -40,36 +40,16 @@ class Tsvfile_Adapter < EnjuTrunk::ResourceAdapter::Base
 
     col_sep = SystemConfiguration.get('set_output_format_type') ? "\t" : ","
     file = CSV.open(tempfile.path, :col_sep => col_sep)
-    return file
-  end
 
-  def set_datas(file)
-    # check if sheet is empty # TODO
-    # raise I18n.t('resource_import_textfile.error.blank_sheet', :sheet => sheet) unless file
-    # set field
-    field = Hash::new
-    datas = []
-    file.each_with_index do|row, c|
-      if c == 0
-        row.each_with_index do |column, i|
-          name = column.to_s.strip
-          unless name.blank?
-            if field.keys.include?(name)
-              raise I18n.t('resource_import_textfile.error.overlap')
-            else
-              field.store(name, i)
-            end
-          end
-        end
-      else
-        datas << row
-      end
+    unless block_given?
+      return file
     end
-    file.close
 
-    # check has duplication column
-    raise I18n.t('resource_import_textfile.error.overlap') unless field.keys.uniq.size == field.keys.size
-    return field, datas
+    begin
+      yield(file)
+    ensure
+      file.close
+    end
   end
 end
 EnjuTrunk::ResourceAdapter::Base.add(Tsvfile_Adapter)
