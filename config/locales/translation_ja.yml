@@ -450,6 +450,7 @@ ja:
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
         grade: 学年
+        gender: 性別
       feeds/app:
         source_url: ソースURL
         title: タイトル
