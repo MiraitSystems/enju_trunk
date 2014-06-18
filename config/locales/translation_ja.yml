@@ -2138,6 +2138,7 @@ ja:
 
   exstatistics:
     report: 帳票
+    totaling_report: 集計帳票
     checkout_report: 貸出状況表
     reserve_report: 予約状況表
     library_report: 報告書(日報・月報)

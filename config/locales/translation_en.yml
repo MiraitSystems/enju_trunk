@@ -3003,6 +3003,7 @@ en:
     search_manifestations: Catalog search
   exstatistics:
     report: Report
+    totaling_report: Totaling report
     checkout_report: Checkout report
     reserve_report: Reservation report
     library_report: Library report

@@ -491,6 +491,7 @@ Rails.application.routes.draw do
 
   resources :copy_requests
 
+  resources :totaling_reports
   resources :checkoutlists
   resources :nacsis_user_requests
 
