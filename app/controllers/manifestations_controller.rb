@@ -837,6 +837,7 @@ class ManifestationsController < ApplicationController
     @contributors = get_contributor_values(@manifestation)
     @publishers = get_publisher_values(@manifestation)
     @subjects = [Subject.new()] if @subjects.blank?
+    @classifications = [{}] if @classifications.blank?
     
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
@@ -866,6 +867,7 @@ class ManifestationsController < ApplicationController
     @contributors = get_contributor_values(@manifestation)
     @publishers = get_publisher_values(@manifestation)
     @subjects = @manifestation.subjects.order(:position).present? ? @manifestation.subjects.order(:position) : [Subject.new()]
+    @classifications = get_classification_values(@manifestation)
     
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
@@ -911,6 +913,10 @@ class ManifestationsController < ApplicationController
     # subjects
     @subjects = params[:subjects] 
     @manifestation.subjects = create_subject_values(@subjects);
+
+    # classifications
+    @classifications = params[:classifications] 
+    @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
@@ -982,6 +988,10 @@ class ManifestationsController < ApplicationController
     @subjects = params[:subjects]
     @manifestation.subjects = create_subject_values(@subjects);
     
+    # classifications
+    @classifications = params[:classifications] 
+    @manifestation.classifications = create_classification_values(@classifications);
+
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -1526,6 +1536,7 @@ class ManifestationsController < ApplicationController
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
     end
     @use_licenses = UseLicense.all
+    @classification_types = ClassificationType.order("position").all
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
@@ -2070,6 +2081,36 @@ class ManifestationsController < ApplicationController
       end
     end
     return subjects
+  end
+
+  # 
+  # create classification vaules
+  # 
+  def create_classification_values(add_classifications)
+    classifications = []
+    add_classifications.each do |add_classification|
+      next if add_classification[:classification_id].blank?
+      classification = Classification.where(:id => add_classification[:classification_id]).first
+      classifications << classification if classification.present?
+    end
+    return classifications
+  end
+
+  # 
+  # get classification vaules
+  # 
+  def get_classification_values(manifestation)
+    classifications = []
+    manifestation_has_classifications = manifestation.manifestation_has_classifications.order(:position)
+    if manifestation_has_classifications.present?
+      manifestation_has_classifications.each do |manifestation_has_classification|
+        classifications << {:classification_type_id => manifestation_has_classification.classification.classification_type_id,
+                            :classification_id => manifestation_has_classification.classification_id}
+      end
+    else
+      classifications << {}
+    end
+    return classifications
   end
 
 end
