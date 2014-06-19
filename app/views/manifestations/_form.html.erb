@@ -277,6 +277,16 @@ $(document).keydown(function(e) {
     </div>
   <%- end -%>
 
+  <div class="field">
+    <%= f.label :location_category_id %>
+    <script>
+      $(document).ready(function() {
+        $("#manifestation_location_category_id").select2();
+      });
+    </script>
+    <%= f.select :location_category_id, options_from_collection_for_select(@location_categorys, :id, :keyname, @manifestation.location_category_id), {}, {:style => "width:250px"} %>
+  </div>
+
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
     <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end %> 
