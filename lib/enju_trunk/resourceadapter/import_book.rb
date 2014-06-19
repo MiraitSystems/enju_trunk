@@ -1102,7 +1102,6 @@ module EnjuTrunk
           obj = model.where(options[:check_column] => options[:default]).first
         end
       elsif options[:can_blank] == true and field_value.blank?
-        # XXX: シートの項目が空で、かつ:can_blankがtrueでないとき、下のelseブロックに進んでしまうがOK? (例外にしなくてもよい?)
         obj = nil
       else
         #obj = options[:model].where(options[:check_column] => field_value).first# rescue nil

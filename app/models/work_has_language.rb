@@ -6,7 +6,7 @@ class WorkHasLanguage < ActiveRecord::Base
   belongs_to :work, class_name: 'Manifestation'
   validates_presence_of :work, :language, :unless => :nested
   validates_associated :work, :language
-  validates_uniqueness_of :work_id, :scope => [:work_id, :language_type_id]
+  validates_uniqueness_of :language_id, :scope => [:work_id, :language_type_id]
   acts_as_list :scope => :work_id
   after_save :reindex
   after_destroy :reindex

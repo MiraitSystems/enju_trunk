@@ -18,7 +18,7 @@
             <tr>
               <td style="width: 200px"><%= t('manifestation.series_statement') -%>:</td>
               <td style="width: 490px">
-              <% if @manifestation.series_statement.periodical %>
+              <% if manifestation.series_statement.periodical %>
                 [<%= t('manifestation.serial') -%>]
               <% end %>
               <%= link_to manifestation.series_statement.original_title, manifestation.series_statement -%>

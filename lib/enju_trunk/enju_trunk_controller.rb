@@ -473,48 +473,119 @@ module EnjuTrunk
         end
       end
 
-      def set_agent_instance_from_params # Use manifestations_controller.rb and series_statements_controller.rb
-        @creates = Create.new_attrs(params[:creates].try(:keys), params[:creates].try(:values))
-        @realizes = Realize.new_attrs(params[:realizes].try(:keys), params[:realizes].try(:values))
-        @produces = Produce.new_attrs(params[:produces].try(:keys), params[:produces].try(:values))
-        @del_creators = params[:del_creator_ids].nil? ? [] : params[:del_creator_ids]
-        @del_contributors = params[:del_contributor_ids].nil? ? [] : params[:del_contributor_ids]
-        @del_publishers = params[:del_publisher_ids].nil? ? [] : params[:del_publisher_ids]
-        @add_creators = set_agent_attrs(params[:creator_ids].try(:values),
-                                        params[:creator_full_names].try(:values),
-                                        params[:creator_full_name_transcriptions].try(:values),
-                                        params[:creator_type_ids].try(:values))
-        @add_contributors = set_agent_attrs(params[:contributor_ids].try(:values),
-                                            params[:contributor_full_names].try(:values),
-                                            params[:contributor_full_name_transcriptions].try(:values),
-                                            params[:contributor_type_ids].try(:values))
-        @add_publishers = set_agent_attrs(params[:publisher_ids].try(:values),
-                                          params[:publisher_full_names].try(:values),
-                                          params[:publisher_full_name_transcriptions].try(:values),
-                                          params[:publisher_type_ids].try(:values))
-      end
+     # 
+     # create creator vaules
+     # 
+     def create_creator_values(add_creators)
+       creates = [] 
+       add_creators.each do |add_creator|
+         next if add_creator[:id].blank?
+         if add_creator[:id].to_i != 0 
+           agent = Agent.where(:id => add_creator[:id]).first
+           if agent.present?
+             agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
+             agent.save
+             create = Create.new
+             create.agent = agent
+             create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
+             create.save
+             creates << create
+           end  
+         else 
+           # new record
+           agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
+           agent.save
+           create = Create.new
+           create.agent = agent
+           create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
+           creates << create
+         end  
+       end  
+       return creates
+     end 
+  
+     # 
+     # create contributor vaules
+     # 
+     def create_contributor_values(add_contributors)
+       realizes = []
+       add_contributors.each do |add_contributor|
+         next if add_contributor[:id].blank?
+         if add_contributor[:id].to_i != 0
+           agent = Agent.where(:id => add_contributor[:id]).first
+           if agent.present?
+             agent.full_name_transcription = add_contributor[:full_name_transcription] if add_contributor[:full_name_transcription].present?
+             agent.save
+             realize = Realize.new
+             realize.agent = agent
+             realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+             realize.save
+             realizes << realize
+           end
+         else
+           # new record
+           agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
+           agent.save
+           realize = Realize.new
+           realize.agent = agent
+           realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
+           realizes << realize
+         end
+       end
+       return realizes
+     end
 
-      def set_agent_attrs(agent_ids, full_names, full_name_reads, type_ids)
-        list = []
-        if agent_ids
-          agent_ids.each_with_index.each do |agent_id ,i|
-            param = {}
-            if agent_id.blank?
-              next if full_name_reads.blank?
-              param[:full_name] = full_names[i]
-              param[:full_name_transcription] = full_name_reads[i]
-              param[:type_id] = type_ids[i] if type_ids
-            else
-              param[:agent_id] = agent_id
-              param[:full_name] = full_names[i] if full_names
-              param[:full_name_transcription] = full_name_reads[i] if full_name_reads
-              param[:type_id] = type_ids[i] if type_ids
-            end
-            list << param
-          end
-        end
-        list
-      end
+     # 
+     # create publisher vaules
+     # 
+     def create_publisher_values(add_publishers)
+       produces = []
+       add_publishers.each do |add_publisher|
+         next if add_publisher[:id].blank?
+         if add_publisher[:id].to_i != 0
+           agent = Agent.where(:id => add_publisher[:id]).first
+           if agent.present?
+             agent.full_name_transcription = add_publisher[:full_name_transcription] if add_publisher[:full_name_transcription].present?
+             agent.save
+             produce = Produce.new
+             produce.agent = agent
+             produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+             produce.save
+             produces << produce
+           end
+         else
+           # new record
+           agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
+           agent.save
+           produce = Produce.new
+           produce.agent = agent
+           produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
+           produces << produce
+         end
+       end
+       return produces
+     end
 
-    end
+     # 
+     # create subject vaules
+     # 
+     def create_subject_values(add_subjects)
+       subjects = []
+       add_subjects.each do |add_subject|
+         next if add_subject[:id].blank?
+         if add_subject[:id].to_i != 0
+           subject = Subject.where(:id => add_subject[:id]).first
+           subject.term_transcription = add_subject[:term_transcription]
+           subjects << subject if subject.present?
+         else
+           # new record
+           subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription])
+           subject.subject_type_id = 1
+           subject.required_role = Role.where(:name => 'Guest').first
+           subjects << subject
+         end
+       end
+       return subjects
+     end
+  end
 end
