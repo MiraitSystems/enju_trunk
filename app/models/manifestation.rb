@@ -761,10 +761,6 @@ class Manifestation < ActiveRecord::Base
     NKF.nkf('-w --katakana', title_transcription) if title_transcription
   end
 
-  def classifications
-    subjects.collect(&:classifications).flatten
-  end
-
   def questions(options = {})
     id = self.id
     options = {:page => 1, :per_page => Question.per_page}.merge(options)
