@@ -81,7 +81,7 @@ ja:
       search_engine: 検索エンジン
       create: 著作関係
       create_type: 著作の関係
-      carrier_type: 資料の形態
+      carrier_type: 資料識別子
       retention_period: 保存種別
       manifestation_type: 資料区分
       manifestation: 資料
@@ -944,7 +944,7 @@ ja:
       manifestation:
         id: ID
         original_title: タイトル # 原題
-        title_alternative: 代替タイトル
+        title_alternative: 原書名 
         title_transcription: タイトル（ヨミ）
         article_title: 誌名
         classification_number: 分類番号
@@ -961,7 +961,7 @@ ja:
         deleted_at: 削除時刻
         access_address: アクセスアドレス
         start_page: 最初のページ
-        end_page: 最後のページ
+        end_page: 総ページ
         page: ページ
         size: サイズ
         height: 高さ
@@ -974,9 +974,9 @@ ja:
         price: 価格
         price_string: 価格
         volume_number: 巻（数字）
-        volume_number_string: 巻
+        volume_number_string: 巻号(ヨミ)
         issue_number: 号（数字）
-        issue_number_string: 号
+        issue_number_string: 通巻
         serial_number: 通号
         serial_number_string: 通号
         edition: 版（数字）
@@ -1008,7 +1008,7 @@ ja:
         exinfo_8: 拡張情報８
         exinfo_9: 拡張情報９
         exinfo_10: 拡張情報１０
-        edition_display_value: 版表示
+        edition_display_value: 巻号
         reserves_number: 予約数
         detail: 資料確認票
         supplement: 付録
