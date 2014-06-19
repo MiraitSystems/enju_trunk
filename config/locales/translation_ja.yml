@@ -8,7 +8,7 @@ ja:
       library: 図書館
       question: 質問（レファレンス）
       agent_import_file: 人物・団体のインポート用ファイル
-      circulation_status: 貸出状態
+      circulation_status: 所蔵状態
       remove_reason: 除籍理由
       inventory: 蔵書点検
       agent: 人物・団体
@@ -62,7 +62,7 @@ ja:
       subject_as_concept: 件名概念として
       frequency: 発行頻度
       expression_merge_list: 協力した資料の統合リスト
-      use_restriction: 利用制限
+      use_restriction: 持出禁止
       subject: 件名
       content_type: 協力した資料の形態
       work_merge: 書いた資料の統合
@@ -82,7 +82,7 @@ ja:
       create: 著作関係
       create_type: 著作の関係
       carrier_type: 資料の形態
-      retention_period: 保存種別
+      retention_period: 貸出規則
       manifestation_type: 資料区分
       manifestation: 資料
       user_group: 利用者グループ
@@ -99,7 +99,7 @@ ja:
       retained_manifestation: 取置済み(未連絡)資料
       reserve_family: 家族の予約
       answer: 回答
-      bookstore: 寄贈・購入先
+      bookstore: 発注先区分
       area: 地区
       user_status: 利用者利用状況
       department: 部署
@@ -706,11 +706,11 @@ ja:
         include_supplements: 付録を含む
         note: 注記
         url: URL
-        price: 購入価格
+        price: 受入価格（税込）
         price_string: 購入価格
         lock_version: ロックバージョン
         checkout_type: 貸出区分
-        retention_period: 保存種別
+        retention_period: 貸出規則
         acquired_at: 受入日
         acquired_at_string: 受入日
         loss_item: 紛失処理
