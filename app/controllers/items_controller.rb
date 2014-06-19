@@ -349,6 +349,8 @@ class ItemsController < ApplicationController
         @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
       end
     end
+    @location_symbols = Keycode.where(:name => 'item.location_symbol')
+    @statistical_classes = Keycode.where(:name => 'item.statistical_class')
   end
 
   def check_status

@@ -321,5 +321,138 @@ keycodes_46:
   v: '9'
   keyname: '適用不能'
   started_at: 2000-04-01
+keycodes_47:
+  id: 47
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '0'
+  keyname: 'その他'
+  started_at: 2000-04-01
+keycodes_48:
+  id: 48
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '1'
+  keyname: 'Ｒ'
+  started_at: 2000-04-01
+keycodes_49:
+  id: 49
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '2'
+  keyname: 'Ｍ'
+  started_at: 2000-04-01
+keycodes_50:
+  id: 50
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '3'
+  keyname: 'Ｂ'
+  started_at: 2000-04-01
+keycodes_51:
+  id: 51
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '4'
+  keyname: 'Ｌ'
+  started_at: 2000-04-01
+keycodes_52:
+  id: 52
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '5'
+  keyname: 'イ'
+  started_at: 2000-04-01
+keycodes_53:
+  id: 53
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '6'
+  keyname: 'い'
+  started_at: 2000-04-01
+keycodes_54:
+  id: 54
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '7'
+  keyname: 'こ'
+  started_at: 2000-04-01
+keycodes_55:
+  id: 55
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '8'
+  keyname: '書庫'
+  started_at: 2000-04-01
+keycodes_56:
+  id: 56
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '9'
+  keyname: '寄贈'
+  started_at: 2000-04-01
+keycodes_57:
+  id: 57
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '10'
+  keyname: 'Ｓ'
+  started_at: 2000-04-01
+keycodes_58:
+  id: 58
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '11'
+  keyname: 'Ｇ'
+  started_at: 2000-04-01
+keycodes_59:
+  id: 59
+  name: 'item.location_symbol'
+  display_name: '別置記号'
+  v: '12'
+  keyname: '就'
+  started_at: 2000-04-01
+keycodes_60:
+  id: 60
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '1'
+  keyname: '人文科学'
+  started_at: 2000-04-01
+keycodes_61:
+  id: 61
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '2'
+  keyname: '社会科学'
+  started_at: 2000-04-01
+keycodes_62:
+  id: 62
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '3'
+  keyname: '自然科学'
+  started_at: 2000-04-01
+keycodes_63:
+  id: 63
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '4'
+  keyname: '英語以外の外国語'
+  started_at: 2000-04-01
+keycodes_64:
+  id: 64
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '5'
+  keyname: '保健体育'
+  started_at: 2000-04-01
+keycodes_65:
+  id: 65
+  name: 'item.statistical_class'
+  display_name: '統計分類'
+  v: '6'
+  keyname: '英語科（専門教育科目）'
+  started_at: 2000-04-01
 
 
