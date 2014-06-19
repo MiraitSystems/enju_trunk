@@ -3313,3 +3313,7 @@ ja:
     adption_code: "採択"
     issn: "ＩＳＳＮ"
     jstage: "J-Stage搭載"
+  classification:
+    search_placeholder: "分類記号を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"
