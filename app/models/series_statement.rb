@@ -149,6 +149,8 @@ class SeriesStatement < ActiveRecord::Base
       manifestation.required_role = root_manifestation.required_role
       manifestation.work_has_languages = root_manifestation.work_has_languages
       manifestation.manifestation_identifier = root_manifestation.identifier
+      manifestation.manifestation_has_classifications = root_manifestation.manifestation_has_classifications.order(:position)
+      manifestation.subjects = root_manifestation.subjects.order(:position)
     end  
     manifestation.series_statement = self
     return manifestation

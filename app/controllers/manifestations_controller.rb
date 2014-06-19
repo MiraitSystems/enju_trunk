@@ -813,10 +813,11 @@ class ManifestationsController < ApplicationController
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
       
-      @creators = original_manifestation.creators.order(:position)
-      @contributors = original_manifestation.contributors.order(:position)
-      @publishers = original_manifestation.publishers.order(:position)
+      @creators = get_creator_values(original_manifestation)
+      @contributors = get_contributor_values(original_manifestation)
+      @publishers = get_publisher_values(original_manifestation)
       @subjects = original_manifestation.subjects.order(:position)
+      @classifications = get_classification_values(original_manifestation)
 
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
@@ -829,15 +830,19 @@ class ManifestationsController < ApplicationController
       end
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
-      #TODO refactoring
-      @creators, @contributors, @publishers, @subjects = @manifestation.creators, @manifestation.contributors, @manifestation.publishers, @manifestation.subjects
+
+      @creators = get_creator_values(@manifestation)
+      @contributors = get_contributor_values(@manifestation)
+      @publishers = get_publisher_values(@manifestation)
+      @subjects = @manifestation.subjects.order(:position)
+      @classifications = get_classification_values(@manifestation)
     end
 
-    @creators = get_creator_values(@manifestation)
-    @contributors = get_contributor_values(@manifestation)
-    @publishers = get_publisher_values(@manifestation)
+    @creators = get_creator_values(@manifestation) if @creators.blank?
+    @contributors = get_contributor_values(@manifestation) if @contributors.blank?
+    @publishers = get_publisher_values(@manifestation) if @publishers.blank?
     @subjects = [Subject.new()] if @subjects.blank?
-    @classifications = [{}] if @classifications.blank?
+    @classifications = get_classification_values(@manifestation) if @classifications.blank?
     
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
