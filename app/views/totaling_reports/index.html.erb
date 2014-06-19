@@ -10,15 +10,16 @@
       <p id="notice"><%= notice %></p>
 
       <%= label :list_condition, t('activerecord.attributes.item_list.list_condition') %>:<br />
+      <%# 資料区分の設定 %>
       <div class="parent">
         <%= check_box_tag "all_manifestation_types", true,
-          @manifestation_type_ids.size == @manifestation_types.size ? true : false, :class => 'check-parent' %>
+          @selected_type_ids.size == @manifestation_types.size ? true : false, :class => 'check-parent' %>
         <%= t('advanced_search.all', :model => t('activerecord.models.manifestation_type')) %><br />
         <div id="list_condition_200">
           <% @manifestation_types.each_with_index do |m, g| %>
             &nbsp;&nbsp;
             <%= check_box_tag "manifestation_types[]", m.id,
-              @manifestation_type_ids.include?(m.id) ? true : false, :class => 'check-child' %>
+              @selected_type_ids.include?(m.id) ? true : false, :class => 'check-child' %>
             <%= m.display_name.localize %><br />
             <% if g == 6 || g == 13 %>
               </div>

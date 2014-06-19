@@ -3,6 +3,7 @@ class TotalingReportsController < ApplicationController
   # load_and_authorize_resource
 
   def index
+    @selected_type_ids = params[:manifestation_types].map{|m| m.to_i} if params[:manifestation_types]
     search = Sunspot.new_search(Manifestation) #.include([:shelf => :library])
     per_page = Item.default_per_page
     page = params[:page].try(:to_i) || 1
@@ -27,20 +28,20 @@ class TotalingReportsController < ApplicationController
       @manifestation_nums[m.display_name.localize] = Manifestation.count_by_sql(["select count(*) from manifestations where manifestation_type_id = ?", m.id])
     end
 =end
-
+    all_items = Item.joins(:manifestation)
     @manifestation_types = ManifestationType.all
-    @manifestation_separete_ids = Array.new
-    @manifestation_types.each do |m|
-      manifestation_separete_item_id = Manifestation.find(:all, :conditions => { :manifestation_type_id => m.id }, :select => "item_id")
-      @manifestation_separete_ids << manifestation_separete_item_id
-    end
     @shelves = Shelf.all
-    @number_of_books = Array.new
-    @shelves.each do |s|
-      @manifestation_separete_ids.each do |ms_item_id|
-        number_of_book = Item.count_by_sql(["SELECT count(*) FROM items WHERE shelf_id = '?' AND id = '?'", s.id, ms_item_id])
-        @number_of_books << number_of_book
+    @selected_type_ids ||= @manifestation_types.map(&:id)
+    @list = Array.new
+    @manifestation_types.each do |m|
+      @shelves.each do |s|
+        manifestation_type = m.display_name.localize
+        shelf = s.display_name.localize
+        item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
+        @list << [manifestation_type, shelf, item_count]
       end
+      # manifestation_separete_item_id = Manifestation.find(:all, :conditions => { :manifestation_type_id => m.id }, :select => "item_id")
+      # @manifestation_separete_ids << manifestation_separete_item_id
     end
   end
 end
