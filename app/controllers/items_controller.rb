@@ -350,7 +350,7 @@ class ItemsController < ApplicationController
       end
     end
     @location_symbols = Keycode.where(:name => 'item.location_symbol')
-    @statistical_classies = Keycode.where(:name => 'item.statistical_class')
+    @statistical_classes = Keycode.where(:name => 'item.statistical_class')
   end
 
   def check_status

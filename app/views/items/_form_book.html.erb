@@ -61,6 +61,24 @@
   </div>
 
   <div class="field">
+    <%= f.label :location_symbol -%><br />
+    <%= f.select :location_symbol_id, options_from_collection_for_select(@location_symbols, :id, :keyname, @item.location_symbol_id), :include_blank => true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :statistical_class -%><br />
+    <%= f.select :statistical_class_id, options_from_collection_for_select(@statistical_classes, :id, :keyname, @item.statistical_class_id), :include_blank => true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :call_number -%><br />
+    <%= f.text_field :call_number -%>
+  </div>
+
+
+
+
+  <div class="field">
     <strong><%= t('item.search_bookstore') %></strong>
     <%= text_field :search_bookstore, :input %>
     <%= submit_tag t('page.search'), :class => 'search_bookstore_button' %>
