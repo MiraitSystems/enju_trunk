@@ -84,6 +84,8 @@ class Item < ActiveRecord::Base
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
+  belongs_to :symbol_location, :class_name => 'Keycode', :foreign_key => 'symbol_location_id'
+  belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
