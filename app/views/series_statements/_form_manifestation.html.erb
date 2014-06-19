@@ -52,7 +52,7 @@ function displayArticleTitle(article_title) {
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 
-  <%= render 'manifestations/form_agent_field' %>
+  <%= render 'manifestations/form_agent_field', :f => f_m %>
 
   <div class="field">
     <%= f_m.label t('page.file') -%><br />

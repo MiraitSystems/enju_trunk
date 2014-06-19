@@ -22,7 +22,10 @@
         <%- if manifestation.try(:catalog_id) && manifestation.catalog_id > 0 -%>
           <tr>
             <td><%= t('activerecord.attributes.manifestation.external_catalog') %>:</td>
-            <td><%= manifestation.catalog.display_name %></td>
+            <td>
+              <%= manifestation.catalog.display_name %>
+              <%- if manifestation.nacsis_identifier %>(<%= t('activerecord.attributes.manifestation.nacsis_identifier') %>: <%= manifestation.nacsis_identifier %>)<%- end %>
+            </td>
           </tr>
         <%- end -%>
         <% if manifestation.bookbinder %>
@@ -36,7 +39,7 @@
             <tr>
               <td style="width: 200px"><%= t('manifestation.series_statement') -%>:</td>
               <td style="width: 490px">
-              <% if @manifestation.series_statement.periodical %>
+              <% if manifestation.series_statement.periodical %>
                 [<%= t('manifestation.serial') -%>]
               <% end %>
               <%= link_to manifestation.series_statement.original_title, manifestation.series_statement -%>

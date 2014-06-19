@@ -389,6 +389,7 @@ Rails.application.routes.draw do
   resources :countries
 
   resources :languages
+  match 'languages/search_name' => 'languages#search_name'
 
   resources :work_has_languages
 
