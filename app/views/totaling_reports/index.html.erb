@@ -1,0 +1,47 @@
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('exstatistics.checkout_report') %></h1>
+  <div id="content_list">
+    <div style="color: green"><%= flash[:message] -%></div>
+    <div id="list_condition_200">
+    </div>
+    <br style="clear:both;"/><br />
+
+    <%= form_for :checkoutlists, :html => {:method => 'get'} do %>
+      <p id="notice"><%= notice %></p>
+
+      <%= label :list_condition, t('activerecord.attributes.item_list.list_condition') %>:<br />
+      <div class="parent">
+        <%= check_box_tag "all_manifestation_types", true,
+          @manifestation_type_ids.size == @manifestation_types.size ? true : false, :class => 'check-parent' %>
+        <%= t('advanced_search.all', :model => t('activerecord.models.manifestation_type')) %><br />
+        <div id="list_condition_200">
+          <% @manifestation_types.each_with_index do |m, g| %>
+            &nbsp;&nbsp;
+            <%= check_box_tag "manifestation_types[]", m.id,
+              @manifestation_type_ids.include?(m.id) ? true : false, :class => 'check-child' %>
+            <%= m.display_name.localize %><br />
+            <% if g == 6 || g == 13 %>
+              </div>
+              <div id="list_condition_200">
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <br style="clear:both;"/>
+      <div class="actions">
+        <%= button_to t('page.show', :model => t('activerecord.models.checkoutlist')), {:method => :show}, {:remote => true} %>
+      </div>
+
+      <div id="item_list">
+        <%= render 'list' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.back'), page_extensions_path %></li>
+  </ul>
+</div>

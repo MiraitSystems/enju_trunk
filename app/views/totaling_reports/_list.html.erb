@@ -1,0 +1,20 @@
+<table class="index">
+  <tr>
+    <th><nobr><%= t('activerecord.models.manifestation_type') %></nobr></th>
+    <th><%= t('totaling_report.shelving_location') %></th>
+    <th><%= t('totaling_report.number_of_books') %></th>
+    <th><%= t('totaling_report.subtotal') %></th>
+  </tr>
+  <% @manifestation_types.each do |mt| %>
+    <tr>
+      <th><%= mt.display_name.localize %></th>
+      <% @shelves.each do |s| %>
+        <th><%= s.display_name.localize %></th>
+        <% @number_of_books.each do |number_of_book| %>
+          <th><%= number_of_book %></th>
+        <% end %>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<%#= paginate(@items) -%>

@@ -2916,6 +2916,10 @@ en:
     title_catalog: Title catalog
     author_catalog: Author catalog
     classfied_catalog: Classfied catalog
+  totaling_report:
+    shelving_location: Shelving location
+    number_of_books: Number of books
+    subtotal: Subtotal
   system_configuration:
     general: General
     user: User

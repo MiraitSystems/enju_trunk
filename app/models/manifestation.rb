@@ -174,6 +174,7 @@ class Manifestation < ActiveRecord::Base
     string :carrier_type do
       carrier_type.name
     end
+    integer :manifestation_type_id
     string :manifestation_type, :multiple => true do
       manifestation_type.try(:name)
       #if series_statement.try(:id) 
