@@ -15,7 +15,7 @@ class Agent < ActiveRecord::Base
     :telephone_number_2_type_id, :extelephone_number_2,
     :extelephone_number_2_type_id, :fax_number_2_type_id, :user_username,
     :exclude_state, :keyperson_1, :keyperson_2, :corporate_type_id, :place_id,
-		:grade
+    :grade, :gender_id
 
   scope :readable_by, lambda{|user| {:conditions => ['required_role_id <= ?', user.try(:user_has_role).try(:role_id) || Role.where(:name => 'Guest').select(:id).first.id]}}
   has_many :creates, :dependent => :destroy
@@ -43,6 +43,8 @@ class Agent < ActiveRecord::Base
   belongs_to :country
   belongs_to :place, :class_name => 'Subject', :foreign_key => 'place_id'
   belongs_to :corporate_type, :class_name => 'Keycode', :foreign_key => 'corporate_type_id'
+  belongs_to :gender, :class_name => 'Keycode', :foreign_key => 'gender_id'
+		
   has_one :agent_import_result
 
   has_many :orders

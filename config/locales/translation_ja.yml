@@ -450,6 +450,7 @@ ja:
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
         grade: 学年
+        gender: 性別
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -3312,3 +3313,7 @@ ja:
     adption_code: "採択"
     issn: "ＩＳＳＮ"
     jstage: "J-Stage搭載"
+  classification:
+    search_placeholder: "分類記号を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"

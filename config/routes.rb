@@ -335,6 +335,8 @@ Rails.application.routes.draw do
 
   resources :library_groups, :except => [:new, :create, :destroy]
 
+  match 'classifications/search_name' => 'classifications#search_name'
+
   resources :classifications do
     resources :subject_has_classifications
   end
