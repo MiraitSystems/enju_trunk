@@ -480,7 +480,7 @@ module EnjuTrunk
        creates = [] 
        add_creators.each do |add_creator|
          next if add_creator[:id].blank?
-         if add_creator[:id].to_i != 0 
+         if add_creator[:id].to_i != 0
            agent = Agent.where(:id => add_creator[:id]).first
            if agent.present?
              agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
@@ -490,8 +490,8 @@ module EnjuTrunk
              create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
              create.save
              creates << create
-           end  
-         else 
+           end
+         else
            # new record
            agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
            agent.save
@@ -500,7 +500,8 @@ module EnjuTrunk
            create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
            creates << create
          end  
-       end  
+       end
+       creates.uniq! {|create| [create.agent_id, create.create_type_id] }
        return creates
      end 
   
@@ -532,6 +533,7 @@ module EnjuTrunk
            realizes << realize
          end
        end
+       realizes.uniq! {|realize| [realize.agent_id, realize.realize_type_id] }
        return realizes
      end
 
@@ -563,6 +565,7 @@ module EnjuTrunk
            produces << produce
          end
        end
+       produces.uniq! {|produce| [produce.agent_id, produce.produce_type_id] }
        return produces
      end
 
