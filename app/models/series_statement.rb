@@ -157,7 +157,7 @@ class SeriesStatement < ActiveRecord::Base
   end
 
   def initialize_root_manifestation(manifestation = nil)
-    manifestation ||= build_root_maifestation
+    manifestation ||= build_root_manifestation
     manifestation.periodical_master   = true
     manifestation.periodical          = self.periodical
     manifestation.original_title      = self.original_title
