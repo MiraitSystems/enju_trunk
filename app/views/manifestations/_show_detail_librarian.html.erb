@@ -187,6 +187,10 @@
           <td><%= manifestation.price -%></td>
         </tr>
         <tr>
+          <td><%= t('activerecord.models.classification') -%>:</td>
+          <td><%= display_classifications(manifestation) -%></td>
+        </tr>
+        <tr>
           <td><%= t('activerecord.models.subject') -%>:</td>
           <td>
             <%- unless manifestation.subjects.empty? -%>

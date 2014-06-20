@@ -431,4 +431,14 @@ module ManifestationsHelper
     end
     return list
   end
+
+  def display_classifications(manifestation)
+    return nil if manifestation.blank? || manifestation.classifications.blank?
+    list = []
+    manifestation.classifications.each do |classification|
+      list << "#{classification.classification_type.display_name}:#{classification.category}(#{classification.classifiation_identifier})"
+    end
+    list.join(" ; ").html_safe
+  end
+
 end
