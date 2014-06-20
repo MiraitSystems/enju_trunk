@@ -10,6 +10,27 @@
       <p id="notice"><%= notice %></p>
 
       <%= label :list_condition, t('activerecord.attributes.item_list.list_condition') %>:<br />
+      <%# 配架場所の絞り込み %>
+      <div class="parent">
+        <%= check_box_tag "all_shelves", true,
+          @selected_shelf_ids.size == @shelves.size ? true : false, :class => 'check-parent' %>
+        <%= t('advanced_search.all', :model => t('activerecord.models.shelf')) %><br />
+        <div id="list_condition_200">
+          <% @shelves.each_with_index do |s, g| %>
+            &nbsp;&nbsp;
+            <%= check_box_tag "shelves[]", s.id,
+              @selected_shelf_ids.include?(s.id) ? true : false, :class => 'check-child' %>
+            <%= s.display_name.localize %><br />
+            <% if g == 5 || g == 11 %>
+              </div>
+              <div id="list_condition_200">
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <br style="clear:both;"/>
+      <br>
+
       <%# 資料区分の絞り込み %>
       <div class="parent">
         <%= check_box_tag "all_manifestation_types", true,
