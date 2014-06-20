@@ -122,6 +122,20 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.item.location_symbol') -%>:</strong>
+  <% if @item.location_symbol_id %>
+  <%= @item.location_symbol.keyname -%>
+  <% end %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.statistical_class') -%>:</strong>
+  <% if @item.statistical_class_id %>
+  <%= @item.statistical_class.keyname -%>
+  <% end %>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.item.item_identifier') -%>:</strong>
   <%= @item.item_identifier -%>
 </p>

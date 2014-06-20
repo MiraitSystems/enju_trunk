@@ -10,7 +10,7 @@ class Item < ActiveRecord::Base
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id 
+                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_symbol_id, :statistical_class_id
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -84,6 +84,8 @@ class Item < ActiveRecord::Base
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
+  belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
+  belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')

@@ -723,6 +723,8 @@ ja:
         rank: 正本区分
         non_searchable: 検索対象から除外
         exemplify: 所蔵
+        location_symbol: 別置記号
+        statistical_class: 統計分類
       loss_item:
         user_id: 利用者番号
         item_id: 紛失資料
