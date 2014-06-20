@@ -56,11 +56,6 @@
   </div>
 
   <div class="field">
-    <%= f.label :call_number -%><br />
-    <%= f.text_field :call_number -%>
-  </div>
-
-  <div class="field">
     <%= f.label :location_symbol -%><br />
     <%= f.select :location_symbol_id, options_from_collection_for_select(@location_symbols, :id, :keyname, @item.location_symbol_id), :include_blank => true %>
   </div>
