@@ -3421,3 +3421,7 @@ en:
     adption_code: "Adption_Code"
     issn: "ISSN"
     jstage: "J-Stage"
+  classification:
+    search_placeholder: Please enter a search classification identifier
+    search_searching: Searching...
+    search_nomatch: No matches

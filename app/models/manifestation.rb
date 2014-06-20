@@ -17,6 +17,8 @@ class Manifestation < ActiveRecord::Base
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
   has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy, :order => :position
   has_many :languages, :through => :work_has_languages, :order => :position
+  has_many :manifestation_has_classifications, :order => :position
+  has_many :classifications, :through => :manifestation_has_classifications, :order => :position
   belongs_to :carrier_type
   belongs_to :sub_carrier_type
   belongs_to :manifestation_type
@@ -758,10 +760,6 @@ class Manifestation < ActiveRecord::Base
 
   def sort_title
     NKF.nkf('-w --katakana', title_transcription) if title_transcription
-  end
-
-  def classifications
-    subjects.collect(&:classifications).flatten
   end
 
   def questions(options = {})

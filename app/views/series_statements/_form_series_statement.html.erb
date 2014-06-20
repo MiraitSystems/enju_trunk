@@ -44,7 +44,7 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.publication_status') -%><br />
-    <%= f.select :publication_status_id, @publication_statuses.collect{|p| [p.display_name, p.id]}, :include_blank => true %>
+    <%= f.select :publication_status_id, @publication_statuses.collect{|p| [p.display_name.localize, p.id]}, :include_blank => true %>
   </div>
 
   <div class="field">

@@ -49,7 +49,7 @@
 
 <p>
   <strong><%= t('activerecord.models.publication_status') %></strong>
-  <%= @series_statement.publication_status.display_name if @series_statement.publication_status %>
+  <%= @series_statement.publication_status.display_name.localize if @series_statement.publication_status %>
 </p>
 
 <p>

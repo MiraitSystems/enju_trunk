@@ -1,3 +1,4 @@
+<%= render :partial => 'form_select2_function_keys' %>
 <script>
 jQuery(function(){
   new AutoKana('manifestation_original_title', 'manifestation_title_transcription', { katakana:true, toggle:false });
@@ -271,10 +272,7 @@ $(document).keydown(function(e) {
       <%= f.label :marc_number -%>
       <%= f.text_field :marc_number, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
     </div>
-    <div class="field">
-      <%= f.label :ndc -%>
-      <%= f.text_field :ndc, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
-    </div>
+    <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>

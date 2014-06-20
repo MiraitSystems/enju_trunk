@@ -813,10 +813,7 @@ class ManifestationsController < ApplicationController
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
       
-      @creators = original_manifestation.creators.order(:position)
-      @contributors = original_manifestation.contributors.order(:position)
-      @publishers = original_manifestation.publishers.order(:position)
-      @subjects = original_manifestation.subjects.order(:position)
+      @classifications = get_classification_values(original_manifestation)
 
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
@@ -829,14 +826,16 @@ class ManifestationsController < ApplicationController
       end
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
-      #TODO refactoring
-      @creators, @contributors, @publishers, @subjects = @manifestation.creators, @manifestation.contributors, @manifestation.publishers, @manifestation.subjects
+
+      @classifications = get_classification_values(@manifestation)
     end
 
-    @creators = get_creator_values(@manifestation)
-    @contributors = get_contributor_values(@manifestation)
-    @publishers = get_publisher_values(@manifestation)
-    @subjects = [Subject.new()] if @subjects.blank?
+    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
+
+    @classifications = get_classification_values(@manifestation) if @classifications.blank?
     
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
@@ -862,10 +861,11 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     
-    @creators = get_creator_values(@manifestation)
-    @contributors = get_contributor_values(@manifestation)
-    @publishers = get_publisher_values(@manifestation)
-    @subjects = @manifestation.subjects.order(:position).present? ? @manifestation.subjects.order(:position) : [Subject.new()]
+    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
+    @classifications = get_classification_values(@manifestation)
     
     @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
     @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
@@ -911,6 +911,10 @@ class ManifestationsController < ApplicationController
     # subjects
     @subjects = params[:subjects] 
     @manifestation.subjects = create_subject_values(@subjects);
+
+    # classifications
+    @classifications = params[:classifications] 
+    @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
@@ -982,6 +986,10 @@ class ManifestationsController < ApplicationController
     @subjects = params[:subjects]
     @manifestation.subjects = create_subject_values(@subjects);
     
+    # classifications
+    @classifications = params[:classifications] 
+    @manifestation.classifications = create_classification_values(@classifications);
+
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
     params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
     params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
@@ -1520,12 +1528,15 @@ class ManifestationsController < ApplicationController
 #TODO starts
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @manifestation.work_has_titles
+    @work_has_languages = @manifestation.work_has_languages
+    @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
 #TODO end
     @numberings = Numbering.get_manifestation_numbering
     if SystemConfiguration.get('manifestation.use_identifiers')
       @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
     end
     @use_licenses = UseLicense.all
+    @classification_types = ClassificationType.order("position").all
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
@@ -1901,175 +1912,33 @@ class ManifestationsController < ApplicationController
   end
 
   # 
-  # get publisher vaules
+  # create classification vaules
   # 
-  def get_publisher_values(manifestation)
-    publishers = []
-    produces = manifestation.produces.order(:position)
-    if produces.present?
-      produces.each do |produce|
-        publishers << {:id => produce.agent.id,
-                       :full_name => produce.agent.full_name,
-                       :full_name_transcription => produce.agent.full_name_transcription,
-                       :type_id => produce.produce_type_id}
+  def create_classification_values(add_classifications)
+    classifications = []
+    add_classifications.each do |add_classification|
+      next if add_classification[:classification_id].blank?
+      classification = Classification.where(:id => add_classification[:classification_id]).first
+      classifications << classification if classification.present?
+    end
+    return classifications
+  end
+
+  # 
+  # get classification vaules
+  # 
+  def get_classification_values(manifestation)
+    classifications = []
+    manifestation_has_classifications = manifestation.manifestation_has_classifications.order(:position)
+    if manifestation_has_classifications.present?
+      manifestation_has_classifications.each do |manifestation_has_classification|
+        classifications << {:classification_type_id => manifestation_has_classification.classification.classification_type_id,
+                            :classification_id => manifestation_has_classification.classification_id}
       end
     else
-      publishers << {}
+      classifications << {}
     end
-    return publishers
-  end
-
-  # 
-  # get contributor vaules
-  # 
-  def get_contributor_values(manifestation)
-    contributors = []
-    realizes = manifestation.realizes.order(:position)
-    if realizes.present?
-      realizes.each do |realize|
-        contributors << {:id => realize.agent.id,
-                     :full_name => realize.agent.full_name,
-                     :full_name_transcription => realize.agent.full_name_transcription,
-                     :type_id => realize.realize_type_id}
-      end
-    else
-      contributors << {}
-    end
-    return contributors
-  end
-
-  # 
-  # get creator vaules
-  # 
-  def get_creator_values(manifestation)
-    creators = []
-    creates = manifestation.creates.order(:position)
-    if creates.present?
-      creates.each do |create|
-        creators << {:id => create.agent.id,
-                     :full_name => create.agent.full_name,
-                     :full_name_transcription => create.agent.full_name_transcription,
-                     :type_id => create.create_type_id}
-      end
-    else
-      creators << {}
-    end
-    return creators
-  end
-
-  # 
-  # create creator vaules
-  # 
-  def create_creator_values(add_creators)
-    creates = []
-    add_creators.each do |add_creator|
-      next if add_creator[:id].blank?
-      if add_creator[:id].to_i != 0
-        agent = Agent.where(:id => add_creator[:id]).first
-        if agent.present?
-          agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
-          agent.save
-          create = Create.new
-          create.agent = agent
-          create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
-          create.save
-          creates << create
-        end
-      else
-        # new record
-        agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
-        agent.save
-        create = Create.new
-        create.agent = agent
-        create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
-        creates << create
-      end
-    end
-    return creates
-  end
-
-  # 
-  # create contributor vaules
-  # 
-  def create_contributor_values(add_contributors)
-    realizes = []
-    add_contributors.each do |add_contributor|
-      next if add_contributor[:id].blank?
-      if add_contributor[:id].to_i != 0
-        agent = Agent.where(:id => add_contributor[:id]).first
-        if agent.present?
-          agent.full_name_transcription = add_contributor[:full_name_transcription] if add_contributor[:full_name_transcription].present?
-          agent.save
-          realize = Realize.new
-          realize.agent = agent
-          realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
-          realize.save
-          realizes << realize
-        end
-      else
-        # new record
-        agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
-        agent.save
-        realize = Realize.new
-        realize.agent = agent
-        realize.realize_type_id = add_contributor[:type_id] if add_contributor[:type_id].present?
-        realizes << realize
-      end
-    end
-    return realizes
-  end
-
-  # 
-  # create publisher vaules
-  # 
-  def create_publisher_values(add_publishers)
-    produces = []
-    add_publishers.each do |add_publisher|
-      next if add_publisher[:id].blank?
-      if add_publisher[:id].to_i != 0
-        agent = Agent.where(:id => add_publisher[:id]).first
-        if agent.present?
-          agent.full_name_transcription = add_publisher[:full_name_transcription] if add_publisher[:full_name_transcription].present?
-          agent.save
-          produce = Produce.new
-          produce.agent = agent
-          produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
-          produce.save
-          produces << produce
-        end
-      else
-        # new record
-        agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
-        agent.save
-        produce = Produce.new
-        produce.agent = agent
-        produce.produce_type_id = add_publisher[:type_id] if add_publisher[:type_id].present?
-        produces << produce
-      end
-    end
-    return produces
-  end
-
-  # 
-  # create subject vaules
-  # 
-  def create_subject_values(add_subjects)
-    subjects = []
-    add_subjects.each do |add_subject|
-      next if add_subject[:id].blank?
-      if add_subject[:id].to_i != 0
-        subject = Subject.where(:id => add_subject[:id]).first
-        subject.term_transcription = add_subject[:term_transcription]
-        subjects << subject if subject.present?
-      else
-        # new record
-        subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription])
-        subject.subject_type_id = 1
-        subject.required_role = Role.where(:name => 'Guest').first
-        subjects << subject
-      end
-    end
-    return subjects
+    return classifications
   end
 
 end
