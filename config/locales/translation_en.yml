@@ -178,6 +178,7 @@ en:
       term: Term
       checkoutlist: Checkout list
       reservelist: Reservation list
+      totaling_report: Totaling report
       manifestation_exstat: Statistics
       ndl_report: Export annual report of ndl branches
       ndl_statistic: Export annual report of nal branches
@@ -2920,6 +2921,7 @@ en:
     shelving_location: Shelving location
     number_of_books: Number of books
     subtotal: Subtotal
+    total: Total
   system_configuration:
     general: General
     user: User

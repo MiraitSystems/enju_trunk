@@ -1,5 +1,5 @@
 <div id="content_detail" class="ui-corner-all">
-  <h1 class="title"><%= t('exstatistics.checkout_report') %></h1>
+  <h1 class="title"><%= t('exstatistics.totaling_report') %></h1>
   <div id="content_list">
     <div style="color: green"><%= flash[:message] -%></div>
     <div id="list_condition_200">
@@ -10,7 +10,7 @@
       <p id="notice"><%= notice %></p>
 
       <%= label :list_condition, t('activerecord.attributes.item_list.list_condition') %>:<br />
-      <%# 資料区分の設定 %>
+      <%# 資料区分の絞り込み %>
       <div class="parent">
         <%= check_box_tag "all_manifestation_types", true,
           @selected_type_ids.size == @manifestation_types.size ? true : false, :class => 'check-parent' %>

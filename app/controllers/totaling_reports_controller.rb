@@ -1,47 +1,66 @@
 class TotalingReportsController < ApplicationController
-  # before_filter :check_librarian
+  before_filter :check_librarian
   # load_and_authorize_resource
 
   def index
-    @selected_type_ids = params[:manifestation_types].map{|m| m.to_i} if params[:manifestation_types]
-    search = Sunspot.new_search(Manifestation) #.include([:shelf => :library])
-    per_page = Item.default_per_page
-    page = params[:page].try(:to_i) || 1
-    set_role_query(current_user, search)
-    m_ids = @manifestation_type_ids
-    search.build do
-      with(:manifestation_type_id).any_of m_ids if m_ids
-      order_by(:manifestation_type_id, :asc)
-      paginate :page => page, :per_page => per_page
+    @manifestation_types = ManifestationType.all
+    if params[:manifestation_types]
+      logger.error "###### params[:manifestation_types] exist ########"
+      @selected_type_ids = params[:manifestation_types].map{|m| m.to_i}
+      @selected_types = ManifestationType.find(:all, :conditions => ["id IN (?)", @selected_type_ids])
+    else
+      logger.error "###### params[:manifestation_types] NOT exist ########"
+      @selected_types = @manifestation_types
+      @selected_type_ids ||= @selected_types.map(&:id)
     end
-    @manifestations = search.execute.results
-    prepare_options
+    all_items = Item.joins(:manifestation)
+    @shelves = Shelf.all
+    @list = Array.new
+    @subtotal = Array.new
+    @total = 0
+    @selected_types.each do |m|
+      subtotal = 0
+      @shelves.each do |s|
+        manifestation_type = m.display_name.localize
+        shelf = s.display_name.localize
+        @number_of_shelves = Shelf.find(:all).count
+        library_name = Library.find(:first, :conditions => ["id = ?", s.library_id], :select => "display_name")
+        unless library_name.nil?
+          library_name = library_name.display_name
+        end
+        item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
+        subtotal += item_count
+        @total += item_count
+        @list << [manifestation_type, library_name, shelf, item_count]
+      end
+      @subtotal << subtotal
+    end
   end
 
   def prepare_options
-=begin
-    @manifestation_types = ManifestationType.all
-    @manifestation_nums = Hash.new
-    @manifestation_type_ids ||= @manifestation_types.map(&:id)
-    @manifestation_types.each do |m|
-      # @manifestation_nums[m.display_name.localize] = Manifestation.count_by_sql(["select count(*) from manifestations where manifestation_type_id = ?", m.id])
-      @manifestation_nums[m.display_name.localize] = Manifestation.count_by_sql(["select count(*) from manifestations where manifestation_type_id = ?", m.id])
-    end
-=end
     all_items = Item.joins(:manifestation)
     @manifestation_types = ManifestationType.all
     @shelves = Shelf.all
     @selected_type_ids ||= @manifestation_types.map(&:id)
     @list = Array.new
+    @subtotal = Array.new
+    @total = 0
     @manifestation_types.each do |m|
+      subtotal = 0
       @shelves.each do |s|
         manifestation_type = m.display_name.localize
         shelf = s.display_name.localize
+        @number_of_shelves = Shelf.find(:all).count
+        library_name = Library.find(:first, :conditions => ["id = ?", s.library_id], :select => "display_name")
+        unless library_name.nil?
+          library_name = library_name.display_name
+        end
         item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
-        @list << [manifestation_type, shelf, item_count]
+        subtotal += item_count
+        @total += item_count
+        @list << [manifestation_type, library_name, shelf, item_count]
       end
-      # manifestation_separete_item_id = Manifestation.find(:all, :conditions => { :manifestation_type_id => m.id }, :select => "item_id")
-      # @manifestation_separete_ids << manifestation_separete_item_id
+      @subtotal << subtotal
     end
   end
 end
