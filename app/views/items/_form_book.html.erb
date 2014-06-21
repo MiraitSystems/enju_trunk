@@ -57,7 +57,7 @@
 
   <div class="field">
     <%= f.label :location_symbol -%><br />
-    <%= f.select :location_symbol_id, options_from_collection_for_select(@location_symbols, :id, :keyname, @item.location_symbol_id), :include_blank => true %>
+    <%= select2(:location_symbol_id, "item[location_symbol_id]", @location_symbols, @item.location_symbol_id, :width => 200, :include_blank => true, :alt_display => true) %>
   </div>
 
   <div class="field">
