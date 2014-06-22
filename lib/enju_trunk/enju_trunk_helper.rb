@@ -590,35 +590,32 @@ module EnjuTrunk
 
       b = ""
       b.concat(select2_script(selector_id))
-      b.concat(make_select2_new(selector_id, selector_name, collection, selected_id, options))
+      b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
       return raw(b)
     end
 
-    def make_select2_new(selector_id, selector_name, collection, selected_id, width, options)
+    def build_select2(selector_id, selector_name, collection, selected_id, options)
       include_blank = options[:include_blank] || false
       alt_display = options[:alt_display] || false
       width = options[:width] || 300
       select_attribute = options[:select_attribute] || 'v'
       display_attribute = options[:display_attribute] || 'keyname'
+      post_attribute = options[:post_attribute] || 'id'
 
       html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
       if include_blank
         html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
       end
       collection.each do |row|
-        html.concat( raw ("      <option alt=\"#{ row.v }\", value=\"#{ row.id }\"") )
+        html.concat( raw ("      <option alt=\"#{ row.send(select_attribute) }\", value=\"#{ row.send(post_attribute) }\"") )
         if selected_id == row.id
           html.concat( raw (", selected=\"selected\"") )
         end
 
-        if row.attribute_present?(:keyname)
-          html.concat( raw (">#{ row.keyname.localize }") )
-        else
-          html.concat( raw (">#{ row.name.localize }") )
-        end
+        html.concat( raw (">#{ row.send(display_attribute).localize }") )
 
         if alt_display
-          html.concat( raw (" (#{ row.v })") )
+          html.concat( raw (" (#{ row.send(select_attribute) })") )
         end
         html.concat( raw ("</option>\n") )
       end
