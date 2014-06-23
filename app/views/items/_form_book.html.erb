@@ -79,11 +79,6 @@
 
 
   <div class="field">
-    <strong><%= t('item.search_bookstore') %></strong>
-    <%= text_field :search_bookstore, :input %>
-    <%= submit_tag t('page.search'), :class => 'search_bookstore_button' %>
-    <div id="error" style="color: red"></div>
-    <div style="font-size: 90%; padding-bottom: 10px;"><%= t('item.search_bookstore_description') %></div>
     <%= f.label t('activerecord.models.bookstore') -%>
     <%#= f.select(:bookstore_id, @bookstores.collect{|b| [b.name, b.id]}, :include_blank => true) -%>
     <%= select2_script "bookstore_id" %>
@@ -93,11 +88,6 @@
   <div class="field">
     <%= f.label :price -%><br />
     <%= f.text_field :price -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :url -%><br />
-    <%= f.url_field :url, :class => 'resource_url' -%>
   </div>
 
   <div class="field">
@@ -149,10 +139,6 @@ $(function(){
 
   <div class="field">
     <%= f.label :item_identifier -%><br />
-    <%#= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]}, :include_blank => true %>
-    <%= select2_script "numbering_type" %>
-    <%= make_select2_struct("numbering_type", "numbering[type]", numberings, nil, 200, true) %>
-    <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
     <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
   </div>
 
