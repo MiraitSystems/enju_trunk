@@ -53,16 +53,6 @@
     },
   };
 
-  function removeItemField(prefix, num){
-    var removeRow = $('#' + prefix + num);
-    if(removeRow[0]){
-      var prevRow = removeRow.prev();
-      var prevElement = prevRow.find('input:first');
-      if(prevElement[0]) prevElement.focus(); // set focus
-      removeRow.remove(); // remove
-    }
-  }
-
   $(document).ready(function() {
     $(".creator, .contributor, .publisher").select2(agentSlect2options);
     $("select[name$='[type_id]']").select2(agentTypeSlect2options);
@@ -125,14 +115,17 @@
     add : function () {
       var newField = $("<tr/>").attr("id", "CF" + this.currentNumber);
       
-      var cloneId = this.cloneField('creators_0_id');
+      var idFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'id']").attr('id');
+      var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
       <% if SystemConfiguration.get("add_only_exist_agent") %>
         newField.append($("<td/>").append(cloneId));
       <% else %>
-        var cloneName = this.cloneField('creators_0_full_name');
-        var cloneFullNameTranscription = this.cloneField('creators_0_full_name_transcription');
+        var nameFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
         newField.append($("<td/>").append(cloneId).append(cloneName));
         newField.append($("<td/>").append(cloneFullNameTranscription));
       <% end %>
@@ -140,7 +133,8 @@
       cloneId.select2(agentSlect2options);
       
       <% if SystemConfiguration.get("use_agent_type") %>
-        var cloneCreatorType = this.cloneFieldWithoutValue('creators_0_type_id');
+        var typeFieldId = $("tr[id ^= 'CF']:first").find("select[id $= 'type_id']").attr('id');
+        var cloneCreatorType = this.cloneFieldWithoutValue(typeFieldId);
         newField.append($("<td/>").append(cloneCreatorType));
         cloneCreatorType.select2(agentTypeSlect2options);
       <% end %>
@@ -164,6 +158,7 @@
       });
     },
     remove : function (div_num) {
+      if($("tr[id ^= 'CF']").length == 1) this.add();
       removeItemField('CF', div_num);
     }
   }
@@ -180,14 +175,17 @@
     add : function () {
       var newField = $("<tr/>").attr("id", "RF" + this.currentNumber);
       
-      var cloneId = this.cloneField('contributors_0_id');
+      var idFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'id']").attr('id');
+      var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
       <% if SystemConfiguration.get("add_only_exist_agent") %>
         newField.append($("<td/>").append(cloneId));
       <% else %>
-        var cloneName = this.cloneField('contributors_0_full_name');
-        var cloneFullNameTranscription = this.cloneField('contributors_0_full_name_transcription');
+        var nameFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
         newField.append($("<td/>").append(cloneId).append(cloneName));
         newField.append($("<td/>").append(cloneFullNameTranscription));
       <% end %>
@@ -195,7 +193,8 @@
       cloneId.select2(agentSlect2options);
       
       <% if SystemConfiguration.get("use_agent_type") %>
-        var cloneContributorType = this.cloneFieldWithoutValue('contributors_0_type_id');
+        var typeFieldId = $("tr[id ^= 'RF']:first").find("select[id $= 'type_id']").attr('id');
+        var cloneContributorType = this.cloneFieldWithoutValue(typeFieldId);
         newField.append($("<td/>").append(cloneContributorType));
         cloneContributorType.select2(agentTypeSlect2options);
       <% end %>
@@ -219,6 +218,7 @@
       });
     },
     remove : function (div_num) {
+      if($("tr[id ^= 'RF']").length == 1) this.add();
       removeItemField('RF', div_num);
     }
   }
@@ -235,14 +235,17 @@
     add : function () {
       var newField = $("<tr/>").attr("id", "PF" + this.currentNumber);
       
-      var cloneId = this.cloneField('publishers_0_id');
+      var idFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'id']").attr('id');
+      var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
       <% if SystemConfiguration.get("add_only_exist_agent") %>
         newField.append($("<td/>").append(cloneId));
       <% else %>
-        var cloneName = this.cloneField('publishers_0_full_name');
-        var cloneFullNameTranscription = this.cloneField('publishers_0_full_name_transcription');
+        var nameFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
         newField.append($("<td/>").append(cloneId).append(cloneName));
         newField.append($("<td/>").append(cloneFullNameTranscription));
       <% end %>
@@ -250,7 +253,8 @@
       cloneId.select2(agentSlect2options);
       
       <% if SystemConfiguration.get("use_agent_type") %>
-        var clonePublisherType = this.cloneFieldWithoutValue('publishers_0_type_id');
+        var typeFieldId = $("tr[id ^= 'PF']:first").find("select[id $= 'type_id']").attr('id');
+        var clonePublisherType = this.cloneFieldWithoutValue(typeFieldId);
         newField.append($("<td/>").append(clonePublisherType));
         clonePublisherType.select2(agentTypeSlect2options);
       <% end %>
@@ -274,6 +278,7 @@
       });
     },
     remove : function (div_num) {
+      if($("tr[id ^= 'PF']").length == 1) this.add();
       removeItemField('PF', div_num);
     }
   }
@@ -309,7 +314,7 @@
           </td>
         <% end %>
         <td><%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" if index > 0 -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" -%></td>
       </tr>
     <% end %>
   </table>
@@ -345,7 +350,7 @@
           </td>
         <% end %>
         <td><%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" if index > 0 -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" -%></td>
       </tr>
     <% end %>
   </table>
@@ -381,7 +386,7 @@
           </td>
         <% end %>
         <td><%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" if index > 0 -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" -%></td>
       </tr>
     <% end %>
   </table>
