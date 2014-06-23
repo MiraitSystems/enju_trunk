@@ -585,6 +585,43 @@ module EnjuTrunk
       end
     end
 
+    def select2(selector_id, selector_name, collection, selected_id, *options)
+      options = options.first # if options.is_a?(Array)　
+
+      b = ""
+      b.concat(select2_script(selector_id))
+      b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
+      return raw(b)
+    end
+
+    def build_select2(selector_id, selector_name, collection, selected_id, options)
+      include_blank = options[:include_blank] || false
+      alt_display = options[:alt_display] || false
+      width = options[:width] || 300
+      select_attribute = options[:select_attribute] || 'v'
+      display_attribute = options[:display_attribute] || 'keyname'
+      post_attribute = options[:post_attribute] || 'id'
+
+      html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+      if include_blank
+        html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
+      end
+      collection.each do |row|
+        html.concat( raw ("      <option alt=\"#{ row.send(select_attribute) }\", value=\"#{ row.send(post_attribute) }\"") )
+        if selected_id == row.id
+          html.concat( raw (", selected=\"selected\"") )
+        end
+
+        html.concat( raw (">#{ row.send(display_attribute).localize }") )
+
+        if alt_display
+          html.concat( raw (" (#{ row.send(select_attribute) })") )
+        end
+        html.concat( raw ("</option>\n") )
+      end
+      html.concat( raw ("    </select>\n") )
+    end
+
     def select2_script(selector_id)
       raw ("
         <script>
