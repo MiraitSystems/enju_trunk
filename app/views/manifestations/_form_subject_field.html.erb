@@ -47,10 +47,13 @@
     add : function () {
       var newField = $("<tr/>").attr("id", "SUBJECT" + this.currentNumber);
       
-      var cloneId = this.cloneField('subjects_0_id');
-      var cloneName = this.cloneField('subjects_0_term');
+      var idFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'id']").attr('id');
+      var nameFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'term']").attr('id');
+      var cloneId = this.cloneField(idFieldId);
+      var cloneName = this.cloneField(nameFieldId);
       
-      var cloneTermTranscription = this.cloneField('subjects_0_term_transcription');
+      var transcriptionFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
+      var cloneTermTranscription = this.cloneField(transcriptionFieldId);
 
       var td1 = $("<td/>").append(cloneId).append(cloneName);
       var td2 = $("<td/>").append(cloneTermTranscription);
@@ -72,6 +75,7 @@
       }).val('');
     },
     remove : function (trNum) {
+      if($("tr[id ^= 'SUBJECT']").length == 1) this.add();
       removeItemField('SUBJECT', trNum)
     }
   }
@@ -106,7 +110,7 @@
         </td>
         <td><%= text_field_tag "subjects[][term_transcription]", subject[:term_transcription], :id => "subjects_#{index}_term_transcription", :placeholder => t("activerecord.attributes.subject.term_transcription") %></td>
         <td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" if index > 0 -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%></td>
       </tr>
     <% end %>
   </table>
