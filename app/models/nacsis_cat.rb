@@ -170,17 +170,10 @@ class NacsisCat
       return {} unless check_upload_params(id, db_type, command)
 
       req_query = {}
+
       case db_type
       when 'BHOLD','SHOLD'
         @item = Item.find(id)
-
-        if command == 'insert'
-          bid = @item.manifestation.items.pluck(:nacsis_identifier).uniq.compact
-          if bid.present?
-            command = 'update'
-            @item.nacsis_identifier = bid.first
-          end
-        end
         req_query[:query] = hold_query(command, db_type)
         result_id = @item.nacsis_identifier
 
@@ -221,12 +214,8 @@ class NacsisCat
             result_id = result_record['hold_id']
           end
           hold_id = command == 'delete' ? nil : result_id
-          @item.manifestation.items.each do |i|
-            if i.library == @item.library
-              i.nacsis_identifier = hold_id
-              i.save!
-            end
-          end
+          @item.nacsis_identifier = hold_id
+          @item.save!
         when 'BOOK'
           result_id = result_record['book_info']['bibliog_id']
           @manifestation.nacsis_identifier = result_id
@@ -464,11 +453,25 @@ class NacsisCat
         query_field += [
           "FANO=#{gateway_config['federation_id']}",
           "LOC=#{@item.shelf.library.nacsis_location_code}",
-          "LTR="
         ]
 
+        i = 0
+        @item.manifestation.subjects.each do |subject|
+          unless subject.subject_type.note == 'for nacsis data'
+            i += 1
+            query_field += [
+              "LTR=#{subject.term}"
+            ]
+          end
+          break if i >= 4
+        end
+
         if db_type == 'BHOLD'
-          query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
+          if @item.manifestation.nacsis_identifier
+            query_field += ["BID=#{@item.manifestation.nacsis_identifier}"]
+          else
+            query_field += ["BID=#{@item.manifestation.series_statement.nacsis_series_statementid}"]
+          end
           @item.manifestation.items.each do |item|
             query_field += [
               '<HOLD>',
@@ -482,11 +485,12 @@ class NacsisCat
             ]
           end
         else
+          cont = '+' if @item.manifestation.series_statement.publication_status.try(:name) == 'c'
           query_field += [
             "BID=#{@item.manifestation.series_statement.nacsis_series_statementid}",
             "HLYR=#{shold_hl_info[:HLYR]}",
             "HLV=#{shold_hl_info[:HLV]}",
-            "CONT=#{shold_hl_info[:CONT]}",
+            "CONT=#{cont}",
             "CLN=#{@item.manifestation.items.pluck(:call_number).reject{|c| c.blank?}.join("||")}",
             "LDF=#{@item.manifestation.items.pluck(:note).reject{|n| n.blank?}.join("||")}",
             "CPYNT=#{@item.manifestation.note}"
@@ -497,9 +501,17 @@ class NacsisCat
 
       def shold_hl_info
         hl_info = {}
-        hl_info[:HLYR] = '*'
-        hl_info[:HLV] = '*'
-        hl_info[:CONT] = ''
+        hlyr = @item.manifestation.series_statement.manifestations.pluck(:date_of_publication_string).reject{|c| c.blank?}.sort
+        if hlyr.present?
+          hl_info[:HLYR] = hlyr[0] + '-' + hlyr[hlyr.count - 1]
+        end
+        if hl_info[:HLYR].blank?
+          hl_info[:HLYR] = '*'
+        end
+        hl_info[:HLV] = @item.manifestation.series_statement.manifestations.pluck(:volume_number_string).reject{|c| c.blank?}.join(",")
+        if hl_info[:HLV].blank?
+          hl_info[:HLV] = '*'
+        end
         hl_info
       end
 
@@ -530,20 +542,28 @@ class NacsisCat
       end
 
       def common_field
+
+        source = @manifestation.catalog.nacsis_identifier if @manifestation.catalog
+        if source == 'NACSIS' || source == 'NDL' || source.nil?
+          source = 'ORG'
+        end
+
+        repro = 'c' if @manifestation.original == true
+
         field = [
           "MARCID=", # SOURCE=ORG 以外の場合必須
-          "SOURCE=#{'ORG'}", # [Required]
+          "SOURCE=#{source}", # [Required]
           "ISSN=#{@manifestation.issn}",
           "LCCN=#{@manifestation.lccn}",
           "GPON=#{get_identifier_number('gpon')}",
-          "GMD=#{}",
-          "SMD=#{}",
+          "GMD=#{@manifestation.carrier_type.try(:nacsis_identifier)}",
+          "SMD=#{@manifestation.sub_carrier_type.try(:nacsis_identifier)}",
           "CNTRY=#{@manifestation.country_of_publication.marc21}",
-          "REPRO=#{}",
+          "REPRO=#{repro}",
           "TTLL=#{get_nacsis_language('title')}",
           "TXTL=#{get_nacsis_language('body')}",
           "ORGL=#{get_nacsis_language('original')}",
-          "ED=#{}",
+          "ED=#{@manifestation.edition_display_value}",
           "NOTE=#{@manifestation.note}"
         ]
 
@@ -580,7 +600,7 @@ class NacsisCat
         end
 
         get_identifier_other_numbers.each do |other_number|
-          field << "OTHN=#{other_number}" # Repeat:255
+          field << "OTHN=#{other_number[0, 23]}" # Repeat:255
         end
 
         nbn_array = @manifestation.nbn.try(:split, ',') || []
@@ -619,6 +639,10 @@ class NacsisCat
       end
 
       def serial_field
+        vlyr = []
+        @manifestation.manifestation_extexts.where(:name => 'VLYR').each do |extext|
+          vlyr << extext.value
+        end
         result = [
           "NDLPN=#{get_identifier_number('ndlpn')}",
           "CODEN=#{get_identifier_number('coden')}",
@@ -626,8 +650,11 @@ class NacsisCat
           "PSTAT=#{@series_statement.publication_status.try(:name)}",
           "FREQ=#{@manifestation.frequency.try(:nii_code)}",
           "REGL=#{}",
-          "TYPE=#{}",
-          "VLYR=#{}",
+          "TYPE=#{@manifestation.manifestation_type.try(:nacsis_identifier)}",
+          "VLYR=#{vlyr[0]}",
+          "VLYR=#{vlyr[1]}",
+          "VLYR=#{vlyr[2]}",
+          "VLYR=#{vlyr[3]}",
           "PRICE=#{@manifestation.price_string}"
         ]
         get_identifier_numbers('xissn').each do |xissn|
@@ -690,8 +717,8 @@ class NacsisCat
       def year_group
         [
           '<YEAR>',
-          "YEAR1=#{@manifestation.date_of_publication_string.try(:[], 0, 4)}",
-          "YEAR2=#{@manifestation.date_of_publication_string.try(:[], 5, 4)}",
+          "YEAR1=#{@manifestation.pub_date.try(:[], 0, 4)}",
+          "YEAR2=#{@manifestation.dis_date.try(:[], 0, 4)}",
           '</YEAR>'
         ]
       end
@@ -733,14 +760,14 @@ class NacsisCat
           '<PUB>',
           "PUBP=#{@manifestation.place_of_publication}",
           "PUBL=#{@manifestation.publishers.first.try(:full_name)}",
-          "PUBDT=#{}",
+          "PUBDT=#{@manifestation.date_of_publication_string}",
           "PUBF=#{}",
           '</PUB>'
         ]
       end
 
       def phys_group
-        phys_array = @manifestation.size.split('||',-1)
+        phys_array = @manifestation.size.try(:split,'||',-1)
         results = []
         if phys_array.try(:size) == 4
           results += [
@@ -756,27 +783,39 @@ class NacsisCat
       end
 
       def cw_group # book only
-        [
-          '<CW>',
-          "CWT=#{}",
-          "CWA=#{}",
-          "CWR=#{}",
-          "CWVR=#{}",
-          '</CW>'
-        ]
+        results = []
+        child_manifestations = @manifestation.derived_manifestations || []
+        child_manifestations.each do |manifestation|
+          cwvr_array = manifestation.title_alternative.try(:split,'||') || []
+          results += [
+            '<CW>',
+            "CWT=#{manifestation.original_title}",
+            "CWA=#{manifestation.creators.first.try(:full_name)}",
+            "CWR=#{manifestation.title_transcription}",
+            "CWVR=#{cwvr_array[0]}",
+            "CWVR=#{cwvr_array[1]}",
+            '</CW>'
+          ]
+        end
+        results
       end
 
       def ptbl_group # book only
         results = []
-        parent_manifestations = @manifestation.derived_manifestations || []
+        parent_manifestations = @manifestation.original_manifestations || []
         parent_manifestations.each do |manifestation|
           if manifestation.nacsis_identifier
-            result += [
-              '<PTBL>',
-              "PTBID=#{manifestation.nacsis_identifier}",
-              "PTBNO=#{}",
-              '</PTBL>'
-            ]
+            parent_nacsis_cat = NacsisCat.search(dbs: [:book], id: manifestation.nacsis_identifier)
+            parent_nacsis_cat = parent_nacsis_cat[:book].try(:first)
+            if parent_nacsis_cat
+              results += [
+                '<PTBL>',
+                "PTBID=#{manifestation.nacsis_identifier}",
+                "PTBK=#{manifestation.children.first.manifestation_relationship_type.try(:name)}",
+                "PTBNO=#{manifestation.note}",
+                '</PTBL>'
+              ]
+            end
           end
         end
         results
@@ -789,7 +828,7 @@ class NacsisCat
             results += [
               '<AL>',
               "AID=#{creator.agent_identifier}",
-              "AF=#{}",
+              "AF=#{@manifestation.creates.where(:agent_id => creator.id).first.create_type.try(:name)}",
               "AFLG=#{}",
               '</AL>'
             ]
@@ -801,7 +840,7 @@ class NacsisCat
               "AHDNGR=#{creator.full_name_transcription}",
               "AHDNGVR=#{alternatives[0]}",
               "AHDNGVR=#{alternatives[1]}",
-              "AF=#{}",
+              "AF=#{@manifestation.creates.where(:agent_id => creator.id).first.create_type.try(:name)}",
               "AFLG=#{}",
               '</AL>'
             ]
@@ -851,7 +890,7 @@ class NacsisCat
 
       def sh_group
         results = []
-        @manifestation.subjects.each do |subject|
+        @manifestation.subjects.where(:note => 'for nacsis data').each do |subject|
           alternatives = subject.term_alternative.try(:split, '||') || []
           results += [
             '<SH>',
@@ -898,6 +937,8 @@ class NacsisCat
         created_manifestations = []
         created_manifestations << child_manifestation
 
+        ptbk = {}
+
         # 親書誌情報の登録
         nacsis_cat.detail[:ptb_info].each do |ptbl_record|
           parent_manifestation = Manifestation.where(:nacsis_identifier => ptbl_record['PTBID']).first
@@ -922,6 +963,7 @@ class NacsisCat
               end
             end
           end
+          ptbk[ptbl_record['PTBID']] = ptbl_record['PTBK']
         end
         # 親書誌関係の登録
         created_manifestations.reverse.each do |parent|
@@ -929,7 +971,30 @@ class NacsisCat
             break if parent == child
             parent.derived_manifestations << child
           end
+
+          # 構造の種類設定
+          parent.derived_manifestations.each do |derived|
+            derived.parents.each do |child|
+              child.manifestation_relationship_type_id = ManifestationRelationshipType.where(:name => ptbk[parent.nacsis_identifier]).first.try(:id)
+              child.save!
+            end
+          end
+
         end
+
+        # 内容著作注記の登録
+        nacsis_cat.detail[:cw_info].each do |cw_record|
+          attrs = {}
+          attrs[:original_title] = cw_record['CWT']
+          attrs[:title_transcription] = cw_record['CWR']
+          attrs[:title_alternative] = arraying(cw_record['CWVR']).join('||')
+          unless cw_record['CWA'].nil?
+            attrs[:creators] = []
+            attrs[:creators] << Agent.where(:full_name => cw_record['CWA'].to_s).first_or_create
+          end
+          child_manifestation.derived_manifestations << Manifestation.create(attrs)
+        end
+
         child_manifestation
       end
 
@@ -937,9 +1002,7 @@ class NacsisCat
         case nacsis_cat.detail[:vol_info].size
         when 0 # VOLGが0件の場合
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
-        when 1 # VOLGが1件の場合
-          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, nacsis_cat.detail[:vol_info].first)
-        else   # VOLGが2件以上の場合
+        else   # VOLGが1件以上の場合
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
 
           volg_manifestations = []
@@ -961,16 +1024,26 @@ class NacsisCat
         return nil if nacsis_cat.blank? || book_types.blank?
         nacsis_info = nacsis_cat.detail
         attrs = {}
-        attrs[:external_catalog] = 2
+        if nacsis_info[:source].nil?
+          attrs[:catalog_id] = Catalog.where(:name => 'nacsis').first.id
+        else
+          attrs[:catalog_id] = Catalog.where(:nacsis_identifier => nacsis_info[:source]).first.id
+        end
         attrs[:original_title] = nacsis_info[:subject_heading]
         attrs[:title_transcription] = nacsis_info[:subject_heading_reading]
         attrs[:title_alternative] = nacsis_info[:title_alternative]
         attrs[:place_of_publication] = nacsis_info[:publication_place].try(:join, ",")
+        attrs[:date_of_publication_string] = nacsis_info[:publication_date].try(:join, ",")
         attrs[:note] = nacsis_info[:note]
         attrs[:marc_number] = nacsis_info[:marc]
-        attrs[:date_of_publication_string] = nacsis_info[:publish_year]
+        attrs[:pub_date] = nacsis_info[:year1]
+        attrs[:dis_date] = nacsis_info[:year2]
         attrs[:lccn] = nacsis_info[:lccn]
         attrs[:issn] = nacsis_info[:issn]
+        attrs[:carrier_type_id] = CarrierType.where(:nacsis_identifier => nacsis_info[:gmd]).first.try(:id)
+        attrs[:sub_carrier_type_id] = SubCarrierType.where(:nacsis_identifier => nacsis_info[:smd]).first.try(:id)
+        attrs[:original] = true if nacsis_info[:repro] == 'c'
+        attrs[:edition_display_value] = nacsis_info[:ed]
 
         if nacsis_info[:size].present?
           size_array = [
@@ -1005,6 +1078,7 @@ class NacsisCat
 
         # 関連テーブル：著者の設定
         attrs[:creators] = []
+        af = {}
         nacsis_info[:creators].each do |creator|
           #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
           attrs[:creators] <<
@@ -1015,6 +1089,7 @@ class NacsisCat
                 p.full_name_alternative = arraying(creator['AHDNGVR']).join('||')
               end
             end
+          af[creator['AHDNG']] = creator['AF']
         end
 
         # 関連テーブル：出版者の設定
@@ -1049,7 +1124,7 @@ class NacsisCat
         end
 
         if nacsis_cat.book?
-          unless nacsis_info[:vol_info].size >= 2 && volg_info.present?
+          unless nacsis_info[:vol_info].size >= 1 && volg_info.present?
             attrs[:nacsis_identifier] = nacsis_cat.ncid
             attrs[:nbn] = nacsis_info[:nbn]
           end
@@ -1115,13 +1190,31 @@ class NacsisCat
             attrs[:identifiers] <<
               Identifier.create(:body => nacsis_info[:ndlhold], :identifier_type_id => identifier_type.id)
           end
-          attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id)
+          if nacsis_info[:freq]
+            attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id) || Frequency.find_by_nii_code('u').try(:id)
+          end
+          attrs[:manifestation_type_id] = ManifestationType.where(:nacsis_identifier => nacsis_info[:type]).first.try(:id)
           attrs[:price_string] = nacsis_info[:price]
         end
 
         manifestation = Manifestation.create(attrs)
-        manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
-        manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
+        manifestation.work_has_languages << new_work_has_languages_from_nacsis_cat(nacsis_cat,manifestation)
+        manifestation.work_has_titles << new_work_has_titles_from_nacsis_cat(nacsis_cat)
+
+        if nacsis_info[:vlyr]
+          vlyr_ary = []
+          nacsis_info[:vlyr].each do |vlyr|
+            vlyr_ary << ManifestationExtext.new(:name => 'VLYR', :value => vlyr)
+          end
+          manifestation.manifestation_extexts = vlyr_ary
+        end
+
+        # 関連テーブル：著者 役割表示の設定
+        manifestation.creates.each do |cre|
+          cre.create_type_id = CreateType.where(:name => af[manifestation.creators.where(:id => cre.agent_id).first.full_name]).first.try(:id)
+          cre.save!
+        end
+
         manifestation
       end
 
@@ -1178,7 +1271,6 @@ class NacsisCat
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
           root_manifestation.periodical_master = true
           root_manifestation.save!
-          root_manifestation.work_has_languages = new_work_has_languages_from_nacsis_cat(nacsis_cat)
           series_statement.root_manifestation = root_manifestation
           series_statement.manifestations << series_statement.root_manifestation
           series_statement.save!
@@ -1199,7 +1291,7 @@ class NacsisCat
         SeriesStatement.new(attrs)
       end
 
-      def new_work_has_languages_from_nacsis_cat(nacsis_cat)
+      def new_work_has_languages_from_nacsis_cat(nacsis_cat, manifestation)
         return [] if nacsis_cat.blank?
         nacsis_info = nacsis_cat.detail
         whl_ary = []
@@ -1208,6 +1300,7 @@ class NacsisCat
             whl = WorkHasLanguage.new
             whl.language = language
             whl.language_type = LanguageType.find_by_name(type)
+            whl.work = manifestation
             whl_ary << whl
           end
         end
@@ -1409,7 +1502,9 @@ class NacsisCat
       :title_alternative => map_attrs(@record['TR'], 'TRVR').join('||'),
       :other_titles => arraying(@record['VT']),
       :publisher => map_attrs(@record['PUB']) {|pub| join_attrs(pub, ['PUBP', 'PUBL', 'PUBDT', 'PUBF'], ',') },
-      :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
+#      :publish_year => join_attrs(@record['YEAR'], ['YEAR1', 'YEAR2'], '-'),
+      :year1 => @record['YEAR'].try(:[], 'YEAR1'),
+      :year2 => @record['YEAR'].try(:[], 'YEAR2'),
       :physical_description => join_attrs(@record['PHYS'], ['PHYSP', 'PHYSI', 'PHYSS', 'PHYSA'], ';'),
       :pub_country => @record['CNTRY'].try {|cntry| Country.where(:marc21 => cntry).first },
       :title_language => get_languages(@record['TTLL']),
@@ -1427,6 +1522,7 @@ class NacsisCat
       :subject => map_attrs(@record['SH'], 'SHD').compact.uniq,
       :note => arraying(@record['NOTE']).compact.join(" "),
       :publication_place => map_attrs(@record['PUB'], 'PUBP').compact.uniq,
+      :publication_date => map_attrs(@record['PUB'], 'PUBDT').compact.uniq,
       :size => @record['PHYS'],
       :creators => arraying(@record['AL']),
       :publishers => map_attrs(@record['PUB'], 'PUBL').compact.uniq,
@@ -1434,6 +1530,11 @@ class NacsisCat
       :marc => @record['MARCID'],
       :lccn => @record['LCCN'],
       :gpon => @record['GPON'],
+      :source => @record['SOURCE'],
+      :gmd => @record['GMD'],
+      :smd => @record['SMD'],
+      :repro => @record['REPRO'],
+      :ed => @record['ED'],
       :issn => issn
     }.tap do |hash|
       if book?
@@ -1451,12 +1552,14 @@ class NacsisCat
         hash[:fid] = fid
         hash[:pstat] = @record['PSTAT']
         hash[:freq] = @record['FREQ']
+        hash[:type] = @record['TYPE']
         hash[:bhn_info] = arraying(@record['BHNT'])
         hash[:ndlpn] = @record['NDLPN']
         hash[:coden] = @record['CODEN']
         hash[:ulpn] = @record['ULPN']
         hash[:ndlcln] = @record['NDLCLN']
         hash[:ndlhold] = @record['NDLHOLD']
+        hash[:vlyr] = arraying(@record['VLYR'])
       end
       hash[:ncid] = ncid
     end

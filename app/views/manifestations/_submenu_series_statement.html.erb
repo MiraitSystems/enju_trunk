@@ -18,34 +18,22 @@
        <li><%= link_to t('page.destroy'), @series_statement, :confirm => t('page.are_you_sure'), :method => :delete %></li>
     <% end %>
     <% if @series_statement.root_manifestation %>
+      <%- unless @series_statement.root_manifestation.bookbinder -%>
+        <% unless SystemConfiguration.get("manifestation.has_one_item") %>
+          <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@series_statement.root_manifestation) -%></li>
+        <% end %>
+      <%- end -%>
       <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
     <% end %>
   </ul>
   <br>
-  <%- if @series_statement.periodical %>
-    <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_serial') + t('resource_import_textfile.book') + ' ' %>
-    <%- option_hash = {:confirm => t('page.roles_confirm')} %>
-    <%= form_tag upload_to_nacsis_manifestations_path, method: 'post' do %>
-      <%= hidden_field_tag 'work_id', @series_statement.id %>
-      <%= hidden_field_tag 'db_type', 'SERIAL' %>
-      <%- if @series_statement.nacsis_series_statementid -%>
-        <%- submit_display_str += t('page.update') %>
-        <%= hidden_field_tag 'command', 'update' %>
-      <%- else %>
-        <%- submit_display_str += t('page.create') %>
-        <%= hidden_field_tag 'command', 'insert' %>
-      <%- end %>
-      <%= "　" %>
-      <%= submit_tag submit_display_str, option_hash %>
-    <%- end %>
-  <%- else %>
-    <% if @series_statement.root_manifestation %>
-      <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_book') + t('resource_import_textfile.book') + ' ' %>
+  <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+    <%- if @series_statement.periodical %>
+      <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_serial') + t('resource_import_textfile.book') + ' ' %>
       <%- option_hash = {:confirm => t('page.roles_confirm')} %>
       <%= form_tag upload_to_nacsis_manifestations_path, method: 'post' do %>
-        <%= hidden_field_tag 'work_id', @series_statement.root_manifestation.id %>
-        <%= hidden_field_tag 'db_type', 'BOOK' %>
-        <%= hidden_field_tag 'series_id', @series_statement.id %>
+        <%= hidden_field_tag 'work_id', @series_statement.id %>
+        <%= hidden_field_tag 'db_type', 'SERIAL' %>
         <%- if @series_statement.nacsis_series_statementid -%>
           <%- submit_display_str += t('page.update') %>
           <%= hidden_field_tag 'command', 'update' %>
@@ -56,6 +44,25 @@
         <%= "　" %>
         <%= submit_tag submit_display_str, option_hash %>
       <%- end %>
+    <%- else %>
+      <% if @series_statement.root_manifestation %>
+        <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_book') + t('resource_import_textfile.book') + ' ' %>
+        <%- option_hash = {:confirm => t('page.roles_confirm')} %>
+        <%= form_tag upload_to_nacsis_manifestations_path, method: 'post' do %>
+          <%= hidden_field_tag 'work_id', @series_statement.root_manifestation.id %>
+          <%= hidden_field_tag 'db_type', 'BOOK' %>
+          <%= hidden_field_tag 'series_id', @series_statement.id %>
+          <%- if @series_statement.nacsis_series_statementid -%>
+            <%- submit_display_str += t('page.update') %>
+            <%= hidden_field_tag 'command', 'update' %>
+          <%- else %>
+            <%- submit_display_str += t('page.create') %>
+            <%= hidden_field_tag 'command', 'insert' %>
+          <%- end %>
+          <%= "　" %>
+          <%= submit_tag submit_display_str, option_hash %>
+        <%- end %>
+      <%- end %>
     <%- end %>
-  <%- end %>
-  <br>
+    <br>
+  <% end %>

@@ -64,7 +64,7 @@ $(document).ready(function() {
         <% move_page = 0 %>
         <% move_page = params[:page].to_i if params[:page] %>
         <% end_page = 0 %>
-        <% end_page = @manifestations.num_pages if @manifestations.num_pages %>
+        <% end_page = @manifestations.num_pages if @manifestations.try(:num_pages) %>
         //今のページを取得
         var now_page = "page="+ <%=move_page %>;
         var new_page = "page="+ <%=move_page + 1 %>;

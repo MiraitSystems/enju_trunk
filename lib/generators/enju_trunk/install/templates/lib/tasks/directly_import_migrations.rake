@@ -11,15 +11,17 @@ namespace :enju do
 
       desc 'Directly import all migrations'
       task :all => :environment do
+        gems = 
         %w(
           EnjuTrunk 
-          EnjuEvent 
-          EnjuTrunkCirculation
-          EnjuSubject
-          EnjuTrunkIll
           EnjuManifestationViewer
           JppCustomercodeTransfer 
-        ).each do |name|
+        )
+        gems << 'EnjuEvent' if defined? EnjuEvent
+        gems << 'EnjuTrunkCirculation' if defined? EnjuTrunkCirculation
+        gems << 'EnjuSubject' if defined? EnjuSubject
+        gems << 'EnjuTrunkIll' if defined? EnjuTrunkIll
+        gems.each do |name|
           import_migrations(name)
         end
       end
