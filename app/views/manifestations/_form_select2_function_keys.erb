@@ -1,6 +1,7 @@
 <script>
   var addItemKeyCode = 122; // F11
   var removeItemKeyCode = 123; // F12
+  var tabKeyCode = 9; // TAB
   
   /**
    * select2 フィールドのファンクション対応(オープン時)
@@ -193,4 +194,80 @@
     }
   }
 
+  /**
+   * タブ移動コントロール
+   * 
+   */
+  $(document)
+    .on("keydown", "input[value='-']", function(e){ // 次のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInput(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[value='+'],input[id $= 'term_transcription']", function(e){ // 前のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[id $= 'full_name_transcription']", function(e){ // 次と前のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInput(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[id ^= 's2id']", function(e){ // フィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInputSlect2(e.target) == true) {
+          return false;
+        }
+      }
+    });
+
+  /**
+   * フォーカス関数
+   * 
+   */
+  var ItemFieldSetFocus = {
+    nextInput : function (targetElement) {
+      var inputs = $(targetElement).closest('form').find('input:visible,select');
+      var nextInput = inputs.eq(inputs.index(targetElement) + 1);
+      if(nextInput[0]){
+        nextInput.focus();
+        return true;
+      }
+      return false;
+    },
+    nextInputSlect2 : function (targetElement) {
+      var parentTd = $(targetElement).parents('td');
+      var nextInput = parentTd.next().find('input:visible,select').first();
+      if(nextInput[0]){
+        nextInput.focus();
+        return true;
+      }
+      return false;
+    },
+    prevInputSlect2 : function (targetElement) {
+      var parentTd = $(targetElement).parents('td');
+      var prevInput = parentTd.prev().find('input:visible,select').first();
+      if(prevInput[0]){
+        prevInput.focus();
+        return true;
+      }
+      return false;
+    },
+  };
 </script>
