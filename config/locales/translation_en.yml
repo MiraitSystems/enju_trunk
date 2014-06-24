@@ -956,6 +956,7 @@ en:
         titles: Titles
         use_license_id: UseLicense
         nacsis_identifier: NACSIS ID
+        location_category_id: Location Category
       manifestation/identifiers:
         body: Other identifier
         identifier_type_id: Other identifier type
