@@ -36,6 +36,7 @@ $(function(){
     }
   });
 });
+
 </script>
 
 <table style="width: 100%" id="advanced_search">
@@ -94,6 +95,15 @@ $(function(){
     <td><label><%= advanced_search_label(:issn) -%>:</label></td>
     <td><%= search_field_tag 'issn', params[:issn] -%><%= t('advanced_search.help_issn') -%></td>
   </tr>
+  <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
+    <tr>
+      <td><label><%= advanced_search_label(:other_identifier) -%>:</label></td>
+      <td>
+        <%= select_tag 'identifier_type', options_from_collection_for_select(IdentifierType.all, "name", "display_name"), :include_blank => true %>
+        <%= search_field_tag 'other_identifier' -%>
+      </td>
+    </tr>
+  <%- end -%>
   <tr>
     <td><label><%= advanced_search_label(:ndc) -%>:</label></td>
     <td><%= search_field_tag 'ndc', params[:ndc] -%></td>

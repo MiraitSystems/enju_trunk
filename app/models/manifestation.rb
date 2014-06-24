@@ -379,13 +379,9 @@ class Manifestation < ActiveRecord::Base
         [issn, series_statement.try(:issn)]
       end
     end
-    text :ndl_jpno do
-      # TODO 詳細不明
+    string :other_identifier, :multiple => true do
+      identifiers.map{|identifier| "#{identifier.identifier_type.name}-#{identifier.body}"}
     end
-    string :ndl_dpid do
-      # TODO 詳細不明
-    end
-    # OTC end
     string :sort_title
     string :original_title
     boolean :periodical do
