@@ -127,6 +127,12 @@
             <td><%= display_classifications(manifestation) -%></td>
           </tr>
         <% end %>
+	<% if manifestation.location_category %>
+        <tr>
+          <td><%= t('activerecord.attributes.manifestation.location_category_id') -%>:</td>
+          <td><%= manifestation.location_category.keyname -%></td>
+        </tr>
+        <% end %>
         <%- unless manifestation.subjects.empty? -%>
           <tr>
             <td><%= t('activerecord.models.subject') -%>:</td>
