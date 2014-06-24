@@ -174,7 +174,7 @@ gem 'enju_trunk_frbr', :git => 'git://github.com/emiko/enju_trunk_frbr.git', :ta
 
 group :operation do
   gem 'enju_trunk_circulation', :git => 'git://github.com/MiraitSystems/enju_trunk_circulation.git', :tag => 'version0.9.3'
-  gem 'enju_trunk_ill', :git => 'git://github.com/MiraitSystems/enju_trunk_ill.git'
+  gem 'enju_trunk_ill', :git => 'git://github.com/MiraitSystems/enju_trunk_ill.git', :tag => 'version0.0.1'
   gem 'enju_trunk_statistics', :git => 'git://github.com/MiraitSystems/enju_trunk_statistics.git', :tag => 'version0.0.1'
 end
-gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git'
+gem 'enju_trunk_inventory', :git => 'git://github.com/MiraitSystems/enju_trunk_inventory.git', :tag => 'version0.0.1'
