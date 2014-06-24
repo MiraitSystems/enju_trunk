@@ -2773,9 +2773,11 @@ ja:
       failed_delete_not_find: "対象の資料が見つからなかったため削除を実行できませんでした。"
       duplicate_item_identifier: "所蔵情報IDが重複しています: %{item_identifier}"
       no_item_identifier: "所蔵情報IDが指定されていないため、所蔵情報の処理を行いません。"
+      unknown_item_identifier: "指定の所蔵情報IDに該当する所蔵は見つかりません。"
       cell_require_manifestation_type: "資料区分を指定してください。"
       wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
       wrong_format: "インポートのファイル形式が不正です。"
+      wrong_association: "書誌と所蔵の指定が不正です。"
       series:
         head_is_blank: "1行目には%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかが必須です。"
         cell_is_blank: "%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかを指定してください。"
