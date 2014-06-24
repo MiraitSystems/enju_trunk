@@ -2840,9 +2840,11 @@ en:
       failed_delete_not_find: Failed to delete item. Item is not found.
       duplicate_item_identifier: 'Duplicate item identifier: %{item_identifier}'
       no_item_identifier: No item identifier
+      unknown_item_identifier: Unknown item identifier
       cell_require_manifestation_type: Select manifestation type
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
       wrong_format: Wrong format type.
+      wrong_association: Wrong pair of manifestation and item
       series:
         head_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required in the first line.'
         cell_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required.'

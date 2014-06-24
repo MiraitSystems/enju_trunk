@@ -539,7 +539,6 @@ class ManifestationsController < ApplicationController
         with_filter, without_filter = make_query_filter(search_opts)
         factory = LocalSearchFactory.new(search_opts, params, @solr_query, with_filter, without_filter, sort)
       end
-
       # 検索オブジェクトの生成と検索の実行
 
       search = factory.new_search
@@ -1251,7 +1250,9 @@ class ManifestationsController < ApplicationController
       qwords << %Q[#{field}:#{qw}]
     end
 
+
     # other attributes
+    params[:other_identifier] = "#{params[:identifier_type]}-#{params[:other_identifier]}" if params[:other_identifier]
     [
       [:tag, 'tag_sm'],
       [:title, 'title_text', 'title_sm'],
@@ -1272,7 +1273,8 @@ class ManifestationsController < ApplicationController
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
-      [:identifier, 'identifier_sm']
+      [:identifier, 'identifier_sm'],
+      [:other_identifier, 'other_identifier_sm']
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 
@@ -1537,7 +1539,7 @@ class ManifestationsController < ApplicationController
     end
     @use_licenses = UseLicense.all
     @classification_types = ClassificationType.order("position").all
-    @location_categorys = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "manifestation.location_category", Time.zone.now) rescue nil
+    @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "manifestation.location_category", Time.zone.now) rescue nil
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true

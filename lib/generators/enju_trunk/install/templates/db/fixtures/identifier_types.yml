@@ -29,3 +29,9 @@ identifier_type_00005:
   display_name: NDL識別子
   note:
   position: 5
+identifier_type_00006:
+  id: 6
+  name: isbnset
+  display_name: ISBN(セット)
+  note:
+  position: 6
