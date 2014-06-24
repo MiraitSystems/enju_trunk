@@ -33,7 +33,15 @@ class TotalingReportsController < ApplicationController
         unless library_name.nil?
           library_name = library_name.display_name
         end
-        item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
+        if params[:acquired_from].present? && params[:acquired_to].present?
+          item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ? and ? <= acquired_at and acquired_at <= ?", m.id, s.id, params[:acquired_from], params[:acquired_to]]).count
+        elsif params[:acquired_from].present?
+          item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ? and ? <= acquired_at", m.id, s.id, params[:acquired_from]]).count
+        elsif params[:acquired_to].present?
+          item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ? and acquired_at <= ?", m.id, s.id, params[:acquired_to]]).count
+        else
+          item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
+        end 
         subtotal += item_count
         @total += item_count
         @list << [manifestation_type, library_name, shelf, item_count]

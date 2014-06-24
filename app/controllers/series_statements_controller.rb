@@ -17,7 +17,7 @@ class SeriesStatementsController < ApplicationController
   load_and_authorize_resource
   before_filter :get_work, :only => [:index, :new, :edit]
   before_filter :get_manifestation, :only => [:index]
-  before_filter :prepare_options, :only => [:new, :edit]
+  before_filter :prepare_options, :only => [:edit]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
 
   # GET /series_statements
@@ -80,6 +80,7 @@ class SeriesStatementsController < ApplicationController
     else
       @series_statement.root_manifestation = Manifestation.new
     end
+    prepare_options
     set_root_manifestation_instance_vals(original_series_statement.root_manifestation)
     respond_to do |format|
       format.html # new.html.erb
@@ -161,7 +162,7 @@ class SeriesStatementsController < ApplicationController
   # DELETE /series_statements/1.json
   def destroy
     SeriesStatement.transaction do
-      @series_statement.root_manifestation.destroy if @series_statement.root_manifestation
+      @series_statement.root_manifestation.destroy
       @series_statement.destroy
       respond_to do |format|
         format.html { redirect_to series_statements_url }
@@ -209,8 +210,8 @@ class SeriesStatementsController < ApplicationController
     @numberings = Numbering.get_manifestation_numbering('series_statement')
     @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
     @work_manifestation = Manifestation.new
-    @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
-    @work_has_languages = @series_statement.root_manifestation.work_has_languages if @series_statement.root_manifestation
+    @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles
+    @work_has_languages = @series_statement.root_manifestation.work_has_languages
     @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
     @use_licenses = UseLicense.all    
     @sequence_patterns = SequencePattern.all
