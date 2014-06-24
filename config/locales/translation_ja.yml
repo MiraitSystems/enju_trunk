@@ -574,7 +574,7 @@ ja:
         user_status: 利用状況
         department: 所属部署
       work_has_subject:
-        work: 書いた資料
+        work: 関連する資料
         subject: 件名
         subjectable_type: 件名付与対象の種類
       work_has_language:
