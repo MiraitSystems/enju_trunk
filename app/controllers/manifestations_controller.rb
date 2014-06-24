@@ -1539,6 +1539,7 @@ class ManifestationsController < ApplicationController
     end
     @use_licenses = UseLicense.all
     @classification_types = ClassificationType.order("position").all
+    @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "manifestation.location_category", Time.zone.now) rescue nil
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
     if SystemConfiguration.get("manifestation.has_one_item") == true
