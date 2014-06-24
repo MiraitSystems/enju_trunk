@@ -114,7 +114,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
     return nil unless cell
     cell = cell.to_s.strip
 
-    if cell.match(/^[0-9]+.0$/)
+    if cell.match(/^[0-9]+\.0$/)
       return cell.to_i
     elsif cell == 'delete'
       return ''
