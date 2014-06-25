@@ -252,11 +252,13 @@
     <% if can? :destroy, @item %>
       <li><%= link_to t('page.destroy'), @item, :confirm => t('page.are_you_sure'), :method => :delete -%></li>
     <% end %>
-    <%- if @item.inter_library_loans.empty? -%>
-      <%- if user_signed_in? and current_user.has_role?('Librarian') -%>
-        <li><%= link_to t('item.add_new_copy'), new_manifestation_item_path(@item.manifestation, :item_id => @item) -%></li>
+    <% if defined? EnjuTrunkIll %>
+      <%- if @item.inter_library_loans.empty? -%>
+        <%- if user_signed_in? and current_user.has_role?('Librarian') -%>
+          <li><%= link_to t('item.add_new_copy'), new_manifestation_item_path(@item.manifestation, :item_id => @item) -%></li>
+        <%- end -%>
       <%- end -%>
-    <%- end -%>
+    <% end %>
     <li><%= link_to t('page.listing', :model => t('activerecord.models.lending_policy')), item_lending_policies_path(@item) -%></li>
     <%- if @item.manifestation.bookbinder -%>
       <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :item_id => @item.id}, :confirm => t('page.undo_binding')) -%></li>
