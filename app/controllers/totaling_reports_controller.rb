@@ -33,6 +33,8 @@ class TotalingReportsController < ApplicationController
         unless library_name.nil?
           library_name = library_name.display_name
         end
+
+        # TODO DBの時間で比較している（ローカル時間での比較ができるようにする）
         if params[:acquired_from].present? && params[:acquired_to].present?
           item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ? and ? <= acquired_at and acquired_at <= ?", m.id, s.id, params[:acquired_from], params[:acquired_to]]).count
         elsif params[:acquired_from].present?
@@ -42,6 +44,7 @@ class TotalingReportsController < ApplicationController
         else
           item_count = all_items.find(:all, :conditions => ["manifestation_type_id = ? and shelf_id = ?", m.id, s.id]).count
         end 
+
         subtotal += item_count
         @total += item_count
         @list << [manifestation_type, library_name, shelf, item_count]
