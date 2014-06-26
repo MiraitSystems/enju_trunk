@@ -145,17 +145,20 @@ class ItemsController < ApplicationController
 
   # GET /items/1/edit
   def edit
+    logger.error "######## #{@item.inspect} #########"
+    all_items = Manifestation.joins(:items)
+    @classification = all_items.find(:first, :conditions => ["items.id = ?", params[:id]] , :select => "manifestations.id, manifestations.classification_id")
+    logger.error "######## #{@classification.inspect} #########"
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
     prepare_options
+
   end
 
   # POST /items
   # POST /items.json
   def create
     @item = Item.new(params[:item])
-
-    @manifestation = Manifestation.find(@item.manifestation_id)
 
     respond_to do |format|
       begin
