@@ -115,7 +115,10 @@ function displayArticleTitle(article_title) {
     <%= f_m.label :issue_number_string -%>
     <%= f_m.text_field :issue_number_string, :size => '10' -%>
   </div>
-
+  <div class="field">
+    <%= f_m.label :jan_magazine %>
+    <%= f_m.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' %>
+  </div>
   <div class="field">
     <%= f_m.label :price -%>
     <%= f_m.text_field :price, :class => 'resource_integer' -%>

@@ -992,6 +992,7 @@ ja:
         lccn: LCCN
         issn: ISSN
         marc_number: MARC番号
+        jan_magazine: 雑誌コード
         subscription_master: 購読マスタ
         description: 説明
         table_of_contents: 目次

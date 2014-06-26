@@ -937,6 +937,7 @@ en:
         serial_number_string: Serial Number
         edition_string: Edition
         marc_number: MARC number
+        jan_magazine: Jan magazine
         table_of_contents: Table of contents
         exinfo_6: Exinfo6
         exinfo_7: Exinfo7
