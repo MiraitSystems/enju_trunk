@@ -161,7 +161,7 @@
             <td><%= render 'manifestations/tag_list', :manifestation => manifestation -%></td>
           </tr>
         <% end %>
-        <% unless manifestation.periodical_master %>
+        <%# unless manifestation.periodical_master %>
           <%- unless manifestation.serial? -%>
             <tr>
               <td><%= t('activerecord.models.identifier') -%>:</td>
@@ -183,6 +183,10 @@
                   <br />
                   NDC: <%= manifestation.ndc -%>
                 <%- end -%>
+                <% if manifestation.jan_magazine.present? %>
+                  <br />
+                  <%= t('activerecord.attributes.manifestation.jan_magazine')%>: <%= manifestation.jan_magazine %>
+                <% end %>
                 <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
                   <%- manifestation.identifiers.each do |identifier| -%> 
                     <%= identifier.identifier_type.display_name.localize %>: <%= identifier.body %><br />
@@ -191,7 +195,7 @@
               </td>
             </tr>
           <%- end -%>
-        <% end %>
+        <%# end %>
         <%- unless manifestation.attachment_file_name.blank? -%>
           <%= render 'manifestations/attachment_file', :manifestation => manifestation -%>
         <%- end -%>
