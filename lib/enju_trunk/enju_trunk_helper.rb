@@ -297,7 +297,9 @@ module EnjuTrunk
       :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
       :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
       :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
-      :title_merge, :creator_merge, :query_merge, :manifestation_types
+      :title_merge, :creator_merge, :query_merge, :manifestation_types,
+      :carrier_types, :identifier, :other_identifier, :identifier_type,
+      :classifications,
     ]
 
     ADVANCED_SEARCH_LABEL_IDS = {
@@ -339,7 +341,8 @@ module EnjuTrunk
       manifestation_types: 'activerecord.models.manifestation_type',
       carrier_types: 'activerecord.models.carrier_type',
       identifier: 'activerecord.attributes.manifestation.identifier',
-      other_identifier: 'activerecord.models.identifier'
+      other_identifier: 'activerecord.models.identifier',
+      classifications: 'activerecord.models.classification',
     }
 
     def advanced_search_label(key)
@@ -366,7 +369,7 @@ module EnjuTrunk
       [:controller, :commit, :utf8].each {|k| url_params.delete(k) }
       url_params.delete('mode') if params[:mode].present? and params[:mode] == 'recent'
       url_params.delete('solr_query') if params[:solr_query].present?
-      ADVANCED_SEARCH_PARAMS.each {|k| url_params.delete(k) }
+      ADVANCED_SEARCH_PARAMS.each {|k| url_params.delete(k)}
       link_to link_title, manifestations_path(url_params)
     end
 
@@ -377,6 +380,13 @@ module EnjuTrunk
           next unless params[name]
           params[name].keys.each do |key|
             array << hidden_field_tag("#{name.to_s}[#{key}]", true)
+          end
+        elsif name == :classifications
+          next unless params[name]
+          params[name].each do |kvs|
+            kvs.each do |key, value|
+              array << hidden_field_tag("#{name.to_s}[][#{key}]", value)
+            end
           end
         else
           array << hidden_field_tag(name.to_s, params[name])
@@ -447,6 +457,15 @@ module EnjuTrunk
         when :manifestation_types
           ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
           summary_ary << [key, ks.join(', ')] if params[key].present?
+
+        when :classifications
+          cls_ids = (params[key] || []).inject([]) {|ary, kvs| ary << kvs['classification_id'] }.compact
+          if cls_ids.present?
+            cls_cats = Classification.where(id: cls_ids).includes(:classification_type).map do | cls|
+              "#{cls.classification_type.display_name} #{cls.category}"
+            end
+            summary_ary << [key, cls_cats.join(', ')] if cls_cats.present?
+          end
 
         else
           summary_ary << [key, params[key]] if params[key].present?

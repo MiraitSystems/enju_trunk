@@ -173,7 +173,10 @@ class Manifestation < ActiveRecord::Base
       subjects.collect(&:term) + subjects.collect(&:term_transcription)
     end
     string :classification, :multiple => true do
-      classifications.collect(&:category)
+      # "分類種類名-分類記号"の配列で登録する
+      classifications.map do |c|
+        "#{c.classification_type.name}-#{c.classification_identifier}"
+      end
     end
     string :carrier_type do
       carrier_type.name

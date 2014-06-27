@@ -1250,9 +1250,33 @@ class ManifestationsController < ApplicationController
       qwords << %Q[#{field}:#{qw}]
     end
 
+    # classification
+    cls_params = {}
+    (params[:classifications] || []).each do |cls_hash|
+      cls_type_id = cls_hash['classification_type_id']
+      cls_id = cls_hash['classification_id']
+      next if cls_type_id.blank? || cls_id.blank?
+      cls_params[cls_type_id] ||= []
+      cls_params[cls_type_id] << cls_id
+    end
 
+    cls_params.each do |cls_type_id, cls_ids|
+      cls_word = {}
+      Classification.where(id: cls_ids).
+        where(classification_type_id: cls_type_id).each do |cls|
+          cls_word[cls.id.to_s] =
+            "#{cls.classification_type.name}-#{cls.classification_identifier}" # Manifestationのsearchableブロックに合わせる
+        end
+
+      qws = cls_ids.map {|cls_id| cls_word[cls_id] || 'unknown' }
+      if qws.size == 1
+        qwords << "classification_sm:#{qws.first}"
+      else
+        qwords << "classification_sm:(#{qws.join(' OR ')})"
+      end
+    end
     # other attributes
-    params[:other_identifier] = "#{params[:identifier_type]}-#{params[:other_identifier]}" if params[:other_identifier]
+    params[:other_identifier] = "#{params[:identifier_type]}-#{params[:other_identifier]}" unless params[:other_identifier].blank?
     [
       [:tag, 'tag_sm'],
       [:title, 'title_text', 'title_sm'],

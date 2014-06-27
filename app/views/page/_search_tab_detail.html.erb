@@ -105,8 +105,7 @@ $(function(){
     </tr>
   <%- end -%>
   <tr>
-    <td><label><%= advanced_search_label(:ndc) -%>:</label></td>
-    <td><%= search_field_tag 'ndc', params[:ndc] -%></td>
+  <%= render :partial => 'form_classification_field' -%>
   </tr>
   <tr>
     <td><label><%= t('page.number') -%>:</label></td>
