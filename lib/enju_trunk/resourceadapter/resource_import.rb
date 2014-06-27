@@ -207,8 +207,8 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
 
       set = []
       1.upto(max_sfx) do |sfx|
-        set << field_keys.inject(SuffixValue.new(sfx)) do |h, fk|
-          h[fk] = index[fk][sfx]
+        set << names.keys.inject(SuffixValue.new(sfx)) do |h, fk|
+          h[fk] = index[fk][sfx] if index[fk]
           h
         end
       end
@@ -253,6 +253,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
     #   #=> []
     def field_data_set(row, field_keys)
       set = field_index_set(field_keys)
+      return nil unless set
 
       set.each do |s|
         s.each_key do |fk|
@@ -468,8 +469,8 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
 
     manifestation_type = get_manifestation_type_from_data(extraparams["manifestation_type"])
     auto_numbering     = extraparams["auto_numbering"]
+    numbering          = ResourceImport.set_numbering(extraparams["numbering"], manifestation_type) # XXX: auto_numbering=trueのとき、extraparams["numbering"]に値がないとnumberingがnilとなり自動採番に失敗するが、そのチェックをしなくてもOK?
     not_set_serial_number = extraparams["not_set_serial_number"]
-    numbering          = ResourceImport.set_numbering(extraparams["numbering"], manifestation_type)
     external_resource  = extraparams["external_resource"]
 
     sheet.manifestation_type = manifestation_type

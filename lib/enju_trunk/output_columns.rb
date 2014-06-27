@@ -139,9 +139,7 @@ module EnjuTrunk
 
       # 分割指定がONならばtrueを、OFFならばfalseを返す
       def separate_output_columns?
-        # FIXME: SystemConfiguration.get(' ... ')
-        # 以下はテスト用
-        ENV['SEPARATE_OUTPUT_COLUMNS'].present? ? true : false
+        !SystemConfiguration.get('import_manifestation.use_delim')
       end
 
       def output_column_defined?(field_key, spec_hash = OUTPUT_COLUMN_SPEC)
@@ -242,17 +240,17 @@ module EnjuTrunk
       private
 
         def clear_cache!
-          book_output_columns_cache.try(:clear)
-          article_output_columns_cache.try(:clear)
-          series_output_columns_cache.try(:clear)
-          all_output_columns_cache.try(:clear)
+          self.book_output_columns_cache = nil
+          self.article_output_columns_cache = nil
+          self.series_output_columns_cache = nil
+          self.all_output_columns_cache = nil
         end
     end # module ClassMethods
   end # module OutputColumns
 end # module EnjuTrunk
 
 __END__
-内部キー(主),内部キー(副),表示名(日),表示名(英),分割ONのとき,分割OFFのとき,主な情報ソース,備考
+内部キー(主),内部キー(副),表示名(日),表示名(英),分割OFFのとき,分割ONのとき,主な情報ソース,備考
 article,title,誌名,Title of journal,singular,singular,manifestation,
 book article,original_title,タイトル,Title,singular,singular,manifestation,
 book,title_transcription,タイトル（ヨミ）,Title(transcription),singular,singular,manifestation,
@@ -315,6 +313,8 @@ book root,subject,件名,Subject,singular,plural,manifestation,
 book root,subject_transcription,件名(ヨミ),Subject(transcription),singular,plural,manifestation,
 book,theme,テーマ,Theme,plural,plural,manifestation,
 book,theme_publish,テーマ公開範囲,Theme publish,plural,plural,manifestation,
+book,classification,分類記号,Classification,singular,plural,manifestation,
+book,classification_type,分類種類,Classification type,none,plural,manifestation,
 book,shelf,本棚,Shelf,singular,singular,item,
 book,checkout_type,貸出区分,Checkout type,singular,singular,item,
 book,accept_type,受入区分,Accept type,singular,singular,item,

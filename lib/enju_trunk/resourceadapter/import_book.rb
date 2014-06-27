@@ -17,7 +17,9 @@ module EnjuTrunk
     # 対象となる書誌種別がシリーズでないときに
     # シート上のシリーズ情報を完全に無視する(true)
     # または無視せずに適用する(false)
-    STRICT_SERIES_STATEMENT_BINDING = false
+    def self.strict_series_statement_binding?
+      false
+    end
 
     # manifestations.split_by_typeがfalseのとき
     # ヘッダーにmanifestation_typeが入っている必要がある
@@ -92,15 +94,10 @@ module EnjuTrunk
     end
 
     def check_book_datas_has_necessary_field(datas, sheet, item, manifestation, manifestation_type)
-      # タイトル未入力で登録しようとしていないか確認
-      if sheet.field_data(datas, 'book.original_title').blank?
-        raise I18n.t('resource_import_textfile.error.book.no_title')
-      end
-
-      # すでに書誌情報または書蔵情報を特定できていればOK
+      # すでに書誌情報または所蔵情報を特定できていればOK
       return if item || manifestation
 
-      # 書誌情報を特定する情報(必要に応じて書蔵情報を生成できる情報)が含まれているか確認
+      # 書誌情報を特定する情報(必要に応じて所蔵情報を生成できる情報)が含まれているか確認
       check_book_data_has_necessary_field(datas, sheet, manifestation_type.is_series?)
     end
 
@@ -145,12 +142,41 @@ module EnjuTrunk
       manifestation = series_statement = item = nil
       error_msgs = []
 
-      # 書蔵、シリーズ、書誌を特定する
+      # 所蔵、シリーズ、書誌を特定する
       item, item_identify_status = identify_item(datas, sheet)
       series_statement, series_statement_identify_status = identify_series_statement(datas, sheet)
       manifestation, manifestation_identify_status = identify_manifestation(datas, sheet)
 
       logger.debug "  record identify status: item:#{item_identify_status} manifestation:#{manifestation_identify_status} series_statement:#{series_statement_identify_status}"
+
+      if item_identify_status == :not_found &&
+          !SystemConfiguration.get('import_manifestation.force_create_item')
+        # 記述されていた所蔵情報IDが登録されていない
+        raise I18n.t('resource_import_textfile.error.unknown_item_identifier')
+      end
+
+      if manifestation && item &&
+          item.manifestation != manifestation
+        logger.debug "  identified manifestation != identified item.manifestation"
+        # シート上のmanifestation-itemの組み合わせがDB上の状態と合致しない
+        if !SystemConfiguration.get('import_manifestation.exchange_manifestation')
+          raise I18n.t('resource_import_textfile.error.unexpected_item')
+        else
+          raise NotImplementedError
+        end
+      end
+
+      if manifestation && series_statement &&
+          manifestation.series_statement &&
+          manifestation.series_statement != series_statement
+        logger.debug "  identified manifestation.series_statement != identified series_statement"
+        # シート上のmanifestation-series_statementの組み合わせがDB上の状態と合致しない
+        if !SystemConfiguration.get('import_manifestation.exchange_series_statement')
+          raise I18n.t('resource_import_textfile.error.unexpected_series_statement')
+        else
+          raise NotImplementedError
+        end
+      end
 
       # 削除指定があったとき、
       # 明示された情報により特定されたレコードを削除してこの行の処理を終える
@@ -163,6 +189,7 @@ module EnjuTrunk
         end
 
         delete_record(import_textresult, item, manifestation, series_statement)
+        import_textresult.error_msg = error_msgs.join('<br />')
         return
       end
 
@@ -175,13 +202,14 @@ module EnjuTrunk
         error_msgs << I18n.t('resource_import_textfile.error.book.exist_multiple_same_manifestations')
       end
 
-      if series_statement.nil? && manifestation && manifestation.series_statement
+      if series_statement.nil? && series_statement_identify_status == :empty_cond &&
+          manifestation && manifestation.series_statement
         series_statement = manifestation.series_statement
       end
       if series_statement.nil? && series_statement_identify_status == :too_many
         error_msgs << I18n.t('resource_import_textfile.error.series.exist_multiple_same_manifestations')
       end
-      logger.debug "  record find status: item:#{item.present?} manifestation:#{manifestation.present?} series_statement:#{series_statement.present?}"
+      logger.debug "  record find status: item:#{item.present?} manifestation:#{manifestation.present?} series_statement:#{series_statement.present?} root_manifestation:#{series_statement.try(:root_manifestation).present?}"
 
       manifestation_type = sheet.manifestation_type
       manifestation_type = data_manifestation_type(datas, sheet, manifestation) unless manifestation_type
@@ -190,33 +218,29 @@ module EnjuTrunk
       check_book_datas_has_necessary_field(
         datas, sheet, item, manifestation, manifestation_type)
       manifestation = update_or_create_manifestation(
-        datas, sheet, manifestation_type, manifestation, not_set_serial_number, series_statement,
-        import_textresult, external_resource)
+        datas, sheet,
+        manifestation_type, manifestation,
+        not_set_serial_number, series_statement,
+        error_msgs, external_resource)
 
       if series_statement
         # root manifestation
         update_or_create_manifestation(
-          datas, sheet, manifestation_type, not_set_serial_number,
-          series_statement.root_manifestation, series_statement,
-          import_textresult, external_resource, true)
+          datas, sheet,
+          manifestation_type, series_statement.root_manifestation,
+          not_set_serial_number, series_statement,
+          error_msgs, external_resource, true)
       end
 
-      if item.blank? && manifestation.items.count == 1
-        # この段階で書蔵を特定できていないとき、
-        # 特定(または作成)した書誌に対する
-        # 書蔵が1つだけであれば、
-        # その書蔵を処理対象として選択する
-        # (書蔵の特定はidentify_itemによる)
-        # XXX: この動作で要件に対して問題ない?(書蔵が2つ以上あればシートによる追加が可能だが、そうでなければ更新しかできない)
-        item = manifestation.items.first
-      end
       item = update_or_create_item(
-        datas, sheet, textfile, numbering, auto_numbering, manifestation, item, import_textresult)
+        datas, sheet, textfile, numbering, auto_numbering, manifestation, item, error_msgs)
 
       import_textresult.manifestation = manifestation
       import_textresult.item = item
       manifestation.index
       manifestation.series_statement.index if manifestation.series_statement
+
+      import_textresult.error_msg = error_msgs.join('<br />')
 
       if false # DO NOT AUTO RETAIN import_textresult.item.manifestation.next_reserve
         current_user = User.where(:username => 'admin').first
@@ -231,7 +255,7 @@ module EnjuTrunk
       end
     end
 
-    def update_or_create_manifestation(datas, sheet, manifestation_type, manifestation, not_set_serial_number, series_statement, import_textresult, external_resource, is_root = false)
+    def update_or_create_manifestation(datas, sheet, manifestation_type, manifestation, not_set_serial_number, series_statement, error_msgs, external_resource, is_root = false)
       if is_root
         # root_manifestationのための処理を行う
         field = 'root'
@@ -251,6 +275,10 @@ module EnjuTrunk
         mode = 'create'
 
         unless is_root
+          if sheet.field_data(datas, 'book.original_title').blank? # タイトル未入力で登録しようとしていないか確認
+            raise I18n.t('resource_import_textfile.error.book.no_title')
+          end
+
           nbn = sheet.field_data(datas, "#{field}.nbn").try(:to_s) #ndl:JPNO,nacsis:NBN
           if external_resource == "nacsis"
             ncid = sheet.field_data(datas, "#{field}.nacsis_identifier").try(:to_s)
@@ -265,16 +293,23 @@ module EnjuTrunk
 
       if series_statement &&
           !manifestation_type.is_series? &&
-          STRICT_SERIES_STATEMENT_BINDING
+          self.class.strict_series_statement_binding?
         # 書誌種別がシリーズでなければ、
         # 特定されたシリーズ情報があっても無視する
         series_statement = nil
+        error_msgs << I18n.t('resource_import_textfile.error.unsuitable_manifestation_type')
 
-      elsif !is_root &&
-          (series_statement || manifestation_type.is_series?)
-        series_statement =
-          update_or_create_series_statement(
-            datas, sheet, manifestation, series_statement)
+      elsif !is_root
+        if series_statement || manifestation_type.is_series?
+          series_statement =
+            update_or_create_series_statement(
+              datas, sheet, manifestation, series_statement)
+        elsif !manifestation_type.is_series? &&
+            sheet.filled_any?(datas, Manifestation.series_output_columns)
+          # シリーズを新規作成する必要があるが
+          # 書誌の資料種別がシリーズ向けではない)
+          error_msgs << I18n.t('resource_import_textfile.error.unsuitable_manifestation_type')
+        end
       end
 
       manifestation.during_import = true
@@ -349,7 +384,6 @@ module EnjuTrunk
             default: '不明', check_column: :display_name],
         ],
         dis_date: ["#{field}.dis_date", [:to_s]],
-        issn: ['series.issn', [:to_s]],
         lccn: ["#{field}.lccn", [:to_s]],
         marc_number: ["#{field}.marc_number", [:to_s]],
         ndc: ["#{field}.ndc", [:to_s]],
@@ -380,112 +414,12 @@ module EnjuTrunk
         update_summary(:manifestation_found)
       end
 
-      # creator, publisher, contributor
-      create_new = SystemConfiguration.get("add_only_exist_agent") == true
-      [
-        ["#{field}.creator", :creators=, :creates],
-        ["#{field}.publisher", :publishers=, :produces],
-        ["#{field}.contributor", :contributors=, :realizes],
-      ].each do |field_key, writer, assoc_name|
-        if Manifestation.separate_output_columns?
-          writer = "#{assoc_name}="
+      manifestation.series_statement = series_statement if series_statement
 
-          name_fk = field_key
-          tran_fk = "#{field_key}_transcription"
-          type_fk = "#{field_key}_type"
-
-          agent_data = sheet.field_data_set(datas, [name_fk, tran_fk, type_fk])
-          next if agent_data.nil?
-
-          atype_cls = (assoc_name.to_s.classify + 'Type').constantize
-          atype_method = assoc_name.to_s.singularize + '_type_id='
-
-          assoc_records = []
-          agent_data.each do |adata|
-            agent = Agent.add_agent(adata[name_fk], adata[tran_fk], create_new: create_new)
-            next if agent.blank?
-
-            record = manifestation.__send__(assoc_name).build
-            record.agent = agent
-            if type_id = adata[type_fk]
-              if type = atype_cls.where(id: type_id).first
-                record.__send__(atype_method, type)
-              end
-            end
-            assoc_records << record
-          end
-
-        else
-          value = sheet.field_data(datas, field_key)
-          next if value.nil?
-          assoc_records = Agent.add_agents(value, create_new: create_new)
-        end
-
-        if assoc_name == :realizes
-          #TODO update contributor position withou destroy_all
-          manifestation.contributors.destroy_all unless manifestation.contributors.empty?
-        end
-        manifestation.__send__(writer, assoc_records)
-      end
-
-      # subject
-      if Manifestation.separate_output_columns?
-        subject_data = sheet.field_data_set(datas, %w(book.subject book.subject_transcription))
-        if subject_data.nil?
-          subject_list = subject_trans_list = nil
-
-        else
-          # TODO: Subject.import_subjectsが配列を受け入れるようにする
-          dlm = ';'
-          subject_list = []
-          subject_trans_list = []
-          subject_data.each do |adata|
-            subject_list << adata["#{field}.subject"]
-            subject_trans_list << adata["#{field}.subject_trans_list"]
-          end
-          subject_list = subject_list.join(dlm)
-          subject_trans_list = subject_trans_list.join(dlm)
-        end
-
-      else
-        subject_list = sheet.field_data(datas, "#{field}.subject")
-        subject_trans_list = nil
-      end
-
-      unless subject_list.nil?
-        subjects = Subject.import_subjects(subject_list, subject_trans_list)
-        manifestation.subjects = subjects
-      end
-
-      # languages
-      if Manifestation.separate_output_columns?
-        records = build_associated_records(sheet, datas, manifestation, :work_has_languages, {
-          language_id: ["#{field}.language", Language, :name],
-          language_type: ["#{field}.language_type", LanguageType, :name, allow_blank: true],
-        })
-        manifestation.work_has_languages = records unless records.nil?
-
-      else
-        languages_list   = []
-        languages_string = sheet.field_data(datas, "#{field}.language")
-        languages        = languages_string.nil? ? nil : split_by_semicolon(languages_string).uniq.compact
-        if languages.blank?
-          languages_list << Language.where(:name => 'Japanese').first
-        else
-          languages.each do |language|
-            next if language.blank?
-            obj = Language.where(:name => language).first
-            if obj.nil?
-              raise I18n.t('resource_import_textfile.error.wrong_data',
-                            :field => sheet.field_name("#{field}.language"),
-                            :data => language)
-            else
-              languages_list << obj
-            end
-          end
-        end
-      end
-      manifestation.languages = languages_list unless languages_list.blank?
+      update_manifestation_agents(sheet, datas, field, manifestation, error_msgs)
+      update_manifestation_subjects(sheet, datas, field, manifestation, error_msgs)
+      update_manifestation_languages(sheet, datas, field, manifestation, error_msgs)
+      update_manifestation_classifications(sheet, datas, field, manifestation, error_msgs)
 
       # manifestation_titles
       records = build_associated_records(sheet, datas, manifestation, :work_has_titles, {
@@ -542,6 +476,169 @@ module EnjuTrunk
       manifestation
     end
 
+    def update_manifestation_agents(sheet, datas, field, manifestation, error_msgs)
+      create_new = SystemConfiguration.get("add_only_exist_agent") == true
+
+      [
+        ["#{field}.creator", :creators=, :creates],
+        ["#{field}.publisher", :publishers=, :produces],
+        ["#{field}.contributor", :contributors=, :realizes],
+      ].each do |field_key, writer, assoc_name|
+        if Manifestation.separate_output_columns?
+          writer = "#{assoc_name}="
+
+          name_fk = field_key
+          tran_fk = "#{field_key}_transcription"
+          type_fk = "#{field_key}_type"
+
+          agent_data = sheet.field_data_set(datas, [name_fk, tran_fk, type_fk])
+          next if agent_data.nil?
+
+          atype_cls = (assoc_name.to_s.classify + 'Type').constantize
+          atype_method = assoc_name.to_s.singularize + '_type_id='
+
+          assoc_records = []
+          agent_data.each do |adata|
+            agent = Agent.add_agent(adata[name_fk], adata[tran_fk], create_new: create_new)
+            next if agent.blank?
+
+            record = manifestation.__send__(assoc_name).build
+            record.agent = agent
+            if type_id = adata[type_fk]
+              if type = atype_cls.where(id: type_id).first
+                record.__send__(atype_method, type)
+              end
+            end
+            assoc_records << record
+          end
+
+        else
+          value = sheet.field_data(datas, field_key)
+          next if value.nil?
+          assoc_records = Agent.add_agents(value, nil, create_new: create_new)
+        end
+
+        if assoc_name == :realizes
+          #TODO update contributor position withou destroy_all
+          manifestation.contributors.destroy_all unless manifestation.contributors.empty?
+        end
+        manifestation.__send__(writer, assoc_records)
+      end
+    end
+
+    def update_manifestation_languages(sheet, datas, field, manifestation, error_msgs)
+      if Manifestation.separate_output_columns?
+        records = build_associated_records(sheet, datas, manifestation, :work_has_languages, {
+          language_id: ["#{field}.language", Language, :name],
+          language_type: ["#{field}.language_type", LanguageType, :name, allow_blank: true],
+        })
+        manifestation.work_has_languages = records unless records.nil?
+
+      else
+        languages_list   = []
+        languages_string = sheet.field_data(datas, "#{field}.language")
+        languages        = languages_string.nil? ? nil : split_by_semicolon(languages_string).uniq.compact
+        if languages.blank?
+          languages_list << Language.where(:name => 'Japanese').first
+        else
+          languages.each do |language|
+            next if language.blank?
+            obj = Language.where(:name => language).first
+            if obj.nil?
+              raise I18n.t('resource_import_textfile.error.wrong_data',
+                            :field => sheet.field_name("#{field}.language"),
+                            :data => language)
+            else
+              languages_list << obj
+            end
+          end
+        end
+        manifestation.languages = languages_list unless languages_list.blank?
+      end
+    end
+
+    def update_manifestation_subjects(sheet, datas, field, manifestation, error_msgs)
+      if Manifestation.separate_output_columns?
+        subject_data = sheet.field_data_set(
+          datas, %W(#{field}.subject #{field}.subject_transcription))
+        if subject_data.nil?
+          subject_list = subject_trans_list = nil
+
+        else
+          # TODO: Subject.import_subjectsが配列を受け入れるようにする
+          dlm = ';'
+          subject_list = []
+          subject_trans_list = []
+          subject_data.each do |adata|
+            subject_list << adata["#{field}.subject"]
+            subject_trans_list << adata["#{field}.subject_trans_list"]
+          end
+          subject_list = subject_list.join(dlm)
+          subject_trans_list = subject_trans_list.join(dlm)
+        end
+
+      else
+        subject_list = sheet.field_data(datas, "#{field}.subject")
+        subject_trans_list = nil
+      end
+
+      unless subject_list.nil?
+        subjects = Subject.import_subjects(subject_list, subject_trans_list)
+        manifestation.subjects = subjects
+      end
+    end
+
+    def update_manifestation_classifications(sheet, datas, field, manifestation, error_msgs)
+      return unless field == 'book'
+
+      classification_field = "#{field}.classification"
+      classification_type_field = "#{field}.classification_type"
+      classification_attrs = nil
+
+      if Manifestation.separate_output_columns?
+        classification_attrs = sheet.field_data_set(datas,
+          [classification_field, classification_type_field])
+
+      else
+        return unless sheet.field_index(classification_field)
+
+        value = sheet.field_data(datas, classification_field) || ''
+        classification_attrs = split_by_semicolon(value).map do |category|
+          {classification_field => category}
+        end
+      end
+      return if classification_attrs.nil?
+
+      classification_list = []
+
+      classification_attrs.each do |hash|
+        type = hash[classification_type_field] || 'ndc9'
+        category = hash[classification_field]
+        next if category.blank?
+
+        ct = ClassificationType.where(name: type).first
+        unless ct
+          error_msgs << I18n.t(
+            'resource_import_textfile.error.unknown_classification_type',
+            type: type)
+          next
+        end
+
+        c = Classification.where(category: category).
+          where(classification_type_id: ct).first
+        unless c
+          error_msgs << I18n.t(
+            'resource_import_textfile.error.unknown_classification',
+            type: type, category: category)
+          next
+        end
+
+        classification_list << c
+      end
+
+      manifestation.classifications = classification_list
+    end
+
     def import_from_external_resource(isbn, ncid, nbn, external_resource)
       manifestation = nil
 
@@ -590,7 +687,7 @@ module EnjuTrunk
       [obj, res]
     end
 
-    # 書蔵IDにより対応する書蔵レコードを特定する
+    # 所蔵IDにより対応する所蔵レコードを特定する
     def identify_item(datas, sheet)
       Rails.logger.debug "identify_item"
 
@@ -654,8 +751,23 @@ module EnjuTrunk
         publishers: 'book.publisher',
         series_title: 'series.original_title',
       }.each do |attr_name, field_key|
-        field_data = sheet.field_data(datas, field_key)
-        if field_data.blank? && attr_name != :series_title
+
+        case attr_name
+        when :creators, :publishers
+          if Manifestation.separate_output_columns?
+            fds = sheet.field_data_set(datas, [field_key])
+            field_data = fds.blank? ? nil : fds.map {|h| h[field_key] }
+          else
+            fd = sheet.field_data(datas, field_key)
+            field_data = fd.blank? ? nil : split_by_semicolon(fd)
+          end
+
+        else
+          field_data = sheet.field_data(datas, field_key)
+        end
+
+        if field_data.nil? && attr_name != :series_title ||
+            !field_data.nil? && field_data.blank?
           # データ中に書誌特定条件が指定されていない
           res = [nil, :empty_cond]
           Rails.logger.debug "manifestation #{res[1]}"
@@ -664,12 +776,11 @@ module EnjuTrunk
 
         case attr_name
         when :creators, :publishers
-          agent_names = split_by_semicolon(field_data).uniq.sort
           check_procs << proc do |record|
             record_agent_names = record.__send__(attr_name).pluck(:full_name).sort
-            record_agent_names == agent_names
+            record_agent_names == field_data.sort
           end
-          scope = scope.where(:"#{attr_name}_agents" => {full_name: agent_names})
+          scope = scope.where(:"#{attr_name}_agents" => {full_name: field_data})
 
         when :series_title
           if field_data.present?
@@ -678,11 +789,11 @@ module EnjuTrunk
           end
 
         else
-          scope = scope.where(attr_name => field_data)
+          scope = scope.where(attr_name => field_data.to_s)
         end
       end
 
-      records = scope.all
+      records = scope.uniq.all
       Rails.logger.debug "manifestation candidates #{records.count}"
       check_procs.each do |check|
         records = records.select(&check)
@@ -694,61 +805,25 @@ module EnjuTrunk
       res
     end
 
-    # シリーズIDまたは以下に挙げる全項目の一致によりシリーズ情報を特定する
-    #  * タイトル
-    #  * タイトルのヨミ
-    #  * 定期刊行物かどうか
-    #  * ISSN
-    #  * 注記
+    # シリーズIDまたはISSNの一致によりシリーズ情報を特定する
     def identify_series_statement(datas, sheet)
       Rails.logger.debug "identify_series_statement"
       scope = SeriesStatement.scoped
+      cand = nil
 
-      series_identifier = sheet.field_data(datas, 'series.series_statement_identifier')
-      if series_identifier.present?
+      if series_identifier = sheet.field_data(datas, 'series.series_statement_identifier')
         cand = scope.where(series_statement_identifier: series_identifier.to_s).all
-        # シリーズIDの指定があるときには、シリーズIDのみから特定する
+      elsif issn = sheet.field_data(datas, 'series.issn')
+        cand = scope.where(issn: issn.to_s).all
+      end
+
+      if cand
         res = identified_result(cand)
-        Rails.logger.debug "series_statement #{res[1]}"
-        return res
-      end
-
-      cond_count = 0
-      scope = scope.where(periodical: fix_boolean(sheet.field_data(datas, 'series.periodical')))
-      {
-        original_title: 'series.original_title',
-        title_transcription: 'series.title_transcription',
-        issn: 'series.issn',
-        note: 'series.note',
-        periodical: 'series.periodical',
-      }.each do |attr_name, field_key|
-        field_data = sheet.field_data(datas, field_key)
-        next unless field_data.present?
-
-        case attr_name
-        when :issn
-          begin
-            Lisbn.new(field_data.to_s)
-          rescue
-            raise I18n.t('resource_import_textfile.error.series.wrong_issn')
-          end
-        when :periodical
-          value = fix_boolean(field_data)
-        else
-          value = field_data
-        end
-        cond_count += 1
-        scope = scope.where(attr_name => value)
-      end
-
-      if cond_count == 0
+      else
         # データ中にシリーズ特定条件が指定されていない
         res = [nil, :empty_cond]
-      else
-        res = identified_result(scope.all)
       end
       Rails.logger.debug "series_statement #{res[1]}"
-
       res
     end
 
@@ -811,19 +886,21 @@ module EnjuTrunk
       series_statement
     end
 
-    def update_or_create_item(datas, sheet, textfile, numbering, auto_numbering, manifestation, item, import_textresult)
+    def update_or_create_item(datas, sheet, textfile, numbering, auto_numbering, manifestation, item, error_msgs)
       if item
         mode = 'edit'
+        item.manifestation.try(:reload) # ActiveRecord::StaleObjectError回避
 
       else
         unless sheet.field_index('book.item_identifier') || auto_numbering
-          import_textresult.error_msg = I18n.t('resource_import_textfile.message.without_item')
+          error_msgs << I18n.t('resource_import_textfile.message.without_item')
           return item
         end
         item = Item.new
         mode = 'create'
       end
 
+      # 所蔵情報IDの設定
       if item.item_identifier
         # noop
         # NOTE:
@@ -838,7 +915,7 @@ module EnjuTrunk
         begin
           create_item_identifier = Numbering.do_numbering(numbering.name)
         end while Item.where(item_identifier: create_item_identifier).exists?
-        item_identifier = create_item_identifier
+        item.item_identifier = create_item_identifier
       end
 
       unless item.item_identifier
@@ -847,6 +924,7 @@ module EnjuTrunk
       end
 
       item.manifestation_id = manifestation.id
+
       set_attributes(item, datas, sheet, {
         accept_type: [
           'book.accept_type',
@@ -1003,9 +1081,7 @@ module EnjuTrunk
           attrs.each do |attr_name, value|
             assoc_record.__send__("#{attr_name}=", value)
           end
-          unless assoc_record.save # XXX: raiseすべき?
-            logger.debug "#{record.class.name}\##{record.id}: #{assoc_name}: #{model_class.name}: #{assoc_record.error.full_messages}: #{attrs.inspect}"
-          end
+          assoc_record.save!
         end
       end
 
@@ -1070,7 +1146,7 @@ module EnjuTrunk
           when :deny_overwrite
             allow_overwrite = false
           when :to_s
-            value = value.to_s
+            value = value.to_s unless value.blank?
           when :to_i
             value = value.to_i unless value.blank?
           when :set_data, :check_data_is_numeric, :check_data_is_integer
@@ -1203,7 +1279,7 @@ module EnjuTrunk
       end
     end
 
-    def delete_record(import_textresult, item, manifestation, series_statement)
+    def delete_record(error_msgs, item, manifestation, series_statement)
       deleted_item =
         deleted_item_identifier =
         deleted_manifestation =
@@ -1248,8 +1324,7 @@ module EnjuTrunk
       msgs << I18n.t('resource_import_textfile.message.deleted_manifestation', original_title: deleted_manifestation_title) if  deleted_manifestation
       msgs << I18n.t('resource_import_textfile.message.deleted_series_statement', original_title: deleted_series_title) if deleted_series_statement
 
-      import_textresult.error_msg =
-        "#{I18n.t('resource_import_textfile.message.deleted')} #{msgs.join(' / ')}"
+      error_msgs << "#{I18n.t('resource_import_textfile.message.deleted')} #{msgs.join(' / ')}"
     end
   end
 end

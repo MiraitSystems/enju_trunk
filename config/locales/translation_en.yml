@@ -2727,92 +2727,6 @@ en:
     auto_numbering: Auto numbering for item identifier
     not_set_serial_number: Keep serial number
     root_prefix: 'Series '
-    excel:
-      series:
-        issn: ISSN
-        nacsis_identifier: NCID
-        nbn: NBN
-        jpno: JPNO
-        original_title: Series name
-        title_transcription: Series name（transcription）
-        periodical: Periodical
-        series_statement_identifier: Series statement identifier
-        note: Note
-      book:
-        manifestation_type: Manifestation type
-        original_title: Title
-        title_transcription: Title（transcription）
-        title_alternative: Alternative title
-        identifier: Identifier
-        nacsis_identifier: NCID
-        nbn: NBN
-        isbn: ISBN
-        lccn: LCCN
-        marc_number: MARC number
-        ndc: NDC
-        carrier_type: Carrier type
-        jpn_or_foreign: Japan or foreign
-        frequency: Frequency
-        pub_date: Date of publication
-        country_of_publication: Country of publication
-        place_of_publication: Place of publication
-        language: Language
-        edition_display_value: Edition statement
-        volume_number_string: Volume number
-        issue_number_string: Issue number
-        serial_number_string: Serial number
-        start_page: Start page
-        end_page: End page
-        height: Height(cm)
-        width: Width(cm)
-        depth: Depth(cm)
-        size: Size
-        price: Price
-        price_string: Price
-        access_address: Access address
-        repository_content: Repository content
-        required_role: Required role
-        except_recent: Excep recent
-        acceptance_number: Accept number
-        description: Description
-        supplement: Supplement
-        note: Note
-        creator: Creator
-        contributor: Contributor
-        publisher: Publisher
-        subject: Subject
-        accept_type: Accept type
-        acquired_at: Date of accession
-        acquired_at_string: Date of accession
-        bookstore: Bookstore
-        library: Library
-        shelf: Shelf
-        checkout_type: Checkout type
-        circulation_status: Circulation status
-        retention_period: retention period
-        call_number: Call number
-        item_price: Purchase price
-        item_price_string: Purchase price
-        url: URL
-        include_supplements: Include supplements
-        use_restriction: Use restriction
-        item_note: Item note
-        rank: Rank
-        item_identifier: Item identifier
-        remove_reason: Removed reason
-        non_searchable: Non searchable
-        missing_issue: Missing issue
-        del_flg: Delete flag
-      article:
-        creator: Creator
-        original_title: Title
-        title: title of journal
-        volume_number_string: Volume number
-        number_of_page: Pages
-        pub_date: Date of publication
-        call_number: Call number
-        access_address: URL
-        subject: Subject
     message:
       read_start: Started to read.
       read_end: End to read.
@@ -2843,7 +2757,11 @@ en:
       cell_require_manifestation_type: Select manifestation type
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
       wrong_format: Wrong format type.
-      wrong_association: Wrong pair of manifestation and item
+      unexpected_item: Wrong pair of manifestation and item
+      unexpected_series_statement: Wrong pair of manifestation and series statement
+      unknown_classification_type: "Classification type %{type} is not exists."
+      unknown_classification: "Classification %{category} is not exists under classification type %{type}."
+      unsuitable_manifestation_type: "Series statement could not create because unsuitable manifestation type was specified."
       series:
         head_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required in the first line.'
         cell_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required.'

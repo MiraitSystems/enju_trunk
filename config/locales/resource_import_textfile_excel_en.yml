@@ -93,6 +93,8 @@ en:
         library: Library
         remove_reason: Removed reason
         del_flg: Delete flag
+        classification: Classification
+        classification_type: Classification type
       root:
         other_title: Other title
         other_title_type: Other title type

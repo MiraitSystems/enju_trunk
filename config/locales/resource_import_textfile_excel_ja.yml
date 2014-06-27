@@ -93,6 +93,8 @@ ja:
         library: 図書館
         remove_reason: 除籍理由
         del_flg: 削除フラグ
+        classification: 分類記号
+        classification_type: 分類種類
       root:
         other_title: その他のタイトル
         other_title_type: その他のタイトルタイプ

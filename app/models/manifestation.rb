@@ -1145,6 +1145,7 @@ class Manifestation < ActiveRecord::Base
         column.delete(type); next
       end
     end
+    return data if column.blank?
 
     if column['book'] && column['series']
       # bookとseriesを同じCSV中に含めるために
@@ -1489,6 +1490,22 @@ class Manifestation < ActiveRecord::Base
         else
           val[i] = record.identifier_type_id
         end
+      end
+
+    when 'classification', 'classification_type'
+      if sep_flg
+        val = [nil]*ccount
+        classifications.each_with_index do |record, i|
+          if ws_col == 'classification'
+            val[i] = record.category
+          else
+            val[i] = record.classification_type.name
+          end
+        end
+
+      else
+        dlm = ';'
+        val = classifications.pluck(:category).join(dlm)
       end
 
     when 'theme', 'theme_publish'

@@ -2778,7 +2778,11 @@ ja:
       cell_require_manifestation_type: "資料区分を指定してください。"
       wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
       wrong_format: "インポートのファイル形式が不正です。"
-      wrong_association: "書誌と所蔵の指定が不正です。"
+      unexpected_item: "書誌と所蔵の指定が不正です。"
+      unexpected_series_statement: "シリーズ情報と書誌の指定が不正です。"
+      unknown_classification_type: "指定された分類種類(%{type})がありません。"
+      unknown_classification: "指定された分類種類(%{type})には該当の記号(%{category})がありません。"
+      unsuitable_manifestation_type: "雑誌・定期刊行物に適切な資料区分が選択されていないため、シリーズ情報を作成できませんでした。"
       series:
         head_is_blank: "1行目には%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかが必須です。"
         cell_is_blank: "%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかを指定してください。"
