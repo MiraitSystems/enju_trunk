@@ -68,6 +68,7 @@
   <div class="field">
     <%= f.label :call_number -%><br />
     <%= f.text_field :call_number -%>
+    <%= t('activerecord.attributes.item.notice_call_number', :call_number_delimiter => current_user.library.call_number_delimiter) -%>
   </div>
 
 

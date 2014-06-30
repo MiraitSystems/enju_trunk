@@ -725,6 +725,7 @@ ja:
         exemplify: 所蔵
         location_symbol: 別置記号
         statistical_class: 統計分類
+        notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
       loss_item:
         user_id: 利用者番号
         item_id: 紛失資料
