@@ -3,6 +3,7 @@ class Keycode < ActiveRecord::Base
   validates_presence_of :name, :display_name, :v, :keyname, :started_at
   validates_format_of :name, :with => /^[0-9A-Za-z]/ #, :message =>"は半角英数字で入力してください。"
   validate :validate_term
+  default_scope where(:hidden => false)
   default_scope :order => 'name ASC, started_at ASC'
 
   has_many :agents
