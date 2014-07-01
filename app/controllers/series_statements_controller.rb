@@ -78,9 +78,9 @@ class SeriesStatementsController < ApplicationController
       @series_statement = original_series_statement.dup
       @series_statement.root_manifestation = original_series_statement.root_manifestation.dup
     else
-      @series_statement.root_manifestation = Manifestation.new
+      @series_statement.initialize_root_manifestation
     end
-    set_root_manifestation_instance_vals(original_series_statement.root_manifestation)
+    set_root_manifestation_instance_vals(@series_statement.root_manifestation)
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -211,7 +211,7 @@ class SeriesStatementsController < ApplicationController
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
     @work_has_languages = @series_statement.root_manifestation.work_has_languages if @series_statement.root_manifestation
-    @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
+    @work_has_languages = [WorkHasLanguage.new] if @work_has_languages.blank?
     @use_licenses = UseLicense.all    
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
