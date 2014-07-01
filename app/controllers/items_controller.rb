@@ -138,6 +138,7 @@ class ItemsController < ApplicationController
       @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
+    @item.acquired_at_string = Date.today unless @item.acquired_at_string
     prepare_options
     respond_to do |format|
       format.html # new.html.erb
