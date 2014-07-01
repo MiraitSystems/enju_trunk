@@ -354,6 +354,7 @@ class ItemsController < ApplicationController
     end
     @location_symbols = Keycode.where(:name => 'item.location_symbol')
     @statistical_classes = Keycode.where(:name => 'item.statistical_class')
+    @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "manifestation.location_category", Time.zone.now) rescue nil
   end
 
   def check_status

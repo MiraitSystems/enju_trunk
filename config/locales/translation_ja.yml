@@ -724,6 +724,7 @@ ja:
         non_searchable: 検索対象から除外
         exemplify: 所蔵
         location_symbol: 別置記号
+        location_category: 別置区分
         statistical_class: 統計分類
         notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
       loss_item:
@@ -1035,7 +1036,6 @@ ja:
         titles: その他の書名
         use_license_id: 著者抄録許諾(許諾機関名称)
         nacsis_identifier: NACSIS書誌レコードID
-        location_category_id: 別置区分
       manifestation/identifiers:
         body: その他の識別子
         identifier_type_id: その他の識別子の種類

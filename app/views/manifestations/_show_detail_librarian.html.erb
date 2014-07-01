@@ -190,12 +190,6 @@
           <td><%= t('activerecord.models.classification') -%>:</td>
           <td><%= display_classifications(manifestation) -%></td>
         </tr>
-	<% if manifestation.location_category %>
-        <tr>
-          <td><%= t('activerecord.attributes.manifestation.location_category_id') -%>:</td>
-          <td><%= manifestation.location_category.keyname -%></td>
-        </tr>
-        <% end %>
         <tr>
           <td><%= t('activerecord.models.subject') -%>:</td>
           <td>
