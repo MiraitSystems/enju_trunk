@@ -130,6 +130,9 @@ class ItemsController < ApplicationController
       @item.checkout_type = @manifestation.carrier_type.checkout_types.first unless @item.try(:checkout_type)
       @item.use_restriction_id = UseRestriction.where(:name => 'Limited Circulation, Normal Loan Period').select(:id).first.id unless @item.use_restriction_id
       @item.call_number = @manifestation.items.where(:rank => 0).first.call_number unless @item.try(:call_number) rescue nil
+      if @item.call_number.blank? && @manifestation.classifications.present?
+        @item.call_number = @manifestation.classifications.first.classification_identifier
+      end
     else
       @item.circulation_status = CirculationStatus.where(:name => 'Not Available').first unless @item.try(:circulation_status)
       @item.checkout_type = CheckoutType.where(:name => 'article').first unless @item.try(:checkout_type)
