@@ -1,146 +1,151 @@
 ---
+title_types_00026:
+  id: 2
+  name: '2'
+  display_name: '原書' # 表示名
+  position: 1
 title_types_00001:
   id: 3
   name: '3'
   display_name: '分出' # 表示名
-  position: 1
+  position: 2
 title_types_00002:
   id: 4
   name: '4'
   display_name: '別' # 表示名
-  position: 2
+  position: 3
 title_types_00003:
   id: 5
   name: '5'
   display_name: '副出' # 表示名
-  position: 3
+  position: 4
 title_types_00004:
   id: 6
   name: '6'
   display_name: '副書名' # 表示名
-  position: 4
+  position: 5
 title_types_00005:
   id: 9
   name: '9'
   display_name: 'その他' # 表示名
-  position: 5
+  position: 6
 title_types_00006:
   id: 10
   name: AB
   display_name: "en:abbreviated title\r\nja:略タイトル"
   note: for nacsis
-  position: 6
+  position: 7
 title_types_00007:
   id: 11
   name: KT
   display_name: "en:key title\r\nja:キータイトル"
   note: for nacsis
-  position: 7
+  position: 8
 title_types_00008:
   id: 12
   name: AT
   display_name: "en:added title page title\r\nja:副標題紙タイトル"
   note: for nacsis
-  position: 8
+  position: 9
 title_types_00009:
   id: 13
   name: BC
   display_name: "en:back cover title\r\nja:裏表紙タイトル"
   note: for nacsis
-  position: 9
+  position: 10
 title_types_00010:
   id: 14
   name: CL
   display_name: "en:colophon title\r\nja:奥付タイトル"
   note: for nacsis
-  position: 10
+  position: 11
 title_types_00011:
   id: 15
   name: CP
   display_name: "en:caption title\r\nja:見出しタイトル"
   note: for nacsis
-  position: 11
+  position: 12
 title_types_00012:
   id: 16
   name: CV
   display_name: "en:cover title\r\nja:表紙タイトル"
   note: for nacsis
-  position: 12
+  position: 13
 title_types_00013:
   id: 17
   name: DT
   display_name: "en:distinctive title\r\nja:識別タイトル"
   note: for nacsis
-  position: 13
+  position: 14
 title_types_00014:
   id: 18
   name: MT
   display_name: "en:masthead title\r\nja:題字欄タイトル"
   note: for nacsis
-  position: 14
+  position: 15
 title_types_00015:
   id: 19
   name: OH
   display_name: "en:other title\r\nja:その他のタイトル"
   note: for nacsis
-  position: 15
+  position: 16
 title_types_00016:
   id: 20
   name: OR
   display_name: "en:original title\r\nja:原タイトル"
   note: for nacsis
-  position: 16
+  position: 17
 title_types_00017:
   id: 21
   name: PT
   display_name: "en:parent title\r\nja:親書誌タイトル"
   note: for nacsis
-  position: 17
+  position: 18
 title_types_00018:
   id: 22
   name: RT
   display_name: "en:running title\r\nja:欄外タイトル"
   note: for nacsis
-  position: 18
+  position: 19
 title_types_00019:
   id: 23
   name: ST
   display_name: "en:spine title\r\nja:背表紙タイトル"
   note: for nacsis
-  position: 19
+  position: 20
 title_types_00020:
   id: 24
   name: TT
   display_name: "en:title page title\r\nja:標題紙タイトル"
   note: for nacsis
-  position: 20
+  position: 21
 title_types_00021:
   id: 25
   name: RM
   display_name: "en:romanized title\r\nja:ローマ字翻字タイトル"
   note: for nacsis
-  position: 21
+  position: 22
 title_types_00022:
   id: 26
   name: TL
   display_name: "en:translation of title by cataloging agency\r\nja:翻訳タイトル"
   note: for nacsis
-  position: 22
+  position: 23
 title_types_00023:
   id: 27
   name: UT
   display_name: "en:uniform title\r\nja:統一タイトル"
   note: for nacsis
-  position: 23
+  position: 24
 title_types_00024:
   id: 28
   name: VT
   display_name: "en:variant access title\r\nja:異なりアクセスタイトル"
   note: for nacsis
-  position: 24
+  position: 25
 title_types_00025:
   id: 29
   name: UTL
   display_name: "en:uniform title authority\r\nja:統一書名典拠"
   note: for nacsis
-  position: 25
+  position: 26
