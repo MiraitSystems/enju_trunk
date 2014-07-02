@@ -502,5 +502,6 @@ class UsersController < ApplicationController
     @departments = Department.all
     @function_classes = FunctionClass.all
     @genders = Keycode.where(:name => 'agent.gender')
+    @grades = Keycode.where(:name => 'agent.grade')
   end
 end

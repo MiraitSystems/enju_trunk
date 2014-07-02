@@ -111,11 +111,11 @@
       </tr>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.gender') -%>:</strong></td>
-        <td><%= @agent.gender.keyname %></td>
+        <td><%= @agent.gender.keyname if @agent.gender %></td>
       </tr>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.grade') -%>:</strong></td>
-        <td><%= @agent.grade %></td>
+        <td><%= @agent.grade.keyname if @agent.grade %></td>
       </tr>
 <%- if false -%>
       <tr>
