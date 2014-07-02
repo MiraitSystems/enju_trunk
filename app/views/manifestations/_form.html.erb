@@ -279,12 +279,6 @@ $(document).keydown(function(e) {
     <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end -%>
 
-  <div class="field">
-    <%= f.label :location_category_id %>
-
-    <%= select2(:location_category_id, "manifestation[location_category_id]", @location_categories, @manifestation.location_category_id, :width => 250, :include_blank => true, :alt_display => true) %>
-  </div>
-
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
     <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end %> 

@@ -142,6 +142,7 @@ class ItemsController < ApplicationController
       @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
+    @item.acquired_at_string = Date.today unless @item.acquired_at_string
     prepare_options
     respond_to do |format|
       format.html # new.html.erb
@@ -363,6 +364,7 @@ class ItemsController < ApplicationController
     end
     @location_symbols = Keycode.where(:name => 'item.location_symbol')
     @statistical_classes = Keycode.where(:name => 'item.statistical_class')
+    @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "item.location_category", Time.zone.now) rescue nil
   end
 
   def check_status

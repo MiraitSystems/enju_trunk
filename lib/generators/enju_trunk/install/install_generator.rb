@@ -127,7 +127,7 @@ devise_scope :user do
     gsub_file target, /^(\s*)(class Application < Rails::Application)\n/, <<-'E'
 \1\2
 \1  Rails.application.config.railties_order = [
-\1    EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
+\1    :main_app, EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :all
 \1  ]
     E
 
@@ -241,5 +241,9 @@ require 'action_dispatch/middleware/session/dalli_store'
 
   def fixup_public_files
     remove_file 'public/index.html'
+  end
+
+  def fixup_view_files
+    remove_file 'app/views/layouts/application.html.erb'
   end
 end

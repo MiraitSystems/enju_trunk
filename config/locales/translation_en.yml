@@ -641,6 +641,9 @@ en:
         price_string: Purchase Price
         items_number: Item number
         exemplify: Item
+        location_symbol: Location Symbol
+        location_category_id: Location Category
+        statistical_class: Statistic Class
       loss_item:
         user_id: User number
         item_id: Loss item

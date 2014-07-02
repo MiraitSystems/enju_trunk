@@ -56,6 +56,11 @@
   </div>
 
   <div class="field">
+    <%= f.label :location_category %><br />
+    <%= select2(:location_category_id, "item[location_category_id]", @location_categories, @item.location_category_id, :width => 250, :include_blank => true, :alt_display => true) %>
+  </div>
+
+  <div class="field">
     <%= f.label :location_symbol -%><br />
     <%= select2(:location_symbol_id, "item[location_symbol_id]", @location_symbols, @item.location_symbol_id, :width => 200, :include_blank => true, :alt_display => true) %>
   </div>
