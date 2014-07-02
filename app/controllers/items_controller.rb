@@ -119,6 +119,10 @@ class ItemsController < ApplicationController
       @item.use_restriction_id = original_item.use_restriction.id
       @item.library_id = original_item.shelf.library.id
       @item.claim = nil
+
+      if original_item.item_extexts
+        original_item.item_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
+      end
     else
       @item = Item.new
     end
@@ -149,6 +153,7 @@ class ItemsController < ApplicationController
   def edit
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
+    @item.item_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @item.item_extexts
     prepare_options
   end
 
@@ -158,6 +163,7 @@ class ItemsController < ApplicationController
     @item = Item.new(params[:item])
 
     @manifestation = Manifestation.find(@item.manifestation_id)
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
     respond_to do |format|
       begin
@@ -178,6 +184,7 @@ class ItemsController < ApplicationController
         end
         flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.item'))
         @item.post_to_union_catalog if LibraryGroup.site_config.post_to_union_catalog
+        @item.item_extexts = ItemExtext.add_extexts(params[:extexts], @item.id) if params[:extexts]
         if @agent
           format.html { redirect_to agent_item_url(@agent, @item) }
           format.json { render :json => @item, :status => :created, :location => @item }
@@ -209,6 +216,7 @@ class ItemsController < ApplicationController
         end
       end
     end
+    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
 
     respond_to do |format|
       if @item.update_attributes(params[:item])
@@ -223,6 +231,8 @@ class ItemsController < ApplicationController
         else
           flash[:notice] =  t('controller.successfully_updated', :model => t('activerecord.models.item'))
         end
+        @item.item_extexts = ItemExtext.add_extexts(params[:extexts], @item.id) if params[:extexts]
+
         format.html { redirect_to @item }
         format.json { head :no_content }
       else

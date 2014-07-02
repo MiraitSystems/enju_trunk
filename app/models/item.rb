@@ -81,6 +81,7 @@ class Item < ActiveRecord::Base
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
+  has_many :item_extexts, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
