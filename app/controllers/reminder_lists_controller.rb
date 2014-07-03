@@ -32,12 +32,12 @@ class ReminderListsController < ApplicationController
     date = params[:days_overdue].to_i.days.ago.end_of_day if params[:days_overdue]
     @days_overdue = params[:days_overdue]
     @reminder_lists = ReminderList.search do
-      fulltext query
-      with(:library_id, library.to_i) if library
-      with(:status, state_ids) 
-      without(:checkin, true) if date
-      with(:due_date).less_than(date)
-      order_by(:id, :desc) # asc
+#      fulltext query
+#      with(:library_id, library.to_i) if library
+#      with(:status, state_ids) 
+#      without(:checkin, true) if date
+#      with(:due_date).less_than(date)
+#      order_by(:id, :desc) # asc
       paginate :page => page.to_i, :per_page => ReminderList.default_per_page unless params[:output_pdf] or params[:output_tsv]
     end.results
 
@@ -140,7 +140,7 @@ class ReminderListsController < ApplicationController
       render :reminder_letter and return 
     end
     # check user has over_due_item
-    @reminder_lists = ReminderList.find(:all, :include => [:checkout => :user], :conditions => {:checkouts => {:users => {:user_number => user_number}}})
+    @reminder_lists = ReminderList.includes(:checkout => :user).where(["users.user_number = ?", user_number])
     unless @reminder_lists.size > 0
       flash[:notice] = t('reminder_list.no_item')
       render :reminder_letter and return 
