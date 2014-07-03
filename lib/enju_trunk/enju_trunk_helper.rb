@@ -616,11 +616,11 @@ module EnjuTrunk
 
     def build_select2(selector_id, selector_name, collection, selected_id, options)
       include_blank = options[:include_blank] || false
-      alt_display = options[:alt_display] || false
+      alt_display = options[:alt_display] || true
       width = options[:width] || 300
-      select_attribute = options[:select_attribute] || 'v'
-      display_attribute = options[:display_attribute] || 'keyname'
-      post_attribute = options[:post_attribute] || 'id'
+      select_attribute = options[:select_attribute] || :v
+      display_attribute = options[:display_attribute] || :keyname
+      post_attribute = options[:post_attribute] || :id
 
       html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
       if include_blank

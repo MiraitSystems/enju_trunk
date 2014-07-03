@@ -175,12 +175,12 @@
 
   <div class="field">
     <%= f.label :gender -%><br />
-    <%= f.select :gender_id, options_from_collection_for_select(@genders, :id, :keyname, @agent.gender_id) %>
+    <%= select2(:gender_id, "agent[gender_id]", @genders, @agent.gender_id, :width => 200) %>
   </div>
 
   <div class="field">
     <%= f.label :grade -%><br />
-    <%= f.text_field :grade, :class => 'date_field' -%>
+    <%= select2(:grade_id, "agent[grade_id]", @grades, @agent.grade_id, :include_blank => true, :width => 200) %>
   </div>
 
   <% unless @user.id.blank? %>
