@@ -12,6 +12,7 @@ class ItemsController < ApplicationController
   helper_method :get_library
   before_filter :get_version, :only => [:show]
   before_filter :check_status, :only => [:edit]
+  after_filter { |c| c.logger.info '######### after_edit #########' }
   #before_filter :store_location
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   after_filter :convert_charset, :only => :index
@@ -152,10 +153,14 @@ class ItemsController < ApplicationController
 
   # GET /items/1/edit
   def edit
+    logger.error "####### edit start ########"
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
-    @item.item_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @item.item_extexts
+    if @item.item_extexts
+      @item.item_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
+    end
     prepare_options
+    logger.error "####### edit end ########"
   end
 
   # POST /items

@@ -5,10 +5,13 @@ class ItemExtext < ActiveRecord::Base
 
   acts_as_list
   default_scope :order => "position"
+  before_save { |c| c.logger.info '######### before_save #########' }
+  after_save { |c| c.logger.info '######### after_save #########' }
 
   has_paper_trail
 
   def self.add_extexts(extexts, item_id)
+    logger.error "####### self.add_extexts start ########"
     return [] if extexts.blank?
     list = []
     position = 1
@@ -38,6 +41,7 @@ class ItemExtext < ActiveRecord::Base
       list << item_extext
       position += 1
     end
+    logger.error "####### self.add_extexts end ########"
     return list
   end
 end
