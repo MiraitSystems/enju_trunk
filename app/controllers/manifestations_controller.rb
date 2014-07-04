@@ -350,7 +350,7 @@ class ManifestationsController < ApplicationController
 
       if options[:html_mode] && params[:missing_issue].nil?
         search.data_accessor_for(Manifestation).select = [
-          :id, :original_title, :title_transcription, :required_role_id,
+          :id, :original_title, :title_transcription, :required_role_id, 
           :manifestation_type_id, :carrier_type_id, :access_address,
           :volume_number_string, :issue_number_string, :serial_number_string, :serial_number,
           :date_of_publication, :pub_date, :periodical_master,
@@ -358,7 +358,6 @@ class ManifestationsController < ApplicationController
           :start_page, :end_page, :exinfo_1, :exinfo_6, :identifier
         ]
       end
-
       search
     end
     private :new_search_internal
@@ -1396,7 +1395,10 @@ class ManifestationsController < ApplicationController
       :required_role_id, :less_than_or_equal_to,
       (current_user.try(:role) || Role.default_role).id
     ]
-
+    without << [ 
+      :shelf_required_role_id, :less_than_or_equal_to,
+      (current_user.try(:role) || Role.default_role).id
+    ]
     if @removed
       with << [:has_removed, :equal_to, true]
     else
@@ -1470,7 +1472,8 @@ class ManifestationsController < ApplicationController
     if @basket
       with << [:id, :any_of, @basket.manifestations.collect(&:id)]
     end
-
+logger.info "----------------------------------------------------------------"
+logger.info  [with, without]
     [with, without]
   end
 

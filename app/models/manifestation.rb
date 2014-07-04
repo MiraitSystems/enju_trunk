@@ -72,6 +72,9 @@ class Manifestation < ActiveRecord::Base
   }
 
   searchable(SUNSPOT_EAGER_LOADING) do
+    integer :shelf_required_role_id do
+      shelf_required_role_id
+    end
     text :extexts do
       if root_of_series? # 雑誌の場合
         series_manifestations.each do |m|
@@ -218,7 +221,7 @@ class Manifestation < ActiveRecord::Base
     end
     string :removed_at, :multiple => true do
       if root_of_series? # 雑誌の場合
-        # 同じ雑誌の全号の除籍日のリストを取得する
+        # self.同じ雑誌の全号の除籍日のリストを取得する
         series_manifestations_items.
           collect(&:removed_at).compact
       else
@@ -585,6 +588,11 @@ class Manifestation < ActiveRecord::Base
 
   def set_manifestation_type
     self.manifestation_type = ManifestationType.where(:name => 'unknown').first if self.manifestation_type.nil?
+  end
+
+  def shelf_required_role_id 
+    min_shelf_id = self.items.map(&:shelf).map(&:required_role_id).min rescue nil
+    return min_shelf_id || Role.where(name: 'Guest').first.id
   end
 
   def root_of_series?
