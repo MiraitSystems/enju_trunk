@@ -67,7 +67,7 @@
     });
 
     // seach_family
-    <%- if SystemConfiguration.get("use_family") == true && current_user.has_role?('Librarian') -%>
+    <%- if SystemConfiguration.get('use_family') && current_user.has_role?('Librarian') -%>
       $("#agent_telephone_number_1").change(function(){
         clear_family_search();
         search_family();
