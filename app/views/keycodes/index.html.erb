@@ -11,17 +11,25 @@
 
 <table class="index">
   <tr>
+    <th id="position"></th>
     <th><%= t('activerecord.attributes.keycode.name') -%></th>
     <th><%= t('activerecord.attributes.keycode.display_name') -%></th>
     <th><%= t('activerecord.attributes.keycode.v') -%></th>
     <th><%= t('activerecord.attributes.keycode.keyname') -%></th>
     <th><%= t('activerecord.attributes.keycode.started_at') -%></th>
     <th><%= t('activerecord.attributes.keycode.ended_at') -%></th>
+    <th></th>    
     <th></th>
   </tr>
 
 <%- @keycodes.each do |keycode| -%>
   <tr class="line<%= cycle("0", "1") -%>">
+    <td>
+      <%= keycode.position %>
+      <%- if can? :update, keycode -%> 
+        <%= move_position(keycode) -%> 
+      <%- end -%> 
+    </td>
     <td><%= keycode.name -%></td>
     <td><%= keycode.display_name -%></td>
     <td><%= keycode.v -%></td>
@@ -32,6 +40,7 @@
     <%- else -%>
       <td><%= l(keycode.ended_at, :format => :only_date) -%></td>
     <%- end -%>
+    <td><%- if keycode.hidden -%><%= t('activerecord.attributes.keycode.hidden') %><%- end -%></td>
     <td>
       <%= link_to t('page.edit'), edit_keycode_path(keycode) -%>
       <%= link_to t('page.destroy'), keycode, :confirm => t('page.are_you_sure'), :method => :delete -%>

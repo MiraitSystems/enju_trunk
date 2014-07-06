@@ -1698,6 +1698,9 @@ en:
         started_at: Started date
         ended_at: Ended date
         ended_at_invalid: End date must be later than Start date.
+        hidden: Not use
+        hidden_yes: yes
+        hidden_no: no
       approval:
         manifestation_id: Title
         created_by: Created by

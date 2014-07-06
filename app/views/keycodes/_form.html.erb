@@ -26,18 +26,17 @@ $(function(){
 });
 </script>
     <%= f.label :started_at %><br />
-<!--
-    <%= f.date_select :started_at, :use_month_numbers => true -%>
--->
     <%= f.text_field :started_at %>
   </div>
 
   <div class="field">
     <%= f.label :ended_at %><br />
-<!--
-    <%= f.date_select :ended_at, :use_month_numbers => true -%>
--->
     <%= f.text_field :ended_at %>
+  </div>
+
+  <div class="field">
+    <%= f.label :hidden %>
+    <%= f.check_box :hidden %>
   </div>
 
   <div class="actions">
