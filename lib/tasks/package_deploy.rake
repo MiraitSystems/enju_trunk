@@ -15,7 +15,7 @@ namespace :enju_trunk do
   namespace :pack do
     desc 'Initial packing'
     task :init => :environment do
-      sh "cd #{::Rails.root}; git log -1 > GitLastLog"
+      #sh "cd #{::Rails.root}; git log -1 > GitLastLog"
 
 #      archives = "Gemfile Gemfile.lock GitLastLog Rakefile app/ config/ config.ru db/ lib/ public/ report/ script/ solr/ spec/ vendor/fonts vendor/cache/ vendor/assets/ report/"
       archives = "Gemfile Gemfile.lock GitLastLog Rakefile app/ config/ config.ru db/ lib/ public/ script/ solr/ vendor/cache/"
