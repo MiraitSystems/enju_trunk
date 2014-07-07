@@ -3,7 +3,7 @@ keycodes_1:
   id: 1
   name: 'undefined'
   display_name: '未設定'
-  v: ''
+  v: 'undefined'
   keyname: '未設定'
   started_at: 2000-01-01 
 keycodes_2:
