@@ -143,6 +143,7 @@ devise_scope :user do
 
     gsub_file target, /^(\s*)\# (config\.i18n.default_locale) = .*\n/, <<-'E'
 \1\2 = :ja
+\1I18n.available_locales = [:en, :ja]
 \1I18n.enforce_available_locales = true
     E
 

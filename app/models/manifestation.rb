@@ -54,7 +54,6 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)
-  # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
   SELECT2_OBJ = Struct.new(:id, :name, :display_name)
   JPN_OR_FOREIGN = [ 
     SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn'), I18n.t('jpn_or_foreign.jpn')), 
