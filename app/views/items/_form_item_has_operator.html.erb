@@ -70,8 +70,6 @@ $(function(){
     <div class="field">
       <%= operator.label :user_id %>
       <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%><br />
-      <%#= select2_script "user_id" %>
-      <%# = make_select2(:user_id, "item_has_operator[user_id]", @checkout_types, @item.checkout_type_id, 200, false) %>
       <%- if item_operator.username %>
         <%= operator.text_field :username %>
       <%- else -%>
@@ -85,7 +83,7 @@ $(function(){
 
     <div class="field">
       <%= operator.label :library_id %><br />
-      <%= operator.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]} %>
+      <%= operator.select2 :library_id, @libraries, nil, :width => 200, :display_attribute => 'display_name', :select_attribute => 'id' %>
     </div>
 
     <div class="field">

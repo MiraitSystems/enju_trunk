@@ -25,7 +25,6 @@
 <%- @keycodes.each do |keycode| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td>
-      <%= keycode.position %>
       <%- if can? :update, keycode -%> 
         <%= move_position(keycode) -%> 
       <%- end -%> 

@@ -217,6 +217,7 @@ ja:
       catalog: カタログ
       sub_carrier_type: 特定資料種別
       tax_rate: 消費税
+      budget_category: 予算区分
 
     attributes:
       use_license:
@@ -727,6 +728,7 @@ ja:
         location_category: 別置区分
         statistical_class: 統計分類
         notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
+        budget_category: 予算区分
       loss_item:
         user_id: 利用者番号
         item_id: 紛失資料
@@ -1519,6 +1521,11 @@ ja:
       budget_type:
         id: ID
         name: 区分名
+      budget_category:
+        id: ID
+        name: 名前
+        display_name: 表示名
+        group: グループ
       term:
         display_name: 期間名
         start_at: 開始日時
