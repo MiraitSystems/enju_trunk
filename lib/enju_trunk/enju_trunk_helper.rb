@@ -689,7 +689,7 @@ module ActionView
   module Helpers
     module FormHelper
 
-      def select2(selector_id, selector_name, collection, selected_id, *options)
+      def select2_tag(selector_id, selector_name, collection, selected_id, *options)
         options = options.first # if options.is_a?(Array)　
 
         b = ""
@@ -744,7 +744,7 @@ module ActionView
 
     class FormBuilder
       def select2(selector_id, collection, selected_id, *options)
-        @template.select2(selector_id, "#{@object_name}[#{selector_id}]", collection, selected_id, *options)
+        @template.select2_tag(selector_id, "#{@object_name}[#{selector_id}]", collection, selected_id, *options)
       end
     end
   end
