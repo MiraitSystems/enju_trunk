@@ -220,6 +220,11 @@ ja:
       budget_category: 予算区分
 
     attributes:
+      title:
+        title: 書名
+        title_transcription: 書名(ヨミ)
+        title_alternative: 代替書名
+        note: 注記
       use_license:
         target: 利用許諾対象
         author: 著者抄録許諾
@@ -3338,3 +3343,6 @@ ja:
     search_placeholder: "分類記号を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
+  title:
+    title_transcription: (ヨミ)
+    title_alternative: (代替)
