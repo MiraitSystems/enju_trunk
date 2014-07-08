@@ -592,5 +592,4 @@ Rails.application.routes.draw do
   match '/system_configurations' => 'system_configurations#index'
   match '/system_configurations/update' => 'system_configurations#update'
   # http://techoctave.com/c7/posts/36-rails-3-0-rescue-from-routing-error-solution
-  match '*a', :to => 'page#routing_error' unless Rails.application.config.consider_all_requests_local
 end
