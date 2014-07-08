@@ -213,6 +213,7 @@ en:
       sequence_pattern: Sequence Pattern
       catalog: Catalog
       sub_carrier_type: Sub Carrier Type
+      budget_category: Budget Category
 
     attributes:
       use_license:
@@ -644,6 +645,7 @@ en:
         location_symbol: Location Symbol
         location_category_id: Location Category
         statistical_class: Statistic Class
+        budget_category: Budget Category
       loss_item:
         user_id: User number
         item_id: Loss item
@@ -1637,6 +1639,11 @@ en:
       budget_type:
         id: ID
         name: Name
+      budget_category:
+        id: ID
+        name: Name
+        display_name: Display Name
+        group: Group
       term:
         display_name: Name
         start_at: Start date

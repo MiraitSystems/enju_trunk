@@ -98,6 +98,7 @@ class Ability
         BarcodeList,
         BindingItem,
         Bookbinding,
+        BudgetCategory,
         CarrierTypeHasCheckoutType,
         Catalog,
         CheckedItem,
