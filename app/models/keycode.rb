@@ -5,7 +5,7 @@ class Keycode < ActiveRecord::Base
   validate :validate_term
   default_scope where(:hidden => false)
   default_scope :order => 'position, name ASC, started_at ASC'
-  acts_as_list :order => 'name=\'#{name}\'' 
+  acts_as_list 
   has_many :agents
   has_many :orders
   has_many :approvals
