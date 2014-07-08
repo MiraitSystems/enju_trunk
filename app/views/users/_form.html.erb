@@ -175,12 +175,12 @@
 
   <div class="field">
     <%= f.label :gender -%><br />
-    <%= select2(:gender_id, "agent[gender_id]", @genders, @agent.gender_id, :width => 200) %>
+    <%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200) %>
   </div>
 
   <div class="field">
     <%= f.label :grade -%><br />
-    <%= select2(:grade_id, "agent[grade_id]", @grades, @agent.grade_id, :include_blank => true, :width => 200) %>
+    <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200) %>
   </div>
 
   <% unless @user.id.blank? %>
@@ -201,7 +201,7 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.country') -%>
-    <%= f.select(:country_id, @countries.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 350) -%>
   </div>
 
   <div class="field">

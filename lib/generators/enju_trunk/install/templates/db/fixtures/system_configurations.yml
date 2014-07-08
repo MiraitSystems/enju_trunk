@@ -1234,3 +1234,11 @@ system_configuration_00175:
   typename: Boolean
   description: "「このページを印刷」ボタンを表示する"
   category: 'general'
+system_configuration_00176:
+  id: 176
+  keyname: agent.manage_grade
+  v: "true"
+  typename: Boolean
+  description: "学年管理を行う"
+  category: 'user'
+
