@@ -1241,4 +1241,10 @@ system_configuration_00176:
   typename: Boolean
   description: "学年管理を行う"
   category: 'user'
-
+system_configuration_00177:
+  id: 177
+  keyname: manifestation.search_titles
+  v: "false"
+  typename: Boolean
+  description: "書名テーブルの検索を行う"
+  category: 'manifestation'
