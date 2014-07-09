@@ -631,6 +631,9 @@ en:
         note: Note
         url: URL
         price: Price
+        excluding_tax: Excluding tax
+        tax_price: Tax price
+        tax_rate: Tax rate
         lock_version: Lock version
         checkout_type: Checkout type
         retention_period: Retention Period
