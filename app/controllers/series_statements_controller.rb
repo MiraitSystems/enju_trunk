@@ -188,9 +188,9 @@ class SeriesStatementsController < ApplicationController
     @publishers = root_manifestation.try(:publishers).present? ? root_manifestation.publishers.order(:position) : [{}] unless @publishers
     @subjects = root_manifestation.try(:subjects).present? ? root_manifestation.subjects.order(:position) : [{}] unless @subjects
     root_manifestation.manifestation_exinfos.
-      each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if root_manifestation.manifestation_exinfos
+      each { |e| eval("@#{e.name} = '#{e.value}'") } if root_manifestation.manifestation_exinfos
     root_manifestation.manifestation_extexts.
-      each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if root_manifestation.manifestation_extexts
+      each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } if root_manifestation.manifestation_extexts
   end
 
   def prepare_options
@@ -220,8 +220,8 @@ class SeriesStatementsController < ApplicationController
   def set_and_create_root_manifestation(params)
     # set class instance attributes
     @creators = params[:creators]; @contributors = params[:contributors]; @publishers = params[:publishers];@subjects = params[:subjects]
-    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
+    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,

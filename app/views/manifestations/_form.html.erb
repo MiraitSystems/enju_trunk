@@ -371,7 +371,7 @@ $(document).keydown(function(e) {
   <%#= TODO for extext: change property_name(=> extext1) when use this form. %>
   <div class="field">
     <label>extext</label><br /> 
-    <%= text_field :extexts, :extext1, :value => @extext1, :class => "" %>
+    <%= text_field :extexts, "extext1[value]", :value => @extext1, :class => "" %>
   </div>
 <% end %>
 <!--
