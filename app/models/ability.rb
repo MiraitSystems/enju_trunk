@@ -98,6 +98,7 @@ class Ability
         BarcodeList,
         BindingItem,
         Bookbinding,
+        BudgetCategory,
         CarrierTypeHasCheckoutType,
         Catalog,
         CheckedItem,
@@ -124,6 +125,7 @@ class Ability
         ImportRequest,
         ItemHasOperator,
         ItemHasUseRestriction,
+        Keycode,
         KeywordCount,
         LibraryReport,
         ManifestationCheckoutStat,
@@ -231,6 +233,7 @@ class Ability
       can :destroy, Item do |item|
         item.deletable?
       end
+      can [:read, :create, :update], Keycode
       can [:read, :create, :update, :output_excelx, :upload_to_nacsis], Manifestation
       can :destroy, Manifestation do |manifestation|
         if SystemConfiguration.get("manifestation.has_one_item")

@@ -104,7 +104,7 @@
           <%= w_f.select :language_id, @languages.map{|language| [language.display_name.localize, language.id]} %>
           <%#= text_field_tag "work_has_languages[][language_id]", work_has_language[:language_id], :id => "work_has_languages_#{index}_language_id", :class => "language" %></td>
           <td>
-          <%= w_f.select :language_type_id, @language_types.map{|language_type| [language_type.display_name.localize, language_type.id]} %>
+          <%= w_f.select :language_type_id, @language_types.map{|language_type| [language_type.display_name.localize, language_type.id]}, :include_blank => true %>
           <%#= text_field_tag "work_has_languages[][language_type_id]", work_has_language[:language_type_id], :id => "work_has_languages_#{index}_language_type_id", :class => "language_type" %></td>
           <%= w_f.hidden_field :nested, :value => 1 %>
           <td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>

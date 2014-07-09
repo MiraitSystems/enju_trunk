@@ -1,0 +1,44 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.budget_category')) -%></h1>
+<div id="content_list">
+
+<table class="index">
+  <tr>
+    <th></th>
+    <th><%= t('activerecord.attributes.budget_category.group') -%></th>
+    <th><%= t('activerecord.attributes.budget_category.name') -%></th>
+    <th><%= t('activerecord.attributes.budget_category.display_name') -%></th>
+    <td>&nbsp;</th>
+  </tr>
+
+<%- @budget_categories.each do |budget_category| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td>
+      <%- if can? :update, budget_category -%> 
+        <%= move_position(budget_category) -%> 
+      <%- end -%> 
+    </td>
+    <td><%= budget_category.group -%></td>
+    <td><%= budget_category.name -%></td>
+    <td><%= budget_category.display_name -%></td>
+    <td>
+      <%- if can? :update, budget_category -%>
+        <%= link_to t('page.edit'), edit_budget_category_path(budget_category) -%>
+      <% end %>
+      <%- if can? :destroy, budget_category -%>
+        <%= link_to t('page.destroy'), budget_category, :confirm => t('page.are_you_sure'), :method => :delete -%>
+      <%- end -%>
+        <%= link_to t('page.show'), budget_category -%>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.new', :model => t('activerecord.models.budget_category')), new_budget_category_path -%></li>
+  </ul>
+</div>

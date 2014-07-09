@@ -217,8 +217,14 @@ ja:
       catalog: カタログ
       sub_carrier_type: 特定資料種別
       tax_rate: 消費税
+      budget_category: 予算区分
 
     attributes:
+      title:
+        title: 書名
+        title_transcription: 書名(ヨミ)
+        title_alternative: 代替書名
+        note: 注記
       use_license:
         target: 利用許諾対象
         author: 著者抄録許諾
@@ -727,6 +733,7 @@ ja:
         location_category: 別置区分
         statistical_class: 統計分類
         notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
+        budget_category: 予算区分
       loss_item:
         user_id: 利用者番号
         item_id: 紛失資料
@@ -1519,6 +1526,11 @@ ja:
       budget_type:
         id: ID
         name: 区分名
+      budget_category:
+        id: ID
+        name: 名前
+        display_name: 表示名
+        group: グループ
       term:
         display_name: 期間名
         start_at: 開始日時
@@ -1690,6 +1702,9 @@ ja:
         ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
         filter: 絞り込み
         execute: 実行
+        hidden: 非表示
+        hidden_yes: はい
+        hidden_no: いいえ
       approval:
         manifestation_id: タイトル 
         created_by: データ登録者名 
@@ -3328,3 +3343,6 @@ ja:
     search_placeholder: "分類記号を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
+  title:
+    title_transcription: (ヨミ)
+    title_alternative: (代替)

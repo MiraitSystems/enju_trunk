@@ -89,13 +89,12 @@ class User < ActiveRecord::Base
   with_options :if => :password_required? do |v|
     v.validates_presence_of     :password
     v.validates_confirmation_of :password
-    v.validates_length_of       :password, :within => 6..20, :allow_blank => true
+    v.validates_length_of       :password, :within => eval(Setting.validator.user_password_length), :allow_blank => true
   end
-
 #  validates_presence_of :email, :email_confirmation, :on => :create #, :if => proc{|user| !user.operator.try(:has_role?, 'Librarian')}
   validates_associated :agent, :user_group, :library
   validates_presence_of :user_group, :library, :locale #, :user_number
-  validates :user_number, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/}, :allow_blank => true
+  validates :user_number, :uniqueness => true, :format => {:with => /\A[0-9A-Za-z_\-\.]+\Z/}, :allow_blank => true
   validates_confirmation_of :email, :on => :create#, :if => proc{|user| !user.operator.try(:has_role?, 'Librarian')}
   validates_confirmation_of :email, :on => :update, :if => Proc.new { |user| user.email != User.find(user.id).email }
   before_validation :set_role_and_agent, :on => :create

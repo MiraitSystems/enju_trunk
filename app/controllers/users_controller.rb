@@ -385,7 +385,6 @@ class UsersController < ApplicationController
         SQL
         query_params = {:tel_1=>tel_1, :last_name=>params[:keys][:last_name], :address_1=>params[:keys][:address_1], :agent_type_person=>agent_type_person}
       end
-     
       @users = User.find_by_sql([query, query_params]) rescue nil
       all_user_ids = []
       if @users
@@ -433,6 +432,8 @@ class UsersController < ApplicationController
       unless @users.blank? && @families.blank?
         html = render_to_string :partial => "search_family"
         render :json => {:success => 1, :html => html}
+      else
+        render :json => {:success => false}
       end
     end
   end
@@ -502,5 +503,6 @@ class UsersController < ApplicationController
     @departments = Department.all
     @function_classes = FunctionClass.all
     @genders = Keycode.where(:name => 'agent.gender')
+    @grades = Keycode.where(:name => 'agent.grade')
   end
 end

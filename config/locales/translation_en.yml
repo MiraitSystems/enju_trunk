@@ -213,8 +213,14 @@ en:
       sequence_pattern: Sequence Pattern
       catalog: Catalog
       sub_carrier_type: Sub Carrier Type
+      budget_category: Budget Category
 
     attributes:
+      title:
+        title: Title
+        title_transcription: Title transcription
+        title_alternative: Title alternative
+        note: Note
       use_license:
         target: Target
         author: Author
@@ -644,6 +650,7 @@ en:
         location_symbol: Location Symbol
         location_category_id: Location Category
         statistical_class: Statistic Class
+        budget_category: Budget Category
       loss_item:
         user_id: User number
         item_id: Loss item
@@ -1637,6 +1644,11 @@ en:
       budget_type:
         id: ID
         name: Name
+      budget_category:
+        id: ID
+        name: Name
+        display_name: Display Name
+        group: Group
       term:
         display_name: Name
         start_at: Start date
@@ -1698,6 +1710,9 @@ en:
         started_at: Started date
         ended_at: Ended date
         ended_at_invalid: End date must be later than Start date.
+        hidden: Not use
+        hidden_yes: yes
+        hidden_no: no
       approval:
         manifestation_id: Title
         created_by: Created by
@@ -3345,3 +3360,6 @@ en:
     search_placeholder: Please enter a search classification identifier
     search_searching: Searching...
     search_nomatch: No matches
+  title:
+    title_transcription: (Transcription)
+    title_alternative: (Alternative)

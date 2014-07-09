@@ -4,7 +4,7 @@ class Shelf < ActiveRecord::Base
   include MasterModel
   self.extend ItemsHelper
   default_scope :order => 'shelves.position'
-  scope :real, where('library_id != 1')
+  scope :real, where('library_id >= 1')
   belongs_to :library, :validate => true
   has_many :items, :include => [:circulation_status]
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy

@@ -10,7 +10,8 @@ class Item < ActiveRecord::Base
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, :statistical_class_id, :tax_rate_id
+                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
+                  :statistical_class_id, :budget_category_id, :tax_rate_id
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -81,6 +82,7 @@ class Item < ActiveRecord::Base
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
+  has_many :item_extexts, :dependent => :destroy
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
