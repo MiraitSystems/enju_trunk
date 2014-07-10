@@ -195,24 +195,19 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.models.carrier_type') -%>
-    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <%= select2_script "carrier_type_id" %>
-    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250, false) %>
+    <%= f.select2(:carrier_type_id, @carrier_types, @manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) %>
     <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
     <br>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.sub_carrier_type') -%>
-    <%= select2_script "sub_carrier_type_id" %>
-    <%= make_select2(:sub_carrier_type_id, "manifestation[sub_carrier_type_id]", @sub_carrier_types, @manifestation.sub_carrier_type_id, 500, false) %>
+    <%= f.select2(:sub_carrier_type_id,  @sub_carrier_types, @manifestation.sub_carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 500) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
-    <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <%= select2_script "manifestation_type_id" %>
-    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300, false) %>
+    <%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) %>
   </div>
 
   <div class="field">
@@ -224,7 +219,7 @@ $(document).keydown(function(e) {
 
   <div class="field" id="frequency_field">
     <%= f.label t('activerecord.models.frequency') -%>
-    <%= f.select(:frequency_id, @frequencies.collect{|frequency| [frequency.display_name.localize, frequency.id]}) -%>
+    <%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%>
   </div>
 
   <div class="field">
@@ -234,9 +229,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
-    <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
-    <%= select2_script "country_of_publication_id" %>
-    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false, false) %>
+    <%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %>
   </div>
 
   <div class="field">

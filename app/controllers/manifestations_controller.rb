@@ -1537,6 +1537,7 @@ class ManifestationsController < ApplicationController
   end
 
   def prepare_options
+    @subject_types = SubjectType.all
     @carrier_types = CarrierType.all
     @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.all
