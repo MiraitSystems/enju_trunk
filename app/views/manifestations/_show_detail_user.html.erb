@@ -37,9 +37,21 @@
         <% end %>
         <% manifestation.work_has_titles.each do |title| %>
           <tr> 
-            <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name.localize  if title.title_type %>:</td>
+            <td><%= title.title_type.display_name.localize  if title.title_type %>:</td>
             <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
           </tr>
+          <% if title.manifestation_title.title_transcription.present? %>
+            <tr>
+              <td><%= title.title_type.display_name.localize if title.title_type %> <%= t('title.title_transcription') %>:</td>
+              <td><%= title.manifestation_title.title_transcription %></td>
+            </tr>
+          <% end %>
+          <% if title.manifestation_title.title_alternative.present? %>
+            <tr>
+              <td><%= title.title_type.display_name.localize if title.title_type %> <%= t('title.title_alternative') %>:</td>
+              <td><%= title.manifestation_title.title_alternative %></td>
+            </tr>
+          <% end %>
         <% end %>
         <% if manifestation.article? %>
           <tr>

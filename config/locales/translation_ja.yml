@@ -220,6 +220,11 @@ ja:
       budget_category: 予算区分
 
     attributes:
+      title:
+        title: 書名
+        title_transcription: 書名(ヨミ)
+        title_alternative: 代替書名
+        note: 注記
       use_license:
         target: 利用許諾対象
         author: 著者抄録許諾
@@ -707,8 +712,11 @@ ja:
         include_supplements: 付録を含む
         note: 注記
         url: URL
-        price: 購入価格
-        price_string: 購入価格
+        price: 受入価格(税込み)
+        price_string: 受入価格(税込み)
+        excluding_tax: 受入価格(税抜)
+        tax_price: 消費税額
+        tax_rate: 消費税区分
         lock_version: ロックバージョン
         checkout_type: 貸出区分
         retention_period: 保存種別
@@ -3338,3 +3346,6 @@ ja:
     search_placeholder: "分類記号を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
+  title:
+    title_transcription: (ヨミ)
+    title_alternative: (代替)

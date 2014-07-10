@@ -216,6 +216,11 @@ en:
       budget_category: Budget Category
 
     attributes:
+      title:
+        title: Title
+        title_transcription: Title transcription
+        title_alternative: Title alternative
+        note: Note
       use_license:
         target: Target
         author: Author
@@ -626,6 +631,9 @@ en:
         note: Note
         url: URL
         price: Price
+        excluding_tax: Excluding tax
+        tax_price: Tax price
+        tax_rate: Tax rate
         lock_version: Lock version
         checkout_type: Checkout type
         retention_period: Retention Period
@@ -3355,3 +3363,6 @@ en:
     search_placeholder: Please enter a search classification identifier
     search_searching: Searching...
     search_nomatch: No matches
+  title:
+    title_transcription: (Transcription)
+    title_alternative: (Alternative)
