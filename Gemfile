@@ -48,7 +48,7 @@ gem 'spreadsheet', '0.7.9'
 gem 'axlsx', '~> 1.3.6'
 
 gem 'spinjs-rails'
-gem 'kaminari'
+gem 'kaminari', '~> 0.15.1'
 gem 'settingslogic'
 gem 'delayed_job_active_record'
 gem 'daemons'
