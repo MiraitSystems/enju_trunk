@@ -12,7 +12,7 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
