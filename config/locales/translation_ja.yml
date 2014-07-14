@@ -715,7 +715,7 @@ ja:
         price: 受入価格(税込)
         excluding_tax: 受入価格(税抜)
         tax: 消費税額
-        price_string: 購入価格
+        price_string: 受入価格(税込)
         lock_version: ロックバージョン
         checkout_type: 貸出区分
         retention_period: 保存種別

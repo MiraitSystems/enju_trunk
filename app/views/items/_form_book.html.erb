@@ -92,8 +92,9 @@
     <%= f.label t('activerecord.models.tax_rate') %><br />
     <%= f.select2 :tax_rate_id, @tax_rates, @item.tax_rate_id, 
       display_attribute: 'display_name', 
-      select_attribute:  'name', 
-      witdh:             150 %>
+      select_attribute: 'name',
+      include_blank: true, 
+      witdh: 150 %>
   </div>
 
   <div class="field">
