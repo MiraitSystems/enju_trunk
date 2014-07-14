@@ -572,15 +572,14 @@ module EnjuTrunk
      def create_subject_values(add_subjects)
        subjects = []
        add_subjects.each do |add_subject|
-         next if add_subject[:id].blank?
-         if add_subject[:id].to_i != 0
-           subject = Subject.where(:id => add_subject[:id]).first
+         next if add_subject[:subject_id].blank?
+         if add_subject[:subject_id].to_i != 0
+           subject = Subject.where(:id => add_subject[:subject_id]).first
            subject.term_transcription = add_subject[:term_transcription]
            subjects << subject if subject.present?
          else
            # new record
-           subject = Subject.new(:term => add_subject[:id], :term_transcription => add_subject[:term_transcription])
-           subject.subject_type_id = 1
+           subject = Subject.new(:term => add_subject[:subject_id], :term_transcription => add_subject[:term_transcription], :subject_type_id => add_subject[:subject_type_id])
            subject.required_role = Role.where(:name => 'Guest').first
            subjects << subject
          end

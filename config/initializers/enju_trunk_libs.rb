@@ -1,3 +1,5 @@
+require "active_record_extension"
+
 # nacsis
 begin
   NACSIS_CLIENT_CONFIG = YAML.load_file("#{Rails.root}/config/nacsis_client.yml")

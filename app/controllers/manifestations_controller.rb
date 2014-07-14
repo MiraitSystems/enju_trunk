@@ -818,10 +818,10 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
       if original_manifestation.manifestation_exinfos
-        original_manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } 
+        original_manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } 
       end
       if original_manifestation.manifestation_extexts
-        original_manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") }
+        original_manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") }
       end
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
@@ -866,8 +866,10 @@ class ManifestationsController < ApplicationController
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
     @classifications = get_classification_values(@manifestation)
     
-    @manifestation.manifestation_exinfos.each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if @manifestation.manifestation_exinfos
-    @manifestation.manifestation_extexts.each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if @manifestation.manifestation_extexts
+    @manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } if @manifestation.manifestation_exinfos
+    if @manifestation.manifestation_extexts
+      @manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } 
+    end
     if defined?(EnjuBookmark)
       if params[:mode] == 'tag_edit'
         @bookmark = current_user.bookmarks.where(:manifestation_id => @manifestation.id).first if @manifestation rescue nil
@@ -916,8 +918,8 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
+    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.save
@@ -990,8 +992,8 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
+    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
+    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
@@ -1537,6 +1539,7 @@ class ManifestationsController < ApplicationController
   end
 
   def prepare_options
+    @subject_types = SubjectType.all
     @carrier_types = CarrierType.all
     @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.all
