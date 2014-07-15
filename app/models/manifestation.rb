@@ -1026,7 +1026,7 @@ class Manifestation < ActiveRecord::Base
     field, field_ext = field_key.split(/\./, 2)
 
     case field_ext
-    when /\Aother_title(?:_type)?\z/
+    when /\Aother_title(?:_type|_transcription|_alternativ|_transcription|_alternativee)?\z/
       table = :manifestation_titles
     when /\Aother_identifier(?:_type)?\z/
       table = :identifiers
