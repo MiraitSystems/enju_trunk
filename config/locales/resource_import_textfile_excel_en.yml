@@ -17,6 +17,8 @@ en:
         title_transcription: Title(transcription)
         title_alternative: Alternative title
         other_title: Other title
+        other_title_transcription: Other title(transcription)
+        other_title_alternative: Other title(alternative)
         other_title_type: Other title type
         identifier: Identifier
         other_identifier: Other identifier
@@ -78,6 +80,9 @@ en:
         call_number: Call number
         bookstore: Bookstore
         item_price: Purchase price
+        excluding_tax: Excluding tax
+        tax: Tax
+        tax_rate: Tax rate
         url: URL
         include_supplements: Include supplements
         use_restriction: Use restriction
