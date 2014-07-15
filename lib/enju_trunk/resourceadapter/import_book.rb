@@ -945,7 +945,7 @@ module EnjuTrunk
         excluding_tax: ['book.excluding_tax', [:to_s]],
         tax: ['book.tax', [:to_s]],
         tax_rate: [
-          'tax_rate',
+          'book.tax_rate',
           [:to_s],
           [:set_data, mode, TaxRate, can_blank: true, check_column: :name], 
           [:set_nil_when_blank],
