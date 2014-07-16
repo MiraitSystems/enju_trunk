@@ -3365,3 +3365,8 @@ en:
   title:
     title_transcription: (Transcription)
     title_alternative: (Alternative)
+  budget_category:
+    search_placeholder: Please enter budget category
+    search_searching: Searching...
+    search_nomatch: No matches
+    search_group_placeholder: Please enter budget category group

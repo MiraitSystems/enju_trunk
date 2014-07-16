@@ -28,4 +28,7 @@ module ItemsHelper
     end
   end
 
+  def budget_category_group(id)
+    return Keycode.find(id).keyname
+  end 
 end

@@ -143,6 +143,14 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.item.budget_category') -%>:</strong>
+  <%- if @item.budget_category -%>
+    <%= budget_category_group(@item.budget_category.group_id) if @item.budget_category.group_id %>
+    <%= @item.budget_category.display_name -%>
+  <%- end -%>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.item.item_identifier') -%>:</strong>
   <%= @item.item_identifier -%>
 </p>

@@ -229,6 +229,7 @@ class Ability
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
       end
+      can [:read, :create, :update], BudgetCategory
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?

@@ -435,6 +435,8 @@ Rails.application.routes.draw do
     get :get_term, :on => :collection
   end
   resources :budget_and_results_managements
+  match 'budget_categories/search_name' => 'budget_categories#search_name'
+  resources :budget_categories
 
   resources :statistic_reports do
     post :get_report, :on => :collection

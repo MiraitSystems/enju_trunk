@@ -91,6 +91,7 @@ class Item < ActiveRecord::Base
   belongs_to :location_category, :class_name => 'Keycode', :foreign_key => 'location_category_id'
   belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
   belongs_to :tax_rate, :class_name => 'TaxRate', :foreign_key => 'tax_rate_id'
+  belongs_to :budget_category
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')

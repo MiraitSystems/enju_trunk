@@ -1,10 +1,32 @@
 class BudgetCategoriesController < ApplicationController
   before_filter :check_client_ip_address
   load_and_authorize_resource
+  before_filter :prepare_options, :only => [:new, :edit]
 
   def index
-    @budget_categories = BudgetCategory.all
+    page = params[:page] || 1
+    @budget_categories = Kaminari.paginate_array(BudgetCategory.all).page(page)
   end
+
+  # GET /budget_categories/search_name.json
+  def search_name
+    struct_classification = Struct.new(:id, :text)
+    if params[:budget_category_id]
+      budget_category = BudgetCategory.where(id: params[:budget_category_id]).select("id, display_name, name").first
+      result = struct_classification.new(budget_category.id, "#{budget_category.display_name}(#{budget_category.name})")
+    else
+      result = []
+      budget_categories = params[:group_id].blank? ? BudgetCategory : BudgetCategory.where(:group_id => params[:group_id])
+      budget_categories = budget_categories.where("name like '%#{params[:search_phrase]}%' OR display_name like '%#{params[:search_phrase]}%'")
+                            .select("id, display_name, name").limit(10) || []
+      budget_categories.each do |budget_category|
+        result << struct_classification.new(budget_category.id, "#{budget_category.display_name}(#{budget_category.name})")
+      end
+    end
+    respond_to do |format|
+      format.json { render :text => result.to_json }
+    end 
+  end 
 
   def new
     @budget_category = BudgetCategory.new
@@ -63,6 +85,11 @@ class BudgetCategoriesController < ApplicationController
         format.json { render :json => @budget_category.errors, :status => :unprocessable_entity }
       end
     end
+  end
+
+  private
+  def prepare_options
+    @budget_groups = Keyname.where(:name => 'budget_category.group') || []
   end
 
 end

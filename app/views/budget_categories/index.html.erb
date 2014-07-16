@@ -18,7 +18,7 @@
         <%= move_position(budget_category) -%> 
       <%- end -%> 
     </td>
-    <td><%= budget_category.group -%></td>
+    <td><%= budget_category_group(budget_category.group_id) -%></td>
     <td><%= budget_category.name -%></td>
     <td><%= budget_category.display_name -%></td>
     <td>
@@ -34,6 +34,7 @@
 <%- end -%>
 </table>
 
+<%= paginate(@budget_categories) -%>
 </div>
 </div>
 
