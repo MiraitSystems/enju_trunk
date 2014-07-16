@@ -691,9 +691,10 @@ module ActionView
 
       def select2_tag(selector_id, selector_name, collection, selected_id, *options)
         options = options.first # if options.is_a?(Array)　
+        select2_options = options[:select2options] || {}
 
         b = ""
-        b.concat(build_select2_script(selector_id))
+        b.concat(build_select2_script(selector_id, select2_options))
         b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
         return raw(b)
       end
@@ -715,26 +716,37 @@ module ActionView
           if selected_id == row.id
             html.concat( raw (", selected=\"selected\"") )
           end
-
-          html.concat( raw (">#{ row.send(display_attribute).localize }") )
+          html.concat( raw (">") )
 
           if alt_display
-            html.concat( raw (" (#{ row.send(select_attribute) })") )
+            html.concat( raw ("#{ row.send(select_attribute) }:") )
           end
+
+          html.concat( raw (" #{ row.send(display_attribute).localize }") )
+
           html.concat( raw ("</option>\n") )
         end
         html.concat( raw ("    </select>\n") )
       end
 
-      def build_select2_script(selector_id)
+      DEFAULT_MATCHER = "
+      function(term, text, opt) {
+        return text.toUpperCase().indexOf(term.toUpperCase())==0
+        || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
+      }"
+
+      def build_select2_script(selector_id, options = {})
+	options[:matcher] = options[:matcher] || DEFAULT_MATCHER
+	options_string = ""
+	options.each do |key, v|
+	  options_string.concat(raw("#{key}: #{v},")).concat("\n")
+	end
+
         raw ("
         <script>
           $(document).ready(function() {
             $(\"##{selector_id}\").select2({
-              matcher: function(term, text, opt) {
-                return text.toUpperCase().indexOf(term.toUpperCase())==0
-                    || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
-              }
+	        #{options_string} 
             });
           });
         </script>
