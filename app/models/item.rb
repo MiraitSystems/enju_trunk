@@ -99,7 +99,7 @@ class Item < ActiveRecord::Base
   before_validation :set_circulation_status, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
-  after_save :check_price, :except => :delete
+  #after_save :check_price, :except => :delete
   after_save :reindex
 
 
