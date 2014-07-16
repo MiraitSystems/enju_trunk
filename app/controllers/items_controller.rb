@@ -356,7 +356,8 @@ class ItemsController < ApplicationController
     @statistical_classes = Keycode.where(:name => 'item.statistical_class')
     @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "item.location_category", Time.zone.now) rescue []
     @tax_rates = TaxRate.all
-    @budget_categories = BudgetCategory.all
+    @budget_groups = Keycode.where(:name => 'budget_category.group')
+    @budget_categories = @item.try(:budget_category).try(:group_id) ? BudgetCategory.where(:group_id => @item.budget_category.group_id):[]   
   end
 
   def check_status

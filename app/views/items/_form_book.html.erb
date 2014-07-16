@@ -54,12 +54,7 @@
     <%= f.select2(:statistical_class_id, @statistical_classes, @item.statistical_class_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true, :alt_display => true) %>
   </div>
 
-  <div class="field">
-    <%= f.label :budget_category -%><br />
-    <%#= select2_tag("budget_category_group", "budget_category[group]", budget_category_groups, @item.budget_category.group, :display_attribute => 'group', :select_attribute => 'id', :width => 250) %>
-
-    <%= f.select2(:budget_category_id, @budget_categories, @item.budget_category_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true, :alt_display => true) %>
-  </div>
+  <%= render :partial => 'form_budget_category', :locals => {:f => f, :item => @item} %>
 
   <div class="field">
     <%= f.label :call_number -%><br />

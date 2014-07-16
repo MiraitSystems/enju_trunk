@@ -1,0 +1,56 @@
+<script>
+  var ItemFieldBudgetCategorySelect2 = {
+    // BudgetCategory select2 options
+    budgetCategorySelect2options: {
+      multiple: false,
+      minimumInputLength: 1,
+      width: "250px",
+      placeholder: <%= raw t("budget_category.search_placeholder").to_json %>,
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("budget_category.search_nomatch").to_json %>;
+      },
+      formatSearching: function() {
+        return <%= raw t("budget_category.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("budget_category.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: "/budget_categories/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+          if ($('#budget_category_group_id').is('*')) {
+            var budgetCategoryGroupId = $('#budget_category_group_id').val();
+          } else {
+            var budgetCategoryGroupId = null;
+          }
+          return {
+            group_id: budgetCategoryGroupId,
+            search_phrase: term,
+          };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/budget_categories/search_name.json?budget_category_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+      },
+    },
+  } 
+  $(document).ready(function() {
+    $("input#item_budget_category_id").select2(ItemFieldBudgetCategorySelect2.budgetCategorySelect2options);
+  });
+</script>
+<div class="field">
+  <%= f.label :budget_category -%><br />
+  <%- unless @budget_groups.blank? %>
+    <%= select2_tag("budget_category_group_id", "budget_category_group_id", @budget_groups, @item.try(:budget_category).try(:group_id), :width => 200, :include_blank => true, :alt_display => true) %>
+  <%- end %>
+  <%= text_field_tag "item[budget_category_id]", item[:budget_category_id], :id => "item_budget_category_id" %>
+</div>

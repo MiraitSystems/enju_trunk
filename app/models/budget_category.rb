@@ -1,5 +1,7 @@
 class BudgetCategory < ActiveRecord::Base
-  include MasterModel
+  acts_as_list
+  default_scope :order => :position
   has_many :manifestation
-  validates_presence_of :group
+  validates_uniqueness_of :name, :case_sensitive => false, :scope => :group_id
+  validates_presence_of :name, :display_name
 end

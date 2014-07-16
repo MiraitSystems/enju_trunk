@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= f.label :group %><br />
-    <%= f.text_field :group -%>
+    <%= f.select :group_id, @budget_groups.map{|g| [g.keyname, g.id]} -%>
   </div>
 
   <div class="actions">
