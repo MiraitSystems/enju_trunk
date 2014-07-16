@@ -75,12 +75,13 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
     solr_url = "http://archive.apache.org/dist/lucene/solr/3.6.2/#{solr_name}.tgz"
     solr_md5 = 'e9c51f51265b070062a9d8ed50b84647'
     solr_sha1 = '3a1a40542670ea6efec246a081053732c5503ec1'
-    copy_solr_file = "#{ENV["HOME"]}/src/#{solr_name}.tgz"
+    copy_solr_files = ["#{ENV["HOME"]}/src/#{solr_name}.tgz","/home/vagrant/src/#{solr_name}.tgz"]
 
     Dir.mktmpdir do |td|
       tgz_path = "#{td}/#{solr_name}.tgz"
+      copy_solr_file = copy_solr_files.find {|file| file if File.exist?(file) }
 
-      if File.exist?(copy_solr_file)
+      if copy_solr_file
         say "Getting #{solr_name} from #{copy_solr_file}..."
         copy_file copy_solr_file, tgz_path
       else
