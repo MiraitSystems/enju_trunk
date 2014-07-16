@@ -1026,7 +1026,7 @@ class Manifestation < ActiveRecord::Base
     field, field_ext = field_key.split(/\./, 2)
 
     case field_ext
-    when /\Aother_title(?:_type)?\z/
+    when /\Aother_title(?:_type|_transcription|_alternativ|_transcription|_alternativee)?\z/
       table = :manifestation_titles
     when /\Aother_identifier(?:_type)?\z/
       table = :identifiers
@@ -1267,7 +1267,7 @@ class Manifestation < ActiveRecord::Base
               :bookstore, :checkout_type,
               :circulation_status, :required_role,
               :accept_type, :retention_period,
-              :use_restriction,
+              :use_restriction, :tax_rate,
               :shelf => :library,
             ]
           ).
@@ -1473,11 +1473,15 @@ class Manifestation < ActiveRecord::Base
         val = work_has_languages.map(&method).map(&:name).join(dlm)
       end
 
-    when 'other_title', 'other_title_type'
+    when 'other_title', 'other_title_transcription', 'other_title_alternative', 'other_title_type'
       val = [nil]*ccount
       work_has_titles.each_with_index do |record, i|
         if ws_col == 'other_title'
           val[i] = record.manifestation_title.try(:title)
+        elsif ws_col == 'other_title_transcription'
+          val[i] = record.manifestation_title.try(:title_transcription)
+        elsif ws_col == 'other_title_alternative'
+          val[i] = record.manifestation_title.try(:title_alternative)
         else
           val[i] = record.title_type.try(:name)
         end

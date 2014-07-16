@@ -424,7 +424,9 @@ module EnjuTrunk
       # manifestation_titles
       records = build_associated_records(sheet, datas, manifestation, :work_has_titles, {
         title: ["#{field}.other_title"],
-        title_type: ["#{field}.other_title_type", TitleType, :name],
+        title_transcription: ["#{field}.other_title_transcription"],
+        title_alternative: ["#{field}.other_title_alternative"],
+        title_type: ["#{field}.other_title_type", TitleType, :name, to_s: true],
       })
       manifestation.work_has_titles = records unless records.nil?
 
@@ -940,6 +942,14 @@ module EnjuTrunk
         ],
         call_number: ['book.call_number', [:to_s]],
         price: ['book.item_price', [:check_data_is_integer]],
+        excluding_tax: ['book.excluding_tax', [:to_s]],
+        tax: ['book.tax', [:to_s]],
+        tax_rate: [
+          'book.tax_rate',
+          [:to_s],
+          [:set_data, mode, TaxRate, can_blank: true, check_column: :name], 
+          [:set_nil_when_blank],
+        ],
         url: ['book.url', [:to_s]],
         include_supplements: [
           'book.include_supplements', [:fix_boolean, mode: mode],
@@ -1057,6 +1067,7 @@ module EnjuTrunk
           elsif field_data.blank?
             obj = nil
           elsif model_class
+            field_data = field_data.to_s if opts[:to_s]
             obj = model_class.where(key => field_data).first
             unless obj
               obj = model_class.new {|r| r[key] = field_data }

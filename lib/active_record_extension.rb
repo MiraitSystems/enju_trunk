@@ -19,4 +19,22 @@ module ActiveRecordExtension
       EOF
     end
   end
+
+  def attr_exinfo_accessor(*args)
+    args.each do |arg|
+      class_eval <<-EOF
+        attr_accessible :#{arg}
+        def #{arg}=(obj)
+          if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
+            exinfo.update_attributes(:value => obj)
+          else
+            self.#{self.name.underscore}_exinfos.build(:name => '#{arg}', :value => obj)
+          end
+        end
+        def #{arg}
+          #{self.name.underscore}_exinfos.where(:name => '#{arg}').first.value rescue nil
+        end
+      EOF
+    end
+  end
 end

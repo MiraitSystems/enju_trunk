@@ -17,6 +17,8 @@ ja:
         title_transcription: タイトル（ヨミ）
         title_alternative: 代替タイトル
         other_title: その他のタイトル
+        other_title_transcription: その他のタイトル（ヨミ）
+        other_title_alternative: その他のタイトル（代替）
         other_title_type: その他のタイトルタイプ
         identifier: 識別子
         other_identifier: その他の識別子
@@ -77,7 +79,10 @@ ja:
         retention_period: 保存種別
         call_number: 請求記号
         bookstore: 寄贈・購入先
-        item_price: 購入価格
+        item_price: 受入価格(税込)
+        excluding_tax: 受入価格(税抜)
+        tax: 消費税額
+        tax_rate: 消費税区分
         url: URL
         include_supplements: 付録を含む
         use_restriction: 利用制限

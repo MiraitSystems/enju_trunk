@@ -75,13 +75,20 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
     solr_url = "http://archive.apache.org/dist/lucene/solr/3.6.2/#{solr_name}.tgz"
     solr_md5 = 'e9c51f51265b070062a9d8ed50b84647'
     solr_sha1 = '3a1a40542670ea6efec246a081053732c5503ec1'
+    copy_solr_file = "#{ENV["HOME"]}/src/#{solr_name}.tgz"
 
     Dir.mktmpdir do |td|
       tgz_path = "#{td}/#{solr_name}.tgz"
 
-      say "Getting #{solr_name} from #{solr_url}..."
-      get solr_url, tgz_path, verbose: true
-      unless Digest::MD5.file(tgz_path).to_s == solr_md5 &&
+      if File.exist?(copy_solr_file)
+        say "Getting #{solr_name} from #{copy_solr_file}..."
+        copy_file copy_solr_file, tgz_path
+      else
+        say "Getting #{solr_name} from #{solr_url}..."
+        get solr_url, tgz_path, verbose: true
+      end
+
+     unless Digest::MD5.file(tgz_path).to_s == solr_md5 &&
           Digest::SHA1.file(tgz_path).to_s == solr_sha1
         raise "failed to get #{solr_url}"
       end

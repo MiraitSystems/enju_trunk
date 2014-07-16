@@ -12,7 +12,7 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax
 
   self.extend ItemsHelper
   scope :sort_rank, order('rank')
@@ -293,7 +293,8 @@ class Item < ActiveRecord::Base
         end
       else
         return true if self.price.nil?
-        budget = Budget.joins(:term).where(:library_id => self.shelf.library.id).order("terms.start_at DESC").first
+        return true if Budgets.count == 0
+        budget = Budget.joins(:term).where(:library_id => self.shelf.library.id).order("terms.start_at DESC").first rescue nil
         yyyymm = select_acquired_at
         Expense.create!(:item => self, :budget => budget, :price => self.price, :acquired_at_ym => yyyymm, :acquired_at => self.acquired_at)
       end
@@ -400,7 +401,7 @@ class Item < ActiveRecord::Base
     when 'library'
       val = shelf.library.display_name || ''
 
-    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role'
+    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate'
       val = __send__(ws_col).try(:name) || ''
 
     when 'accept_type', 'retention_period', 'remove_reason', 'shelf'

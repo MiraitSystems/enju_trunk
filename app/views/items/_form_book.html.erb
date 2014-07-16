@@ -46,12 +46,12 @@
 
   <div class="field">
     <%= f.label :location_symbol -%><br />
-    <%= f.select2(:location_symbol_id, @location_symbols, @item.location_symbol_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true, :alt_display => true) %>
+    <%= f.select2(:location_symbol_id, @location_symbols, @item.location_symbol_id, :display_attribute => 'keyname', :select_attribute => 'v', :width => 200, :include_blank => true, :alt_display => true) %>
   </div>
 
   <div class="field">
     <%= f.label :statistical_class -%><br />
-    <%= f.select2(:statistical_class_id, @statistical_classes, @item.statistical_class_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true, :alt_display => true) %>
+    <%= f.select2(:statistical_class_id, @statistical_classes, @item.statistical_class_id, :display_attribute => 'keyname', :select_attribute => 'v', :width => 200, :include_blank => true, :alt_display => true) %>
   </div>
 
   <%= render :partial => 'form_budget_category', :locals => {:f => f, :item => @item} %>
@@ -71,6 +71,25 @@
   <div class="field">
     <%= f.label :price -%><br />
     <%= f.text_field :price -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :excluding_tax %><br />
+    <%= f.text_field :excluding_tax %>
+  </div>
+
+  <div class="field">
+    <%= f.label :tax %><br />
+    <%= f.text_field :tax %>
+  </div>
+
+  <div class="field">
+    <%= f.label t('activerecord.models.tax_rate') %><br />
+    <%= f.select2 :tax_rate_id, @tax_rates, @item.tax_rate_id, 
+      display_attribute: 'display_name', 
+      select_attribute: 'name',
+      include_blank: true, 
+      witdh: 150 %>
   </div>
 
   <div class="field">
