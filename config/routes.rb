@@ -220,11 +220,6 @@ Rails.application.routes.draw do
   resources :agent_types
   resources :circulation_statuses
   resources :form_of_works
-  resources :subject_has_classifications
-  resources :subject_heading_types do
-    resources :subjects
-  end
-  resources :subject_heading_type_has_subjects
   resources :agent_merge_lists do
     resources :agents
     resources :agent_merges
@@ -335,31 +330,7 @@ Rails.application.routes.draw do
 
   resources :library_groups, :except => [:new, :create, :destroy]
 
-  match 'classifications/search_name' => 'classifications#search_name'
-
-  resources :classifications do
-    resources :subject_has_classifications
-  end
-
-  resources :classification_types do
-    resource :classifications
-  end
-
   resources :search_engines
-
-  resources :subject_types
-
-  resources :work_has_subjects
-
-  match 'subjects/search_name' => 'subjects#search_name'
-
-  resources :subjects do
-    resources :works, :controller => 'manifestations'
-    resources :subject_heading_types
-    resources :subject_has_classifications
-    resources :work_has_subjects
-    resources :classifications
-  end
 
   resources :content_types
 
