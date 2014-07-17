@@ -21,6 +21,7 @@ ja:
     sessions:
       signed_in: 'ログインしました。'
       signed_out: 'ログアウトしました。'
+      login: 'ログイン'
     passwords:
       send_instructions: 'パスワードを再設定する手順についてのメールが数分のうちに届きます。'
       updated: 'パスワードは正しく更新されました。ログインしました。'
