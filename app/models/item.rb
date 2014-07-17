@@ -12,9 +12,10 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes
 
   self.extend ItemsHelper
+ 
   scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL')
   scope :not_for_checkout, where(:item_identifier => nil)
@@ -84,6 +85,11 @@ class Item < ActiveRecord::Base
   accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
   has_many :item_extexts, :dependent => :destroy
+  accepts_nested_attributes_for :item_extexts, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? and !(ItemExtext.find(a[:id]) rescue nil) }
+  before_validation :mark_item_extexts_for_removal
+  def mark_item_extexts_for_removal
+    item_extexts.each { |item_extext| item_extext.mark_for_destruction if item_extext.value.blank? }
+  end
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order

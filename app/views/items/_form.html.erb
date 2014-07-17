@@ -9,6 +9,21 @@
       }
     });
   });
+
+  function add_field(obj, parent_id, id_name) {
+    var new_area = document.createElement("div");
+    new_area.setAttribute("id", id_name + obj.currentNumber);
+    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
+    document.getElementById(parent_id).appendChild(new_area);
+    obj.currentNumber += 1;
+  }
+  function remove_field(no, div_name, param_name) {
+    var field = $("div#" + div_name + no);
+    if(field != null){
+      field.append('<input name=item[' + param_name + '][' + no + '][_destroy] type="hidden" value="1" />');
+      field.hide();
+    }
+  }
 </script>
 
 <% manifestation = @manifestation ? @manifestation : @item.manifestation %>
