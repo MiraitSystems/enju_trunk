@@ -1,4 +1,4 @@
-ails.applicatio.routerails g enju_trunk:install:.draw do
+Rails.application.routes.draw do
   resources :tax_rates
 
 
