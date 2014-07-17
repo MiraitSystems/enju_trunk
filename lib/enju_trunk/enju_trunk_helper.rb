@@ -692,6 +692,9 @@ module ActionView
       def select2_tag(selector_id, selector_name, collection, selected_id, *options)
         options = options.first # if options.is_a?(Array)　
         select2_options = options[:select2options] || {}
+        if options[:placeholder]
+          select2_options[:placeholder] = '"' + escape_javascript(options.delete(:placeholder)) + '"'
+	end
 
         b = ""
         b.concat(build_select2_script(selector_id, select2_options))
@@ -709,7 +712,8 @@ module ActionView
 
         html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
         if include_blank
-          html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
+          #html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
+          html.concat( raw ("<option></option>\n") )
         end
         collection.each do |row|
           html.concat( raw ("      <option alt=\"#{ row.send(select_attribute) }\", value=\"#{ row.send(post_attribute) }\"") )
@@ -745,9 +749,10 @@ module ActionView
         raw ("
         <script>
           $(document).ready(function() {
-            $(\"##{selector_id}\").select2({
-	        #{options_string} 
-            });
+            var select2options = {
+	        #{options_string}
+            };
+            $(\"##{selector_id}\").select2(select2options);
           });
         </script>
        ")

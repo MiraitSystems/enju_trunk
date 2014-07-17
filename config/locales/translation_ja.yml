@@ -457,6 +457,8 @@ ja:
         corporate_type: 団体分類
         grade: 学年
         gender: 性別
+        select_gender_reason: "性別を選択してください。"
+        select_grade_reason: "学年を選択してください。"
       feeds/app:
         source_url: ソースURL
         title: タイトル

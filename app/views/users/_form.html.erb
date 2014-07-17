@@ -175,12 +175,17 @@
 
   <div class="field">
     <%= f.label :gender -%><br />
-    <%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200) %>
+    <%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200, :include_blank => "",
+		  :select2options => {
+	            "placeholder" => "\"#{t('activerecord.attributes.agent.select_gender_reason')}\""
+                  }
+		 ) %>
   </div>
 
   <div class="field">
     <%= f.label :grade -%><br />
-    <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200) %>
+    <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
+		  :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
   </div>
 
   <% unless @user.id.blank? %>
