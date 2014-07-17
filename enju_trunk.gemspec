@@ -64,7 +64,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'library_stdnums'
   s.add_dependency 'client_side_validations'
   s.add_dependency 'prawn', '1.0.0.rc1'
-  s.add_dependency 'rmagick'
+  s.add_dependency 'rmagick', '2.13.2'
   s.add_dependency 'rails_autolink'
   s.add_dependency 'parallel'
   s.add_dependency 'enju_trunk_subject'
