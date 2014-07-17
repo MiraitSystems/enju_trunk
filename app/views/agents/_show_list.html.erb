@@ -113,10 +113,12 @@
         <td><strong><%= t('activerecord.attributes.agent.gender') -%>:</strong></td>
         <td><%= @agent.gender.keyname if @agent.gender %></td>
       </tr>
+      <% if SystemConfiguration.get("agent.manage_grade") %>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.grade') -%>:</strong></td>
         <td><%= @agent.grade.keyname if @agent.grade %></td>
       </tr>
+      <% end %>
 <%- if false -%>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.other_designation') -%>:</strong></td>

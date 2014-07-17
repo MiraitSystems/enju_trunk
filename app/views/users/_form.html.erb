@@ -182,11 +182,13 @@
 		 ) %>
   </div>
 
+  <% if SystemConfiguration.get("agent.manage_grade") %>
   <div class="field">
     <%= f.label :grade -%><br />
     <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
 		  :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
   </div>
+  <% end %>
 
   <% unless @user.id.blank? %>
     <%- if current_user.has_role?('Librarian') -%>
