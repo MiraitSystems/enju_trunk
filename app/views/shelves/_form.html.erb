@@ -23,6 +23,11 @@
   </div>
 
   <div class="field">
+    <%= f.label t('role.required_role') %><br />
+    <%= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) %>
+  </div>
+
+  <div class="field">
     <%= f.label :open_access -%><br />
     <%= t('activerecord.attributes.shelf.open') -%><%= f.radio_button :open_access, 0 -%>&nbsp;
     <%= t('activerecord.attributes.shelf.closed') -%><%= f.radio_button :open_access, 1 -%>&nbsp;

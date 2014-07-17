@@ -558,7 +558,6 @@ class ManifestationsController < ApplicationController
         e.backtrace.each {|bt| logger.debug "\t#{bt}" }
         return
       end
-
       update_search_sessions(search_opts, search)
       do_tag_cloud_process(search_opts) and return
 
@@ -628,7 +627,6 @@ class ManifestationsController < ApplicationController
         @suggested_tag = @solr_query.suggest_tags.first
       end
     end
-
     store_location # before_filter ではファセット検索のURLを記憶してしまう
     
     respond_to do |format|
@@ -1399,13 +1397,16 @@ class ManifestationsController < ApplicationController
       (current_user.try(:role) || Role.default_role).id
     ]
 
+    current_role_id = (current_user.try(:role) || Role.default_role).id
+    shelves = Shelf.where('required_role_id > ?', current_role_id)
+    without << [:item_shelf_id, :any_of, shelves.collect(&:id)] unless shelves.blank?
+
     if @removed
       with << [:has_removed, :equal_to, true]
     else
       if !params[:missing_issue] && 
         (@all_manifestations.blank? or !@all_manifestations == true) &&
         !SystemConfiguration.get("manifestation.show_all") 
-        without << [:non_searchable, :equal_to, true]
       end
     end
     without << [:hide, :equal_to, true]
@@ -1431,8 +1432,10 @@ class ManifestationsController < ApplicationController
     with << [:manifestation_type, :equal_to, params[:manifestation_type]] if params[:manifestation_type]
     with << [:circulation_status_in_process, :equal_to, params[:circulation_status_in_process]] if params[:circulation_status_in_process]
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
-    with << [:no_item, :equal_to, params[:no_item]] if params[:no_item]
-
+    unless @all_manifestations
+      params[:no_item] ? with << [:no_item, :equal_to, params[:no_item]] : with << [:no_item, :equal_to, false]
+    end
+    without << [:has_available_items, :equal_to, false] if SystemConfiguration.get('manifestation.search.hide_not_for_loan') && @all_manifestations.blank?
     [
       [:publisher_ids, @agent],
       [:creator_ids, @index_agent[:creator]],
@@ -1472,7 +1475,6 @@ class ManifestationsController < ApplicationController
     if @basket
       with << [:id, :any_of, @basket.manifestations.collect(&:id)]
     end
-
     [with, without]
   end
 

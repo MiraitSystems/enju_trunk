@@ -575,6 +575,7 @@ en:
         in_process: In process
         stock: Stock
         other: Other
+        required_role: Required role
       advertisement:
         title: Title
         url: URL

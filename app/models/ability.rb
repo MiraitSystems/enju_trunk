@@ -423,7 +423,7 @@ class Ability
       can :create, Basket
       can :index, Item
       can :show, Item do |item|
-        item.required_role_id <= 2
+        item.required_role_id <= 2 && item.shelf.required_role_id <= 2
       end
       can :read, Manifestation do |manifestation|
         manifestation.required_role_id <= 2
@@ -525,6 +525,9 @@ class Ability
       can :index, Agent
       can :show, Agent do |agent|
         agent.required_role_id == 1 #name == 'Guest'
+      end
+      can :read, Item do |item|
+        item.required_role_id <= 1 && item.shelf.required_role_id <= 1
       end
       can :read, Manifestation do |manifestation|
         manifestation.required_role_id <= 1

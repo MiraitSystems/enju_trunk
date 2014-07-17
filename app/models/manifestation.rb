@@ -234,6 +234,9 @@ class Manifestation < ActiveRecord::Base
     string :shelf, :multiple => true do
       items.collect{|i| "#{item_library_name(i)}_#{i.shelf.name}"}
     end
+    integer :item_shelf_id, :multiple => true do
+      items.collect{|i| i.shelf_id}
+    end
     string :user, :multiple => true do
     end
     time :created_at
@@ -450,8 +453,14 @@ class Manifestation < ActiveRecord::Base
       end
     end
     boolean :except_recent
-    boolean :non_searchable do
-      non_searchable?
+    boolean :item_non_searchable do
+      item_non_searchable?
+    end
+    integer :item_shelf_id, :multiple => true do
+      items.collect(&:shelf_id).compact
+    end
+    boolean :has_available_items do
+      has_available_items?
     end
     boolean :hide do
       # 定期刊行物でないroot_manifestationは隠す
@@ -484,9 +493,7 @@ class Manifestation < ActiveRecord::Base
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
     boolean :no_item do
-      unless root_of_series?
-        true if items.blank?
-      end
+      has_items?
     end
 
   end
@@ -613,23 +620,30 @@ class Manifestation < ActiveRecord::Base
 #    self.try(:manifestation_type).try(:is_series?)
   end
 
-  def non_searchable?
+  # true for items.empty, dupricate with has_items? (:no_item index)
+  def item_non_searchable?
     return false if periodical_master
-    return true  if items.empty?
     items.each do |i|
-      hide = false
-      hide = true if i.non_searchable
-      hide = true if item_retention_period_non_searchable?(i)
-      if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
-        hide = true if i.try(:use_restriction).try(:name) == 'Not For Loan' 
-      end
-      unless article?
-        hide = true if item_circulation_status_unsearchable?(i)
-        if SystemConfiguration.get('manifestation.manage_item_rank')
-          hide = true if i.rank == 2
-        end
-      end
-      return false unless hide 
+      return false unless i.non_searchable
+      return false if i.required_role_id < (current_user.role || Role.default_role).id 
+    end
+    return true
+  end
+  
+  def has_items?
+    unless root_of_series?
+      return true if items.blank?
+    end
+    return false
+  end
+
+  def has_available_items?
+    unless article?
+      return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank?
+      return false if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id) && 
+                     !unsearchables.blank? && 
+                     items.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)).blank?
+      return false if items.where('rank < 2').blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
     end
     return true
   end
