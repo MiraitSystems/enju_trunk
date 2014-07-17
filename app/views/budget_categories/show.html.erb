@@ -18,10 +18,12 @@
   <%= @budget_category.display_name-%>
 </p>
 
-<p>
-  <strong><%= t('activerecord.attributes.budget_category.group') -%>:</strong>
-  <%= @budget_category.name-%>
-</p>
+<%- if @budget_category.group_id %>
+  <p>
+    <strong><%= t('activerecord.attributes.budget_category.group') -%>:</strong>
+    <%= budget_category_group(@budget_category.group_id) -%>
+  </p>
+<%- end -%>
 
 </div>
 </div>

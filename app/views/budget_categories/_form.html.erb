@@ -11,10 +11,12 @@
     <%= f.text_field :display_name -%>
   </div>
 
-  <div class="field">
-    <%= f.label :group %><br />
-    <%= f.select :group_id, @budget_groups.map{|g| [g.keyname, g.id]} -%>
-  </div>
+  <%- unless @budget_groups.blank? -%>
+    <div class="field">
+      <%= f.label :group %><br />
+      <%= f.select :group_id, @budget_groups.map{|g| [g.keyname, g.id]} -%>
+    </div>
+  <%- end -%>
 
   <div class="actions">
     <%= f.submit %>

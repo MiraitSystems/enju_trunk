@@ -89,7 +89,7 @@ class BudgetCategoriesController < ApplicationController
 
   private
   def prepare_options
-    @budget_groups = Keyname.where(:name => 'budget_category.group') || []
+    @budget_groups = Keycode.where(:name => 'budget_category.group') || []
   end
 
 end
