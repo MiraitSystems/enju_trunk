@@ -694,15 +694,17 @@ class ManifestationsController < ApplicationController
   # GET /manifestations/1
   # GET /manifestations/1.json
   def show
-    can_show = true
-    unless user_signed_in?
-      can_show = false if @manifestation.non_searchable?
-    else
-      can_show = false if !current_user.has_role?('Librarian') and @manifestation.non_searchable?
-    end
-    unless can_show
-      access_denied
-    end
+    if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
+      can_show = true
+      unless user_signed_in?
+        can_show = false if @manifestation.has_available_items?
+      else
+        can_show = false if !current_user.has_role?('Librarian') and @manifestation.has_available_items?
+      end
+      unless can_show
+        access_denied
+      end
+    end 
 
     if params[:isbn].present?
       if @manifestation = Manifestation.find_by_isbn(params[:isbn])
