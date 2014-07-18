@@ -73,6 +73,7 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/new
   # GET /series_statements/new.json
   def new
+    prepare_options
     original_series_statement = SeriesStatement.find(params[:series_statement_id]) if params[:series_statement_id]
     if original_series_statement
       @series_statement = original_series_statement.dup
@@ -194,6 +195,7 @@ class SeriesStatementsController < ApplicationController
   end
 
   def prepare_options
+    @subject_types = SubjectType.all
     @carrier_types = CarrierType.all
     @sub_carrier_types = SubCarrierType.all
     @manifestation_types = ManifestationType.series
