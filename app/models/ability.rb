@@ -23,10 +23,6 @@ class Ability
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
       end
-      can [:read, :create, :update], ClassificationType
-      can :destroy, ClassificationType do |classification_type|
-        classification_type.classifications.empty?
-      end
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
@@ -183,10 +179,9 @@ class Ability
         UserReserveStat,
         UserStatus,
         Wareki,
-        WorkHasSubject,
         WorkHasTitle,
         LanguageType,
-	TaxRate
+        TaxRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -344,8 +339,6 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
-        Subject,
-        SubjectHasClassification,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -354,7 +347,6 @@ class Ability
         TitleType,
         UseLicense,
         UserStatus,
-        WorkHasSubject,
         WorkHasTitle
       ]
       can [:read, :update], [
@@ -368,8 +360,6 @@ class Ability
         CheckoutStatHasManifestation,
         CheckoutStatHasUser,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         ContentType,
         Country,
         Extent,
@@ -397,16 +387,13 @@ class Ability
         Role,
         SearchEngine,
         Shelf,
-        SubjectType,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
         EnjuTerminal,
         UseRestriction,
         UserGroup,
         UserGroupHasCheckoutType,
         UserRequestLog,
         Wareki,
-	TaxRate
+        TaxRate
       ]
     when 'User'
       can [:index, :create], Answer
@@ -518,8 +505,7 @@ class Ability
         UserStatus,
         UserGroup,
         Wareki,
-        WorkHasSubject,
-	TaxRate
+        TaxRate
       ]
     else
       can :index, Agent
@@ -577,7 +563,6 @@ class Ability
         UserGroup,
         UserReserveStat,
         Wareki,
-        WorkHasSubject,
         TaxRate
       ]
     end
