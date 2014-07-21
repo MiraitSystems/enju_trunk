@@ -1,4 +1,7 @@
+# TODO
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Setting.operation
+require EnjuSubject::Engine.root.join('app','models','ability') if defined?(EnjuTrunkSubject) 
+
 class Ability
   include CanCan::Ability
 
