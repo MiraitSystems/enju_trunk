@@ -112,6 +112,15 @@ class Item < ActiveRecord::Base
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
 
+  def has_view_role?(current_role_id)
+    current_role_id = Role.default_role.id unless current_role_id
+    if self.required_role_id <= current_role_id && self.shelf.required_role_id <= current_role_id 
+      return TRUE
+    else
+      return FALSE
+    end 
+  end
+
   def set_item_operator
     item_has_operators.each do |operator|
       operator.item = self if operator.item.blank?

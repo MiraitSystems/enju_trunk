@@ -237,6 +237,9 @@ class Manifestation < ActiveRecord::Base
     integer :item_shelf_id, :multiple => true do
       items.collect{|i| i.shelf_id}
     end
+    integer :item_required_id, :multiple => true do
+      items.collect{|i| i.required_role_id}
+    end
     string :user, :multiple => true do
     end
     time :created_at

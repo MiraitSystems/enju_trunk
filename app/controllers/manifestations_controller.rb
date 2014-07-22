@@ -1400,8 +1400,9 @@ class ManifestationsController < ApplicationController
     ]
 
     current_role_id = (current_user.try(:role) || Role.default_role).id
-    shelves = Shelf.where('required_role_id > ?', current_role_id)
-    without << [:item_shelf_id, :any_of, shelves.collect(&:id)] unless shelves.blank?
+    shelves = Shelf.where('required_role_id >= ?', current_role_id)
+    with << [:item_shelf_id, :any_of, shelves.collect(&:id)] unless shelves.blank?
+    with << [:item_required_id, :less_than_or_equal_to, current_role_id]
 
     if @removed
       with << [:has_removed, :equal_to, true]

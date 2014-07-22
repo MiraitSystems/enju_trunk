@@ -536,7 +536,6 @@ class Ability
         Extent,
         Frequency,
         FormOfWork,
-        Item,
         Language,
         Library,
         LibraryGroup,
