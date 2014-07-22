@@ -2964,6 +2964,7 @@ ja:
     successfully_sent: "督促メールを送信しました。"
     failed_sent: "督促メールの送信に失敗しました。"
     reminder_mail: "メール"
+    search_notice_full_name: "利用者のフルネームと読みを部分一致で検索します。"
   system_configuration:
     general: 全般
     user: 利用者

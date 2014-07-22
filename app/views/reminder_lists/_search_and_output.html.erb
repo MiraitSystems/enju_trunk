@@ -36,8 +36,8 @@
   <div>
     <%= t('advanced_search.library') -%>:<%= select("library", "id", @libraries, {:include_blank => t('advanced_search.all_libraries'), :selected=>@selected_library})%>
     <%= t('checkout.number_of_day_overdue') -%>:<%= text_field_tag 'days_overdue', h(@days_overdue), :class => 'resource_integer' -%><%= t('activerecord.attributes.checkout.over') -%><br />
-    <%= t('activerecord.attributes.user.user_number') -%>: <%= text_field_tag 'user_number', h(@user_number), {:id => 'user_number', :class => 'resource_user_number', :placeholder => t('page.search_term')} -%>
-    <%= t('activerecord.attributes.agent.full_name') -%>: <%= text_field_tag 'full_name', h(@query), {:id => 'full_name', :class => 'resource_title', :placeholder => t('page.search_term')} -%><br />
+    <%= t('activerecord.attributes.user.user_number') -%>: <%= text_field_tag 'user_number', h(@user_number), {:id => 'user_number', :class => 'resource_user_number'} -%>
+    <%= t('activerecord.attributes.reminder_list.user_name') -%>: <%= text_field_tag 'full_name', h(@full_name), {:id => 'full_name', :class => 'resource_title', :placeholder => "#{t('activerecord.attributes.agent.full_name')} もしくは #{t('activerecord.attributes.agent.full_name_transcription')}"} -%> <%= t('reminder_list.search_notice_full_name') %><br />
     <%= t('page.search_term') -%>: <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%><br />
   </div>
   <div class="actions">
