@@ -71,6 +71,11 @@ class ReminderList < ActiveRecord::Base
     time :due_date do
       checkout.try(:due_date)
     end
+
+    string :user_number do
+      self.checkout.user.user_number
+    end
+ 
   end
 
   def set_checkout_id

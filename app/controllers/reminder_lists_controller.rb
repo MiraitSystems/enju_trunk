@@ -30,14 +30,30 @@ class ReminderListsController < ApplicationController
     library = params[:library][:id] if params[:library] and !params[:library][:id].blank?
     date = 1.days.ago.end_of_day
     date = params[:days_overdue].to_i.days.ago.end_of_day if params[:days_overdue]
+    user_number = @user_number = params[:user_number]
+    full_name = @full_name = params[:full_name]
+    if full_name && full_name.size == 1
+      full_name = "#{full_name}*"
+    end
     @days_overdue = params[:days_overdue]
+
+    #puts "user_number=#{@user_number} present?=#{@user_number.present?}"
+    #puts "full_name=#{@full_name} present?=#{@full_name.present?}"
+    
     @reminder_lists = ReminderList.search do
-#      fulltext query
-#      with(:library_id, library.to_i) if library
-#      with(:status, state_ids) 
-#      without(:checkin, true) if date
-#      with(:due_date).less_than(date)
-#      order_by(:id, :desc) # asc
+      fulltext query
+      with(:library_id, library.to_i) if library
+      with(:status, state_ids) 
+      without(:checkin, true) if date
+      with(:due_date).less_than(date)
+      with(:user_number, user_number) if user_number.present?
+      if full_name.present?
+        fulltext full_name do
+          fields(:full_name)
+        end
+      end
+
+      order_by(:id, :desc) # asc
       paginate :page => page.to_i, :per_page => ReminderList.default_per_page unless params[:output_pdf] or params[:output_tsv]
     end.results
 
