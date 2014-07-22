@@ -302,9 +302,8 @@ function BoxChecked(check){
     <div id='check_cols_book'>
       <form id = "column" name="column" method="GET">
       <br />
-      <strong><%= t('page.output_excelx_dialog') %></strong>
+      <strong><%= t('page.output_excelx_dialog') %></strong><br />
       <% if output_column_lists = OutputColumnList.find(:all) %>
-        <strong><%= t('page.output_list') %></strong><br />
         <% output_column_lists.each_with_index do |column_list, i| %>
           <%= button_tag column_list.name, :onClick=>"TemplateChecked(#{i})" %>
         <% end %>
