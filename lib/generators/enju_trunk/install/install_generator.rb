@@ -164,6 +164,23 @@ devise_scope :user do
 
     comment_lines target, /^\s*config\.active_support\.escape_html_entities_in_json = true/
     comment_lines target, /^\s*config\.active_record\.whitelist_attributes = true/
+
+    gsub_file target, /^(\s*)(\# config\.autoload_paths \+= .*\n)/, <<-'E'
+\1\2
+\1config.after_initialize do |app| 
+\1  unless File.basename($0) == "rake" && (ARGV.include?('db:migrate') || ARGV.include?('enju:install:migrations:all'))
+\1    Dir["#{Rails.root}/lib/#{Rails.application.class.parent_name.underscore}/class_eval/*.rb"].each { |file| require file }
+\1  end
+\1  app.routes.append { match '*a', :to => 'page#routing_error' } unless Rails.application.config.consider_all_requests_local
+\1end
+    E
+
+    #comment_lines target, /^\s*config\.colorize_logging = false/
+    gsub_file target, /^(\s*)(config\.assets\.version = \'1\.0\'\s*\n)/, <<-'E'
+\1\2
+\1config.colorize_logging = false
+    E
+ 
   end
 
   def fixup_config_environments_production
