@@ -608,8 +608,9 @@ tr{
 }
 .active{
     /* 線 */
-    /*border-left: solid 2px red; */
+    /* border-left: solid 2px red; */
     border-left: solid;
+    border-left-style: 2px;
     border-left-color: red;
     /* 色 */
     /* background-color:yellow !important; */
