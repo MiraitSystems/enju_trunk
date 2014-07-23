@@ -1277,8 +1277,15 @@ class ManifestationsController < ApplicationController
         qwords << "classification_sm:(#{qws.join(' OR ')})"
       end
     end
-    # other attributes
-    params[:other_identifier] = "#{params[:identifier_type]}-#{params[:other_identifier]}" unless params[:other_identifier].blank?
+    # other_identifier
+    if params[:other_identifier]
+      identifier_type = IdentifierType.find(params[:other_identifier][:identifier_type_id]) rescue nil
+      if identifier_type
+        unless params[:other_identifier][:identifier].blank?
+          qwords << "other_identifier_sm:#{identifier_type.name}-#{params[:other_identifier][:identifier]}"
+        end
+      end
+    end
     [
       [:tag, 'tag_sm'],
       [:title, 'title_text', 'title_sm'],
@@ -1300,7 +1307,6 @@ class ManifestationsController < ApplicationController
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
       [:identifier, 'identifier_sm'],
-      [:other_identifier, 'other_identifier_sm']
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 
