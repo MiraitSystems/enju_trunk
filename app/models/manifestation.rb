@@ -179,6 +179,9 @@ class Manifestation < ActiveRecord::Base
     string :carrier_type do
       carrier_type.name
     end
+    string :manifestation_type_position do
+      manifestation_type.try(:position)
+    end
     string :manifestation_type, :multiple => true do
       manifestation_type.try(:name)
       #if series_statement.try(:id) 
@@ -345,6 +348,9 @@ class Manifestation < ActiveRecord::Base
     end
     string :publisher, :multiple => true do
       publisher.map{|au| au.gsub(' ', '')}
+    end
+    string :produces do
+      NKF.nkf('-w --katakana', publishers[0].full_name_transcription) if publishers[0] and publishers[0].full_name_transcription
     end
     string :author do
       NKF.nkf('-w --katakana', creators[0].full_name_transcription) if creators[0] and creators[0].full_name_transcription
