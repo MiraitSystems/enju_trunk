@@ -1399,10 +1399,13 @@ class ManifestationsController < ApplicationController
       (current_user.try(:role) || Role.default_role).id
     ]
 
-    current_role_id = (current_user.try(:role) || Role.default_role).id
-    shelves = Shelf.where('required_role_id >= ?', current_role_id)
-    with << [:item_shelf_id, :any_of, shelves.collect(&:id)] unless shelves.blank?
-    with << [:item_required_id, :less_than_or_equal_to, current_role_id]
+    # show manifestaion without item for Librarian and Administrator
+    unless current_user.try(:has_role?, 'Librarian')
+      current_role_id = (current_user.try(:role) || Role.default_role).id
+      shelves = Shelf.where('required_role_id <= ?', current_role_id)
+      with << [:item_shelf_id, :any_of, shelves.collect(&:id)]
+      with << [:item_required_id, :less_than_or_equal_to, current_role_id]
+    end
 
     if @removed
       with << [:has_removed, :equal_to, true]
@@ -1435,10 +1438,7 @@ class ManifestationsController < ApplicationController
     with << [:manifestation_type, :equal_to, params[:manifestation_type]] if params[:manifestation_type]
     with << [:circulation_status_in_process, :equal_to, params[:circulation_status_in_process]] if params[:circulation_status_in_process]
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
-    unless @all_manifestations
-      params[:no_item] ? with << [:no_item, :equal_to, params[:no_item]] : with << [:no_item, :equal_to, false]
-    end
-    without << [:has_available_items, :equal_to, false] if SystemConfiguration.get('manifestation.search.hide_not_for_loan') && @all_manifestations.blank?
+    without << [:has_available_items, :equal_to, false] unless @all_manifestations
     [
       [:publisher_ids, @agent],
       [:creator_ids, @index_agent[:creator]],

@@ -634,7 +634,6 @@ class Manifestation < ActiveRecord::Base
     return false if periodical_master
     items.each do |i|
       return false unless i.non_searchable
-      return false if i.required_role_id < (current_user.role || Role.default_role).id 
     end
     return true
   end
@@ -648,11 +647,12 @@ class Manifestation < ActiveRecord::Base
 
   def has_available_items?
     unless article?
-      return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank?
+      return false if items.empty?
+      return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
       return false if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id) && 
                      !unsearchables.blank? && 
                      items.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)).blank?
-      return false if items.where('rank < 2').blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
+      return false if SystemConfiguration.get('manifestation.manage_item_rank') && items.where('rank < 2').blank?
     end
     return true
   end
