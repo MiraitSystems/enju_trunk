@@ -71,7 +71,7 @@
 </script>
 
   <td>
-    <label><%= t('activerecord.models.classification') -%></label>
+    <nobr><label><%= t('activerecord.models.classification') -%>:</label></nobr>
   </td>
   <td>
   <table id="bless">
@@ -79,11 +79,13 @@
     <% @classifications.each_with_index do |classification, index| -%>
       <tr id="CLASSIFICATION<%= index %>" >
         <td>
-          <%= make_select2("classifications_#{index}_classification_type_id", 
+          <%= select2_tag("classifications_#{index}_classification_type_id", 
                            "classifications[][classification_type_id]", 
                            @classification_types,
                            classification[:classification_type_id].to_i,
-                           400,
+                           select_attribute: :name,
+                           display_attribute: :display_name, 
+                           width: '200'
                           ) %>
         </td>
         <td>
