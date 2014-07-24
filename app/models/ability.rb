@@ -1,5 +1,12 @@
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Setting.operation
-[EnjuSubject::Engine, EnjuEvent::Engine, EnjuMessage::Engine, EnjuTrunkIll::Engine, EnjuBookmark::Engine].map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
+
+engines = []
+engines << EnjuSubject::Engine  if defined?(EnjuTrunkSubject)
+engines << EnjuEvent::Engine    if defined?(EnjuTrunkEvent)
+engines << EnjuMessage::Engine  if defined?(EnjuTrunkMessage)
+engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
+engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
+engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
 
 class Ability
   include CanCan::Ability
@@ -7,10 +14,10 @@ class Ability
   def initialize(user, ip_address = nil)
     # TODO
     initialize_circulation(user, ip_address) if Setting.operation
-    initialize_event(user, ip_address) if defined?(EnjuEvent)
+    initialize_event(user, ip_address) if defined?(EnjuTrunkEvent)
     initialize_subject(user, ip_address) if defined?(EnjuTrunkSubject)
 #    initialize_theme(user,ip_address) if defined?(EnjuTrunkTheme)
-    initialize_message(user, ip_address) if defined?(EnjuMessage)
+    initialize_message(user, ip_address) if defined?(EnjuTrunkMessage)
     initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
     initialize_bookmark(user, ip_address) if defined?(EnjuBookmark)
     case user.try(:role).try(:name)
