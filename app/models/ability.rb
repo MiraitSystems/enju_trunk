@@ -1,12 +1,18 @@
-# TODO
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Setting.operation
-require EnjuSubject::Engine.root.join('app','models','ability') if defined?(EnjuTrunkSubject) 
+[EnjuSubject::Engine, EnjuEvent::Engine, EnjuMessage::Engine, EnjuTrunkIll::Engine, EnjuBookmark::Engine].map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
 
 class Ability
   include CanCan::Ability
 
   def initialize(user, ip_address = nil)
-    initialize_circulation(user) if Setting.operation
+    # TODO
+    initialize_circulation(user, ip_address) if Setting.operation
+    initialize_event(user, ip_address) if defined?(EnjuEvent)
+    initialize_subject(user, ip_address) if defined?(EnjuTrunkSubject)
+#    initialize_theme(user,ip_address) if defined?(EnjuTrunkTheme)
+    initialize_message(user, ip_address) if defined?(EnjuMessage)
+    initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
+    initialize_bookmark(user, ip_address) if defined?(EnjuBookmark)
     case user.try(:role).try(:name)
     when 'Administrator'
       can [:read, :create, :update], AcceptType
@@ -93,20 +99,17 @@ class Ability
         Answer,
         Approval,
         ApprovalExtext,
-        Basket,
         BarcodeList,
         BindingItem,
         Bookbinding,
         BudgetCategory,
         CarrierTypeHasCheckoutType,
         Catalog,
-        CheckedItem,
         Checkoutlist,
         CheckoutStatHasManifestation,
         CheckoutStatHasUser,
         CheckoutType,
         ClaimType,
-        Classification,
         Classmark,
         CopyRequest,
         Create,
@@ -163,11 +166,6 @@ class Ability
         SeriesStatementMerge,
         SeriesStatementMergeList,
         SubCarrierType,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
-        SubjectType,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -289,12 +287,10 @@ class Ability
         Answer,
         Approval,
         ApprovalExtext,
-        Basket,
         BarcodeList,
         BindingItem,
         Bookbinding,
         Catalog,
-        CheckedItem,
         Checkoutlist,
         ClaimType,
         Classmark,
@@ -410,7 +406,6 @@ class Ability
       can [:update, :destroy], Answer do |answer|
         answer.user == user
       end
-      can :create, Basket
       can :index, Item
       can :show, Item do |item|
         item.required_role_id <= 2 && item.shelf.required_role_id <= 2
@@ -470,8 +465,6 @@ class Ability
         AcceptType,
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
@@ -503,9 +496,6 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         EnjuTerminal,
         UserCheckoutStat,
         UserReserveStat,
@@ -533,8 +523,6 @@ class Ability
       can :read, [
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
@@ -566,151 +554,12 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,
         Wareki,
         TaxRate
       ]
-    end
-
-    if defined?(EnjuBookmark)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can :manage, [
-          Bookmark,
-          BookmarkStat,
-          BookmarkStatHasManifestation,
-          Tag
-        ]
-      when 'Librarian'
-        can [:read, :create, :update], BookmarkStat
-        can :read, BookmarkStatHasManifestation
-        can :manage, [
-          Bookmark,
-          Tag
-        ]
-      when 'User'
-        can [:index, :create], Bookmark
-        can :show, Bookmark do |bookmark|
-          if bookmark.user == user
-            true
-          elsif user.share_bookmarks
-            true
-          else
-            false
-          end
-        end
-        can [:update, :destroy], Bookmark do |bookmark|
-          bookmark.user == user
-        end
-        can :read, BookmarkStat
-        can :read, Tag
-      else
-        can :read, BookmarkStat
-        can :read, Tag
-      end
-    end
-
-    #if defined?(EnjuMessage)
-    if defined?(Message)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can :manage, Message
-        can [:read, :update, :destroy], MessageRequest
-        can [:read, :update], MessageTemplate
-      when 'Librarian'
-        can [:index, :create], Message
-        can [:update], Message do |message|
-          message.sender == user
-        end
-        can [:show, :destroy, :destroy_selected], Message do |message|
-          message.receiver == user
-        end
-        can [:read, :update, :destroy], MessageRequest
-        can :read, MessageTemplate
-      when 'User'
-        can [:read, :destroy, :destroy_selected], Message do |message|
-          message.receiver == user
-        end
-        can [:index, :create], Message
-        can :show, Message do |message|
-          message.receiver == user
-        end
-      end
-    end
-
-    if defined?(EnjuEvent)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can [:read, :new, :create], EventCategory
-        can [:edit, :update, :destroy], EventCategory do |event_category|
-          !['unknown', 'closed'].include?(event_category.name)
-        end
-        can :manage, [
-          Event,
-          EventImportFile,
-          Participate
-        ]
-        can :read, EventImportResult
-      when 'Librarian'
-        can [:read, :new, :create], EventCategory
-        can [:edit, :update, :destroy], EventCategory do |event_category|
-          !['unknown', 'closed'].include?(event_category.name)
-        end
-        can :manage, [
-          Event,
-          EventImportFile,
-          Participate
-        ]
-        can :read, EventImportResult
-      when 'User'
-        can :read, [
-          Event,
-          EventCategory
-        ]
-      else
-        can :read, [
-          Event,
-          EventCategory
-        ]
-      end
-    end
-
-    if defined?(EnjuNii)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can [:read, :update], NiiType
-      else
-        can :read, NiiType
-      end
-    end
-
-    if defined?(EnjuTrunkTheme)
-      case user.try(:role).try(:name)
-      when 'Administrator' then can :manage, [Theme]
-      when 'Librarian'     then can :manage, [Theme]
-      when 'User'          then can :read,   [Theme]
-      else                      can :read,   [Theme]
-      end
-    end
-
-    if defined?(EnjuTrunkIll)
-      case user.try(:role).try(:name)
-      when 'Administrator' 
-        can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-        can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
-          inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
-        end
-      when 'Librarian'
-        can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-        can [:update, :update, :destroy], InterLibraryLoan do |inter_library_loan|
-          inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
-        end
-      end
     end
 
     can :manage, :opac
