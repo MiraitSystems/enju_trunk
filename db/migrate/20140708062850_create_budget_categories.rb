@@ -7,6 +7,5 @@ class CreateBudgetCategories < ActiveRecord::Migration
       t.integer :position
       t.timestamps
     end
-    add_index :budget_categories, :name, :unique => true
   end
 end

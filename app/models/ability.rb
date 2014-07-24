@@ -416,9 +416,13 @@ class Ability
         item.required_role_id <= 2 && item.shelf.required_role_id <= 2
       end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 2
+        manifestation.required_role_id <= 2 &&
+        !manifestation.items.joins(:shelf).where('items.required_role_id <= 2 AND shelves.required_role_id <= 2').blank? &&
+        (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
+        !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
       end
-      can :edit, Manifestation
+      can :edit, Manifestation #TODO not necessary?
       can [:index, :create], Question
       can [:update, :destroy], Question do |question|
         question.user == user
@@ -519,7 +523,11 @@ class Ability
         item.required_role_id <= 1 && item.shelf.required_role_id <= 1
       end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 1
+        manifestation.required_role_id <= 1 &&
+        !manifestation.items.joins(:shelf).where('items.required_role_id <= 1 AND shelves.required_role_id <= 1').blank? &&
+        (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
+        !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
       can :read, [

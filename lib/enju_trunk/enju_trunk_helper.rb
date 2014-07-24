@@ -302,7 +302,7 @@ module EnjuTrunk
       :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
       :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
       :title_merge, :creator_merge, :query_merge, :manifestation_types,
-      :carrier_types, :identifier, :other_identifier, :identifier_type,
+      :carrier_types, :identifier, :other_identifier,
       :classifications,
     ]
 
@@ -392,6 +392,11 @@ module EnjuTrunk
               array << hidden_field_tag("#{name.to_s}[][#{key}]", value)
             end
           end
+        elsif name == :other_identifier
+          next unless params[name]
+          next unless params[name]["identifier"]
+          array << hidden_field_tag("#{name.to_s}[identifier]", params[name]["identifier"]) 
+          array << hidden_field_tag("#{name.to_s}[identifier_type_id]", params[name]["identifier_type_id"]) 
         else
           array << hidden_field_tag(name.to_s, params[name])
         end
@@ -471,6 +476,13 @@ module EnjuTrunk
             summary_ary << [key, cls_cats.join(', ')] if cls_cats.present?
           end
 
+        when :other_identifier
+          unless params[:other_identifier][:identifier].blank?
+            identifier = IdentifierType.find(params[:other_identifier][:identifier_type_id]) rescue nil
+            other_identifier = params[:other_identifier][:identifier]
+            other_identifier += "(#{identifier.display_name})"if identifier
+            summary_ary << [key, other_identifier] 
+          end
         else
           summary_ary << [key, params[key]] if params[key].present?
         end

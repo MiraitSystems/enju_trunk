@@ -114,7 +114,7 @@ class Item < ActiveRecord::Base
 
   def has_view_role?(current_role_id)
     current_role_id = Role.default_role.id unless current_role_id
-    if self.required_role_id <= current_role_id && self.shelf.required_role_id <= current_role_id 
+    if self.required_role_id <= current_role_id && (self.shelf.required_role_id.nil? || self.shelf.required_role_id <= current_role_id) 
       return TRUE
     else
       return FALSE

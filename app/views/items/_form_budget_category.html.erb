@@ -3,7 +3,7 @@
     // BudgetCategory select2 options
     budgetCategorySelect2options: {
       multiple: false,
-      minimumInputLength: 1,
+      maximumSelectionSize: 10,
       width: "250px",
       placeholder: <%= raw t("budget_category.search_placeholder").to_json %>,
       formatNoMatches: function(term) {
@@ -11,9 +11,6 @@
       },
       formatSearching: function() {
         return <%= raw t("budget_category.search_searching").to_json %>;
-      },
-      formatInputTooShort: function(term, minLength){
-        return <%= raw t("budget_category.search_placeholder").to_json %>;
       },
       ajax: {
         url: "/budget_categories/search_name.json",

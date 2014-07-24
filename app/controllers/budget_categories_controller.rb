@@ -17,8 +17,8 @@ class BudgetCategoriesController < ApplicationController
     else
       result = []
       budget_categories = params[:group_id].blank? ? BudgetCategory : BudgetCategory.where(:group_id => params[:group_id])
-      budget_categories = budget_categories.where("name like '%#{params[:search_phrase]}%' OR display_name like '%#{params[:search_phrase]}%'")
-                            .select("id, display_name, name").limit(10) || []
+      budget_categories = budget_categories.where("name like '%#{params[:search_phrase]}%' OR display_name like '%#{params[:search_phrase]}%'") unless params[:search_phrase].blank?
+      budget_categories = budget_categories.select("id, display_name, name").limit(10) || []
       budget_categories.each do |budget_category|
         result << struct_classification.new(budget_category.id, "#{budget_category.display_name}(#{budget_category.name})")
       end
