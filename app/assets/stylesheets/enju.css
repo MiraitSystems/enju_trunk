@@ -608,10 +608,17 @@ tr{
 }
 .active{
     /* 線 */
-    /* border-left: solid 2px red; */
+    border-left: solid 2px red;
+    /* 色 */
+    /* background-color:yellow !important; */
+}
+
+/* IE9 */
+.ie9 .active{
+    /* 線 */
     border-left: solid;
     border-left-style: 2px;
-    border-left-color: red;
     /* 色 */
+    border-left-color: red;
     /* background-color:yellow !important; */
 }
