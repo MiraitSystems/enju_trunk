@@ -710,7 +710,11 @@ module ActionView
         select2_options = options[:select2options] || {}
         if options[:placeholder]
           select2_options[:placeholder] = '"' + escape_javascript(options.delete(:placeholder)) + '"'
-	end
+        end
+        include_blank = options[:include_blank] || false
+        if include_blank
+          select2_options[:allowClear] = true
+        end
 
         b = ""
         b.concat(build_select2_script(selector_id, select2_options))
@@ -756,11 +760,11 @@ module ActionView
       }"
 
       def build_select2_script(selector_id, options = {})
-	options[:matcher] = options[:matcher] || DEFAULT_MATCHER
-	options_string = ""
-	options.each do |key, v|
-	  options_string.concat(raw("#{key}: #{v},")).concat("\n")
-	end
+        options[:matcher] = options[:matcher] || DEFAULT_MATCHER
+        options_string = ""
+        options.each do |key, v|
+          options_string.concat(raw("#{key}: #{v},")).concat("\n")
+        end
 
         raw ("
         <script>
