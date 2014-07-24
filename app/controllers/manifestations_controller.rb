@@ -1444,7 +1444,10 @@ class ManifestationsController < ApplicationController
     with << [:manifestation_type, :equal_to, params[:manifestation_type]] if params[:manifestation_type]
     with << [:circulation_status_in_process, :equal_to, params[:circulation_status_in_process]] if params[:circulation_status_in_process]
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
-    without << [:has_available_items, :equal_to, false] unless @all_manifestations
+    unless ((SystemConfiguration.get('manifestation.show_all') && 
+      current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
+      without << [:has_available_items, :equal_to, false] unless @all_manifestations
+    end
     [
       [:publisher_ids, @agent],
       [:creator_ids, @index_agent[:creator]],

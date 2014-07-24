@@ -646,7 +646,7 @@ class Manifestation < ActiveRecord::Base
   end
 
   def has_available_items?
-    unless article?
+    unless article? or root_of_series?
       return false if items.empty?
       return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
       return false if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id) && 
