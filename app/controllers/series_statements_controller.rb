@@ -198,7 +198,7 @@ class SeriesStatementsController < ApplicationController
     @subject_types = SubjectType.all
     @carrier_types = CarrierType.all
     @sub_carrier_types = SubCarrierType.all
-    @manifestation_types = ManifestationType.series
+    @manifestation_types = ManifestationType.all#ManifestationType.series
     @frequencies = Frequency.all
     @countries = Country.all
     @languages = Language.all_cache
