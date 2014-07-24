@@ -5,7 +5,9 @@ class Identifier < ActiveRecord::Base
   belongs_to :manifestation
 
   validates_presence_of :body
-  validates :identifier_type_id, :uniqueness => {:scope => :manifestation_id, :message => I18n.t('activerecord.errors.attributes.identifier.duplicate_identifier_type')}
+  validates :identifier_type_id,
+    :uniqueness => {:scope => :manifestation_id, :message => I18n.t('activerecord.errors.attributes.identifier.duplicate_identifier_type')},
+    :if => proc { !SystemConfiguration.get('other_identifier.duplicate_identifier_type') }
   validate :check_identifier
   before_save :convert_isbn
 

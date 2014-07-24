@@ -1248,3 +1248,10 @@ system_configuration_00177:
   typename: Boolean
   description: "書名テーブルの検索を行う"
   category: 'manifestation'
+ystem_configuration_00178:
+  id: 178
+  keyname: other_identifier.duplicate_identifier_type
+  v: "false"
+  typename: Boolean
+  description: "その他の識別子のタイプの重複を許可する"
+  category: 'manifestation'
