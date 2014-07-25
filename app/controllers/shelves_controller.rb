@@ -141,4 +141,24 @@ class ShelvesController < ApplicationController
     file = Shelf.get_closing_report(@item)
     send_data file, :filename => "closed_shelf.pdf", :type => 'application/pdf', :disposition => 'attachment'
   end
+
+  # GET /shelves/search_name.json
+  def search_name
+    struct_classification = Struct.new(:id, :text)
+    if params[:shelf_id]
+      shelf = Shelf.where(id: params[:shelf_id]).select("id, display_name, name").first
+      result = struct_classification.new(shelf.id, "#{shelf.display_name}(#{shelf.name})")
+    else
+      result = []
+      shelves = Shelf.where(:library_id => params[:library_id])
+      shelves = shelves.where("name like '%#{params[:search_phrase]}%' OR display_name like '%#{params[:search_phrase]}%'") unless params[:search_phrase].blank?
+      shelves = shelves.select("id, display_name, name").limit(10) || []
+      shelves.each do |shelf|
+        result << struct_classification.new(shelf.id, "#{shelf.name}: #{shelf.display_name}")
+      end 
+    end 
+    respond_to do |format|
+      format.json { render :text => result.to_json }
+    end 
+  end 
 end

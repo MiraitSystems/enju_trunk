@@ -3361,3 +3361,7 @@ ja:
     search_placeholder: "資料の形態詳細を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
+  shelf:
+    search_placeholder: "本棚を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"

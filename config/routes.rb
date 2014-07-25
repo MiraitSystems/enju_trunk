@@ -348,6 +348,7 @@ Rails.application.routes.draw do
     resources :user_group_has_checkout_types
   end
 
+  match 'shelves/search_name' => 'shelves#search_name'
   resources :shelves do
     resources :picture_files
     post :output, :on => :collection

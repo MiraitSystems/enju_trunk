@@ -77,7 +77,7 @@ class Ability
           true
         end
       end
-      can [:read, :create, :output], Shelf
+      can [:read, :create, :output, :search_name], Shelf
       can :update, Shelf do |shelf|
         shelf.open_access < 9
       end

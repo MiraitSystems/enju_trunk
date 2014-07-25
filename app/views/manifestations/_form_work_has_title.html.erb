@@ -1,11 +1,4 @@
 <script id="script_add_title">
-  function add_field(obj, parent_id, id_name) {
-    var new_area = document.createElement("div");
-    new_area.setAttribute("id", id_name + obj.currentNumber);
-    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
-    document.getElementById(parent_id).appendChild(new_area);
-    obj.currentNumber += 1;
-  }
   function remove_field(div_num, id_name) {
     var field = $("div#" + id_name + div_num);
     if(field != null){
@@ -16,43 +9,28 @@
 
   var ItemField_title = {
     currentNumber: <%= raw (@work_manifestation.work_has_titles.size == 0 ? 1 : @work_manifestation.work_has_titles.size).to_json %>,
-    template : ''
-      + '<hr style="width: 630px"/>'
-      + '<div class="field">'
-      + '<input id="work_has_titles_attributes___count___title"\
-          name="manifestation[work_has_titles_attributes][__count__][title]"\
-          placeholder=<%= t('activerecord.attributes.title.title') %>\
-          type="text"\
-          class="resource_title" /> '
-      + '<input id="work_has_titles_attributes___count___title"\
-          name="manifestation[work_has_titles_attributes][__count__][title_transcription]"\
-          placeholder=<%= t('activerecord.attributes.title.title_transcription') %>\
-          type="text"\
-          class="resource_title" /> '
-      + '<input id="work_has_titles_attributes___count___title"\
-          name="manifestation[work_has_titles_attributes][__count__][title_alternative]"\
-          placeholder=<%= t('activerecord.attributes.title.title_alternative') %>\
-          type="text"\
-          class="resource_title" /> '
-      + '<select id="manifestation_work_has_titles_attributes___count___title_type_id"\
-          name="manifestation[work_has_titles_attributes][__count__][title_type_id]"> '
-      <% @title_types.collect do |m| %>
-        + '<option value="<%= m.id %>"><%= m.display_name.localize %></option>'
-      <% end %>
-      + '<input id="manifestation_work_has_titles_attributes___count___title_id"\
-          name="manifestation[work_has_titles_attributes][__count__][title_id]"\
-          type="hidden"\
-          value="" /> '
-      + '<input id="manifestation_work_has_titles_attributes___count___nested"\
-          name="manifestation[work_has_titles_attributes][__count__][nested]"\
-          type="hidden"\
-          value=""/>'
-      + '<input type="button" value="+" onClick="ItemField_title.add();" />  '
-      + '<input type="button" value="-" onClick="ItemField_title.remove(__count__);" /> '
-      + '</div>',
-    add : function () { add_field(this, 'titles', 'VF'); },
+    add : function () {
+      var fieldId = this.currentNumber;
+      var cloneField = $('#VF0').clone().attr({
+                       'id' : 'VF' + fieldId
+                       });
+      cloneField.children('div').remove();
+      cloneField.children('input.resource_title').val('');
+      cloneField.append('<input type="button" value="-" onClick="ItemField_title.remove(' + fieldId + ');" /> ');
+
+      $('#titles').append(cloneField);
+      cloneField.children('input, select').each(function(){
+        if ($(this).attr('id')) {$(this).attr('id', $(this).attr('id').replace(/\d+/, fieldId));}
+        if ($(this).attr('name')) {$(this).attr('name', $(this).attr('name').replace(/\d+/, fieldId));}
+      });
+      $("select[id $= 'title_type_id']").select2({includeBlank: false});
+      this.currentNumber += 1;
+    },
     remove : function (div_num) { remove_field(div_num, 'VF'); }
   };
+  $(document).ready(function() {
+    $("select[id $= 'title_type_id']").select2();
+  });
 </script>
 
 <div class="field" id='titles'>
@@ -86,7 +64,11 @@
              :class => 'resource_title',
              :placeholder => t('activerecord.attributes.title.title_alternative') %>
          <% end %>
-         <%= w_f.select :title_type_id, @title_types.collect{|m| [m.display_name.localize, m.id]} %>
+          <%= make_select2("manifestation_work_has_titles_attributes_#{index}_title_type_id",
+                           "manifestation[work_has_titles_attributes][#{index}][title_type_id]",
+                           @title_types,
+                           work_has_title.title_type_id,
+                           300) %>
          <%= w_f.hidden_field :nested %>
          <%= button_to_function '+', 'ItemField_title.add()' %>
          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
