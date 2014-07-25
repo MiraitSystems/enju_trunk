@@ -1567,7 +1567,7 @@ class ManifestationsController < ApplicationController
     @realize_types = RealizeType.find(:all, :select => "id, name, display_name")
     @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
-    @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @title_types = TitleType.find(:all, :select => "id, display_name, name", :order => "position")
 #TODO starts
     @work_manifestation = Manifestation.new
     @work_manifestation.work_has_titles = @manifestation.work_has_titles

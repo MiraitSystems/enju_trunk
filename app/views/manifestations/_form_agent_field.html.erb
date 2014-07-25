@@ -3,6 +3,7 @@
     multiple: false,
     minimumInputLength: 1,
     width: "250px",
+    allowClear: true,
     placeholder: <%= raw t("agent.search_placeholder").to_json %>,
     formatNoMatches: function(term) {
       return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>;
@@ -282,7 +283,6 @@
       removeItemField('PF', div_num);
     }
   }
-
 </script>
 
 <div class="field" id="creator_field">
@@ -304,12 +304,12 @@
         <% end %>
         <% if SystemConfiguration.get("use_agent_type") %>
           <td>
-            <%= make_select2(
+            <%= select2_tag(
               "creators_#{index}_type_id", 
               "creators[][type_id]", 
               @create_types,
               creator[:type_id], 
-              250, 
+              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
           </td>
         <% end %>
@@ -339,13 +339,12 @@
         <% end %>
         <% if SystemConfiguration.get("use_agent_type") %>
           <td>
-            <%= select2_script "contributors_#{index}_type_id" %>
-            <%= make_select2(
+            <%= select2_tag(
               "contributors_#{index}_type_id", 
               "contributors[][type_id]", 
               @realize_types,
               contributor[:type_id], 
-              250, 
+              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
           </td>
         <% end %>
@@ -375,13 +374,12 @@
         <% end %>
         <% if SystemConfiguration.get("use_agent_type") %>
           <td>
-            <%= select2_script "publishers_#{index}_type_id" %>
-            <%= make_select2(
+            <%= select2_tag(
               "publishers_#{index}_type_id", 
               "publishers[][type_id]", 
               @produce_types,
               publisher[:type_id], 
-              250, 
+              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
           </td>
         <% end %>

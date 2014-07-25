@@ -215,7 +215,7 @@ ja:
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
       catalog: カタログ
-      sub_carrier_type: 特定資料種別
+      sub_carrier_type: 資料の形態詳細
       tax_rate: 消費税区分
       budget_category: 予算区分
 
@@ -3357,3 +3357,7 @@ ja:
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
     search_group_placeholder: "予算区分のグループを入力してください"
+  sub_carrier_type:
+    search_placeholder: "資料の形態詳細を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"

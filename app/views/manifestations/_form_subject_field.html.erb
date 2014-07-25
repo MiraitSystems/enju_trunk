@@ -5,6 +5,7 @@
       multiple: false,
       minimumInputLength: 1,
       width: "200px",
+      allowClear: true,
       placeholder: <%= raw t("activerecord.attributes.subject.term").to_json %>,
       formatNoMatches: function(term) {
         return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>; 

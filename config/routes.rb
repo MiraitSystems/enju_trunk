@@ -471,6 +471,7 @@ Rails.application.routes.draw do
   resources :nacsis_user_requests
 
   resources :catalogs
+  match 'sub_carrier_types/search_name' => 'sub_carrier_types#search_name'
   resources :sub_carrier_types
 
   # The priority is based upon order of creation:

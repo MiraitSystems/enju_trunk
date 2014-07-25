@@ -165,9 +165,7 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label :identifier %><br />
     <%= f.text_field :identifier %>
-    <%#= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
-    <%= select2_script "numbering_type" %>
-    <%= make_select2_struct("numbering_type", "numbering[type]", numberings, nil, 250, false) %>
+    <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 
@@ -193,17 +191,7 @@ $(document).keydown(function(e) {
     }
   </script>
 
-  <div class="field">
-    <%= f.label t('activerecord.models.carrier_type') -%>
-    <%= f.select2(:carrier_type_id, @carrier_types, @manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) %>
-    <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
-    <br>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.models.sub_carrier_type') -%>
-    <%= f.select2(:sub_carrier_type_id,  @sub_carrier_types, @manifestation.sub_carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 500) %>
-  </div>
+  <%= render :partial => 'form_carrier_type_field', :locals => {:f => f, :manifestation => @manifestation} %>
 
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>

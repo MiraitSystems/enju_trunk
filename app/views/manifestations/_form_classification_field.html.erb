@@ -9,6 +9,7 @@
       multiple: false,
       minimumInputLength: 1,
       width: "250px",
+      allowClear: true,
       placeholder: <%= raw t("classification.search_placeholder").to_json %>,
       formatNoMatches: function(term) {
         return "'" + term + "' " + <%= raw t("classification.search_nomatch").to_json %>;

@@ -1,0 +1,51 @@
+<script>
+  var ManifestationFieldSubCarrierTypeSelect2 = {
+    subCarrierTypeSelect2options: {
+      multiple: false,
+      maximumSelectionSize: 10,
+      width: "300px",
+      allowClear: true,
+      placeholder: <%= raw t("sub_carrier_type.search_placeholder").to_json %>, 
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("sub_carrier_type.search_nomatch").to_json %>; 
+      },
+      formatSearching: function() {
+        return <%= raw t("sub_carrier_type.search_searching").to_json %>; 
+      },
+      ajax: {
+        url: "/sub_carrier_types/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+          if ($('#carrier_type_id').is('*')) {
+            var carrierTypeId = $('#carrier_type_id').val();
+          } else {
+            var carrierTypeId = null;
+          }
+          return {
+            carrier_type_id: carrierTypeId,
+            search_phrase: term,
+          };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/sub_carrier_types/search_name.json?sub_carrier_type_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+      },
+    },
+  } 
+  $(document).ready(function() {
+    $("input#manifestation_sub_carrier_type_id").select2(ManifestationFieldSubCarrierTypeSelect2.subCarrierTypeSelect2options);
+  });</script>
+
+<div class="field">
+  <%= f.label t('activerecord.models.carrier_type') -%> 
+  <%= f.select2(:carrier_type_id, @carrier_types, @manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) %> 
+  <%= text_field_tag "manifestation[sub_carrier_type_id]", manifestation[:sub_carrier_type_id], :id => 'manifestation_sub_carrier_type_id' %>
+</div>

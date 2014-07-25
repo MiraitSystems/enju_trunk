@@ -3371,3 +3371,7 @@ en:
     search_searching: Searching...
     search_nomatch: No matches
     search_group_placeholder: Please enter budget category group
+  sub_carrier_type:
+    search_placeholder: Please enter sub carrier type
+    search_searching: Searching...
+    search_nomatch: No matches
