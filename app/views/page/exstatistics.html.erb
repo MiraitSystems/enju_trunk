@@ -13,6 +13,7 @@
         <% unless SystemConfiguration.get("write_search_log_to_file") %>
           <li><%= link_to t('activerecord.models.search_history'), search_histories_path -%></li>
         <% end %>
+        <li><%= link_to t('page.statistical_table'), statistical_table_path %></li>
       </ul>
     </div>
   </div>

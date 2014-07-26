@@ -218,6 +218,7 @@ ja:
       sub_carrier_type: 特定資料種別
       tax_rate: 消費税区分
       budget_category: 予算区分
+      statistical_table: 統計表
 
     attributes:
       title:
@@ -1848,7 +1849,7 @@ ja:
         rounding: 端数処理方式
         start_date: 適用開始日
         end_date: 適用終了日     
-
+      
   page:
     user_title: "ようこそ %{login_name} さん"
     logged_in_as: "%{login_name} としてログイン"
@@ -2136,6 +2137,7 @@ ja:
     imported: インポート済み
     copy: コピーして新規作成
     print: このページを印刷
+    statistical_table: 統計表の出力
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -3211,10 +3213,18 @@ ja:
   activemodel:
     models:
       barcode_registration: 資料登録番号バーコード
+      checkout_statistics: 貸出統計表
+      item_statistics: 蔵書統計表
     attributes:
       barcode_registration:
         first_number: 開始番号
         last_number: 終了番号
+      checkout_statistics:
+        checked_at_from: 貸出期間開始
+        checked_at_to: 貸出期間終了
+        aggregation_type: 集計方法1
+        first_aggregation: 集計方法2
+        second_aggregation: 集計方法2
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
@@ -3353,3 +3363,19 @@ ja:
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
     search_group_placeholder: "予算区分のグループを入力してください"
+  statistical_table:
+    statistical_table_output: "統計表の出力"
+    statistical_table_type: "統計表の種類"
+    checkout_period: "貸出期間"
+    books: "冊数"
+    persons: "人数"
+    subtotal: "合計"
+    total: "総合計"
+    output_date: "出力日"
+    aggregation_type:
+      month: "月別"
+      classification_type: "分類別"
+    first_aggregation:
+      user_group: "ユーザグループ"
+    second_aggregation:
+      grade: "学年"

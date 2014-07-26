@@ -1,0 +1,34 @@
+<script>
+  $(document).ready(function() {
+    $('#statistical_table_type').change(function(){
+      if($(this).val()) {
+        $.ajax({
+          url: '/statistical_table/get_condition',
+          type: 'GET',
+          dataType: 'html',
+          data: {statistical_table_type : $(this).val()},
+          success: function(data) {
+              $('#condition').html(data);
+          },
+        });
+      } else {
+        $('#condition').html('');
+      }
+    });
+  });
+</script>
+
+<div id="content_detail" class="ui-corner-all">
+  <h1 class="title"><%= t('page.statistical_table') -%></h1>
+  <div id="content_list">
+    <div style="color: red"><%= flash[:message] -%></div>
+    <p>
+      <%= t('statistical_table.statistical_table_type') -%>:<%= select_tag("statistical_table_type", options_for_select(@statistical_table_types.map{|t|[t[:display_name], t[:id]]}, @statistical_table_type), :include_blank => true)%> </td>
+    <p>
+    <div id="condition">
+      <% if @statistical_table_type == 'checkout_statistics' -%>
+        <%= render :partial => 'checkout_statistics' %>
+      <% end -%>
+    </div>
+  </div>
+</div>
