@@ -26,6 +26,12 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
     end
   end
 
+  def copy_tools
+    require 'rake'
+    Rails.application.load_tasks
+    Rake::Task['enju_trunk:copy_tools'].execute
+  end
+
   def install_migrations
     if File.exist?("#{EnjuTrunk::Engine.root.to_s}/db/schema.rb")
       copy_file "#{EnjuTrunk::Engine.root.to_s}/db/schema.rb", 'db/schema.rb'

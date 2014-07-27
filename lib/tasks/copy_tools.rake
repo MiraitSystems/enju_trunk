@@ -5,7 +5,7 @@ namespace :enju_trunk do
     copy_src = "#{EnjuTrunk::Engine.root.to_s}/script/tools"
     copy_dest = "#{Rails.root.to_s}/script/tools"
    
-    puts "copy_src=#{copy_src} copy_dest=#{copy_dest}"
+    puts "copy tools. copy_src=#{copy_src} copy_dest=#{copy_dest}"
     FileUtils.copy_entry(copy_src, copy_dest)
     puts "done."
 
