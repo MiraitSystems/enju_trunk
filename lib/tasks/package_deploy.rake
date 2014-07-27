@@ -24,7 +24,7 @@ namespace :enju_trunk do
       package_name = "#{packprefix}_pack_staging_init.tar.bz2"
       packagefile = "#{package_dir}#{package_name}"
       #excludes = ".gitkeep *.sample"
-      exclude_from = "script/exclude_init"
+      exclude_from = "script/tools/exclude_init"
 
       #packing
       sh "cd #{::Rails.root}; tar cjvf #{packagefile} #{archives} -X #{exclude_from}"
@@ -39,7 +39,7 @@ namespace :enju_trunk do
       package_name = "#{packprefix}_pack_staging_#{Time.now.strftime('%Y%m%d%H%M%S')}.tar.bz2"
       packagefile = "#{package_dir}#{package_name}"
 
-      exclude_from = "script/exclude_init"
+      exclude_from = "script/tools/exclude_init"
       sh "cd #{::Rails.root}; tar cjvf #{packagefile} #{archives} -X #{exclude_from}"
     end
   end
