@@ -1,6 +1,7 @@
 dirprefix = "customer"
 if ENV["ENJU_CUSTOMER_PREFIX"]
 	dirprefix = ENV["ENJU_CUSTOMER_PREFIX"]
+  puts "set prefix=#{dirprefix}"
 end
 package_dir = "/home/enju/#{dirprefix}/pack/"
 packprefix = "enju_production"
