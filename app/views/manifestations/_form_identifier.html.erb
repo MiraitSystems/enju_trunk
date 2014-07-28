@@ -5,11 +5,11 @@
       + '<input type="button" value="+" onClick="ItemField_identifier.add();" /> '
       + '<input type="button" value="-" onClick="ItemField_identifier.remove(__count__);" />',
     add : function () {
-      var newField = $("<div/>").attr("id", "identifiers_" + this.currentNumber).attr("class", "field");
+      var newField = $("<div/>").attr("id", "identifiers_" + this.currentNumber);
       var cloneIdentifier = this.cloneField($("div[id ^= 'identifiers_']:first").find("input[id $= 'body']").attr('id'));
       var cloneIdentifierType = this.cloneField($("div[id ^= 'identifiers_']:first").find("select[id $= 'identifier_type_id']").attr('id'));
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
-      newField.append(cloneIdentifier).append(cloneIdentifierType).append(actionButton);      
+      newField.append(cloneIdentifierType).append(cloneIdentifier).append(actionButton);      
       cloneIdentifierType.select2();
       $('div#identifiers').append(newField);
       this.currentNumber += 1;
@@ -28,16 +28,24 @@
     }
   }
 </script>
-<div id="identifiers">
-  <%= f.label t('activerecord.models.identifier') -%><br />
-  <% identifiers.each_with_index do |identifier, index| %>
-    <%= f.fields_for :identifiers, identifier do |i_f| %>
-       <div class="field" id="identifiers_<%= index %>">
-         <%= i_f.text_field :body %>
-         <%= i_f.select2 :identifier_type_id, @identifier_types, identifier[:identifier_type_id], :select_attribute => :name, :display_attribute => :display_name %>
-         <%= button_to_function '+', 'ItemField_identifier.add()' -%>
-         <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 -%><br />
-       </div>
+
+<div class="row">
+  <div><%= f.label t('activerecord.models.identifier') %></div>
+  <div id="identifiers">
+    <% identifiers.each_with_index do |identifier, index| %>
+      <div id="identifiers_<%= index %>">
+        <%= f.fields_for :identifiers, identifier do |i_f| %>
+          <%= i_f.select2 :identifier_type_id, 
+            @identifier_types, 
+            identifier[:identifier_type_id], 
+            :select_attribute => :id, 
+            :display_attribute => :display_name,
+            :width => 200 %>
+          <%= i_f.text_field :body, style: 'width:200px;' %>
+          <%= button_to_function '+', 'ItemField_identifier.add()' %>
+          <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 %>
+        <% end %>
+      </div>
     <% end %>
-  <% end %>
+  </div>
 </div>

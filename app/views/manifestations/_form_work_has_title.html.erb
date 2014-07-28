@@ -43,7 +43,7 @@
                            "manifestation[work_has_titles_attributes][#{index}][title_type_id]",
                            @title_types,
                            work_has_title.title_type_id,
-                           :width => 200, :select_attribute => :id, :display_attribute => :display_name) %><br />
+                           :width => 250, :select_attribute => :id, :display_attribute => :display_name) %><br />
           <% unless work_has_title.manifestation_title %>
             <%= w_f.text_field :title, 
               :class => 'resource_title', 
