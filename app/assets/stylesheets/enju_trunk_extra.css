@@ -253,19 +253,19 @@ span.not_rent_item {
 div#table {
   display: table; 
 }
-div.row {
+div#table div.row {
   //display: table-row;
 }
-div.row>div {
+div#table div.row>div {
   display: table-cell;
   padding: 3px;
   border-bottom: 1px solid #fff;
 }
-div.row>div:nth-child(odd) {
+div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
   width: 110px;
  // background-color: #ddd;
 }
-div.row>div:nth-child(even) {
+div#table div.row>div:nth-child(even) {
   white-space: nowrap;
 }
