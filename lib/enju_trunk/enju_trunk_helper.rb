@@ -655,6 +655,11 @@ module ActionView
           select2_options[:allowClear] = true
         end
 
+        # minimumInputLength 0
+        select2_options[:minimumInputLength] = 0
+        # maximumSelectionSize 10
+        select2_options[:maximumSelectionSize] = 10
+
         b = ""
         b.concat(build_select2_script(selector_id, select2_options))
         b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
