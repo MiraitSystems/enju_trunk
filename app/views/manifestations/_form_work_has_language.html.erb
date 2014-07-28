@@ -4,7 +4,7 @@
     select2Options : {
       multiple: false,
       minimumInputLength: 1,
-      width: "250px",
+      width: "200px",
       placeholder: <%= raw t("activerecord.models.language").to_json %>,
       formatSearching: function() {
         return <%= raw t("agent.search_searching").to_json %>;
@@ -83,19 +83,21 @@
 
 </script>
 
-<div class="field" id="languages">
-  <%= f.label t('activerecord.models.language') -%><br />
-  <table id="bless">
-    <%- @work_has_languages.each_with_index do |work_has_language, index| %>
-      <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
-        <tr id="LANG<%= index %>">
-          <td><%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", work_has_language[:language_id], :id => "manifestation_work_has_languages_attributes_#{index}_language_id", :class => "language" %></td>
-          <td><%= w_f.select2 :language_type_id, @language_types, work_has_language.language_type_id, :select_attribute => :name, :display_attribute => :display_name %>
-          <%= w_f.hidden_field :nested, :value => 1 %></td>
-          <td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>
-          <td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 -%></td>
-        </tr>
+<div class="row field">
+  <div><%= f.label t('activerecord.models.language') %></div>
+  <div id="languages">
+    <table id="bless">
+      <%- @work_has_languages.each_with_index do |work_has_language, index| %>
+        <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
+          <tr id="LANG<%= index %>">
+            <td><%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", work_has_language[:language_id], :id => "manifestation_work_has_languages_attributes_#{index}_language_id", :class => "language" %></td>
+            <td><%= w_f.select2 :language_type_id, @language_types, work_has_language.language_type_id, :select_attribute => :name, :display_attribute => :display_name, :width => 200 %>
+            <%= w_f.hidden_field :nested, :value => 1 %></td>
+            <td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>
+            <td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 -%></td>
+          </tr>
+        <%- end -%>
       <%- end -%>
-    <%- end -%>
-   </table>
+     </table>
+   </div>
 </div>
