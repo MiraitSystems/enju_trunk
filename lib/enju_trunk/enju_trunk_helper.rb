@@ -621,67 +621,6 @@ module EnjuTrunk
       end
     end
 
-    def select2_script(selector_id)
-      raw ("
-        <script>
-          $(document).ready(function() {
-            $(\"##{selector_id}\").select2({
-              matcher: function(term, text, opt) {
-                return text.toUpperCase().indexOf(term.toUpperCase())==0
-                    || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
-              }
-            });
-          });
-        </script>
-      ")
-    end
-
-    def make_select2(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
-      html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
-      if include_blank
-        html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
-      end
-      data.each do |data|
-        html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-        if obj_data == data.id
-          html.concat( raw (", selected=\"selected\"") )
-        end
-
-        if data.attribute_present?(:display_name)
-          html.concat( raw (">#{ data.display_name.localize }") )
-        else
-          html.concat( raw (">#{ data.name.localize }") )
-        end
-
-        if alt_display
-          html.concat( raw (" (#{ data.name })") )
-        end
-        html.concat( raw ("</option>\n") )
-      end
-      html.concat( raw ("    </select>\n") )
-    end
-
-    def make_select2_struct(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
-      html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
-      if include_blank
-        html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
-      end
-      data.each do |data|
-        html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-        if obj_data == data.id
-          html.concat( raw (", selected=\"selected\"") )
-        end
-
-        html.concat( raw (">#{ data.display_name }") )
-
-        if alt_display
-          html.concat( raw (" (#{ data.name })") )
-        end
-        html.concat( raw ("</option>\n") )
-      end
-      html.concat( raw ("    </select>\n") )
-    end
-
     def markdown(text)
       unless @markdown
         renderer = Redcarpet::Render::HTML.new
