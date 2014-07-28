@@ -33,46 +33,47 @@
   });
 </script>
 
-<div class="field" id='titles'>
-  <%= f.label :other_titles %><br /> 
-  <% manifestation.work_has_titles << WorkHasTitle.new if manifestation.work_has_titles.blank? %>
-  <% manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
-    <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
-       <div class="field" id="VF<%= index %>">
-         <% unless index == 0 %><hr style='width: 630px'/><% end %>
-         <% unless work_has_title.manifestation_title %>
-           <%= w_f.text_field :title, 
-             :class => 'resource_title', 
-             :placeholder => t('activerecord.attributes.title.title') %>
-           <%= w_f.text_field :title_transcription, 
-             :class => 'resource_title', 
-             :placeholder => t('activerecord.attributes.title.title_transcription') %>
-           <%= w_f.text_field :title_alternative, 
-             :class => 'resource_title', 
-             :placeholder => t('activerecord.attributes.title.title_alternative') %>
-         <% else %>
-           <%= w_f.text_field :title,
-             :value => work_has_title.try(:manifestation_title).try(:title), 
-             :class => 'resource_title',
-             :placeholder => t('activerecord.attributes.title.title') %>
-           <%= w_f.text_field :title_transcription,
-             :value => work_has_title.try(:manifestation_title).try(:title_transcription), 
-             :class => 'resource_title', 
-             :placeholder => t('activerecord.attributes.title.title_transcription') %>
-           <%= w_f.text_field :title_alternative,
-             :value => work_has_title.try(:manifestation_title).try(:title_alternative), 
-             :class => 'resource_title',
-             :placeholder => t('activerecord.attributes.title.title_alternative') %>
-         <% end %>
+<div class="row">
+  <div><%= f.label :other_titles %></div> 
+  <div id='titles'>
+    <% manifestation.work_has_titles << WorkHasTitle.new if manifestation.work_has_titles.blank? %>
+    <% manifestation.work_has_titles.each_with_index do |work_has_title, index| %>
+      <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
+        <div class="field" id="VF<%= index %>">
           <%= make_select2("manifestation_work_has_titles_attributes_#{index}_title_type_id",
                            "manifestation[work_has_titles_attributes][#{index}][title_type_id]",
                            @title_types,
                            work_has_title.title_type_id,
-                           300) %>
-         <%= w_f.hidden_field :nested %>
-         <%= button_to_function '+', 'ItemField_title.add()' %>
-         <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
-      </div>
+                           200) %><br />
+          <% unless work_has_title.manifestation_title %>
+            <%= w_f.text_field :title, 
+              :class => 'resource_title', 
+              :placeholder => t('activerecord.attributes.title.title') %><br />
+            <%= w_f.text_field :title_transcription, 
+              :class => 'resource_title', 
+              :placeholder => t('activerecord.attributes.title.title_transcription') %><br />
+            <%= w_f.text_field :title_alternative, 
+              :class => 'resource_title', 
+              :placeholder => t('activerecord.attributes.title.title_alternative') %>
+          <% else %>
+            <%= w_f.text_field :title,
+              :value => work_has_title.try(:manifestation_title).try(:title), 
+              :class => 'resource_title',
+              :placeholder => t('activerecord.attributes.title.title') %><br />
+            <%= w_f.text_field :title_transcription,
+              :value => work_has_title.try(:manifestation_title).try(:title_transcription), 
+              :class => 'resource_title', 
+              :placeholder => t('activerecord.attributes.title.title_transcription') %><br />
+            <%= w_f.text_field :title_alternative,
+              :value => work_has_title.try(:manifestation_title).try(:title_alternative), 
+              :class => 'resource_title',
+              :placeholder => t('activerecord.attributes.title.title_alternative') %>
+          <% end %>
+          <%= w_f.hidden_field :nested %>
+          <%= button_to_function '+', 'ItemField_title.add()' %>
+          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>
