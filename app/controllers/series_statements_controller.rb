@@ -211,7 +211,8 @@ class SeriesStatementsController < ApplicationController
     @numberings = Numbering.get_manifestation_numbering('series_statement')
     @title_types = TitleType.find(:all, :select => "id, display_name, name", :order => "position")
     @work_manifestation = Manifestation.new
-    @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
+    @work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
+    @work_has_titles = [WorkHasTitle.new] if @work_has_titles.blank?
     @work_has_languages = @series_statement.root_manifestation.work_has_languages if @series_statement.root_manifestation
     @work_has_languages = [WorkHasLanguage.new] if @work_has_languages.blank?
     @use_licenses = UseLicense.all    
