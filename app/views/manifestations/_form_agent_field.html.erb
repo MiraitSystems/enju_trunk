@@ -64,10 +64,13 @@
    * 
    */
   $(document)
-    .on("select2-selecting", ".creator", function(e){
+    .on("select2-selecting select2-removed", ".creator", function(e){
       var targetId = e.target.id
       var targetNumber = targetId.match(/_(\d+)_/);
-      if(e.val == parseInt(e.val)){
+      if (e.type == 'select2-removed') {
+          $("#creators_" + targetNumber[1] + "_full_name_transcription").val('');
+      }
+      else if(e.val == parseInt(e.val)){
           $("#creators_" + targetNumber[1] + "_id").val(e.object.id);
           $("#creators_" + targetNumber[1] + "_full_name").val(e.object.text);
           $("#creators_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
@@ -77,10 +80,13 @@
           $("#creators_" + targetNumber[1] + "_full_name").val(e.object.id);
       }
     })
-    .on("select2-selecting", ".contributor", function(e){
+    .on("select2-selecting select2-removed", ".contributor", function(e){
       var targetId = e.target.id
       var targetNumber = targetId.match(/_(\d+)_/);
-      if(e.val == parseInt(e.val)){
+      if(e.type == 'select2-removed'){
+          $("#contributors_" + targetNumber[1] + "_full_name_transcription").val('');
+      }
+      else if(e.val == parseInt(e.val)){
           $("#contributors_" + targetNumber[1] + "_id").val(e.object.id);
           $("#contributors_" + targetNumber[1] + "_full_name").val(e.object.text);
           $("#contributors_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
@@ -90,10 +96,13 @@
           $("#contributors_" + targetNumber[1] + "_full_name").val(e.object.id);
       }
     })
-    .on("select2-selecting", ".publisher", function(e){
+    .on("select2-selecting select2-removed", ".publisher", function(e){
       var targetId = e.target.id
       var targetNumber = targetId.match(/_(\d+)_/);
-      if(e.val == parseInt(e.val)){
+      if(e.type == 'select2-removed'){
+          $("#publishers_" + targetNumber[1] + "_full_name_transcription").val('');
+      }
+      else if(e.val == parseInt(e.val)){
           $("#publishers_" + targetNumber[1] + "_id").val(e.object.id);
           $("#publishers_" + targetNumber[1] + "_full_name").val(e.object.text);
           $("#publishers_" + targetNumber[1] + "_full_name_transcription").val(e.object.full_name_transcription);
