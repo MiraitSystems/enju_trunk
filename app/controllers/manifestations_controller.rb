@@ -1576,7 +1576,9 @@ class ManifestationsController < ApplicationController
 #TODO end
     @numberings = Numbering.get_manifestation_numbering
     if SystemConfiguration.get('manifestation.use_identifiers')
-      @identifier_types = IdentifierType.find(:all, :select => "id, display_name", :order => "position") || []
+      @identifier_types = IdentifierType.find(:all, :select => "id, display_name, name", :order => "position") || []
+      @identifiers = @manifestation.identifiers
+      @identifiers << Identifier.new if @identifiers.blank?
     end
     @use_licenses = UseLicense.all
     @classification_types = ClassificationType.order("position").all

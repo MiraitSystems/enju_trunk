@@ -48,7 +48,7 @@ function displayArticleTitle(article_title) {
   <div class="field">
     <%= f_m.label :identifier %><br />
     <%= f_m.text_field :identifier %>
-    <%= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
+    <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
  
@@ -62,32 +62,22 @@ function displayArticleTitle(article_title) {
         <%= render 'manifestations/attachment_file', :manifestation => @series_statement.root_manifestation -%>
     <%- end -%>
   </div>
-  <div class="field">
-    <%= f_m.label t('activerecord.models.carrier_type') -%>
-    <%= f_m.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
-  </div>
 
-  <div class="field">
-    <%= f_m.label t('activerecord.models.sub_carrier_type') -%>
-    <%= f_m.select(:sub_carrier_type_id, @sub_carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-  </div>
+  <%= render :partial => 'manifestations/form_carrier_type_field', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation, :carrier_types => @carrier_types} %>
 
   <div class="field">
     <%= f_m.label t('activerecord.models.manifestation_type') -%>
-    <%= f_m.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
+    <%= f_m.select2(:manifestation_type_id, @manifestation_types, @series_statement.root_manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) -%>
   </div>
 
   <div class="field">
     <%= f_m.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%#= f_m.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
-    <%= select2_script "jpn_or_foreign" %>
-    <%= make_select2_struct(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, 200, true, false) %>
+    <%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => :name, :display_attribute => :display_name) %>
   </div>
 
   <div class="field">
     <%= f_m.label t('activerecord.models.frequency') -%>
-    <%= f_m.select(:frequency_id, @frequencies.collect{|frequency| [frequency.display_name.localize, frequency.id]}) -%>
+    <%= f_m.select2(:frequency_id, @frequencies, @series_statement.root_manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%>
   </div>
 
   <div class="field">
@@ -97,7 +87,7 @@ function displayArticleTitle(article_title) {
 
   <div class="field">
     <%= f_m.label t('activerecord.attributes.manifestation.country_of_publication') -%>
-    <%= f_m.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
+    <%= f_m.select2(:country_of_publication_id, @countries, @series_statement.root_manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %>
   </div>
 
   <div class="field">
@@ -136,7 +126,7 @@ function displayArticleTitle(article_title) {
 
   <div class="field">
     <%= f_m.label t('role.required_role') -%>
-    <%= f_m.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
+    <%= f_m.select2(:required_role_id, @roles, @series_statement.root_manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %>
   </div>
 
   <div class="field">
@@ -153,7 +143,7 @@ function displayArticleTitle(article_title) {
 
   <div class="field">
     <%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %><br />
-    <%= f_m.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
+    <%= f_m.select2 :use_license_id, @use_licenses, @series_statement.root_manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name'%>
   </div>
 
 
