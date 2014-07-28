@@ -50,6 +50,7 @@ $(function(){
       var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
       new_area.innerHTML = newItem;
       $("div#operators").append(new_area);
+      $("select[name $= '[library_id]']").select2({width: '200px'});
       $('#item_item_has_operators_attributes_' + replaceCount + '_operated_at').setCalendar({src:'/assets/calendar.png'});
     
    },

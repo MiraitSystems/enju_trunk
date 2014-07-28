@@ -122,11 +122,11 @@
     <% @subjects.each_with_index do |subject, index| -%>
       <tr id="SUBJECT<%= index %>" >
         <td>
-          <%= make_select2("subjects_#{index}_subject_type_id",
+          <%= select2_tag("subjects_#{index}_subject_type_id",
                            "subjects[][subject_type_id]",
                            @subject_types,
                            subject[:subject_type_id],
-                           300) %>
+                           :width => 300, :select_attribute => :id, :display_attribute => :display_name) %>
         </td>
         <td>
           <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>

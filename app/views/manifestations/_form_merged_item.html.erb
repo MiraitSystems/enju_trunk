@@ -2,36 +2,24 @@
   <br />
   <h2><%= t('activerecord.models.item') -%></h2>
   <%= f.fields_for :items do |item| %>
-    <div class="field">
-      <%= item.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong><br />
-      <%= item.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]}, :selected => @library.id %>
-      <%- if @shelf_categories %>
-        <%= select_tag :shelf_category, options_for_select(@shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
-        <%= item.select :shelf_id, @shelves.map{|s| [s.display_name.localize, s.id]} %>
-      <%- else %>
-        <%= item.select :shelf_id, @shelves.map{|s| [s.display_name.localize, s.id]}, {} %>
-      <%- end -%>
-    </div>
-    <%= render 'observe_field' %>
+    
+    <%= render :partial => 'items/form_shelf', :locals => {:f => item} %>
+
     <div class="field">
       <%= item.label t('activerecord.models.checkout_type') -%><br />
-      <%= select2_script "checkout_type_id" %>
-      <%= make_select2(:checkout_type_id, "manifestation[items_attributes][0][checkout_type_id]", @checkout_types, @item.checkout_type_id, 200, false) %>
+      <%= item.select2 :checkout_type_id, @checkout_types, @item.checkout_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label t('activerecord.models.accept_type') -%><br />
-      <%= select2_script "accept_type_id" %>
-      <%= make_select2(:accept_type_id, "manifestation[items_attributes][0][accept_type_id]", @accept_types, @item.accept_type_id, 200, false) %>
+      <%= item.select2 :accept_type_id, @accept_types, @item.accept_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label t('activerecord.models.circulation_status') -%><br />
-      <%= select2_script "circulation_status_id" %>
-      <%= make_select2(:circulation_status_id, "manifestation[items_attributes][0][circulation_status_id]", @circulation_statuses, @item.circulation_status_id, 500, false) %>
+      <%= item.select2 :circulation_status_id, @circulation_statuses, @item.circulation_status_id, :width => 500, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label t('activerecord.models.retention_period') -%><br />
-      <%= select2_script "retention_period_id" %>
-      <%= make_select2(:retention_period_id, "manifestation[items_attributes][0][retention_period_id]", @retention_periods, @item.retention_period_id, 200, false) %>
+      <%= item.select2 :retention_period_id, @retention_periods, @item.retention_period_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label :call_number -%><br />
@@ -39,8 +27,7 @@
     </div>
     <div class="field">
       <%= item.label t('activerecord.models.bookstore') -%>
-      <%= select2_script "bookstore_id" %>
-      <%= make_select2(:bookstore_id, "manifestation[items_attributes][0][bookstore_id]", @bookstores, @item.bookstore_id, 150, true, false) %>
+      <%= item.select2 :bookstore_id, @bookstores, @item.bookstore_id, :width => 150, :select_attribute => :id, :display_attribute => :name, :include_blank => true%>
     </div>
     <div class="field">
       <%= f.label :price -%><br />
@@ -56,13 +43,11 @@
     </div>
     <div class="field">
       <%= item.label t('activerecord.models.use_restriction') -%>
-      <%= select2_script "use_restriction_id" %>
-      <%= make_select2(:use_restriction_id, "manifestation[items_attributes][0][use_restriction_id]", @use_restrictions, @use_restriction_id, 400, false) %>
+      <%= item.select2 :use_restriction_id, @use_restrictions, @use_restriction_id, :width => 400, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label t('role.required_role') -%>
-      <%= select2_script "item_required_role_id" %>
-      <%= make_select2(:item_required_role_id, "manifestation[items_attributes][0][required_role_id]", @roles, @item.required_role_id, 150, false, false) %>
+      <%= item.select2 :required_role_id, @roles, @item.required_role_id, :width => 150, :select_attribute => :id, :display_attribute => :display_name %>
     </div>
     <div class="field">
       <%= item.label :non_searchable %>
@@ -89,8 +74,7 @@
     <% end %>
     <div class="field">
       <%= item.label :item_identifier -%><br />
-      <%= select2_script "item_numbering_type" %>
-      <%= make_select2_struct("item_numbering_type", "numbering[type]", @item_numberings, nil, 200, true) %>
+      <%= select2_tag "item_numbering_type", "numbering[type]", @item_numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false %>
       <%= link_to t('activerecord.models.numbering'), {}, :onClick => "item_numbering();false", :remote => true %>
       <%= item.text_field :item_identifier, :class => 'resource_item_identifier' -%>
     </div>
@@ -98,7 +82,7 @@
       <div class="field">
         <%= item.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
           <%= f_claim.label :claim_type_id %><br />
-          <%= f_claim.select :claim_type_id, @claim_types.map{|c| [c.display_name, c.id]}, :include_blank => true %><br />
+          <%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :select_attribute => :id, :display_attribute => :display_name, :include_blank => true %><br />
           <%= f_claim.label :note %><br />
           <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
         <% end %>

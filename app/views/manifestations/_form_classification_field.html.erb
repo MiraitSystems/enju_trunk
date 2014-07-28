@@ -111,11 +111,11 @@
     <% @classifications.each_with_index do |classification, index| -%>
       <tr id="CLASSIFICATION<%= index %>" >
         <td>
-          <%= make_select2("classifications_#{index}_classification_type_id", 
+          <%= select2_tag("classifications_#{index}_classification_type_id", 
                            "classifications[][classification_type_id]", 
                            @classification_types,
                            classification[:classification_type_id],
-                           300,
+                           :width => 300, :select_attribute => :id, :display_attribute => :display_name
                           ) %>
         </td>
         <td>

@@ -140,7 +140,7 @@ $(function(){
     <div class="field">
       <%= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
         <%= f_claim.label :claim_type_id %><br />
-        <%= f_claim.select2 :claim_type_id, @claim_types, @item.claim_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true %><br />
+        <%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true %><br />
         <%= f_claim.label :note %><br />
         <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
       <% end %>

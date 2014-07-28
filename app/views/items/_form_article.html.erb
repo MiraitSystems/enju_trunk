@@ -31,9 +31,7 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.bookstore') %>
-    <%#= f.select(:bookstore_id, @bookstores.collect{|b| [b.name, b.id]}, :include_blank => true) %>
-    <%= select2_script "bookstore_id" %>
-    <%= make_select2(:bookstore_id, "item[bookstore_id]", @bookstores, @item.bookstore_id, 150, true, false) %>
+    <%= f.select2(:bookstore_id, @bookstores, @item.bookstore_id, :display_attribute => 'name', :select_attribute => 'id', :witdh => 150) %>
   </div>
 
   <div class="field">

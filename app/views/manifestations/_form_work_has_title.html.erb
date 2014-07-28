@@ -64,11 +64,11 @@
              :class => 'resource_title',
              :placeholder => t('activerecord.attributes.title.title_alternative') %>
          <% end %>
-          <%= make_select2("manifestation_work_has_titles_attributes_#{index}_title_type_id",
+          <%= select2_tag("manifestation_work_has_titles_attributes_#{index}_title_type_id",
                            "manifestation[work_has_titles_attributes][#{index}][title_type_id]",
                            @title_types,
                            work_has_title.title_type_id,
-                           300) %>
+                           :width => 300, :select_attribute => :id, :display_attribute => :display_name) %>
          <%= w_f.hidden_field :nested %>
          <%= button_to_function '+', 'ItemField_title.add()' %>
          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
