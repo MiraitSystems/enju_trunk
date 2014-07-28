@@ -129,7 +129,7 @@
                            300) %>
         </td>
         <td>
-          <%= text_field_tag "subjects[][subject_id]", subject[:id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
+          <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
         </td>
         <td><%= text_field_tag "subjects[][term_transcription]", subject[:term_transcription], :id => "subjects_#{index}_term_transcription", :placeholder => t("activerecord.attributes.subject.term_transcription") %></td>
         <td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>

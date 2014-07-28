@@ -188,6 +188,7 @@ class Ability
         UserStatus,
         Wareki,
         WorkHasTitle,
+        Language,
         LanguageType,
         TaxRate
       ]
@@ -200,7 +201,6 @@ class Ability
         Extent,
         Frequency,
         FormOfWork,
-        Language,
         LibraryGroup,
         License,
         ManifestationType,
@@ -314,6 +314,8 @@ class Ability
         ImportRequest,
         ItemHasOperator,
         KeywordCount,
+        Language,
+        LanguageType,
         LibraryReport,
         ManifestationCheckoutStat,
         ManifestationRelationship,
@@ -372,8 +374,6 @@ class Ability
         Frequency,
         FormOfWork,
         ItemHasUseRestriction,
-        Language,
-        LanguageType,
         Library,
         LibraryGroup,
         License,

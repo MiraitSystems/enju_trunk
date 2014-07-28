@@ -19,11 +19,15 @@ class LanguagesController < InheritedResources::Base
   # GET /languages/search_name.json
   def search_name
     struct_language = Struct.new(:id, :text, :term_transcription)
-    languages = Language.where("name like '%#{params[:search_phrase]}%' OR display_name like '%#{params[:search_phrase]}%'").select("id, display_name").limit(10)
-    logger.error "languages: #{languages.size}"
-    result = []
-    languages.each do |language|
-      result << struct_language.new(language.id, language.display_name.localize)
+    if params[:language_id]
+      language = Language.where(id: params[:language_id]).select("id, display_name, name").first
+      result = struct_language.new(language.id, language.display_name.localize)
+    else
+      languages = Language.where("name ilike '%#{params[:search_phrase]}%' OR display_name ilike '%#{params[:search_phrase]}%'").select("id, display_name").limit(10)
+      result = []
+      languages.each do |language|
+        result << struct_language.new(language.id, language.display_name.localize)
+      end
     end
     respond_to do |format|
       format.json { render :text => result.to_json }
