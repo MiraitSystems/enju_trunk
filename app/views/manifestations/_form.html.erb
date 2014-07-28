@@ -191,7 +191,7 @@ $(document).keydown(function(e) {
     }
   </script>
 
-  <%= render :partial => 'form_carrier_type_field', :locals => {:f => f, :manifestation => @manifestation} %>
+  <%= render :partial => 'form_carrier_type_field', :locals => {:f => f, :manifestation => @manifestation, :carrier_types => @carrier_types} %>
 
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
@@ -259,7 +259,7 @@ $(document).keydown(function(e) {
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
-    <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation} %>
+    <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation, :identifiers => @identifiers} %>
   <%- end %> 
 
   <div class="field">
@@ -390,18 +390,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
-    <%#= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
-    <%# TODO make_select2 内の分岐がうまくできない %>
-    <%= select2_script "use_license_id" %>
-    <%= make_select2_struct(
-      :use_license_id, 
-      "manifestation[use_license_id]", 
-      use_licenses, 
-      @manifestation.use_license_id, 
-      250, 
-      true, 
-      false
-    ) %>
+    <%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %>
   </div>
 
   <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
