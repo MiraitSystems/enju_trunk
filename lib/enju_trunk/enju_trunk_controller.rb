@@ -19,6 +19,8 @@ module EnjuTrunk
       rescue_from ActionView::MissingTemplate, :with => :render_404_invalid_format
 
       before_filter :get_library_group, :set_locale, :set_available_languages, :set_current_user, :get_current_basket
+
+      has_mobile_fu
     end
 
     module ClassMethods
