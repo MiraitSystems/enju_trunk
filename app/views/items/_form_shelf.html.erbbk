@@ -1,0 +1,57 @@
+<script>
+  var ItemFieldShelfSelect2 = {
+    // Shelf select2 options
+    shelfSelect2options: {
+      multiple: false,
+      maximumSelectionSize: 10,
+      width: "250px",
+      placeholder: <%= raw t("shelf.search_placeholder").to_json %>, 
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("shelf.search_nomatch").to_json %>; 
+      },
+      formatSearching: function() {
+        return <%= raw t("shelf.search_searching").to_json %>; 
+      },
+      ajax: {
+        url: "/shelves/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+          if ($('#item_library_id').is('*')) {
+            var libraryId = $('#item_library_id').val();
+          } else {
+            var libraryId = null;
+          }
+          return {
+            library_id: libraryId,
+            search_phrase: term,
+          };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/shelves/search_name.json?shelf_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+      },
+    },
+  } 
+  $(document).ready(function() {
+    $("input#item_shelf_id").select2(ItemFieldShelfSelect2.shelfSelect2options);
+  });
+</script>
+
+<div class="field">
+  <%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong><br />
+  <%= select2_tag("item_library_id", "item[library_id]", libraries, item.library_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250) %>
+  <%- if shelf_categories %>
+    <%= select2_tag :shelf_category, options_for_select(shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
+    <%= f.select2 :shelf_id, shelves, item.shelf_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 300, :selected => item.shelf_id %>
+  <%- else -%>
+    <%= text_field_tag "item[shelf_id]", item[:shelf_id], :id => "item_shelf_id" %> 
+  <%- end -%> 
+</div>

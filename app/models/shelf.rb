@@ -1,14 +1,15 @@
 class Shelf < ActiveRecord::Base
-  attr_accessible  :name, :display_name, :note, :library_id, :open_access
+  attr_accessible  :name, :display_name, :note, :library_id, :open_access, :required_role_id
 
   include MasterModel
   self.extend ItemsHelper
   default_scope :order => 'shelves.position'
-  scope :real, where('library_id != 1')
+  scope :real, where('library_id >= 1')
   belongs_to :library, :validate => true
   has_many :items, :include => [:circulation_status]
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
   has_many :statistics
+  belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
 
   validates_associated :library
   validates_presence_of :library, :open_access

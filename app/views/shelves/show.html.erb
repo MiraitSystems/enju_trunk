@@ -26,6 +26,11 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.shelf.required_role') -%>:</strong>
+  <%= @shelf.required_role.display_name -%>
+</p>
+
+<p>
   <strong><%= t('activerecord.models.picture_file') -%>:</strong><br />
   <%- @shelf.picture_files.each do |picture_file| -%>
     <%= render 'picture_files/link', :picture_file => picture_file %>

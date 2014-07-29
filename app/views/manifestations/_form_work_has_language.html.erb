@@ -1,108 +1,103 @@
 <script>
-  var ItemField_language = {
-    currentNumber : <%= manifestation.work_has_languages.size %>,
-    itemTemplate : ''
-      + '<select id="language_id___count__" name="language_id[__count__]">'
-      + <%= raw @languages.collect{ |l| ["<option value='" + l.id.to_s + "'>" + l.display_name.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<select id="language_type___count__" name="language_type[__count__]">'
-      + <%= raw @language_types.collect{ |t| ["<option value='" + t.id.to_s + "'>" + t.display_name.localize + "</option>"] }.join().to_json %>
-      + '</select>&#10'
-      + '<input type="button" value="+" onClick="ItemField_language.add();" /> '
-      + '<input type="button" value="-" onClick="ItemField_language.remove(__count__);" />',
-    add : function () {
-      var field = document.getElementById('languages');
-      var new_area = document.createElement("div");
-      new_area.setAttribute("class", "field");
-      new_area.setAttribute("id", "languages_" + this.currentNumber + 1);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      new_area.innerHTML = newItem;
-      field.appendChild(new_area);
+  var ItemFieldLanguageSelect2 = {
+    currentNumber : <%= raw (@work_has_languages.size).to_json %>,
+    select2Options : {
+      multiple: false,
+      minimumInputLength: 1,
+      width: "200px",
+      placeholder: <%= raw t("activerecord.models.language").to_json %>,
+      formatSearching: function() {
+        return <%= raw t("agent.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("agent.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: "/languages/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+            return {search_phrase: term
+            };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "" && id == parseInt(id)) {
+          $.ajax("/languages/search_name.json?language_id=" + id, {
+              dataType: "json"
+          }).done(function(data) { callback(data); });
+        }
+        else{
+          callback({ id: id, text: id });
+        }
+      },
     },
-    remove : function (div_num) {
-      var field = document.getElementById('LANG' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
-    }
-  }
-</script>
-<select id="languages_select2_hidden" style="display: none;">
-  <%= raw @languages.collect{ |l| ["<option alt='" + l.name + "', value='" + l.id.to_s + "'>" + l.display_name.localize + " (" + l.name + ")</option>"] } %>
-</select>
-<select id="language_types_select2_hidden" style="display: none;">
-  <%= raw @language_types.collect{ |t| ["<option alt='" + t.name + "', value='" + t.id.to_s + "'>" + t.display_name.localize + " (" + t.name + ")</option>"] } %>
-</select>
-<script>
-  var ItemField_language_select2 = {
-    currentNumber : <%= raw (@work_has_languages.blank? ? 1 : @work_has_languages.size).to_json %>,
-    itemTemplate : ''
-      + '<td><input type="button" value="+" onClick="ItemField_language_select2.add();" /></td> '
-      + '<td><input type="button" value="-" onClick="ItemField_language_select2.remove(__count__);" /></td>',
+    actionTemplate : ''
+      + '<td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>'
+      + '<td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(__count__)" -%>',
     add : function () {
-      // language_clone
-      var $clone = $("#languages_select2_hidden").clone();
-      $clone[0].id = 'select2_language';
-      $clone.show();
+      var newField = $("<tr/>").attr("id", "LANG" + this.currentNumber);
+      
+      var cloneLanguageId = $("tr[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');;
+      var cloneLanguageTypeId = $("tr[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');;
+      var cloneDummyId = $("tr[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
+      var cloneLanguage = this.cloneField(cloneLanguageId);
+      var cloneLanguageType = this.cloneField(cloneLanguageTypeId);
+      var cloneDummy = this.cloneField(cloneDummyId);
 
-      // language_type_clone
-      var $type_clone = $("#language_types_select2_hidden").clone();
-      $type_clone[0].id = 'select2_language_type';
-      $type_clone.show();
+      var td1 = $("<td/>").append(cloneLanguageType);
+      var td2 = $("<td/>").append(cloneLanguage);
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
-      // form のid,name設定
-      $clone.attr('name', 'language_id[' + this.currentNumber + ']'); 
-      $type_clone.attr('name', 'language_type[' + this.currentNumber + ']'); 
-      var $new_field = $("<tr/>").attr("id", "LANG" + this.currentNumber);
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-
-      var $clone_field = $("<td/>");
-      $clone_field.append($clone);
-      var $type_clone_field = $("<td/>");
-      $type_clone_field.append($type_clone);
-      $new_field.append($clone_field);
-      $new_field.append($type_clone_field);
-      $new_field.append(newItem);
-
-      $("#language > table > tbody").append($new_field);
+      newField.append(td1).append(td2).append(cloneDummy).append(actionButton);
+      
+      cloneLanguage.select2(this.select2Options);
+      cloneLanguageType.select2();
+      
+      $("#languages > table > tbody").append(newField);
 
       this.currentNumber += 1;
-      $clone.select2({
-        width: "300px",
-        matcher: function(term, text, opt) {
-          return text.toUpperCase().indexOf(term.toUpperCase())==0
-              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-        }
-      });
-      $type_clone.select2({
-        width: "200px",
-        matcher: function(term, text, opt) {
-          return text.toUpperCase().indexOf(term.toUpperCase())==0
-              || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
-        }
-      });
     },
-    remove : function (div_num) {
-      var field = document.getElementById('LANG' + div_num);
-      if(field != null){ field.parentNode.removeChild(field); }
+    cloneField : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+    },
+    remove : function (trNum) {
+      var field = $("#LANG" + trNum);
+      if(field != null){
+        field.append('<input name=manifestation[work_has_languages_attributes][' + trNum + '][_destroy] style="display:none" value="1" />');
+        field.hide();
+      }       
     }
   }
+
+  $(document).ready(function() {
+    $('.language').select2(ItemFieldLanguageSelect2.select2Options);
+    $("select[name$='[language_type_id]']").select2();
+  });
+
 </script>
 
-<div class="field" id="languages">
-  <%= f.label t('activerecord.models.language') -%><br />
-  <% manifestation.work_has_languages << WorkHasLanguage.new if manifestation.work_has_languages.blank? %>
-  <% manifestation.work_has_languages.each_with_index do |work_has_language, index| %>
-    <div class="field" >
-      <%= f.fields_for :work_has_languages do |w_f| %>
-        <%#= select2_script "language_#{index}" %>
-        <%#= make_select2 "language_#{index}", "manifestation[work_has_languages_attributes][#{index}][language_id]", @languages, work_has_language.language_id, 300 %>
-        <%#= select2_script "language_type_#{index}" %>
-        <%#= make_select2 "language_type_#{index}", "manifestation[work_has_languages_attributes][#{index}][language_type_id]", @language_types, work_has_language.language_type_id, 300 %>
-        <%= w_f.select :language_id, @languages.map{|language| [language.display_name.localize, language.id]} %>
-        <%= w_f.select :language_type_id, @language_types.map{|language_type| [language_type.display_name.localize, language_type.id]} %>
-        <%= w_f.hidden_field :nested %>
-        <%#= button_to_function '+', 'ItemField_language_select2.add()' -%></td>
-        <%#= button_to_function '-', 'ItemField_language_select2.remove(' + index.to_s + ')' if index > 0 -%></td>
-      <% end %>
-    </div>
-  <% end %>
+<div class="row">
+  <div><%= f.label t('activerecord.models.language') %></div>
+  <div id="languages">
+    <table id="bless">
+      <%- @work_has_languages.each_with_index do |work_has_language, index| %>
+        <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
+          <tr id="LANG<%= index %>">
+            <td><%= w_f.select2 :language_type_id, @language_types, work_has_language.language_type_id, :select_attribute => :name, :display_attribute => :display_name, :width => 200 %>
+            <td><%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", work_has_language[:language_id], :id => "manifestation_work_has_languages_attributes_#{index}_language_id", :class => "language" %></td>
+            <%= w_f.hidden_field :nested, :value => 1 %></td>
+            <td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>
+            <td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 -%></td>
+          </tr>
+        <%- end -%>
+      <%- end -%>
+     </table>
+   </div>
 </div>

@@ -29,6 +29,14 @@
   <%- end -%>
 </p>
 
+<p>
+  <strong><%= t('activerecord.attributes.keycode.hidden') %>:</strong>
+  <%- if @keycode.hidden %>
+    <%= t('activerecord.attributes.keycode.hidden_yes') %>
+  <%- else -%>
+    <%= t('activerecord.attributes.keycode.hidden_no') %>
+  <%- end -%>
+</p>
 
 </div>
 </div>

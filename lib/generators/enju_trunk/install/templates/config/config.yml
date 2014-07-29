@@ -490,6 +490,9 @@ defaults: &defaults
       username: "uid"
       full_name: "cn"
 
+  validator:
+    user_password_length: "6..20"
+
 development:
   <<: *defaults
 

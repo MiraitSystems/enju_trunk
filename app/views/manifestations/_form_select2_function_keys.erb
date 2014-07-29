@@ -1,0 +1,273 @@
+<script>
+  var addItemKeyCode = 122; // F11
+  var removeItemKeyCode = 123; // F12
+  var tabKeyCode = 9; // TAB
+  
+  /**
+   * select2 フィールドのファンクション対応(オープン時)
+   * 
+   */
+   $(document).on("keydown", ".select2-input", function(e){
+  
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+
+      // creators
+      $("input[name^='creators']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldCreatorSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if($("tr[id ^= 'CF']").length == 1) ItemFieldCreatorSelect2.add();
+            $(this).select2('close');
+            ItemFieldCreatorSelect2.remove(currentNumber);
+            return false;
+          }
+        }
+      });
+
+      // contributors
+      $("input[name^='contributors']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldContributorSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if($("tr[id ^= 'RF']").length == 1) ItemFieldContributorSelect2.add();
+            $(this).select2('close');
+            ItemFieldContributorSelect2.remove(currentNumber);
+            return false;
+          }
+        }
+      });
+
+      // publishers
+      $("input[name^='publishers']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldPublisherSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if($("tr[id ^= 'PF']").length == 1) ItemFieldPublisherSelect2.add();
+            $(this).select2('close');
+            ItemFieldPublisherSelect2.remove(currentNumber);
+            return false;
+          }
+        }
+      });
+
+      // subjects
+      $("input[name^='subjects']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldSubjectSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if($("tr[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
+            $(this).select2('close');
+            ItemFieldSubjectSelect2.remove(currentNumber);
+            return false;
+          }
+        }
+      });
+
+      // classifications
+      $("input[id ^= 'classifications'], select[id ^= 'classifications']").each(function(){
+        if($(this).select2('isFocused') == true){
+          if(keyCode == addItemKeyCode){
+            ItemFieldClassificationSelect2.add();
+            return false;
+          }
+          if(keyCode == removeItemKeyCode){
+            var currentNumber = $(this).attr("id").match(/\d+/);
+            if($("tr[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
+            $(this).select2('close');
+            ItemFieldClassificationSelect2.remove(currentNumber);
+            return false;
+          }
+        }
+      });
+
+    }
+    
+  });
+
+  /**
+   * select2 フィールドのファンクション対応(クローズ時)
+   * 
+   */
+  $(document).on("keydown", "input[id^='s2id_autogen']", function(e){
+
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+      var parentElement = e.target.parentElement;
+      var nextElement = parentElement.nextElementSibling;
+      if(keyCode == addItemKeyCode){
+        if(nextElement.id.indexOf("creators") != -1) ItemFieldCreatorSelect2.add();
+        if(nextElement.id.indexOf("contributors") != -1) ItemFieldContributorSelect2.add();
+        if(nextElement.id.indexOf("publishers") != -1) ItemFieldPublisherSelect2.add();
+        if(nextElement.id.indexOf("subjects") != -1) ItemFieldSubjectSelect2.add();
+        if(nextElement.id.indexOf("classifications") != -1) ItemFieldClassificationSelect2.add();
+        return false;
+      }
+      if(keyCode == removeItemKeyCode){
+        var currentNumber = nextElement.id.match(/\d+/);
+        if(nextElement.id.indexOf("creators") != -1) {
+          if($("tr[id ^= 'CF']").length == 1) ItemFieldCreatorSelect2.add();
+          ItemFieldCreatorSelect2.remove(currentNumber);
+        }
+        if(nextElement.id.indexOf("contributors") != -1) {
+          if($("tr[id ^= 'RF']").length == 1) ItemFieldContributorSelect2.add();
+          ItemFieldContributorSelect2.remove(currentNumber);
+        }
+        if(nextElement.id.indexOf("publishers") != -1) {
+          if($("tr[id ^= 'PF']").length == 1) ItemFieldPublisherSelect2.add();
+          ItemFieldPublisherSelect2.remove(currentNumber);
+        }
+        if(nextElement.id.indexOf("subjects") != -1) {
+          if($("tr[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
+          ItemFieldSubjectSelect2.remove(currentNumber);
+        }
+        if(nextElement.id.indexOf("classifications") != -1) {
+          if($("tr[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
+          ItemFieldClassificationSelect2.remove(currentNumber);
+        }
+        return false;
+      }
+     }
+
+   });
+
+  /**
+   * 件名読み フィールドのファンクション対応
+   * 
+   */
+  $(document).on("keydown", "input[id$='term_transcription']", function(e){
+  
+    var keyCode = e.keyCode;
+
+    if(keyCode == addItemKeyCode || keyCode == removeItemKeyCode ){
+      if(keyCode == addItemKeyCode){
+        ItemFieldSubjectSelect2.add();
+        return false;
+      }
+      if(keyCode == removeItemKeyCode){
+        var currentNumber = e.target.id.match(/\d+/);
+        if($("tr[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
+        ItemFieldSubjectSelect2.remove(currentNumber);
+        return false;
+      }
+     }
+
+   });
+
+
+  /**
+   * 入力フィールドの削除
+   * 
+   */
+  function removeItemField(prefix, num){
+    if($("tr[id ^= '" + prefix + "']").length == 1) return;
+    var removeRow = $('#' + prefix + num);
+    if(removeRow[0]){
+      // set focus
+      var firstNumber = $("tr[id ^= '" + prefix + "']:first").attr("id").match(/\d+/);
+      if(num == firstNumber){
+        var nextElement = removeRow.next().find('input,select').first();
+        if(nextElement[0]) nextElement.focus();
+      }else{
+        var prevElement = removeRow.prev().find('input,select').first();
+        if(prevElement[0]) prevElement.focus();
+      }
+      removeRow.remove(); // remove
+    }
+  }
+
+  /**
+   * タブ移動コントロール
+   * 
+   */
+  $(document)
+    .on("keydown", "input[value='-']", function(e){ // 次のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInput(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[value='+'],input[id $= 'term_transcription']", function(e){ // 前のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[id $= 'full_name_transcription']", function(e){ // 次と前のフィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInput(e.target) == true) {
+          return false;
+        }
+      }
+    })
+    .on("keydown", "input[id ^= 's2id']", function(e){ // フィールドがselect2
+      if(e.keyCode == tabKeyCode && e.shiftKey == true){
+        if(ItemFieldSetFocus.prevInputSlect2(e.target) == true) {
+          return false;
+        }
+      }else if(e.keyCode == tabKeyCode){
+        if(ItemFieldSetFocus.nextInputSlect2(e.target) == true) {
+          return false;
+        }
+      }
+    });
+
+  /**
+   * フォーカス関数
+   * 
+   */
+  var ItemFieldSetFocus = {
+    nextInput : function (targetElement) {
+      var inputs = $(targetElement).closest('form').find('input:visible,select');
+      var nextInput = inputs.eq(inputs.index(targetElement) + 1);
+      if(nextInput[0]){
+        nextInput.focus();
+        return true;
+      }
+      return false;
+    },
+    nextInputSlect2 : function (targetElement) {
+      var parentTd = $(targetElement).parents('td');
+      var nextInput = parentTd.next().find('input:visible,select').first();
+      if(nextInput[0]){
+        nextInput.focus();
+        return true;
+      }
+      return false;
+    },
+    prevInputSlect2 : function (targetElement) {
+      var parentTd = $(targetElement).parents('td');
+      var prevInput = parentTd.prev().find('input:visible,select').first();
+      if(prevInput[0]){
+        prevInput.focus();
+        return true;
+      }
+      return false;
+    },
+  };
+</script>

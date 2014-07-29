@@ -121,22 +121,24 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <li>
-      <%= link_to t('activerecord.models.nacsis_request_lend'),
-        {:controller => "nacsis_user_requests",
-         :action => "new",
-         :ncid => @nacsis_cat.ncid,
-         :manifestation_type => params[:manifestation_type],
-         :request_type => "1" } -%>
-    </li>
-    <li>
-      <%= link_to t('activerecord.models.nacsis_request_copy'),
-        {:controller => "nacsis_user_requests",
-         :action => "new",
-         :ncid => @nacsis_cat.ncid,
-         :manifestation_type => params[:manifestation_type],
-         :request_type => "2" } -%>
-    </li>
+    <%- if can? :create, NacsisUserRequest %>
+      <li>
+        <%= link_to t('activerecord.models.nacsis_request_lend'),
+          {:controller => "nacsis_user_requests",
+           :action => "new",
+           :ncid => @nacsis_cat.ncid,
+           :manifestation_type => params[:manifestation_type],
+           :request_type => "1" } -%>
+      </li>
+      <li>
+        <%= link_to t('activerecord.models.nacsis_request_copy'),
+          {:controller => "nacsis_user_requests",
+           :action => "new",
+           :ncid => @nacsis_cat.ncid,
+           :manifestation_type => params[:manifestation_type],
+           :request_type => "2" } -%>
+      </li>
+    <%- end -%>
     <% if @nacsis_cat.manifestation %>
       <li>
         <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>

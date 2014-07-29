@@ -149,24 +149,32 @@ class SeriesStatement < ActiveRecord::Base
       manifestation.required_role = root_manifestation.required_role
       manifestation.work_has_languages = root_manifestation.work_has_languages
       manifestation.manifestation_identifier = root_manifestation.identifier
+      manifestation.manifestation_has_classifications = root_manifestation.manifestation_has_classifications.order(:position)
+      manifestation.subjects = root_manifestation.subjects.order(:position)
     end  
     manifestation.series_statement = self
     return manifestation
   end
 
+  def initialize_root_manifestation(manifestation = nil)
+    manifestation ||= build_root_manifestation
+    manifestation.periodical_master   = true
+    manifestation.periodical          = self.periodical || false
+    manifestation.original_title      = self.original_title
+    manifestation.title_transcription = self.title_transcription
+    manifestation.title_alternative   = self.title_alternative
+    manifestation
+  end
+
   def self.create_root_manifestation(series_statement, objs)
     root_manifestation = series_statement.root_manifestation
-    root_manifestation.periodical_master   = true
-    root_manifestation.periodical          = series_statement.periodical
-    root_manifestation.original_title      = series_statement.original_title
-    root_manifestation.title_transcription = series_statement.title_transcription
-    root_manifestation.title_alternative   = series_statement.title_alternative
+    root_manifestation = series_statement.initialize_root_manifestation(root_manifestation)
     root_manifestation.save!
 
-    root_manifestation.subjects = Subject.import_subjects(objs[:subjects], objs[:subject_transcriptions])
-    root_manifestation.creates = Create.new_from_instance(objs[:creates], objs[:del_creators], objs[:add_creators])
-    root_manifestation.realizes = Realize.new_from_instance(objs[:realizes], objs[:del_contributors], objs[:add_contributors])
-    root_manifestation.produces = Produce.new_from_instance(objs[:produces], objs[:del_publishers], objs[:add_publishers])
+    root_manifestation.subjects = objs[:subjects]
+    root_manifestation.creates = objs[:creates]
+    root_manifestation.realizes = objs[:realizes]
+    root_manifestation.produces = objs[:produces]
     root_manifestation.manifestation_exinfos = ManifestationExinfo.
       add_exinfos(objs[:exinfos], root_manifestation.id) if objs[:exinfos]
     root_manifestation.manifestation_extexts = ManifestationExtext.
@@ -177,7 +185,9 @@ class SeriesStatement < ActiveRecord::Base
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
-  def excel_worksheet_value(ws_type, ws_col)
+  # sep_flg: 分割指定(ONのときture)
+  # ccount: 分割指定OKのときのカラム数
+  def excel_worksheet_value(ws_type, ws_col, sep_flg, ccount)
     val = nil
 
     case ws_col

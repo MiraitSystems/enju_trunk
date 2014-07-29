@@ -249,3 +249,23 @@ span.not_rent_item {
   color: red;
   font-weight: bold;
 }
+
+div#table {
+  display: table; 
+}
+div#table div.row {
+  //display: table-row;
+}
+div#table div.row>div {
+  display: table-cell;
+  padding: 3px;
+  border-bottom: 1px solid #fff;
+}
+div#table div.row>div:nth-child(odd) {
+  white-space: nowrap;
+  width: 110px;
+ // background-color: #ddd;
+}
+div#table div.row>div:nth-child(even) {
+  white-space: nowrap;
+}

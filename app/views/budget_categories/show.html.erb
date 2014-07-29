@@ -1,0 +1,36 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.budget_category')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.budget_category.id') -%>:</strong>
+  <%= @budget_category.id -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.budget_category.name') -%>:</strong>
+  <%= @budget_category.name-%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.budget_category.display_name') -%>:</strong>
+  <%= @budget_category.display_name-%>
+</p>
+
+<%- if @budget_category.group_id %>
+  <p>
+    <strong><%= t('activerecord.attributes.budget_category.group') -%>:</strong>
+    <%= budget_category_group(@budget_category.group_id) -%>
+  </p>
+<%- end -%>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_budget_category_path(@budget_category) -%></li>
+    <li><%= link_to t('page.back'), budget_categories_path -%></li>
+  </ul>
+</div>

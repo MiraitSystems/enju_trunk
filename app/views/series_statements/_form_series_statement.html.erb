@@ -39,12 +39,12 @@
 
   <div class="field">
     <%= f.label :sequence_pattern -%><br />
-    <%= f.select :sequence_pattern_id, @sequence_patterns.collect{|p| [p.name, p.id]}, :include_blank => true %>
+    <%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.models.publication_status') -%><br />
-    <%= f.select :publication_status_id, @publication_statuses.collect{|p| [p.display_name, p.id]}, :include_blank => true %>
+    <%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %>
   </div>
 
   <div class="field">

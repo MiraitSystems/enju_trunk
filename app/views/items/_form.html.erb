@@ -1,30 +1,4 @@
 <script>
-  $(document).ready( function(e) {
-    $('.search_bookstore_button').click(function(ev) {
-      var input = $('#search_bookstore_input').val().replace(/^\s+|\s+$/g, "");
-      $.ajax({
-        type: "Get",
-        url: "<%= url_for(:controller => :bookstores, :action => :search_bookstores) %>",
-        data: {"input": input},
-        success: function(obj) {
-          if (obj.success) {
-            var message = "";
-            if (obj["exist"] == false)
-              message = "<%= t('bookstore.not_found') %><br />"
-
-            $('#item_bookstore_id').html("");
-            $('#item_bookstore_id').append($('<option>').attr({}).text(""));
-            $.each(obj["bookstores"], function() {
-              $('#item_bookstore_id').append($('<option>').attr({ value: this["bookstore"]["id"]}).text(this["bookstore"]["name"]));
-            });
-            
-            $("div#error").html(message); 
-          }
-        }
-      });
-      return false;
-    });
-  });
   $(document).keydown(function(e) {
     $("input[type=text]").keypress(function(ev) {
       if ((ev.which && ev.which === 13) ||
@@ -35,12 +9,29 @@
       }
     });
   });
+
+  function add_field(obj, parent_id, id_name) {
+    var new_area = document.createElement("div");
+    new_area.setAttribute("id", id_name + obj.currentNumber);
+    new_area.innerHTML = obj.template.replace(/__count__/mg, obj.currentNumber);
+    document.getElementById(parent_id).appendChild(new_area);
+    obj.currentNumber += 1;
+  }
+  function remove_field(no, div_name, param_name) {
+    var field = $("div#" + div_name + no);
+    if(field != null){
+      field.append('<input name=item[' + param_name + '][' + no + '][_destroy] type="hidden" value="1" />');
+      field.hide();
+    }
+  }
 </script>
 
 <% manifestation = @manifestation ? @manifestation : @item.manifestation %>
 
-<% if manifestation.article? %>
-  <%= render 'form_article', :manifestation => manifestation %>
-<% else %>
-  <%= render 'form_book', :manifestation => manifestation %>
-<% end %>
+<div id='table'>
+  <% if manifestation.article? %>
+    <%= render 'form_article', :manifestation => manifestation %>
+  <% else %>
+    <%= render 'form_book', :manifestation => manifestation %>
+  <% end %>
+</div>

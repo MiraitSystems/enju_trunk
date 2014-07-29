@@ -1,5 +1,5 @@
 <script>
-$(function(){
+$(document).ready(function(){
   $('#tabs').bind("tabsactivate", function(event, ui) {
     if (ui.newPanel.selector == "#tabs-1" ) {
       $('#tabs-1').find('input').removeAttr("disabled");

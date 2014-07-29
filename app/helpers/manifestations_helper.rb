@@ -201,20 +201,6 @@ module ManifestationsHelper
     return pages
   end
 
-  def not_rent_book?(manifestation)
-    return false if manifestation.periodical_master?
-    return false if manifestation.article?
-    return true if manifestation.items.empty?
-    manifestation.items.each do  |i|
-      if CirculationStatus.available_for_retain.all.map(&:id).include?(i.circulation_status.id) and 
-        i.item_identifier and
-        (SystemConfiguration.get('manifestation.search.hide_not_for_loan') ? i.use_restriction.name != 'Not For Loan' : true)
-        return false 
-      end
-    end
-    true
-  end
-
   def hide_item?(show_all = false, item)
     unless SystemConfiguration.get("manifestation.show_all")
       if @removed
@@ -431,4 +417,14 @@ module ManifestationsHelper
     end
     return list
   end
+
+  def display_classifications(manifestation)
+    return nil if manifestation.blank? || manifestation.classifications.blank?
+    list = []
+    manifestation.classifications.each do |classification|
+      list << "#{classification.classification_type.display_name}:#{classification.category}(#{classification.classification_identifier})"
+    end
+    list.join(" ; ").html_safe
+  end
+
 end

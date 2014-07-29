@@ -26,6 +26,12 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
     end
   end
 
+  def copy_tools
+    require 'rake'
+    Rails.application.load_tasks
+    Rake::Task['enju_trunk:copy_tools'].execute
+  end
+
   def install_migrations
     if File.exist?("#{EnjuTrunk::Engine.root.to_s}/db/schema.rb")
       copy_file "#{EnjuTrunk::Engine.root.to_s}/db/schema.rb", 'db/schema.rb'
@@ -33,6 +39,9 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       %w(
         EnjuTrunk
         EnjuEvent
+        EnjuTrunkCirculation
+        EnjuSubject
+        EnjuTrunkIll
         EnjuManifestationViewer
         JppCustomercodeTransfer
       ).each do |name|
@@ -45,6 +54,9 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
         jpp_customercode_transfer
         enju_event_engine
         enju_trunk_engine
+        enju_trunk_circulation_engine
+        enju_subject_engine
+        enju_trunk_ill_engine
         enju_manifestation_viewer_engine
      ).each do |name|
         rake "#{name}:install:migrations"
@@ -69,13 +81,21 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
     solr_url = "http://archive.apache.org/dist/lucene/solr/3.6.2/#{solr_name}.tgz"
     solr_md5 = 'e9c51f51265b070062a9d8ed50b84647'
     solr_sha1 = '3a1a40542670ea6efec246a081053732c5503ec1'
+    copy_solr_files = ["#{ENV["HOME"]}/src/#{solr_name}.tgz","/home/vagrant/src/#{solr_name}.tgz"]
 
     Dir.mktmpdir do |td|
       tgz_path = "#{td}/#{solr_name}.tgz"
+      copy_solr_file = copy_solr_files.find {|file| file if File.exist?(file) }
 
-      say "Getting #{solr_name} from #{solr_url}..."
-      get solr_url, tgz_path, verbose: true
-      unless Digest::MD5.file(tgz_path).to_s == solr_md5 &&
+      if copy_solr_file
+        say "Getting #{solr_name} from #{copy_solr_file}..."
+        copy_file copy_solr_file, tgz_path
+      else
+        say "Getting #{solr_name} from #{solr_url}..."
+        get solr_url, tgz_path, verbose: true
+      end
+
+     unless Digest::MD5.file(tgz_path).to_s == solr_md5 &&
           Digest::SHA1.file(tgz_path).to_s == solr_sha1
         raise "failed to get #{solr_url}"
       end
@@ -121,7 +141,7 @@ devise_scope :user do
     gsub_file target, /^(\s*)(class Application < Rails::Application)\n/, <<-'E'
 \1\2
 \1  Rails.application.config.railties_order = [
-\1    EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :main_app, :all
+\1    :main_app, EnjuTrunk::Engine, EnjuEvent::Engine, EnjuNdl::Engine, :all
 \1  ]
     E
 
@@ -137,6 +157,7 @@ devise_scope :user do
 
     gsub_file target, /^(\s*)\# (config\.i18n.default_locale) = .*\n/, <<-'E'
 \1\2 = :ja
+\1I18n.available_locales = [:en, :ja]
 \1I18n.enforce_available_locales = true
     E
 
@@ -149,6 +170,23 @@ devise_scope :user do
 
     comment_lines target, /^\s*config\.active_support\.escape_html_entities_in_json = true/
     comment_lines target, /^\s*config\.active_record\.whitelist_attributes = true/
+
+    gsub_file target, /^(\s*)(\# config\.autoload_paths \+= .*\n)/, <<-'E'
+\1\2
+\1config.after_initialize do |app| 
+\1  unless File.basename($0) == "rake" && (ARGV.include?('db:migrate') || ARGV.include?('enju:install:migrations:all'))
+\1    Dir["#{Rails.root}/lib/#{Rails.application.class.parent_name.underscore}/class_eval/*.rb"].each { |file| require file }
+\1  end
+\1  app.routes.append { match '*a', :to => 'page#routing_error' } unless Rails.application.config.consider_all_requests_local
+\1end
+    E
+
+    #comment_lines target, /^\s*config\.colorize_logging = false/
+    gsub_file target, /^(\s*)(config\.assets\.version = \'1\.0\'\s*\n)/, <<-'E'
+\1\2
+\1config.colorize_logging = false
+    E
+ 
   end
 
   def fixup_config_environments_production
@@ -235,5 +273,9 @@ require 'action_dispatch/middleware/session/dalli_store'
 
   def fixup_public_files
     remove_file 'public/index.html'
+  end
+
+  def fixup_view_files
+    remove_file 'app/views/layouts/application.html.erb'
   end
 end

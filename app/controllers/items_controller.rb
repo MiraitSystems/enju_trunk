@@ -117,7 +117,6 @@ class ItemsController < ApplicationController
       @item.item_identifier = nil
       @item.rank = 1 if original_item.rank == 0
       @item.use_restriction_id = original_item.use_restriction.id
-      @shelves <<  Shelf.find(original_item.shelf_id)
       @item.library_id = original_item.shelf.library.id
       @item.claim = nil
     else
@@ -130,12 +129,16 @@ class ItemsController < ApplicationController
       @item.checkout_type = @manifestation.carrier_type.checkout_types.first unless @item.try(:checkout_type)
       @item.use_restriction_id = UseRestriction.where(:name => 'Limited Circulation, Normal Loan Period').select(:id).first.id unless @item.use_restriction_id
       @item.call_number = @manifestation.items.where(:rank => 0).first.call_number unless @item.try(:call_number) rescue nil
+      if @item.call_number.blank? && @manifestation.classifications.present?
+        @item.call_number = @manifestation.classifications.first.classification_identifier
+      end
     else
       @item.circulation_status = CirculationStatus.where(:name => 'Not Available').first unless @item.try(:circulation_status)
       @item.checkout_type = CheckoutType.where(:name => 'article').first unless @item.try(:checkout_type)
       @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
       @item.shelf = @library.article_shelf unless @item.try(:shelf)
     end
+    @item.acquired_at_string = Date.today unless @item.acquired_at_string
     prepare_options
     respond_to do |format|
       format.html # new.html.erb
@@ -349,6 +352,12 @@ class ItemsController < ApplicationController
         @item.item_has_operators << ItemHasOperator.new(:operated_at => Date.today.to_date, :library_id => @item.library_id)
       end
     end
+    @location_symbols = Keycode.where(:name => 'item.location_symbol')
+    @statistical_classes = Keycode.where(:name => 'item.statistical_class')
+    @location_categories = Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", "item.location_category", Time.zone.now) rescue []
+    @tax_rates = TaxRate.all
+    @budget_groups = Keycode.where(:name => 'budget_category.group')
+    @budget_categories = @item.try(:budget_category).try(:group_id) ? BudgetCategory.where(:group_id => @item.budget_category.group_id):[]   
   end
 
   def check_status

@@ -11,6 +11,8 @@
 </div>
 </div>
 
+<%= javascript_tag("$('#user_email').focus()") -%>
+
 <div id="submenu" class="ui-corner-all">
   <ul>
     <%- if current_user.has_role?('Librarian') -%>

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :tax_rates
+
+
   resources :sequence_patterns
   resources :publication_statuses
   resources :claim_types
@@ -217,11 +220,6 @@ Rails.application.routes.draw do
   resources :agent_types
   resources :circulation_statuses
   resources :form_of_works
-  resources :subject_has_classifications
-  resources :subject_heading_types do
-    resources :subjects
-  end
-  resources :subject_heading_type_has_subjects
   resources :agent_merge_lists do
     resources :agents
     resources :agent_merges
@@ -332,29 +330,7 @@ Rails.application.routes.draw do
 
   resources :library_groups, :except => [:new, :create, :destroy]
 
-  resources :classifications do
-    resources :subject_has_classifications
-  end
-
-  resources :classification_types do
-    resource :classifications
-  end
-
   resources :search_engines
-
-  resources :subject_types
-
-  resources :work_has_subjects
-
-  match 'subjects/search_name' => 'subjects#search_name'
-
-  resources :subjects do
-    resources :works, :controller => 'manifestations'
-    resources :subject_heading_types
-    resources :subject_has_classifications
-    resources :work_has_subjects
-    resources :classifications
-  end
 
   resources :content_types
 
@@ -372,6 +348,7 @@ Rails.application.routes.draw do
     resources :user_group_has_checkout_types
   end
 
+  match 'shelves/search_name' => 'shelves#search_name'
   resources :shelves do
     resources :picture_files
     post :output, :on => :collection
@@ -385,6 +362,7 @@ Rails.application.routes.draw do
 
   resources :countries
 
+  match 'languages/search_name' => 'languages#search_name'
   resources :languages
 
   resources :work_has_languages
@@ -429,6 +407,8 @@ Rails.application.routes.draw do
     get :get_term, :on => :collection
   end
   resources :budget_and_results_managements
+  match 'budget_categories/search_name' => 'budget_categories#search_name'
+  resources :budget_categories
 
   resources :statistic_reports do
     post :get_report, :on => :collection
@@ -492,6 +472,7 @@ Rails.application.routes.draw do
   resources :nacsis_user_requests
 
   resources :catalogs
+  match 'sub_carrier_types/search_name' => 'sub_carrier_types#search_name'
   resources :sub_carrier_types
 
   # The priority is based upon order of creation:
@@ -584,6 +565,4 @@ Rails.application.routes.draw do
   match '/retained_manifestations/informed' => 'retained_manifestations#informed'
   match '/system_configurations' => 'system_configurations#index'
   match '/system_configurations/update' => 'system_configurations#update'
-  # http://techoctave.com/c7/posts/36-rails-3-0-rescue-from-routing-error-solution
-  match '*a', :to => 'page#routing_error' unless Rails.application.config.consider_all_requests_local
 end

@@ -2,6 +2,7 @@
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'item')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'item') if Setting.operation
 class Item < ActiveRecord::Base
+  extend ActiveRecordExtension
   attr_accessible :library_id, :shelf_id, :checkout_type_id, :circulation_status_id,
                   :retention_period_id, :call_number, :bookstore_id, :price, :price_string, :url, 
                   :include_supplements, :use_restriction_id, :required_role_id, 
@@ -10,9 +11,11 @@ class Item < ActiveRecord::Base
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id 
+                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes
 
   self.extend ItemsHelper
+ 
   scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL')
   scope :not_for_checkout, where(:item_identifier => nil)
@@ -81,9 +84,20 @@ class Item < ActiveRecord::Base
   has_many :operators, :through => :item_has_operators, :source => :user
   accepts_nested_attributes_for :item_has_operators, :allow_destroy => true, :reject_if => lambda{|a| a[:username].blank? && a[:note].blank?}
   has_many :item_exinfos, :dependent => :destroy
+  has_many :item_extexts, :dependent => :destroy
+  accepts_nested_attributes_for :item_extexts, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? and !(ItemExtext.find(a[:id]) rescue nil) }
+  before_validation :mark_item_extexts_for_removal
+  def mark_item_extexts_for_removal
+    item_extexts.each { |item_extext| item_extext.mark_for_destruction if item_extext.value.blank? }
+  end
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :order
+  belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
+  belongs_to :location_category, :class_name => 'Keycode', :foreign_key => 'location_category_id'
+  belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
+  belongs_to :tax_rate, :class_name => 'TaxRate', :foreign_key => 'tax_rate_id'
+  belongs_to :budget_category
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
   # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
@@ -92,11 +106,20 @@ class Item < ActiveRecord::Base
   before_validation :set_circulation_status, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
-  after_save :check_price, :except => :delete
+  #after_save :check_price, :except => :delete
   after_save :reindex
 
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
+
+  def has_view_role?(current_role_id)
+    current_role_id = Role.default_role.id unless current_role_id
+    if self.required_role_id <= current_role_id && (self.shelf.required_role_id.nil? || self.shelf.required_role_id <= current_role_id) 
+      return TRUE
+    else
+      return FALSE
+    end 
+  end
 
   def set_item_operator
     item_has_operators.each do |operator|
@@ -285,7 +308,8 @@ class Item < ActiveRecord::Base
         end
       else
         return true if self.price.nil?
-        budget = Budget.joins(:term).where(:library_id => self.shelf.library.id).order("terms.start_at DESC").first
+        return true if Budgets.count == 0
+        budget = Budget.joins(:term).where(:library_id => self.shelf.library.id).order("terms.start_at DESC").first rescue nil
         yyyymm = select_acquired_at
         Expense.create!(:item => self, :budget => budget, :price => self.price, :acquired_at_ym => yyyymm, :acquired_at => self.acquired_at)
       end
@@ -380,7 +404,9 @@ class Item < ActiveRecord::Base
   # XLSX形式でのエクスポートのための値を生成する
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
-  def excel_worksheet_value(ws_type, ws_col)
+  # sep_flg: 分割指定(ONのときture)
+  # ccount: 分割指定OKのときのカラム数
+  def excel_worksheet_value(ws_type, ws_col, sep_flg, ccount)
     helper = Object.new
     helper.extend(ItemsHelper)
     helper.instance_eval { def t(*a) I18n.t(*a) end } # NOTE: ItemsHelper#i18n_rankの中でtを呼び出しているが、ヘルパーを直接利用しようとするとRedCloth由来のtが見えてしまうため、その回避策
@@ -390,7 +416,7 @@ class Item < ActiveRecord::Base
     when 'library'
       val = shelf.library.display_name || ''
 
-    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role'
+    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate'
       val = __send__(ws_col).try(:name) || ''
 
     when 'accept_type', 'retention_period', 'remove_reason', 'shelf'

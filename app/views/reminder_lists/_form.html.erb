@@ -11,7 +11,7 @@
       <%= f.label :checkout_id -%><br />
       <%= @reminder_list.checkout_id -%>
     <%- else -%>
-      <%= f.text_field :item_identifier -%>
+      <%= f.text_field :item_identifier, autofocus: true -%>
     <%- end -%>
   </div>
   <div class="field">

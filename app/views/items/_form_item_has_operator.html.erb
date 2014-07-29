@@ -50,9 +50,11 @@ $(function(){
       var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
       new_area.innerHTML = newItem;
       $("div#operators").append(new_area);
+      $("select[name $= '[library_id]']").select2({width: '200px'});
       $('#item_item_has_operators_attributes_' + replaceCount + '_operated_at').setCalendar({src:'/assets/calendar.png'});
     
-   },
+      this.currentNumber += 1;
+    },
     remove : function (no) {
       var field = $('div#SF' + no);
       field.append('<input name=item[item_has_operators_attributes][' + no + '][_destroy] style="display:none" value="1" />');
@@ -70,8 +72,6 @@ $(function(){
     <div class="field">
       <%= operator.label :user_id %>
       <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%><br />
-      <%#= select2_script "user_id" %>
-      <%# = make_select2(:user_id, "item_has_operator[user_id]", @checkout_types, @item.checkout_type_id, 200, false) %>
       <%- if item_operator.username %>
         <%= operator.text_field :username %>
       <%- else -%>
@@ -85,7 +85,7 @@ $(function(){
 
     <div class="field">
       <%= operator.label :library_id %><br />
-      <%= operator.select :library_id, @libraries.map{|l| [l.display_name.localize, l.id]} %>
+      <%= operator.select2 :library_id, @libraries, nil, :width => 200, :display_attribute => 'display_name', :select_attribute => 'id' %>
     </div>
 
     <div class="field">

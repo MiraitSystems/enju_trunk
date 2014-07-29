@@ -36,6 +36,7 @@ $(function(){
     }
   });
 });
+
 </script>
 
 <table style="width: 100%" id="advanced_search">
@@ -94,9 +95,24 @@ $(function(){
     <td><label><%= advanced_search_label(:issn) -%>:</label></td>
     <td><%= search_field_tag 'issn', params[:issn] -%><%= t('advanced_search.help_issn') -%></td>
   </tr>
+  <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
+    <tr>
+      <td><nobr><label><%= advanced_search_label(:other_identifier) -%>:</label></nobr></td>
+      <td>
+        <%= select2_tag 'other_identifier_identifier_type',
+          'other_identifier[identifier_type_id]',
+          IdentifierType.all,
+          (params[:other_identifier][:identifier_type_id].to_i rescue nil),
+          select_attribute: :id,
+          display_attribute: :display_name,
+          include_blank: true,
+          width: '200' %>
+        <%= search_field_tag 'other_identifier[identifier]', (params[:other_identifier][:identifier] rescue nil) %>
+      </td>
+    </tr>
+  <%- end -%>
   <tr>
-    <td><label><%= advanced_search_label(:ndc) -%>:</label></td>
-    <td><%= search_field_tag 'ndc', params[:ndc] -%></td>
+  <%= render :partial => 'form_classification_field' -%>
   </tr>
   <tr>
     <td><label><%= t('page.number') -%>:</label></td>
@@ -159,7 +175,7 @@ $(function(){
       <% end %>
       <% manifestation_types.each_with_index do |manifestation_type, i| %>
         <% if params[:manifestation_types] %>
-          <% manifestation_types = params[:manifestation_types].class == String ? eval(params[:manifestation_types]) : params[:manifestation_types] %>
+          <% manifestation_types = params[:manifestation_types] %>
           <%= check_box 'manifestation_types', manifestation_type.id, {:checked => manifestation_types.has_key?(manifestation_type.id.to_s), :class => 'check-child'}, true, false %>
           <%= manifestation_type.display_name.localize -%>
           <%- if [5,9].include?(i) %><br /><%- end -%>

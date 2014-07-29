@@ -38,11 +38,9 @@ class SeriesStatementsController < ApplicationController
 
     @basket = Basket.find(params[:basket_id]) if params[:basket_id]
 
-    #work = @work
     manifestation = @manifestation
     unless params[:mode] == 'add'
       search.build do
-      #  with(:work_id).equal_to work.id if work
         with(:manifestation_ids).equal_to manifestation.id if manifestation
       end
     end
@@ -75,14 +73,15 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/new
   # GET /series_statements/new.json
   def new
+    prepare_options
     original_series_statement = SeriesStatement.find(params[:series_statement_id]) if params[:series_statement_id]
     if original_series_statement
       @series_statement = original_series_statement.dup
       @series_statement.root_manifestation = original_series_statement.root_manifestation.dup
-      set_root_manifestation_instance_vals(original_series_statement.root_manifestation)
     else
-      @series_statement.root_manifestation = Manifestation.new
+      @series_statement.initialize_root_manifestation
     end
+    set_root_manifestation_instance_vals(@series_statement.root_manifestation)
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @series_statement }
@@ -92,6 +91,10 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/1/edit
   def edit
     @series_statement.work = @work if @work
+    @creators = @series_statement.root_manifestation.try(:creators).present? ? @series_statement.root_manifestation.creators.order(:position) : [{}] unless @creators
+    @contributors = @series_statement.root_manifestation.try(:contributors).present? ? @series_statement.root_manifestation.contributors.order(:position) : [{}] unless @contributors
+    @publishers = @series_statement.root_manifestation.try(:publishers).present? ? @series_statement.root_manifestation.publishers.order(:position) : [{}] unless @publishers
+    @subjects = @series_statement.root_manifestation.try(:subjects).present? ? @series_statement.root_manifestation.subjects : [{}] unless @subjects
     set_root_manifestation_instance_vals(@series_statement.root_manifestation)
   end
 
@@ -159,7 +162,7 @@ class SeriesStatementsController < ApplicationController
   # DELETE /series_statements/1.json
   def destroy
     SeriesStatement.transaction do
-      @series_statement.root_manifestation.destroy
+      @series_statement.root_manifestation.destroy if @series_statement.root_manifestation
       @series_statement.destroy
       respond_to do |format|
         format.html { redirect_to series_statements_url }
@@ -181,21 +184,21 @@ class SeriesStatementsController < ApplicationController
 
   private
   def set_root_manifestation_instance_vals(root_manifestation)
-    @creates = root_manifestation.creates.order(:position)
-    @realizes = root_manifestation.realizes.order(:position)
-    @produces = root_manifestation.produces.order(:position)
-    @subject = root_manifestation.subjects.collect(&:term).join(';')
-    @subject_transcription = root_manifestation.subjects.collect(&:term_transcription).join(';')
+    @creators = root_manifestation.try(:creators).present? ? root_manifestation.creators.order(:position) : [{}] unless @creators
+    @contributors = root_manifestation.try(:contributors).present? ? root_manifestation.contributor.order(:position) : [{}] unless @contributors
+    @publishers = root_manifestation.try(:publishers).present? ? root_manifestation.publishers.order(:position) : [{}] unless @publishers
+    @subjects = root_manifestation.try(:subjects).present? ? root_manifestation.subjects.order(:position) : [{}] unless @subjects
     root_manifestation.manifestation_exinfos.
-      each { |exinfo| eval("@#{exinfo.name} = '#{exinfo.value}'") } if root_manifestation.manifestation_exinfos
+      each { |e| eval("@#{e.name} = '#{e.value}'") } if root_manifestation.manifestation_exinfos
     root_manifestation.manifestation_extexts.
-      each { |extext| eval("@#{extext.name} = '#{extext.value}'") } if root_manifestation.manifestation_extexts
+      each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } if root_manifestation.manifestation_extexts
   end
 
   def prepare_options
+    @subject_types = SubjectType.all
     @carrier_types = CarrierType.all
     @sub_carrier_types = SubCarrierType.all
-    @manifestation_types = ManifestationType.series
+    @manifestation_types = ManifestationType.all#ManifestationType.series
     @frequencies = Frequency.all
     @countries = Country.all
     @languages = Language.all_cache
@@ -206,44 +209,29 @@ class SeriesStatementsController < ApplicationController
     @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.get_manifestation_numbering('series_statement')
-    @title_types = TitleType.find(:all, :select => "id, display_name", :order => "position")
+    @title_types = TitleType.find(:all, :select => "id, display_name, name", :order => "position")
     @work_manifestation = Manifestation.new
-    @work_manifestation.work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
-    @use_licenses = UseLicense.all
+    @work_has_titles = @series_statement.root_manifestation.work_has_titles if @series_statement.root_manifestation
+    @work_has_titles = [WorkHasTitle.new] if @work_has_titles.blank?
+    @work_has_languages = @series_statement.root_manifestation.work_has_languages if @series_statement.root_manifestation
+    @work_has_languages = [WorkHasLanguage.new] if @work_has_languages.blank?
+    @use_licenses = UseLicense.all    
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
-    @creates = [] if @creates.blank?
-    @realizes = [] if @realizes.blank?
-    @produces = [] if @produces.blank?
-    @del_creators = [] if @del_creators.blank?
-    @del_contributors = [] if @del_contributors.blank?
-    @del_publishers = [] if @del_publishers.blank?
-    @add_creators = [{}] if @add_creators.blank?
-    @add_contributors = [{}] if @add_contributors.blank?
-    @add_publishers = [{}] if @add_publishers.blank?
   end
 
   def set_and_create_root_manifestation(params)
     # set class instance attributes
-    @subject = params[:manifestation][:subject]
-    @subject_transcription = params[:manifestation][:subject_transcription]
-    params[:exinfos].each { |key, value| eval("@#{key} = '#{value}'") } if params[:exinfos]
-    params[:extexts].each { |key, value| eval("@#{key} = '#{value}'") } if params[:extexts]
-    set_agent_instance_from_params # Implemented in application_controller.rb
-    if params[:manifestation][:work_has_titles_attributes]
-      params[:manifestation][:work_has_titles_attributes].each do |key, title_attributes|
-        if title_attributes[:title].blank? && title_attributes[:title_transcription].blank? && title_attributes[:title_alternative].blank?
-          params[:manifestation][:work_has_titles_attributes]["#{key}"][:_destroy] = 1
-        end  
-      end  
-    end
+    @creators = params[:creators]; @contributors = params[:contributors]; @publishers = params[:publishers];@subjects = params[:subjects]
+    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
+    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
-      { subjects: @subject, subject_transcription: @subject_transcription,
-        creates:  @creates,  del_creators:     @del_creators,     add_creators: @add_creators,
-        realizes: @realizes, del_contributors: @del_contributors, add_contributors: @add_contributors,
-        produces: @produces, del_publishers:   @del_publishers,   add_publishers: @add_publishers,
+      { subjects: create_subject_values(@subjects), 
+        creates: create_creator_values(@creators), 
+        realizes: create_contributor_values(@contributors),
+        produces: create_publisher_values(@publishers),
         exinfos: params[:exinfos], extexts: params[:extexts]})
   end
 end

@@ -215,9 +215,16 @@ ja:
       publication_status: 出版状況
       sequence_pattern: 刊行パターン
       catalog: カタログ
-      sub_carrier_type: 特定資料種別
+      sub_carrier_type: 資料の形態詳細
+      tax_rate: 消費税区分
+      budget_category: 予算区分
 
     attributes:
+      title:
+        title: 書名
+        title_transcription: 書名(ヨミ)
+        title_alternative: 代替書名
+        note: 注記
       use_license:
         target: 利用許諾対象
         author: 著者抄録許諾
@@ -449,6 +456,9 @@ ja:
         keyperson_2: キーパーソン2
         corporate_type: 団体分類
         grade: 学年
+        gender: 性別
+        select_gender_reason: "性別を選択してください。"
+        select_grade_reason: "学年を選択してください。"
       feeds/app:
         source_url: ソースURL
         title: タイトル
@@ -572,7 +582,7 @@ ja:
         user_status: 利用状況
         department: 所属部署
       work_has_subject:
-        work: 書いた資料
+        work: 関連する資料
         subject: 件名
         subjectable_type: 件名付与対象の種類
       work_has_language:
@@ -651,6 +661,7 @@ ja:
         stock: 保存
         in_process: 受入手続き中
         other: その他
+        required_role: 参照に必要な権限
       advertisement:
         title: タイトル
         url: URL
@@ -699,12 +710,15 @@ ja:
       item: 
         call_number: 請求記号
         item_identifier: 所蔵情報ID
+        nacsis_identifier: NACSIS所蔵レコードID
         deleted_at: 削除時刻
         include_supplements: 付録を含む
         note: 注記
         url: URL
-        price: 購入価格
-        price_string: 購入価格
+        price: 受入価格(税込)
+        excluding_tax: 受入価格(税抜)
+        tax: 消費税額
+        price_string: 受入価格(税込)
         lock_version: ロックバージョン
         checkout_type: 貸出区分
         retention_period: 保存種別
@@ -720,6 +734,11 @@ ja:
         rank: 正本区分
         non_searchable: 検索対象から除外
         exemplify: 所蔵
+        location_symbol: 別置記号
+        location_category: 別置区分
+        statistical_class: 統計分類
+        notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
+        budget_category: 予算区分
       loss_item:
         user_id: 利用者番号
         item_id: 紛失資料
@@ -987,6 +1006,7 @@ ja:
         lccn: LCCN
         issn: ISSN
         marc_number: MARC番号
+        jan_magazine: 雑誌コード
         subscription_master: 購読マスタ
         description: 説明
         table_of_contents: 目次
@@ -1027,6 +1047,7 @@ ja:
         manifestation_identifier: 資料番号
         titles: その他の書名
         use_license_id: 著者抄録許諾(許諾機関名称)
+        nacsis_identifier: NACSIS書誌レコードID
       manifestation/identifiers:
         body: その他の識別子
         identifier_type_id: その他の識別子の種類
@@ -1510,6 +1531,11 @@ ja:
       budget_type:
         id: ID
         name: 区分名
+      budget_category:
+        id: ID
+        name: 名前
+        display_name: 表示名
+        group: グループ
       term:
         display_name: 期間名
         start_at: 開始日時
@@ -1679,6 +1705,11 @@ ja:
         started_at: 開始年月日
         ended_at: 終了年月日
         ended_at_invalid: 終了年月日は開始年月日より未来を指定してください。
+        filter: 絞り込み
+        execute: 実行
+        hidden: 非表示
+        hidden_yes: はい
+        hidden_no: いいえ
       approval:
         manifestation_id: タイトル 
         created_by: データ登録者名 
@@ -1813,6 +1844,13 @@ ja:
         carrier_type_id: 資料の形態
         note: 注記
         position: 位置
+      tax_rate:
+        name: 名前
+        display_name: 表示名
+        rate: 税率
+        rounding: 端数処理方式
+        start_date: 適用開始日
+        end_date: 適用終了日     
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1848,7 +1886,7 @@ ja:
     has_relationships: "関連あり"
     advanced_search: "条件を詳しく指定して検索"
     normal_search: "詳細条件を解除して検索"
-    advanced_search_summary_delimiter: "、"
+    list_delimiter: "、"
     created_at: "登録日"
     pub_date: "出版日"
     title: "タイトル"
@@ -2730,98 +2768,16 @@ ja:
     wrong_content_type: "にはTSVファイルまたはXLSXファイル以外を指定しないでください。"
     importing_please_wait: "ファイルを読み込み中です。しばらくお待ちください。。。"
     auto_numbering: "所蔵情報IDを自動採番する"
-    excel:
-      series:
-        issn: ISSN
-        nacsis_identifier: NCID
-        nbn: NBN
-        jpno: JPNO
-        original_title: シリーズ名
-        title_transcription: シリーズ名（ヨミ）
-        periodical: 定期刊行物
-        series_statement_identifier: シリーズ識別子
-        note: 雑誌注記
-      book:
-        manifestation_type: 資料区分
-        original_title: タイトル
-        title_transcription: タイトル（ヨミ）
-        title_alternative: 代替タイトル
-        nacsis_identifier: NCID
-        nbn: NBN
-        isbn: ISBN
-        lccn: LCCN
-        marc_number: MARC番号
-        ndc: NDC
-        carrier_type: 資料の形態
-        jpn_or_foreign: 和洋区分
-        frequency: 発行頻度
-        pub_date: 出版日
-        country_of_publication: 出版国
-        place_of_publication: 出版地
-        language: 言語
-        edition_display_value: 版表示
-        volume_number_string: 巻
-        issue_number_string: 号
-        serial_number_string: 通号
-        start_page: 最初のページ
-        end_page: 最後のページ
-        height: 高さ(cm) 
-        width: 幅(cm) 
-        depth: 奥行き(cm)
-        size: サイズ
-        price: 価格
-        price_string: 価格
-        access_address: アクセスアドレス
-        repository_content: リポジトリのコンテンツ
-        required_role: 参照に必要な権限
-        except_recent: 新刊対象から除外
-        acceptance_number: 受入部数
-        description: 説明
-        supplement: 付録
-        note: 注記
-        creator: 著者
-        contributor: 編者
-        publisher: 出版者
-        subject: 件名
-        accept_type: 受入区分
-        acquired_at: 受入日
-        acquired_at_string: 受入日
-        bookstore: 寄贈・購入先
-        library: 図書館
-        shelf: 本棚
-        checkout_type: 貸出区分
-        circulation_status: 貸出状態
-        retention_period: 保存種別
-        call_number: 請求記号
-        item_price: 購入価格
-        item_price_string: 購入価格
-        url: URL
-        include_supplements: 付録を含む
-        use_restriction: 利用制限
-        item_note: 所蔵注記
-        rank: 正本区分
-        item_identifier: 所蔵情報ID
-        remove_reason: 除籍理由
-        non_searchable: 検索対象から除外
-        missing_issue: 欠号管理
-        del_flg: 削除フラグ
-      article: 
-        creator: 著者
-        original_title: 表題
-        title: 誌名
-        volume_number_string: 巻号
-        number_of_page: ページ
-        pub_date: 刊行年
-        call_number: 請求記号 
-        access_address: ＵＲＬ
-        subject: 件名 
+    not_set_serial_number: "通号を上書きしない"
+    root_prefix: "シリーズ"
     message:
       read_start: "読み取りを開始します。"
       read_end: "読み取りが完了しました。"
       sheet_info: "シート: 『%{sheet}』"
-      deleted: "削除完了  所蔵情報ID: %{item_identifier}"
-      deleted_manifestation: "タイトル：%{original_title}"
-      deleted_series_statement: "シリーズタイトル：%{series_original_title}"
+      deleted: "削除完了"
+      deleted_item: "所蔵情報ID: %{identifier}"
+      deleted_manifestation: "タイトル: %{original_title}"
+      deleted_series_statement: "シリーズタイトル: %{original_title}"
       out_of_manage: "<br />ヘッダーに管理外のカラム名が存在しています: %{columns}"
       without_item: "所蔵情報IDカラムが存在しないので、所蔵情報はインポート対象外です。"
       manifestation_imported: 新規資料数
@@ -2834,24 +2790,30 @@ ja:
         <br />シート『%{sheet}』を再インポートする場合は資料インポートの新規登録より読み込みを再度行ってください。\r\n"
       manifestation_type_is_nil: "資料区分が設定されていません。"
       blank_sheet: "データが記述されていません。"
-      overlap: "ヘッダーに重複したフィールド名が存在しています。"
+      overlap: "ヘッダーに重複したフィールド名(%{name})が存在しています。"
       head_require_manifestation_type: "1行目には資料区分が必須です。"
       wrong_data: "指定の%{field}は不正です。 %{field}: %{data}"
       delete_requre_item_identifier: "所蔵情報IDが入力されていないため削除を実行できませんでした。"
       failed_delete_not_find: "対象の資料が見つからなかったため削除を実行できませんでした。"
       duplicate_item_identifier: "所蔵情報IDが重複しています: %{item_identifier}"
-      no_item_identifier: "所蔵情報IDが指定されていません。"
+      no_item_identifier: "所蔵情報IDが指定されていないため、所蔵情報の処理を行いません。"
+      unknown_item_identifier: "指定の所蔵情報IDに該当する所蔵は見つかりません。"
       cell_require_manifestation_type: "資料区分を指定してください。"
       wrong_manifestation_type: "指定の資料区分は不正です。 資料区分: %{manifestation_type}"
       wrong_format: "インポートのファイル形式が不正です。"
+      unexpected_item: "書誌と所蔵の指定が不正です。"
+      unexpected_series_statement: "シリーズ情報と書誌の指定が不正です。"
+      unknown_classification_type: "指定された分類種類(%{type})がありません。"
+      unknown_classification: "指定された分類種類(%{type})には該当の記号(%{category})がありません。"
+      unsuitable_manifestation_type: "雑誌・定期刊行物に適切な資料区分が選択されていないため、シリーズ情報を作成できませんでした。"
       series:
-        head_is_blank: "1行目にはシリーズ名あるいはISSN, またタイトルあるいはISBNが必須です。"
-        cell_is_blank: "シリーズ名またはISSN,タイトルまたはISBNを指定してください。"
+        head_is_blank: "1行目には%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかが必須です。"
+        cell_is_blank: "%{series_fields}(%{series})、%{book_fields}(%{book})のいずれかを指定してください。"
         wrong_issn: "指定のISSNは不正です。"
         exist_same_series: "更新しようとしている内容と同一のシリーズ情報が既に存在しています。資料の編集画面より更新する資料のシリーズ情報を付け替えてください。"
       book:
-        head_is_blank: "1行目にはタイトルまたはISBNが必須です。"
-        cell_is_blank: "タイトルまたはISBNを指定してください。"
+        head_is_blank: "1行目には%{fields}のいずれかが必須です。"
+        cell_is_blank: "%{fields}のいずれかを指定してください。"
         only_integer: "%{field}には整数以外の値を指定しないでください。 %{field}: %{data}"
         only_numeric: "%{field}には数値以外の値を指定しないでください。 %{field}: %{data}"
         only_date: "%{field}には日時以外の値を指定しないでください。 %{field}: %{data}"
@@ -2860,7 +2822,7 @@ ja:
         wrong_rank: "指定の正本区分は不正です。 正本区分: %{data}"
         wrong_isbn: "指定のISBNは不正です。"
         wrong_missing_issue: "指定の欠号管理は不正です。 欠号管理: %{data}"
-        not_delete: "タイトルを空白登録することはできません。"
+        no_title: "タイトルを空白登録することはできません。"
         has_original: "既に正本登録済みの資料に、正本資料の追加はできません。"
         has_not_shelf: "図書館が保持していない本棚が指定されています。"
         exist_multiple_same_manifestations: "書誌同定された資料が複数存在します。インポートデータを新規作成しました。"
@@ -3003,6 +2965,7 @@ ja:
     successfully_sent: "督促メールを送信しました。"
     failed_sent: "督促メールの送信に失敗しました。"
     reminder_mail: "メール"
+    search_notice_full_name: "利用者のフルネームと読みを部分一致で検索します。"
   system_configuration:
     general: 全般
     user: 利用者
@@ -3383,3 +3346,23 @@ ja:
     adption_code: "採択"
     issn: "ＩＳＳＮ"
     jstage: "J-Stage搭載"
+  classification:
+    search_placeholder: "分類記号を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"
+  title:
+    title_transcription: (ヨミ)
+    title_alternative: (代替)
+  budget_category:
+    search_placeholder: "予算区分を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"
+    search_group_placeholder: "予算区分のグループを入力してください"
+  sub_carrier_type:
+    search_placeholder: "資料の形態詳細を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"
+  shelf:
+    search_placeholder: "本棚を入力してください"
+    search_searching: "検索中..."
+    search_nomatch: " の候補が見つかりません"

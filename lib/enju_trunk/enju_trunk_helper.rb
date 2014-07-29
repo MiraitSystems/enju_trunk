@@ -255,8 +255,12 @@ module EnjuTrunk
 
     def title(controller_name)
       string = ''
-      unless controller_name == 'page' or controller_name == 'my_accounts' or controller_name == 'opac'
-        string << t("activerecord.models.#{controller_name.singularize}") + ' - '
+      if controller_name == 'sessions'
+        string << t("devise.sessions.login") + ' - '
+      else
+        unless controller_name == 'page' or controller_name == 'my_accounts' or controller_name == 'opac'
+          string << t("activerecord.models.#{controller_name.singularize}") + ' - '
+        end
       end
       string << LibraryGroup.system_name + ' - Next-L Enju Trunk'
       string.html_safe
@@ -324,7 +328,9 @@ module EnjuTrunk
       :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
       :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
       :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
-      :title_merge, :creator_merge, :query_merge, :manifestation_types
+      :title_merge, :creator_merge, :query_merge, :manifestation_types,
+      :carrier_types, :identifier, :other_identifier,
+      :classifications,
     ]
 
     ADVANCED_SEARCH_LABEL_IDS = {
@@ -365,7 +371,9 @@ module EnjuTrunk
       solr_query: 'page.solr_query',
       manifestation_types: 'activerecord.models.manifestation_type',
       carrier_types: 'activerecord.models.carrier_type',
-      identifier: 'activerecord.attributes.manifestation.identifier'
+      identifier: 'activerecord.attributes.manifestation.identifier',
+      other_identifier: 'activerecord.models.identifier',
+      classifications: 'activerecord.models.classification',
     }
 
     def advanced_search_label(key)
@@ -392,7 +400,7 @@ module EnjuTrunk
       [:controller, :commit, :utf8].each {|k| url_params.delete(k) }
       url_params.delete('mode') if params[:mode].present? and params[:mode] == 'recent'
       url_params.delete('solr_query') if params[:solr_query].present?
-      ADVANCED_SEARCH_PARAMS.each {|k| url_params.delete(k) }
+      ADVANCED_SEARCH_PARAMS.each {|k| url_params.delete(k)}
       link_to link_title, manifestations_path(url_params)
     end
 
@@ -404,6 +412,18 @@ module EnjuTrunk
           params[name].keys.each do |key|
             array << hidden_field_tag("#{name.to_s}[#{key}]", true)
           end
+        elsif name == :classifications
+          next unless params[name]
+          params[name].each do |kvs|
+            kvs.each do |key, value|
+              array << hidden_field_tag("#{name.to_s}[][#{key}]", value)
+            end
+          end
+        elsif name == :other_identifier
+          next unless params[name]
+          next unless params[name]["identifier"]
+          array << hidden_field_tag("#{name.to_s}[identifier]", params[name]["identifier"]) 
+          array << hidden_field_tag("#{name.to_s}[identifier_type_id]", params[name]["identifier_type_id"]) 
         else
           array << hidden_field_tag(name.to_s, params[name])
         end
@@ -474,6 +494,22 @@ module EnjuTrunk
           ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
           summary_ary << [key, ks.join(', ')] if params[key].present?
 
+        when :classifications
+          cls_ids = (params[key] || []).inject([]) {|ary, kvs| ary << kvs['classification_id'] }.compact
+          if cls_ids.present?
+            cls_cats = Classification.where(id: cls_ids).includes(:classification_type).map do | cls|
+              "#{cls.classification_type.display_name} #{cls.category}"
+            end
+            summary_ary << [key, cls_cats.join(', ')] if cls_cats.present?
+          end
+
+        when :other_identifier
+          unless params[:other_identifier][:identifier].blank?
+            identifier = IdentifierType.find(params[:other_identifier][:identifier_type_id]) rescue nil
+            other_identifier = params[:other_identifier][:identifier]
+            other_identifier += "(#{identifier.display_name})"if identifier
+            summary_ary << [key, other_identifier] 
+          end
         else
           summary_ary << [key, params[key]] if params[key].present?
         end
@@ -500,7 +536,7 @@ module EnjuTrunk
 
         label = label_id.is_a?(Symbol) ? advanced_search_label(label_id) : label_id
         "#{label}: #{data}"
-      end.join(I18n.t('page.advanced_search_summary_delimiter')) + omission + ')'
+      end.join(I18n.t('page.list_delimiter')) + omission + ')'
     end
 
     def advanced_search_merge_tag(name)
@@ -612,67 +648,6 @@ module EnjuTrunk
       end
     end
 
-    def select2_script(selector_id)
-      raw ("
-        <script>
-          $(document).ready(function() {
-            $(\"##{selector_id}\").select2({
-              matcher: function(term, text, opt) {
-                return text.toUpperCase().indexOf(term.toUpperCase())==0
-                    || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
-              }
-            });
-          });
-        </script>
-      ")
-    end
-
-    def make_select2(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
-      html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
-      if include_blank
-        html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
-      end
-      data.each do |data|
-        html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-        if obj_data == data.id
-          html.concat( raw (", selected=\"selected\"") )
-        end
-
-        if data.attribute_present?(:display_name)
-          html.concat( raw (">#{ data.display_name.localize }") )
-        else
-          html.concat( raw (">#{ data.name.localize }") )
-        end
-
-        if alt_display
-          html.concat( raw (" (#{ data.name })") )
-        end
-        html.concat( raw ("</option>\n") )
-      end
-      html.concat( raw ("    </select>\n") )
-    end
-
-    def make_select2_struct(selector_id, selector_name, data, obj_data, width, include_blank=false, alt_display=true)
-      html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
-      if include_blank
-        html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
-      end
-      data.each do |data|
-        html.concat( raw ("      <option alt=\"#{ data.name }\", value=\"#{ data.id }\"") )
-        if obj_data == data.id
-          html.concat( raw (", selected=\"selected\"") )
-        end
-
-        html.concat( raw (">#{ data.display_name }") )
-
-        if alt_display
-          html.concat( raw (" (#{ data.name })") )
-        end
-        html.concat( raw ("</option>\n") )
-      end
-      html.concat( raw ("    </select>\n") )
-    end
-
     def markdown(text)
       unless @markdown
         renderer = Redcarpet::Render::HTML.new
@@ -691,3 +666,96 @@ module EnjuTrunk
     end
   end
 end
+
+module ActionView
+  module Helpers
+    module FormHelper
+
+      def select2_tag(selector_id, selector_name, collection, selected_id, *options)
+        options = options.first # if options.is_a?(Array)　
+        select2_options = options[:select2options] || {}
+        if options[:placeholder]
+          select2_options[:placeholder] = '"' + escape_javascript(options.delete(:placeholder)) + '"'
+        end
+        include_blank = options[:include_blank] || false
+        if include_blank
+          select2_options[:allowClear] = true
+        end
+
+        # minimumInputLength 0
+        select2_options[:minimumInputLength] = 0
+        # maximumSelectionSize 10
+        select2_options[:maximumSelectionSize] = 10
+
+        b = ""
+        b.concat(build_select2_script(selector_id, select2_options))
+        b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
+        return raw(b)
+      end
+
+      def build_select2(selector_id, selector_name, collection, selected_id, options)
+        include_blank = options[:include_blank] || false
+        alt_display = options[:alt_display] || true
+        width = options[:width] || 300
+        select_attribute = options[:select_attribute] || :v
+        display_attribute = options[:display_attribute] || :keyname
+        post_attribute = options[:post_attribute] || :id
+
+        html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+        if include_blank
+          #html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
+          html.concat( raw ("<option></option>\n") )
+        end
+        collection.each do |row|
+          html.concat( raw ("      <option alt=\"#{ row.send(select_attribute) }\", value=\"#{ row.send(post_attribute) }\"") )
+          if selected_id.try(:to_i) == row.id
+            html.concat( raw (", selected=\"selected\"") )
+          end
+          html.concat( raw (">") )
+
+          if alt_display
+            html.concat( raw ("#{ row.send(select_attribute) }:") )
+          end
+
+          html.concat( raw (" #{ row.send(display_attribute).localize }") )
+
+          html.concat( raw ("</option>\n") )
+        end
+        html.concat( raw ("    </select>\n") )
+      end
+
+      DEFAULT_MATCHER = "
+      function(term, text, opt) {
+        return text.toUpperCase().indexOf(term.toUpperCase())==0
+        || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
+      }"
+
+      def build_select2_script(selector_id, options = {})
+        options[:matcher] = options[:matcher] || DEFAULT_MATCHER
+        options_string = ""
+        options.each do |key, v|
+          options_string.concat(raw("#{key}: #{v},")).concat("\n")
+        end
+
+        raw ("
+        <script>
+          $(document).ready(function() {
+            var select2options = {
+	        #{options_string}
+            };
+            $(\"##{selector_id}\").select2(select2options);
+          });
+        </script>
+       ")
+      end
+    end
+
+    class FormBuilder
+      def select2(selector_id, collection, selected_id, *options)
+        @template.select2_tag(selector_id, "#{@object_name}[#{selector_id}]", collection, selected_id, *options)
+      end
+    end
+  end
+end
+
+

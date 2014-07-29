@@ -67,7 +67,7 @@
     });
 
     // seach_family
-    <%- if current_user.has_role?('Librarian') -%>
+    <%- if SystemConfiguration.get('use_family') && current_user.has_role?('Librarian') -%>
       $("#agent_telephone_number_1").change(function(){
         clear_family_search();
         search_family();
@@ -174,9 +174,21 @@
   </div>
 
   <div class="field">
-    <%= f.label :grade -%><br />
-    <%= f.text_field :grade, :class => 'date_field' -%>
+    <%= f.label :gender -%><br />
+    <%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200, :include_blank => "",
+		  :select2options => {
+	            "placeholder" => "\"#{t('activerecord.attributes.agent.select_gender_reason')}\""
+                  }
+		 ) %>
   </div>
+
+  <% if SystemConfiguration.get("agent.manage_grade") %>
+  <div class="field">
+    <%= f.label :grade -%><br />
+    <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
+		  :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
+  </div>
+  <% end %>
 
   <% unless @user.id.blank? %>
     <%- if current_user.has_role?('Librarian') -%>
@@ -196,7 +208,7 @@
 
   <div class="field">
     <%= f.label t('activerecord.models.country') -%>
-    <%= f.select(:country_id, @countries.collect{|c| [c.display_name.localize, c.id]}) -%>
+    <%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 350) -%>
   </div>
 
   <div class="field">
@@ -224,19 +236,19 @@
   <div class="field">
     <%= f.label :telephone_number_1 -%><br />
     <%= f.phone_field :telephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_1_type_id, telephone_types -%>
+    <%= f.select :telephone_number_1_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">
     <%= f.label :extelephone_number_1 -%><br />
     <%= f.phone_field :extelephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_1_type_id, telephone_types -%>
+    <%= f.select :extelephone_number_1_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">
     <%= f.label :fax_number_1 -%><br />
     <%= f.phone_field :fax_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_1_type_id, telephone_types -%>
+    <%= f.select :fax_number_1_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">
@@ -261,19 +273,19 @@
   <div class="field">
     <%= f.label :telephone_number_2 -%><br />
     <%= f.phone_field :telephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_2_type_id, telephone_types -%>
+    <%= f.select :telephone_number_2_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">
     <%= f.label :extelephone_number_2 -%><br />
     <%= f.phone_field :extelephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_2_type_id, telephone_types -%>
+    <%= f.select :extelephone_number_2_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">
     <%= f.label :fax_number_2 -%><br />
     <%= f.phone_field :fax_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_2_type_id, telephone_types -%>
+    <%= f.select :fax_number_2_type_id, telephone_types, :include_blank => true -%>
   </div>
 
   <div class="field">

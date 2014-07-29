@@ -18,7 +18,7 @@
             <tr>
               <td style="width: 200px"><%= t('manifestation.series_statement') -%>:</td>
               <td style="width: 490px">
-              <% if @manifestation.series_statement.periodical %>
+              <% if manifestation.series_statement.periodical %>
                 [<%= t('manifestation.serial') -%>]
               <% end %>
               <%= link_to manifestation.series_statement.original_title, manifestation.series_statement -%>
@@ -37,9 +37,21 @@
         <% end %>
         <% manifestation.work_has_titles.each do |title| %>
           <tr> 
-            <td><%= t('activerecord.models.title') %> <%= title.title_type.display_name.localize  if title.title_type %>:</td>
+            <td><%= title.title_type.display_name.localize  if title.title_type %>:</td>
             <td><%= title.manifestation_title.title  if title.manifestation_title%></td>
           </tr>
+          <% if title.manifestation_title.title_transcription.present? %>
+            <tr>
+              <td><%= title.title_type.display_name.localize if title.title_type %> <%= t('title.title_transcription') %>:</td>
+              <td><%= title.manifestation_title.title_transcription %></td>
+            </tr>
+          <% end %>
+          <% if title.manifestation_title.title_alternative.present? %>
+            <tr>
+              <td><%= title.title_type.display_name.localize if title.title_type %> <%= t('title.title_alternative') %>:</td>
+              <td><%= title.manifestation_title.title_alternative %></td>
+            </tr>
+          <% end %>
         <% end %>
         <% if manifestation.article? %>
           <tr>
@@ -107,7 +119,11 @@
               <%- if manifestation.number_of_pages -%>
                 <span itemprop="numPages"><%= manifestation.number_of_pages -%></span> p.
               <%- end -%>
-              <%= manifestation_page(manifestation) %>
+              <%- unless manifestation.start_page.blank? %>
+                <%= manifestation_page(manifestation) %>
+              <%- else -%>
+                <%= manifestation.end_page %>
+              <%- end -%>
               <!-- TODO: センチメートル以外の単位 -->
               <%- if manifestation.height -%>
                 <%= manifestation.height -%> cm.
@@ -119,6 +135,12 @@
           <tr>
             <td><%= t('activerecord.attributes.manifestation.price') -%></td>
             <td><%= manifestation.price -%></td>
+          </tr>
+        <% end %>
+        <% if manifestation.classifications.present? %>
+          <tr>
+            <td><%= t('activerecord.models.classification') -%>:</td>
+            <td><%= display_classifications(manifestation) -%></td>
           </tr>
         <% end %>
         <%- unless manifestation.subjects.empty? -%>
@@ -149,7 +171,7 @@
             <td><%= render 'manifestations/tag_list', :manifestation => manifestation -%></td>
           </tr>
         <% end %>
-        <% unless manifestation.periodical_master %>
+        <%# unless manifestation.periodical_master %>
           <%- unless manifestation.serial? -%>
             <tr>
               <td><%= t('activerecord.models.identifier') -%>:</td>
@@ -171,6 +193,10 @@
                   <br />
                   NDC: <%= manifestation.ndc -%>
                 <%- end -%>
+                <% if manifestation.jan_magazine.present? %>
+                  <br />
+                  <%= t('activerecord.attributes.manifestation.jan_magazine')%>: <%= manifestation.jan_magazine %>
+                <% end %>
                 <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
                   <%- manifestation.identifiers.each do |identifier| -%> 
                     <%= identifier.identifier_type.display_name.localize %>: <%= identifier.body %><br />
@@ -179,7 +205,7 @@
               </td>
             </tr>
           <%- end -%>
-        <% end %>
+        <%# end %>
         <%- unless manifestation.attachment_file_name.blank? -%>
           <%= render 'manifestations/attachment_file', :manifestation => manifestation -%>
         <%- end -%>

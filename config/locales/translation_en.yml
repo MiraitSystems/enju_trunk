@@ -213,8 +213,14 @@ en:
       sequence_pattern: Sequence Pattern
       catalog: Catalog
       sub_carrier_type: Sub Carrier Type
+      budget_category: Budget Category
 
     attributes:
+      title:
+        title: Title
+        title_transcription: Title transcription
+        title_alternative: Title alternative
+        note: Note
       use_license:
         target: Target
         author: Author
@@ -569,6 +575,7 @@ en:
         in_process: In process
         stock: Stock
         other: Other
+        required_role: Required role
       advertisement:
         title: Title
         url: URL
@@ -619,11 +626,14 @@ en:
       item:
         call_number: Call number
         item_identifier: Item identifier
+        nacsis_identifier: NACSIS Item identifier
         deleted_at: Deleted at
         include_supplements: Include supplements
         note: Note
         url: URL
         price: Price
+        excluding_tax: Excluding tax
+        tax: Tax
         lock_version: Lock version
         checkout_type: Checkout type
         retention_period: Retention Period
@@ -640,6 +650,10 @@ en:
         price_string: Purchase Price
         items_number: Item number
         exemplify: Item
+        location_symbol: Location Symbol
+        location_category_id: Location Category
+        statistical_class: Statistic Class
+        budget_category: Budget Category
       loss_item:
         user_id: User number
         item_id: Loss item
@@ -936,6 +950,7 @@ en:
         serial_number_string: Serial Number
         edition_string: Edition
         marc_number: MARC number
+        jan_magazine: Jan magazine
         table_of_contents: Table of contents
         exinfo_6: Exinfo6
         exinfo_7: Exinfo7
@@ -953,6 +968,8 @@ en:
         manifestation_identifier: manifestation_identifier
         titles: Titles
         use_license_id: UseLicense
+        nacsis_identifier: NACSIS ID
+        location_category_id: Location Category
       manifestation/identifiers:
         body: Other identifier
         identifier_type_id: Other identifier type
@@ -1630,6 +1647,11 @@ en:
       budget_type:
         id: ID
         name: Name
+      budget_category:
+        id: ID
+        name: Name
+        display_name: Display Name
+        group: Group
       term:
         display_name: Name
         start_at: Start date
@@ -1691,6 +1713,9 @@ en:
         started_at: Started date
         ended_at: Ended date
         ended_at_invalid: End date must be later than Start date.
+        hidden: Not use
+        hidden_yes: yes
+        hidden_no: no
       approval:
         manifestation_id: Title
         created_by: Created by
@@ -1866,8 +1891,9 @@ en:
     tag: Tag
     call_number: Call number
     holding: Holding
-    advanced_search: Normal search
-    advanced_search_summary_delimiter: ', '
+    advanced_search: Advanced search
+    normal_search: Clear advanced search and search
+    list_delimiter: ', '
     title: Title
     exact_title: Exact match
     startwith_title: Start with
@@ -2097,7 +2123,6 @@ en:
       over_end_date: The end date should over the start date
     search_clear: Clear
     has_relationships: Has relationships
-    normal_search: Clear advanced search and search
     pub_date: Date of publication
     carrier_type: Carrier Type
     item_identifier: Item identifier
@@ -2723,98 +2748,16 @@ en:
     exinfo: Other
     wrong_content_type: was invalid type. TSV or EXLSX are available. 
     auto_numbering: Auto numbering for item identifier
-    excel:
-      series:
-        issn: ISSN
-        nacsis_identifier: NCID
-        nbn: NBN
-        jpno: JPNO
-        original_title: Series name
-        title_transcription: Series name（transcription）
-        periodical: Periodical
-        series_statement_identifier: Series statement identifier
-        note: Note
-      book:
-        manifestation_type: Manifestation type
-        original_title: Title
-        title_transcription: Title（transcription）
-        title_alternative: Alternative title
-        nacsis_identifier: NCID
-        nbn: NBN
-        isbn: ISBN
-        lccn: LCCN
-        marc_number: MARC number
-        ndc: NDC
-        carrier_type: Carrier type
-        jpn_or_foreign: Japan or foreign
-        frequency: Frequency
-        pub_date: Date of publication
-        country_of_publication: Country of publication
-        place_of_publication: Place of publication
-        language: Language
-        edition_display_value: Edition statement
-        volume_number_string: Volume number
-        issue_number_string: Issue number
-        serial_number_string: Serial number
-        start_page: Start page
-        end_page: End page
-        height: Height(cm)
-        width: Width(cm)
-        depth: Depth(cm)
-        size: Size
-        price: Price
-        price_string: Price
-        access_address: Access address
-        repository_content: Repository content
-        required_role: Required role
-        except_recent: Excep recent
-        acceptance_number: Accept number
-        description: Description
-        supplement: Supplement
-        note: Note
-        creator: Creator
-        contributor: Contributor
-        publisher: Publisher
-        subject: Subject
-        accept_type: Accept type
-        acquired_at: Date of accession
-        acquired_at_string: Date of accession
-        bookstore: Bookstore
-        library: Library
-        shelf: Shelf
-        checkout_type: Checkout type
-        circulation_status: Circulation status
-        retention_period: retention period
-        call_number: Call number
-        item_price: Purchase price
-        item_price_string: Purchase price
-        url: URL
-        include_supplements: Include supplements
-        use_restriction: Use restriction
-        item_note: Item note
-        rank: Rank
-        item_identifier: Item identifier
-        remove_reason: Removed reason
-        non_searchable: Non searchable
-        missing_issue: Missing issue
-        del_flg: Delete flag
-      article:
-        creator: Creator
-        original_title: Title
-        title: title of journal
-        volume_number_string: Volume number
-        number_of_page: Pages
-        pub_date: Date of publication
-        call_number: Call number
-        access_address: URL
-        subject: Subject
+    not_set_serial_number: Keep serial number
+    root_prefix: 'Series '
     message:
       read_start: Started to read.
       read_end: End to read.
       sheet_info: 'sheet: %{sheet}'
-      deleted: 'Deleted Item identifier: %{item_identifier}'
-      deleted_manifestation: Title：%{original_title}
-      deleted_series_statement: Series title：%{series_original_title}
+      deleted: 'Deleted'
+      deleted_item: 'Item identifier: %{identifier}'
+      deleted_manifestation: 'Title: %{original_title}'
+      deleted_series_statement: 'Series title: %{original_title}'
       out_of_manage: '<br />Header has unmanaged colum name: %{columns}'
       without_item: Item won't be created withou item identifier column.
       manifestation_imported: Manifestation imported
@@ -2826,24 +2769,30 @@ en:
       failed_to_read_sheet: "Failed to read %{sheet} sheet.\r\n"
       manifestation_type_is_nil: Manifestation type is not selected.
       blank_sheet: No date in the sheet.
-      overlap: Header has duplicate column name.
+      overlap: Header has duplicate column name (%{name}).
       head_require_manifestation_type: Manifestation type id required in first line.
       wrong_data: 'Invalid data %{field}: %{data}'
       delete_requre_item_identifier: Cannnot delete item without item identifier.
       failed_delete_not_find: Failed to delete item. Item is not found.
       duplicate_item_identifier: 'Duplicate item identifier: %{item_identifier}'
       no_item_identifier: No item identifier
+      unknown_item_identifier: Unknown item identifier
       cell_require_manifestation_type: Select manifestation type
       wrong_manifestation_type: 'Manifestation type is invalid: %{manifestation_type}'
       wrong_format: Wrong format type.
+      unexpected_item: Wrong pair of manifestation and item
+      unexpected_series_statement: Wrong pair of manifestation and series statement
+      unknown_classification_type: "Classification type %{type} is not exists."
+      unknown_classification: "Classification %{category} is not exists under classification type %{type}."
+      unsuitable_manifestation_type: "Series statement could not create because unsuitable manifestation type was specified."
       series:
-        head_is_blank: "One of series name, ISSN, title or ISBN is required."
-        cell_is_blank: One of series name, ISSN, title or ISBN is required.
+        head_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required in the first line.'
+        cell_is_blank: 'One of %{series_fields} (%{series}), %{book_fields} (%{book}) is required.'
         wrong_issn: ISSN is invalid.
         exist_same_series: Series statement may already registered. Select series statement in manifestation editting screen.
       book:
-        head_is_blank: "Title or ISBN is required in first line."
-        cell_is_blank: Select title or ISBN.
+        head_is_blank: 'One of %{fields} is required in the first line.'
+        cell_is_blank: 'One of %{fields} is required.'
         only_integer: 'Only integer is available for %{field} %{field}: %{data}'
         only_numeric: 'Only number is available for %{field} %{field}: %{data}'
         only_date: 'Only datetime is available for %{field} %{field}: %{data}'
@@ -2852,7 +2801,7 @@ en:
         wrong_rank: 'Item rank is invalid rank: %{data}'
         wrong_isbn: ISBN is invalid.
         wrong_missing_issue: 'Missing issue is invalid. Missing issue: %{data}'
-        not_delete: Title is required field and cannot delete title.
+        no_title: Title is required field and cannot delete title.
         has_original: Manifestaion cannot have 2 original items.
         has_not_shelf: There is not specific shelf.
         exist_multiple_same_manifestations: There are multiple identifier manifestations. New data is created.
@@ -3411,3 +3360,19 @@ en:
     adption_code: "Adption_Code"
     issn: "ISSN"
     jstage: "J-Stage"
+  classification:
+    search_placeholder: Please enter a search classification identifier
+    search_searching: Searching...
+    search_nomatch: No matches
+  title:
+    title_transcription: (Transcription)
+    title_alternative: (Alternative)
+  budget_category:
+    search_placeholder: Please enter budget category
+    search_searching: Searching...
+    search_nomatch: No matches
+    search_group_placeholder: Please enter budget category group
+  sub_carrier_type:
+    search_placeholder: Please enter sub carrier type
+    search_searching: Searching...
+    search_nomatch: No matches

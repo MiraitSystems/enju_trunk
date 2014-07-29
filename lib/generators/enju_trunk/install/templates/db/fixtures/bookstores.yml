@@ -1,6 +1,6 @@
 --- 
 bookstore_00001: 
-  name: unknown
+  name: "未設定"
   fax_number: 
   telephone_number: 
   id: 1

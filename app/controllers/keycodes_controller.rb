@@ -1,7 +1,12 @@
 class KeycodesController < ApplicationController
+  load_and_authorize_resource
+  before_filter :prepare_options
 
   def index
-    @keycodes = Keycode.page(params[:page])
+    @keycodes = Keycode.unscoped.order(:position).page(params[:page])
+    if params[:name].present?
+      @keycodes = @keycodes.where(:name => params[:name])
+    end
   end
 
   def new
@@ -23,11 +28,15 @@ class KeycodesController < ApplicationController
   end
 
   def edit
-    @keycode = Keycode.find(params[:id])
+    @keycode = Keycode.unscoped.find(params[:id])
   end
 
   def update
-    @keycode = Keycode.find(params[:id])
+    @keycode = Keycode.unscoped.find(params[:id])
+    if params[:move]
+      move_position(@keycode, params[:move])
+      return
+    end 
     respond_to do |format|
       if @keycode.update_attributes(params[:keycode])
         flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.keycode'))
@@ -41,15 +50,21 @@ class KeycodesController < ApplicationController
   end
 
   def show
-    @keycode = Keycode.find(params[:id])
+    @keycode = Keycode.unscoped.find(params[:id])
   end
 
   def destroy
-    @keycode = Keycode.find(params[:id])
+    @keycode = Keycode.unscoped.find(params[:id])
     respond_to do |format|
       @keycode.destroy
       format.html { redirect_to(keycodes_url) }
       format.json { head :no_content }
     end
+  end
+
+  private
+  def prepare_options
+    @keycode_names = Keycode.unscoped.group(:name, :display_name).select([:name, :display_name])
+    @name = params[:name]
   end
 end

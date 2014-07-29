@@ -1,0 +1,45 @@
+<div id="content_detail" class="ui-corner-all">
+<h1 class="title"><%= t('page.showing', :model => t('activerecord.models.tax_rate')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.name') -%>:</strong>
+  <%= @tax_rate.name -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.display_name') -%>:</strong>
+  <%= @tax_rate.display_name -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.rate') -%>:</strong>
+  <%= @tax_rate.rate -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.rounding') -%>:</strong>
+  <%= rounding_type_name(@tax_rate.rounding) -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.start_date') -%>:</strong>
+  <%= @tax_rate.start_date -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.tax_rate.end_date') -%>:</strong>
+  <%= @tax_rate.end_date -%>
+</p>
+
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all">
+  <ul>
+    <li><%= link_to t('page.edit'), edit_tax_rate_path(@tax_rate) -%></li>
+    <li><%= link_to t('page.back'), tax_rates_path -%></li>
+  </ul>
+</div>

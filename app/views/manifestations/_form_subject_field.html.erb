@@ -1,132 +1,142 @@
 <script>
-  var subjectSlect2Options = {
-    multiple: false,
-    minimumInputLength: 1,
-    width: "250px",
-    placeholder: <%= raw t("activerecord.attributes.subject.term_transcription").to_json %>,
-    formatSearching: function() {
-      return <%= raw t("agent.search_searching").to_json %>;
-    },
-    formatInputTooShort: function(term, minLength){
-      return <%= raw t("agent.search_placeholder").to_json %>;
-    },
-    ajax: {
-      url: "/subjects/search_name.json",
-      dataType: 'json',
-      data: function (term, page) {
-          return {search_phrase: term,
-          };
-      },
-      results: function (data, page) {
-          return {results: data};
-      },
-    },
-    initSelection: function(element, callback) {
-      var id = $(element).val();
-      if (id != "" && id == parseInt(id)) {
-        $.ajax("/subjects/search_name.json?subject_id=" + id, {
-            dataType: "json"
-       }).done(function(data) { callback(data); });
-      }
-      else{
-        callback({ id: id, text: id });
-      }
-    },
-    createSearchChoice: function(term, data) {
-      if ($(data).filter(function() {
-        return this.text.localeCompare(term)===0; }).length===0) {
-        return {id:term, text:term};
-      }
-    },
-  };
   var ItemFieldSubjectSelect2 = {
-    currentNumber : <%= raw (@add_subjects.size).to_json %>,
-    itemTemplate : ''
-      + '<td><input type="button" value="+" onClick="ItemFieldSubjectSelect2.add();" /></td> '
-      + '<td><input type="button" value="-" onClick="ItemFieldSubjectSelect2.remove(__count__);" /></td>',
+    // Subject select2 options
+    subjectSelect2options: {
+      multiple: false,
+      minimumInputLength: 1,
+      width: "200px",
+      allowClear: true,
+      placeholder: <%= raw t("activerecord.attributes.subject.term").to_json %>,
+      formatNoMatches: function(term) {
+        return "'" + term + "' " + <%= raw t("agent.search_nomatch").to_json %>; 
+      },
+      formatSearching: function() {
+        return <%= raw t("agent.search_searching").to_json %>;
+      },
+      formatInputTooShort: function(term, minLength){
+        return <%= raw t("agent.search_placeholder").to_json %>;
+      },
+      ajax: {
+        url: "/subjects/search_name.json",
+        dataType: 'json',
+        data: function (term, page) {
+            var currentNumber = $(this).attr('id').match(/\d+/);
+            var subjectTypeId = $('#subjects_' + currentNumber + '_subject_type_id').val();
+            return {
+              subject_type_id: subjectTypeId,
+              search_phrase: term,
+            };
+        },
+        results: function (data, page) {
+            return {results: data};
+        },
+      },
+      initSelection: function(element, callback) {
+        var id = $(element).val();
+        if (id != "") {
+          $.ajax("/subjects/search_name.json?subject_id=" + id, {
+              dataType: "json"
+         }).done(function(data) { callback(data); });
+        }
+      },
+      createSearchChoice: function(term, data) {
+        if ($(data).filter(function() {
+          return this.text.localeCompare(term)===0; }).length===0) {
+          return {id:term, text:term};
+        }
+      },
+    },
+    // SubjectType select2 options
+    subjectTypeSelect2options: {
+      width: "200px",
+      matcher: function(term, text, opt) {
+        return text.toUpperCase().indexOf(term.toUpperCase())==0
+            || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
+      },
+    },
+    currentNumber : <%= raw (@subjects.size).to_json %>,
+    actionTemplate : ''
+      + '<td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>'
+      + '<td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(__count__)" -%>',
     add : function () {
       var newField = $("<tr/>").attr("id", "SUBJECT" + this.currentNumber);
+      var typeFieldId = $("tr[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
+      var termFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'subject_id']").attr('id');
+      var termTranscriptionFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
+      var cloneType = this.cloneField(typeFieldId);
+      var cloneTerm = this.cloneField(termFieldId);
+      var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
+      
+      var td1 = $("<td/>").append(cloneType);
+      var td2 = $("<td/>").append(cloneTerm);
+      var td3 = $("<td/>").append(cloneTermTranscription);
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
-      var cloneId = $('#add_subjects_0_id').clone();
-      cloneId.attr('id','add_subjects_' + this.currentNumber + '_id');
-//      cloneId.attr('name','add_subjects[' + this.currentNumber + '][id]');
-      cloneId.val('');
-
-      var cloneTerm = $('#add_subjects_0_term').clone();
-      cloneTerm.attr('id','add_subjects_' + this.currentNumber + '_term');
-//      cloneTerm.attr('name','add_subjects[' + this.currentNumber + '][term]');
+      newField.append(td1).append(td2).append(td3).append(actionButton);
+      
+      // select2の設定
+      cloneType.select2(this.subjectTypeSelect2options);
       cloneTerm.val('');
-
-      var cloneTermTranscription = $('#add_subjects_0_term_transcription').clone();
-      cloneTermTranscription.attr('id','add_subjects_' + this.currentNumber + '_term_transcription');
-//      cloneTermTranscription.attr('name','add_subjects[' + this.currentNumber + '][term_transcription]');
+      cloneTerm.select2(ItemFieldSubjectSelect2.subjectSelect2options);
       cloneTermTranscription.val('');
-      
-      var cloneField = $("<td/>");
-      cloneField.append(cloneId);
-      cloneId.select2(subjectSlect2Options);
-      cloneField.append(cloneTerm);
-      newField.append(cloneField);
-      
-      var cloneTermTranscriptionField = $("<td/>");
-      cloneTermTranscriptionField.append(cloneTermTranscription);
-      newField.append(cloneTermTranscriptionField);
-      
-      var newItem = this.itemTemplate.replace(/__count__/mg, this.currentNumber);
-      newField.append(newItem);
 
       $("#subjects > table > tbody").append(newField);
 
       this.currentNumber += 1;
-      
+    },
+    cloneField : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+          'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      });
     },
     remove : function (trNum) {
+      if($("tr[id ^= 'SUBJECT']").length == 1) this.add();
       removeItemField('SUBJECT', trNum)
     }
   }
 
   $(document).ready(function() {
-    $(".subject_id").select2(subjectSlect2Options);
+    $("select[id $= 'subject_type_id']").select2(ItemFieldSubjectSelect2.subjectTypeSelect2options);
+    $("input[id $= 'subject_id']").select2(ItemFieldSubjectSelect2.subjectSelect2options);
   });
-
-  $(document).on("select2-selecting", ".subject_id", function(e){
-    var attribute_id = e.target.id
-    var attribute_number = attribute_id.match(/\d+/);
-    if(e.val == parseInt(e.val)){
-        $("#add_subjects_" + attribute_number + "_term").val(e.object.text);
-        $("#add_subjects_" + attribute_number + "_term_transcription").val(e.object.term_transcription);
+  $(document).on("select2-selecting select2-removed", ".subject", function(e){
+    var targetId = e.target.id;
+    var targetNumber = targetId.match(/_(\d+)_/);
+    if (e.type == 'select2-removed'){
+        $("#subjects_" + targetNumber[1] + "_term_transcription").val('');
+    }
+    else if(e.val == parseInt(e.val)){
+        $("#subjects_" + targetNumber[1] + "_id").val(e.object.id);
+        $("#subjects_" + targetNumber[1] + "_term").val(e.object.text);
+        $("#subjects_" + targetNumber[1] + "_term_transcription").val(e.object.term_transcription);
     }
     else{
-        $("#add_subjects_" + attribute_number + "_term").val("");
+        $("#subjects_" + targetNumber[1] + "_id").val("");
+        $("#subjects_" + targetNumber[1] + "_term").val(e.object.id);
+        $("#subjects_" + targetNumber[1] + "_term_transcription").val(e.object.term_transcription);
     }
   });
 </script>
-<div class="field">
-  <%= f.label t('activerecord.attributes.manifestation.subject') -%><br />
-  <table id="bless">
-  <% @subjects.each do |subject| %>
-    <tr>
-      <td><%= link_to subject.term, subject_path(subject), :target => ["_blank"] -%></td>
-      <td>
-        <%= t('page.destroy') %>
-        <%= check_box_tag 'del_subjects[]', subject.id.to_s, @del_subjects.include?(subject.id.to_s), {} -%>
-      </td>
-    </tr>
-  <% end %>
-  </table>
-</div>
 
 <div class="field" id="subjects">
+  <%= f.label t('activerecord.attributes.manifestation.subject') -%><br />
   <table id="bless">
-    <% @add_subjects.each_with_index do |add_subject, index| -%>
+    <% @subjects.each_with_index do |subject, index| -%>
       <tr id="SUBJECT<%= index %>" >
         <td>
-          <%= text_field_tag "add_subjects[][id]", add_subject[:id], :id => "add_subjects_#{index}_id", :class => "subject_id", :placeholder => t("activerecord.attributes.subject.term"), :class => "subject_id" %>
-          <%= hidden_field_tag "add_subjects[][term]", add_subject[:term], :id => "add_subjects_#{index}_term" %>
+          <%= select2_tag("subjects_#{index}_subject_type_id",
+                           "subjects[][subject_type_id]",
+                           @subject_types,
+                           subject[:subject_type_id],
+                           :width => 300, :select_attribute => :id, :display_attribute => :display_name) %>
         </td>
-        <td><%= text_field_tag "add_subjects[][term_transcription]", add_subject[:term_transcription], :id => "add_subjects_#{index}_term_transcription", :placeholder => t("activerecord.attributes.subject.term_transcription") %></td>
+        <td>
+          <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
+        </td>
+        <td><%= text_field_tag "subjects[][term_transcription]", subject[:term_transcription], :id => "subjects_#{index}_term_transcription", :placeholder => t("activerecord.attributes.subject.term_transcription") %></td>
         <td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" if index > 0 -%></td>
+        <td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%></td>
       </tr>
     <% end %>
   </table>

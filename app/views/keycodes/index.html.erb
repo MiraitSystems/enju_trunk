@@ -2,19 +2,33 @@
 <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.keycode')) -%></h1>
 <div id="content_list">
 <div style="color: red"><%= flash[:message].to_s -%></div>
+
+<%= form_tag(keycodes_path, :method => :get) do %>
+  <b><%= t('activerecord.attributes.keycode.filter') %>:</b>
+  <%= select_tag('name', options_from_collection_for_select(@keycode_names, :name, :display_name, @name), :include_blank => true) %>
+  <%= button_tag t('activerecord.attributes.keycode.execute') %>
+<% end %>
+
 <table class="index">
   <tr>
+    <th id="position"></th>
     <th><%= t('activerecord.attributes.keycode.name') -%></th>
     <th><%= t('activerecord.attributes.keycode.display_name') -%></th>
     <th><%= t('activerecord.attributes.keycode.v') -%></th>
     <th><%= t('activerecord.attributes.keycode.keyname') -%></th>
     <th><%= t('activerecord.attributes.keycode.started_at') -%></th>
     <th><%= t('activerecord.attributes.keycode.ended_at') -%></th>
+    <th></th>    
     <th></th>
   </tr>
 
 <%- @keycodes.each do |keycode| -%>
   <tr class="line<%= cycle("0", "1") -%>">
+    <td>
+      <%- if can? :update, keycode -%> 
+        <%= move_position(keycode) -%> 
+      <%- end -%> 
+    </td>
     <td><%= keycode.name -%></td>
     <td><%= keycode.display_name -%></td>
     <td><%= keycode.v -%></td>
@@ -25,6 +39,7 @@
     <%- else -%>
       <td><%= l(keycode.ended_at, :format => :only_date) -%></td>
     <%- end -%>
+    <td><%- if keycode.hidden -%><%= t('activerecord.attributes.keycode.hidden') %><%- end -%></td>
     <td>
       <%= link_to t('page.edit'), edit_keycode_path(keycode) -%>
       <%= link_to t('page.destroy'), keycode, :confirm => t('page.are_you_sure'), :method => :delete -%>

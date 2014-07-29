@@ -1,11 +1,13 @@
 # -*- encoding: utf-8 -*-
+require 'csv'
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'manifestation')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation') # unless SystemConfiguration.isWebOPAC
 require 'enju_trunk/output_columns'
 class Manifestation < ActiveRecord::Base
+  extend ActiveRecordExtension
   self.extend ItemsHelper
   include EnjuNdl::NdlSearch
-  include OutputColumns
+  include EnjuTrunk::OutputColumns
 
   has_many :creators, :through => :creates, :source => :agent, :order => :position
   has_many :contributors, :through => :realizes, :source => :agent, :order => :position
@@ -16,6 +18,8 @@ class Manifestation < ActiveRecord::Base
   has_many :picture_files, :as => :picture_attachable, :dependent => :destroy
   has_many :work_has_languages, :foreign_key => 'work_id', :dependent => :destroy, :order => :position
   has_many :languages, :through => :work_has_languages, :order => :position
+  has_many :manifestation_has_classifications, :order => :position
+  has_many :classifications, :through => :manifestation_has_classifications, :order => :position
   belongs_to :carrier_type
   belongs_to :sub_carrier_type
   belongs_to :manifestation_type
@@ -27,7 +31,7 @@ class Manifestation < ActiveRecord::Base
   has_many :purchase_requests
   has_many :table_of_contents
   has_many :checked_manifestations
-  has_many :identifiers
+  has_many :identifiers, :dependent => :destroy
   has_many :manifestation_exinfos, :dependent => :destroy
   has_many :manifestation_extexts, :dependent => :destroy
   has_one :approval
@@ -40,7 +44,8 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :work_has_titles, :reject_if => lambda{|attributes| attributes[:title].blank?}, :allow_destroy => true
   accepts_nested_attributes_for :identifiers, :reject_if => lambda{|attributes| attributes[:body].blank?}, :allow_destroy => true
   accepts_nested_attributes_for :work_has_languages, :allow_destroy => true
-  accepts_nested_attributes_for :subjects, :allow_destroy => true
+#  accepts_nested_attributes_for :subjects, :allow_destroy => true
+  accepts_nested_attributes_for :work_has_subjects, :allow_destroy => true
   
   has_many :orders
 
@@ -50,7 +55,6 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :items
 
   scope :without_master, where(:periodical_master => false)
-  # JPN_OR_FOREIGN = { I18n.t('jpn_or_foreign.jpn') => 0, I18n.t('jpn_or_foreign.foreign') => 1 }
   SELECT2_OBJ = Struct.new(:id, :name, :display_name)
   JPN_OR_FOREIGN = [ 
     SELECT2_OBJ.new(0, I18n.t('jpn_or_foreign.jpn'), I18n.t('jpn_or_foreign.jpn')), 
@@ -167,10 +171,16 @@ class Manifestation < ActiveRecord::Base
       subjects.collect(&:term) + subjects.collect(&:term_transcription)
     end
     string :classification, :multiple => true do
-      classifications.collect(&:category)
+      # "分類種類名-分類記号"の配列で登録する
+      classifications.map do |c|
+        "#{c.classification_type.name}-#{c.classification_identifier}"
+      end
     end
     string :carrier_type do
       carrier_type.name
+    end
+    string :manifestation_type_position do
+      manifestation_type.try(:position)
     end
     string :manifestation_type, :multiple => true do
       manifestation_type.try(:name)
@@ -226,6 +236,12 @@ class Manifestation < ActiveRecord::Base
     end
     string :shelf, :multiple => true do
       items.collect{|i| "#{item_library_name(i)}_#{i.shelf.name}"}
+    end
+    integer :item_shelf_id, :multiple => true do
+      items.collect{|i| i.shelf_id}
+    end
+    integer :item_required_id, :multiple => true do
+      items.collect{|i| i.required_role_id}
     end
     string :user, :multiple => true do
     end
@@ -333,6 +349,9 @@ class Manifestation < ActiveRecord::Base
     string :publisher, :multiple => true do
       publisher.map{|au| au.gsub(' ', '')}
     end
+    string :produces do
+      NKF.nkf('-w --katakana', publishers[0].full_name_transcription) if publishers[0] and publishers[0].full_name_transcription
+    end
     string :author do
       NKF.nkf('-w --katakana', creators[0].full_name_transcription) if creators[0] and creators[0].full_name_transcription
     end
@@ -373,13 +392,9 @@ class Manifestation < ActiveRecord::Base
         [issn, series_statement.try(:issn)]
       end
     end
-    text :ndl_jpno do
-      # TODO 詳細不明
+    string :other_identifier, :multiple => true do
+      identifiers.map{|identifier| "#{identifier.identifier_type.name}-#{identifier.body}"}
     end
-    string :ndl_dpid do
-      # TODO 詳細不明
-    end
-    # OTC end
     string :sort_title
     string :original_title
     boolean :periodical do
@@ -447,8 +462,14 @@ class Manifestation < ActiveRecord::Base
       end
     end
     boolean :except_recent
-    boolean :non_searchable do
-      non_searchable?
+    boolean :item_non_searchable do
+      item_non_searchable?
+    end
+    integer :item_shelf_id, :multiple => true do
+      items.collect(&:shelf_id).compact
+    end
+    boolean :has_available_items do
+      has_available_items?
     end
     boolean :hide do
       # 定期刊行物でないroot_manifestationは隠す
@@ -481,9 +502,7 @@ class Manifestation < ActiveRecord::Base
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
     boolean :no_item do
-      unless root_of_series?
-        true if items.blank?
-      end
+      has_items?
     end
 
   end
@@ -610,23 +629,30 @@ class Manifestation < ActiveRecord::Base
 #    self.try(:manifestation_type).try(:is_series?)
   end
 
-  def non_searchable?
+  # true for items.empty, dupricate with has_items? (:no_item index)
+  def item_non_searchable?
     return false if periodical_master
-    return true  if items.empty?
     items.each do |i|
-      hide = false
-      hide = true if i.non_searchable
-      hide = true if item_retention_period_non_searchable?(i)
-      if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
-        hide = true if i.try(:use_restriction).try(:name) == 'Not For Loan' 
-      end
-      unless article?
-        hide = true if item_circulation_status_unsearchable?(i)
-        if SystemConfiguration.get('manifestation.manage_item_rank')
-          hide = true if i.rank == 2
-        end
-      end
-      return false unless hide 
+      return false unless i.non_searchable
+    end
+    return true
+  end
+  
+  def has_items?
+    unless root_of_series?
+      return true if items.blank?
+    end
+    return false
+  end
+
+  def has_available_items?
+    unless article? or root_of_series?
+      return false if items.empty?
+      return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
+      return false if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id) && 
+                     !unsearchables.blank? && 
+                     items.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)).blank?
+      return false if SystemConfiguration.get('manifestation.manage_item_rank') && items.where('rank < 2').blank?
     end
     return true
   end
@@ -755,10 +781,6 @@ class Manifestation < ActiveRecord::Base
 
   def sort_title
     NKF.nkf('-w --katakana', title_transcription) if title_transcription
-  end
-
-  def classifications
-    subjects.collect(&:classifications).flatten
   end
 
   def questions(options = {})
@@ -1013,6 +1035,83 @@ class Manifestation < ActiveRecord::Base
     block.call(output)
   end
 
+  # 指定された内部キーについて、
+  # 出力対象となる書誌のうちの最大件数を導出する。
+  # たとえば'book.creator'ならば、
+  # 対象書誌のそれぞれに関係付けられている
+  # 著者の数が最も多いものを調べ、
+  # その登録数を返す。
+  #
+  # ただし、最大数が0となった場合でも、
+  # 出力フィールドを生成する(出力フィールド自体が
+  # なくなってしまわないようにする)ために1を返す。
+  def self.get_manifestation_list_separated_column_count(manifestation_ids, field_key, outer_cache = {})
+    field, field_ext = field_key.split(/\./, 2)
+
+    case field_ext
+    when /\Aother_title(?:_type|_transcription|_alternativ|_transcription|_alternativee)?\z/
+      table = :manifestation_titles
+    when /\Aother_identifier(?:_type)?\z/
+      table = :identifiers
+    when /\Alanguage(?:_type)?\z/
+      table = :languages
+    when /\Acreator(?:_type|_transcription)?\z/
+      table = :creators
+    when /\Apublisher(?:_type|_transcription)?\z/
+      table = :publishers
+    when /\Acontributor(?:_type|_transcription)?\z/
+      table = :contributors
+    when /\Asubject(?:_transcription)?\z/
+      table = :subjects
+    when /\Atheme(?:_publish)?\z/
+      # TODO:
+      # book.theme、book.theme_publishについては
+      # enju_trunk_theme側でカウント方法を提供できるようにする
+      table = :themes
+    else
+      table = nil
+    end
+
+    case field
+    when 'book'
+      scope = scoped
+    when 'root'
+      scope = scoped.joins(:series_statement).
+        where('series_statements.root_manifestation_id=manifestations.id')
+    else
+      table = nil
+    end
+
+    cache_key = [table, field]
+    return outer_cache[cache_key] if outer_cache[cache_key]
+
+    if table
+      count = scope.joins(table).group('manifestations.id').
+        select('count(manifestations.id) column_count').
+        order('column_count desc').first.
+        try(:column_count).try(:to_i) || 1
+    else
+      count = 1
+    end
+
+    outer_cache[cache_key] = count
+  end
+
+  def self.get_manifestation_list_header_row(column_spec, sheet_name)
+    row = []
+    column_spec[sheet_name].each do |field, field_ext, sep_flg, ccount|
+      field_key = "#{field}.#{field_ext}"
+      if sep_flg
+        1.upto(ccount) do |n|
+          row << ResourceImport::Sheet.suffixed_field_name(field_key, n)
+        end
+      else
+        row << ResourceImport::Sheet.field_name(field_key)
+      end
+    end
+    row
+  end
+
   def self.get_manifestation_list_excelx(manifestation_ids, current_user, selected_column = [])
     user_file = UserFile.new(current_user)
     excel_filepath, excel_fileinfo = user_file.create(:manifestation_list, Setting.manifestation_list_print_excelx.filename)
@@ -1034,42 +1133,72 @@ class Manifestation < ActiveRecord::Base
     }
     worksheet = {}
     style = {}
+
     # ヘッダー部分
-    column = self.set_column(selected_column)
+    column = set_column(selected_column, manifestation_ids)
     column.keys.each do |type|
       if column[type].blank?
         column.delete(type); next
       end
       worksheet[type] = ws_cls.new(wb, :name => sheet_name[type]).tap do |sheet|
-        row = column[type].map { |(t, c)| I18n.t("resource_import_textfile.excel.#{t}.#{c}") }
+        row = get_manifestation_list_header_row(column, type)
         style[type] = [sty]*row.size
         sheet.add_row row, :types => :string, :style => style[type]
       end
     end
+
     # データ部分
-    self.set_manifestations_data(:excelx, column, manifestation_ids, worksheet, style)
+    set_manifestations_data(column, manifestation_ids) do |row, type_of_row|
+      worksheet[type_of_row].add_row row, :types => :string, :style => style[type_of_row]
+    end
     pkg.serialize(excel_filepath)
-    return [excel_filepath, excel_fileinfo]
+
+    [excel_filepath, excel_fileinfo]
   end
 
   def self.get_manifestation_list_tsv_csv(manifestation_ids, selected_column = [])
-    split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
-    data = String.new
-    data << "\xEF\xBB\xBF".force_encoding("UTF-8")
-    # ヘッダー部分
-    column = self.set_column(selected_column)
+    csv_sep = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
+    bom = "\xEF\xBB\xBF"
+    bom.force_encoding("UTF-8")
+    data = ""
+
+    # 出力カラム書式の生成
+    column = set_column(selected_column, manifestation_ids)
     column.keys.each do |type|
       if column[type].blank?
         column.delete(type); next
       end
     end
-    type = column.keys.include?('article') ? 'article' : 'series'
-    row = column[type].map { |(t, c)| I18n.t("resource_import_textfile.excel.#{t}.#{c}") }
-    data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
-    # データ部分
-    self.set_manifestations_data(:tsv_csv, column, manifestation_ids, data)
+    return data if column.blank?
 
-    return data
+    if column['book'] && column['series']
+      # bookとseriesを同じCSV中に含めるために
+      # 包含関係にあるseriesによりbookをカバーする。
+      # 出力カラム数を合わせるために
+      # series用の出力カラム定義から
+      # book用のもののみを残すものに変換する。
+      column['book'] = column['series'].map do |field, *rest|
+        if field == 'book'
+          [field, *rest]
+        else
+          [nil, *rest]
+        end
+      end
+    end
+
+    CSV(data, col_sep: csv_sep, force_quotes: true) do |csv|
+      # ヘッダー部分
+      type = column.keys.include?('article') ? 'article' : 'series'
+      header_row = get_manifestation_list_header_row(column, type)
+      csv << header_row
+
+      # データ部分
+      set_manifestations_data(column, manifestation_ids) do |row, type_of_row|
+        csv << row
+      end
+    end
+
+    bom + data
   end
 
   def self.get_label_list_tsv_csv(manifestation_ids)
@@ -1091,38 +1220,77 @@ class Manifestation < ActiveRecord::Base
     return data
   end
 
-  def self.set_column(selected_column = [])
+  # 与えられたカラム(出力カラム定義上の内部キー)のリストから
+  # 必要となる出力フィールド定義を生成して返す。
+  #
+  # 返り値は以下の形式のハッシュ:
+  #
+  #   {type => [[field, field_ext, separated?, column_count], ...], ...}
+  def self.set_column(selected_column, manifestation_ids)
+    col_spec = OUTPUT_COLUMN_FIELDS.inject({}) do |spec, name|
+      spec[name] = select_output_column_spec(name)
+      spec
+    end
+
     column = {
       'book'    => [], # 一般書誌(manifestation_type.is_{series,article}?がfalse
       'series'  => [], # 雑誌(manifestation_type.is_series?がtrue)
       'article' => [], # 文献(manifestation_type.is_article?がtrue)
     }
+    series_book_column = []
+    series_root_column = []
+
+    all_cols = all_output_columns
+    cc_cache = {}
     selected_column.each do |type_col|
-#      next unless ALL_COLUMNS.include?(type_col) #TODO
-      next unless /\A([^.]+)\.([^.]+)\.*([^.]+)*([^.]+)\z/ =~ type_col
-      val = $2
-      val += ".#{$3}" if $3
-      val += $4 if $4
-      column[$1]       << [$1, val]
-      column['series'] << [$1, val] if $1 == 'book' # NOTE: 雑誌の行は雑誌向けカラム+一般書誌向けカラム(参照: resource_import_textfile.excel)
+      next unless all_cols.include?(type_col)
+      next unless /\A([^.]+)\.([^.]+(?:\.[^.]+)*)\z/ =~ type_col
+
+      field, field_ext = $1, $2
+      sep_flg = col_spec[field][type_col] == :plural
+      column_count = !sep_flg ? 1 : get_manifestation_list_separated_column_count(manifestation_ids, type_col, cc_cache)
+      column[field] << [field, field_ext, sep_flg, column_count]
+
+      if field == 'book'
+        # NOTE:
+        # 一般書誌向けのカラムをリストに加える
+        # (雑誌の行は雑誌向けカラム+一般書誌向けカラム+root書誌向けカラム
+        # 参照: resource_import_textfile.excel)
+        series_book_column << ['book', field_ext, sep_flg, column_count]
+
+        fk = "root.#{field_ext}"
+        if col_spec['root'].include?(fk)
+          # "root.#{field_ext}"の出力カラム定義がある場合は
+          # root書誌情報用としてリストに加える
+          sf = col_spec['root'][fk] == :plural
+          cc = !sf ? 1 : get_manifestation_list_separated_column_count(manifestation_ids, fk, cc_cache)
+          series_root_column << ['root', field_ext, sf, cc]
+        end
+      end
     end
+    column['series'] += series_root_column + series_book_column
+
     return column
   end
 
-  def self.set_manifestations_data(format_type, column, manifestation_ids, data, style = {})
+  def self.set_manifestations_data(column, manifestation_ids)
     logger.debug "begin export manifestations"
     transaction do
       where(:id => manifestation_ids).
           includes(
-            :carrier_type, :languages, :required_role,
+            :carrier_type, :required_role,
             :frequency, :creators, :contributors,
             :publishers, :subjects, :manifestation_type,
             :series_statement,
+            :creates => [:agent],
+            :realizes => [:agent],
+            :produces => [:agent],
+            :work_has_languages => [:language, :language_type],
             :items => [
               :bookstore, :checkout_type,
               :circulation_status, :required_role,
               :accept_type, :retention_period,
-              :use_restriction,
+              :use_restriction, :tax_rate,
               :shelf => :library,
             ]
           ).
@@ -1158,16 +1326,14 @@ class Manifestation < ActiveRecord::Base
             end
             items.each do |i|
               row = []
-              column[type].each do |(t, c)|
-                row << m.excel_worksheet_value(t, c, i)
+              column[type].each do |field, field_ext, sep_flg, ccount|
+                if field.nil?
+                  row << [nil]*ccount
+                else
+                  row << m.excel_worksheet_value(field, field_ext, sep_flg, ccount, i)
+                end
               end
-              if format_type == :excelx
-                data[type].add_row row, :types => :string, :style => style[type]
-              else
-                split = SystemConfiguration.get("set_output_format_type") ? "\t" : ","
-                SERIES_COLUMNS.size.times { data << '""' + split } unless m.series?
-                data << '"' + row.join(%Q[\"#{split}\"]) +"\"\n"
-              end
+              yield(row.flatten, type)
 
               if Setting.export.delete_article
                 # 文献をエクスポート時にはその文献情報を削除する
@@ -1200,7 +1366,15 @@ class Manifestation < ActiveRecord::Base
   # ws_type: ワークシートの種別
   # ws_col: ワークシートでのカラム名
   # item: 対象とするItemレコード
-  def excel_worksheet_value(ws_type, ws_col, item = nil)
+  def excel_worksheet_value(ws_type, ws_col, sep_flg, ccount, item = nil)
+    if ws_type == 'root'
+      if root_manifestation = series_statement.try(:root_manifestation)
+        root_manifestation.excel_worksheet_value('book', ws_col, sep_flg, ccount, item)
+      else
+        [nil]*ccount
+      end
+    end
+
     helper = Object.new
     helper.extend(ManifestationsHelper)
     val = nil
@@ -1211,7 +1385,7 @@ class Manifestation < ActiveRecord::Base
 
     when 'original_title', 'title_transcription', 'series_statement_identifier', 'periodical', 'issn', 'note'
       if ws_type == 'series'
-        val = series_statement.excel_worksheet_value(ws_type, ws_col)
+        val = series_statement.excel_worksheet_value(ws_type, ws_col, sep_flg, ccount)
       end
 
     when 'title'
@@ -1249,31 +1423,134 @@ class Manifestation < ActiveRecord::Base
     when 'frequency'
       val = __send__(ws_col).try(:display_name) || ''
 
-    when 'creator', 'contributor', 'publisher'
-      sep = ';'
-      if ws_col == 'creator' &&
-          ws_type == 'article' && !japanese_article?
-        sep = ' '
-      end
-      val = __send__("#{ws_col}s").map(&:full_name).join(sep)
-      if ws_col == 'creator' &&
-          ws_type == 'article' && japanese_article? && !val.blank?
-        val += sep
+    when 'creator', 'contributor', 'publisher',
+        'creator_transcription', 'contributor_transcription', 'publisher_transcription',
+        'creator_type', 'contributor_type', 'publisher_type'
+      if sep_flg
+        case ws_col
+        when /^creator/
+          name = 'create'
+        when /^contributor/
+          name = 'realize'
+        when /^publisher/
+          name = 'produce'
+        end
+
+        val = [nil]*ccount
+        __send__("#{name}s").each_with_index do |record, i|
+          case ws_col
+          when /_type$/
+            val[i] = record.try("#{name}_type_id")
+          when /_transcription$/
+            val[i] = record.agent.try(:full_name_transcription)
+          else
+            val[i] = record.agent.try(:full_name)
+          end
+        end
+
+      else
+        dlm = ';'
+        if ws_col == 'creator' &&
+            ws_type == 'article' && !japanese_article?
+          dlm = ' '
+        end
+        val = __send__("#{ws_col}s").map(&:full_name).join(dlm)
+        if ws_col == 'creator' &&
+            ws_type == 'article' && japanese_article? && !val.blank?
+          val += dlm
+        end
       end
 
-    when 'subject'
-      sep = ';'
-      if ws_type == 'article' && !japanese_article?
-        sep = '*'
-      end
-      val = __send__(:subjects).map(&:term).join(sep)
+    when 'subject', 'subject_transcription'
+      if sep_flg
+        val = [nil]*ccount
+        subjects.each_with_index do |record, i|
+          if ws_col == 'subject'
+            val[i] = record.term
+          else
+            val[i] = record.term_transcription
+          end
+        end
 
-    when 'language'
-      sep = ';'
-      if ws_type == 'article' && !japanese_article?
-        sep = '*'
+      else
+        dlm = ';'
+        if ws_type == 'article' && !japanese_article?
+          dlm = '*'
+        end
+        val = subjects.map(&:term).join(dlm)
       end
-      val = __send__(:languages).map(&:name).join(sep)
+
+    when 'language', 'language_type'
+      method = ws_col.to_sym
+      if sep_flg
+        val = [nil]*ccount
+        work_has_languages.each_with_index do |record, i|
+          val[i] = record.try(method).try(:name)
+        end
+
+      else
+        dlm = ';'
+        if ws_type == 'article' && !japanese_article?
+          dlm = '*'
+        end
+        val = work_has_languages.map(&method).map(&:name).join(dlm)
+      end
+
+    when 'other_title', 'other_title_transcription', 'other_title_alternative', 'other_title_type'
+      val = [nil]*ccount
+      work_has_titles.each_with_index do |record, i|
+        if ws_col == 'other_title'
+          val[i] = record.manifestation_title.try(:title)
+        elsif ws_col == 'other_title_transcription'
+          val[i] = record.manifestation_title.try(:title_transcription)
+        elsif ws_col == 'other_title_alternative'
+          val[i] = record.manifestation_title.try(:title_alternative)
+        else
+          val[i] = record.title_type.try(:name)
+        end
+      end
+
+    when 'other_identifier', 'other_identifier_type'
+      val = [nil]*ccount
+      identifiers.each_with_index do |record, i|
+        if ws_col == 'other_identifier'
+          val[i] = record.body
+        else
+          val[i] = record.identifier_type_id
+        end
+      end
+
+    when 'classification', 'classification_type'
+      if sep_flg
+        val = [nil]*ccount
+        classifications.each_with_index do |record, i|
+          if ws_col == 'classification'
+            val[i] = record.category
+          else
+            val[i] = record.classification_type.name
+          end
+        end
+
+      else
+        dlm = ';'
+        val = classifications.pluck(:category).join(dlm)
+      end
+
+    when 'theme', 'theme_publish'
+      # TODO: enju_trunk_themeに処理を移す
+      val = [nil]*ccount
+      if defined?(EnjuTrunkTheme)
+        themes.each_with_index do |record, i|
+          if ws_col == 'theme'
+            val[i] = record.name
+          else
+            val[i] = record.publish
+          end
+        end
+      end
+
+    when 'use_license'
+      val = use_license_id
 
     when 'missing_issue'
       val = helper.missing_status(missing_issue) || ''
@@ -1300,7 +1577,7 @@ class Manifestation < ActiveRecord::Base
     if item
       if /\Aitem_/ =~ ws_col
         begin
-          val = item.excel_worksheet_value(ws_type, $') || ''
+          val = item.excel_worksheet_value(ws_type, $', sep_flg, ccount) || ''
         rescue NoMethodError
         end
       end
@@ -1308,7 +1585,7 @@ class Manifestation < ActiveRecord::Base
       if val.nil?
         if ws_col != 'note' and ws_col != 'price' and ws_col != 'price_string'
           begin
-            val = item.excel_worksheet_value(ws_type, ws_col) || ''
+            val = item.excel_worksheet_value(ws_type, ws_col, sep_flg, ccount) || ''
           rescue NoMethodError
           end
         end

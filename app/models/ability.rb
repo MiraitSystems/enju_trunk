@@ -1,9 +1,25 @@
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Setting.operation
+
+engines = []
+engines << EnjuSubject::Engine  if defined?(EnjuTrunkSubject)
+engines << EnjuEvent::Engine    if defined?(EnjuTrunkEvent)
+engines << EnjuMessage::Engine  if defined?(EnjuTrunkMessage)
+engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
+engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
+engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
+
 class Ability
   include CanCan::Ability
 
   def initialize(user, ip_address = nil)
-    initialize_circulation(user) if Setting.operation
+    # TODO
+    initialize_circulation(user, ip_address) if Setting.operation
+    initialize_event(user, ip_address) if defined?(EnjuTrunkEvent)
+    initialize_subject(user, ip_address) if defined?(EnjuTrunkSubject)
+#    initialize_theme(user,ip_address) if defined?(EnjuTrunkTheme)
+    initialize_message(user, ip_address) if defined?(EnjuTrunkMessage)
+    initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
+    initialize_bookmark(user, ip_address) if defined?(EnjuBookmark)
     case user.try(:role).try(:name)
     when 'Administrator'
       can [:read, :create, :update], AcceptType
@@ -22,14 +38,6 @@ class Ability
       can [:read, :create, :update], BudgetType
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
-      end
-      can [:read, :create, :update], ClassificationType
-      can :destroy, ClassificationType do |classification_type|
-        classification_type.classifications.empty?
-      end
-      can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-      can [:update, :destroy], InterLibraryLoan do |inter_library_loan|
-        inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
       end
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
@@ -58,8 +66,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.size == 1 and 
-          series_statement.root_manifestation = series_statement.manifestations.first
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:read, :create, :update], Agent
       can :destroy, Agent do |agent|
@@ -69,7 +77,7 @@ class Ability
           true
         end
       end
-      can [:read, :create, :output], Shelf
+      can [:read, :create, :output, :search_name], Shelf
       can :update, Shelf do |shelf|
         shelf.open_access < 9
       end
@@ -98,19 +106,17 @@ class Ability
         Answer,
         Approval,
         ApprovalExtext,
-        Basket,
         BarcodeList,
         BindingItem,
         Bookbinding,
+        BudgetCategory,
         CarrierTypeHasCheckoutType,
         Catalog,
-        CheckedItem,
         Checkoutlist,
         CheckoutStatHasManifestation,
         CheckoutStatHasUser,
         CheckoutType,
         ClaimType,
-        Classification,
         Classmark,
         CopyRequest,
         Create,
@@ -128,6 +134,7 @@ class Ability
         ImportRequest,
         ItemHasOperator,
         ItemHasUseRestriction,
+        Keycode,
         KeywordCount,
         LibraryReport,
         ManifestationCheckoutStat,
@@ -166,11 +173,6 @@ class Ability
         SeriesStatementMerge,
         SeriesStatementMergeList,
         SubCarrierType,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
-        SubjectType,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -185,9 +187,10 @@ class Ability
         UserReserveStat,
         UserStatus,
         Wareki,
-        WorkHasSubject,
         WorkHasTitle,
-        LanguageType
+        Language,
+        LanguageType,
+        TaxRate
       ]
       can [:read, :update], [
         AcceptType,
@@ -198,7 +201,6 @@ class Ability
         Extent,
         Frequency,
         FormOfWork,
-        Language,
         LibraryGroup,
         License,
         ManifestationType,
@@ -230,14 +232,12 @@ class Ability
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
       end
-      can [:read, :create, :export_loan_lists, :get_loan_lists, :pickup, :pickup_item, :accept, :accept_item, :download_file, :output], InterLibraryLoan
-      can [:update, :update, :destroy], InterLibraryLoan do |inter_library_loan|
-        inter_library_loan.state == "pending" || inter_library_loan.state == "requested"
-      end
+      can [:read, :create, :update], BudgetCategory
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
       end
+      can [:read, :create, :update], Keycode
       can [:read, :create, :update, :output_excelx, :upload_to_nacsis], Manifestation
       can :destroy, Manifestation do |manifestation|
         if SystemConfiguration.get("manifestation.has_one_item")
@@ -248,8 +248,8 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.size == 1 and 
-          series_statement.root_manifestation = series_statement.manifestations.first
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+          series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:output], Shelf
       can [:index, :create], Agent
@@ -294,12 +294,10 @@ class Ability
         Answer,
         Approval,
         ApprovalExtext,
-        Basket,
         BarcodeList,
         BindingItem,
         Bookbinding,
         Catalog,
-        CheckedItem,
         Checkoutlist,
         ClaimType,
         Classmark,
@@ -316,6 +314,8 @@ class Ability
         ImportRequest,
         ItemHasOperator,
         KeywordCount,
+        Language,
+        LanguageType,
         LibraryReport,
         ManifestationCheckoutStat,
         ManifestationRelationship,
@@ -347,8 +347,6 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
-        Subject,
-        SubjectHasClassification,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -357,7 +355,6 @@ class Ability
         TitleType,
         UseLicense,
         UserStatus,
-        WorkHasSubject,
         WorkHasTitle
       ]
       can [:read, :update], [
@@ -371,16 +368,12 @@ class Ability
         CheckoutStatHasManifestation,
         CheckoutStatHasUser,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         ContentType,
         Country,
         Extent,
         Frequency,
         FormOfWork,
         ItemHasUseRestriction,
-        Language,
-        LanguageType,
         Library,
         LibraryGroup,
         License,
@@ -400,15 +393,13 @@ class Ability
         Role,
         SearchEngine,
         Shelf,
-        SubjectType,
-        SubjectHeadingType,
-        SubjectHeadingTypeHasSubject,
         EnjuTerminal,
         UseRestriction,
         UserGroup,
         UserGroupHasCheckoutType,
         UserRequestLog,
-        Wareki
+        Wareki,
+        TaxRate
       ]
     when 'User'
       can [:index, :create], Answer
@@ -422,15 +413,18 @@ class Ability
       can [:update, :destroy], Answer do |answer|
         answer.user == user
       end
-      can :create, Basket
       can :index, Item
       can :show, Item do |item|
-        item.required_role_id <= 2
+        item.required_role_id <= 2 && item.shelf.required_role_id <= 2
       end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 2
+        manifestation.required_role_id <= 2 &&
+        !manifestation.items.joins(:shelf).where('items.required_role_id <= 2 AND shelves.required_role_id <= 2').blank? &&
+        (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
+        !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
       end
-      can :edit, Manifestation
+      can :edit, Manifestation #TODO not necessary?
       can [:index, :create], Question
       can [:update, :destroy], Question do |question|
         question.user == user
@@ -478,8 +472,6 @@ class Ability
         AcceptType,
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
@@ -511,31 +503,33 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         EnjuTerminal,
         UserCheckoutStat,
         UserReserveStat,
         UserStatus,
         UserGroup,
         Wareki,
-        WorkHasSubject
+        TaxRate
       ]
     else
       can :index, Agent
       can :show, Agent do |agent|
         agent.required_role_id == 1 #name == 'Guest'
       end
+      can :read, Item do |item|
+        item.required_role_id <= 1 && item.shelf.required_role_id <= 1
+      end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 1
+        manifestation.required_role_id <= 1 &&
+        !manifestation.items.joins(:shelf).where('items.required_role_id <= 1 AND shelves.required_role_id <= 1').blank? &&
+        (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
+        !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
       can :read, [
         CarrierType,
         CirculationStatus,
-        Classification,
-        ClassificationType,
         Classmark,
         ContentType,
         Country,
@@ -545,7 +539,6 @@ class Ability
         Extent,
         Frequency,
         FormOfWork,
-        Item,
         Language,
         Library,
         LibraryGroup,
@@ -568,136 +561,12 @@ class Ability
         SeriesStatement,
         SeriesHasManifestation,
         Shelf,
-        Subject,
-        SubjectHasClassification,
-        SubjectHeadingType,
         UserCheckoutStat,
         UserGroup,
         UserReserveStat,
         Wareki,
-        WorkHasSubject
+        TaxRate
       ]
-    end
-
-    if defined?(EnjuBookmark)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can :manage, [
-          Bookmark,
-          BookmarkStat,
-          BookmarkStatHasManifestation,
-          Tag
-        ]
-      when 'Librarian'
-        can [:read, :create, :update], BookmarkStat
-        can :read, BookmarkStatHasManifestation
-        can :manage, [
-          Bookmark,
-          Tag
-        ]
-      when 'User'
-        can [:index, :create], Bookmark
-        can :show, Bookmark do |bookmark|
-          if bookmark.user == user
-            true
-          elsif user.share_bookmarks
-            true
-          else
-            false
-          end
-        end
-        can [:update, :destroy], Bookmark do |bookmark|
-          bookmark.user == user
-        end
-        can :read, BookmarkStat
-        can :read, Tag
-      else
-        can :read, BookmarkStat
-        can :read, Tag
-      end
-    end
-
-    #if defined?(EnjuMessage)
-    if defined?(Message)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can :manage, Message
-        can [:read, :update, :destroy], MessageRequest
-        can [:read, :update], MessageTemplate
-      when 'Librarian'
-        can [:index, :create], Message
-        can [:update], Message do |message|
-          message.sender == user
-        end
-        can [:show, :destroy, :destroy_selected], Message do |message|
-          message.receiver == user
-        end
-        can [:read, :update, :destroy], MessageRequest
-        can :read, MessageTemplate
-      when 'User'
-        can [:read, :destroy, :destroy_selected], Message do |message|
-          message.receiver == user
-        end
-        can [:index, :create], Message
-        can :show, Message do |message|
-          message.receiver == user
-        end
-      end
-    end
-
-    if defined?(EnjuEvent)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can [:read, :new, :create], EventCategory
-        can [:edit, :update, :destroy], EventCategory do |event_category|
-          !['unknown', 'closed'].include?(event_category.name)
-        end
-        can :manage, [
-          Event,
-          EventImportFile,
-          Participate
-        ]
-        can :read, EventImportResult
-      when 'Librarian'
-        can [:read, :new, :create], EventCategory
-        can [:edit, :update, :destroy], EventCategory do |event_category|
-          !['unknown', 'closed'].include?(event_category.name)
-        end
-        can :manage, [
-          Event,
-          EventImportFile,
-          Participate
-        ]
-        can :read, EventImportResult
-      when 'User'
-        can :read, [
-          Event,
-          EventCategory
-        ]
-      else
-        can :read, [
-          Event,
-          EventCategory
-        ]
-      end
-    end
-
-    if defined?(EnjuNii)
-      case user.try(:role).try(:name)
-      when 'Administrator'
-        can [:read, :update], NiiType
-      else
-        can :read, NiiType
-      end
-    end
-
-    if defined?(EnjuTrunkTheme)
-      case user.try(:role).try(:name)
-      when 'Administrator' then can :manage, [Theme]
-      when 'Librarian'     then can :manage, [Theme]
-      when 'User'          then can :read,   [Theme]
-      else                      can :read,   [Theme]
-      end
     end
 
     can :manage, :opac

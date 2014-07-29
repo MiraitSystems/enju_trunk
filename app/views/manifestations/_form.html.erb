@@ -1,3 +1,4 @@
+<%= render :partial => 'form_select2_function_keys' %>
 <script>
 jQuery(function(){
   new AutoKana('manifestation_original_title', 'manifestation_title_transcription', { katakana:true, toggle:false });
@@ -164,13 +165,11 @@ $(document).keydown(function(e) {
   <div class="field">
     <%= f.label :identifier %><br />
     <%= f.text_field :identifier %>
-    <%#= select :numbering, :type, @numberings.map{|n| [n.display_name, n.name]} %>
-    <%= select2_script "numbering_type" %>
-    <%= make_select2_struct("numbering_type", "numbering[type]", numberings, nil, 250, false) %>
+    <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
     <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
   </div>
 
-  <%= render 'form_agent_field' %>
+  <%= render 'form_agent_field', :f => f %>
   <div class="field">
     <%= f.label t('page.file') -%><br />
     <%= f.file_field :attachment -%>
@@ -192,38 +191,21 @@ $(document).keydown(function(e) {
     }
   </script>
 
-  <div class="field">
-    <%= f.label t('activerecord.models.carrier_type') -%>
-    <%#= f.select(:carrier_type_id, @carrier_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <%= select2_script "carrier_type_id" %>
-    <%= make_select2(:carrier_type_id, "manifestation[carrier_type_id]", @carrier_types, @manifestation.carrier_type_id, 250, false) %>
-    <!-- TODO: Formの切り替え時に入力項目をAjaxで書き換える -->
-    <br>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.models.sub_carrier_type') -%>
-    <%= select2_script "sub_carrier_type_id" %>
-    <%= make_select2(:sub_carrier_type_id, "manifestation[sub_carrier_type_id]", @sub_carrier_types, @manifestation.sub_carrier_type_id, 500, false) %>
-  </div>
+  <%= render :partial => 'form_carrier_type_field', :locals => {:f => f, :manifestation => @manifestation, :carrier_types => @carrier_types} %>
 
   <div class="field">
     <%= f.label t('activerecord.models.manifestation_type') -%>
-    <%#= f.select(:manifestation_type_id, @manifestation_types.collect{|m| [m.display_name.localize, m.id]}) -%>
-    <%= select2_script "manifestation_type_id" %>
-    <%= make_select2(:manifestation_type_id, "manifestation[manifestation_type_id]", @manifestation_types, @manifestation.manifestation_type_id, 300, false) %>
+    <%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) %>
   </div>
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%#= f.select :jpn_or_foreign, Manifestation::JPN_OR_FOREIGN, :include_blank => true %>
-    <%= select2_script "jpn_or_foreign" %>
-    <%= make_select2_struct(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, 200, true, false) %>
+    <%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => 'id', :display_attribute => 'display_name')  %>
   </div>
 
   <div class="field" id="frequency_field">
     <%= f.label t('activerecord.models.frequency') -%>
-    <%= f.select(:frequency_id, @frequencies.collect{|frequency| [frequency.display_name.localize, frequency.id]}) -%>
+    <%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%>
   </div>
 
   <div class="field">
@@ -233,9 +215,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
-    <%#= f.select(:country_of_publication_id, @countries.collect{|country| [country.display_name.localize, country.id]}) -%>
-    <%= select2_script "country_of_publication_id" %>
-    <%= make_select2(:country_of_publication_id, "manifestation[country_of_publication_id]", @countries, @manifestation.country_of_publication_id, 400, false, false) %>
+    <%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %>
   </div>
 
   <div class="field">
@@ -272,13 +252,14 @@ $(document).keydown(function(e) {
       <%= f.text_field :marc_number, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
     </div>
     <div class="field">
-      <%= f.label :ndc -%>
-      <%= f.text_field :ndc, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
+      <%= f.label :jan_magazine %>
+      <%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
     </div>
+    <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end -%>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
-    <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation} %>
+    <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation, :identifiers => @identifiers} %>
   <%- end %> 
 
   <div class="field">
@@ -314,9 +295,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('role.required_role') -%>
-    <%#= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) -%>
-    <%= select2_script "required_role_id"%>
-    <%= make_select2(:required_role_id, "manifestation[required_role_id]", @roles, @manifestation.required_role_id, 150, false, false) %>
+    <%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %>
   </div>
 
   <div class="field">
@@ -350,9 +329,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
-    <%#= f.select :missing_issue, missing_issue_statuses, :include_blank => true -%>
-    <%= select2_script "missing_issue" %>
-    <%= make_select2_struct(:missing_issue, "manifestation[missing_issue]", missing_issue_statuses, @manifestation.missing_issue, 200, true, false) %>
+    <%= f.select2 :missing_issue, missing_issue_statuses, @manifestation.missing_issue, :select_attribute => :id, :display_attribute => :display_name, :width => 200, :include_blank => true %>
   </div>
 
   <div class="field">
@@ -369,7 +346,7 @@ $(document).keydown(function(e) {
   <%#= TODO for extext: change property_name(=> extext1) when use this form. %>
   <div class="field">
     <label>extext</label><br /> 
-    <%= text_field :extexts, :extext1, :value => @extext1, :class => "" %>
+    <%= text_field :extexts, "extext1[value]", :value => @extext1, :class => "" %>
   </div>
 <% end %>
 <!--
@@ -411,18 +388,7 @@ $(document).keydown(function(e) {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
-    <%#= f.select :use_license_id, @use_licenses.collect{|l| [l.agency_name, l.id]} , :include_blank => true %>
-    <%# TODO make_select2 内の分岐がうまくできない %>
-    <%= select2_script "use_license_id" %>
-    <%= make_select2_struct(
-      :use_license_id, 
-      "manifestation[use_license_id]", 
-      use_licenses, 
-      @manifestation.use_license_id, 
-      250, 
-      true, 
-      false
-    ) %>
+    <%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %>
   </div>
 
   <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
@@ -430,10 +396,6 @@ $(document).keydown(function(e) {
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>
-    <%= hidden_field_tag :creators, @creators if @creators -%>
-    <%= hidden_field_tag :contributors, @contributors if @contributors -%>
-    <%= hidden_field_tag :publishers, @publishers if @publishers -%>
-    <%= hidden_field_tag :subjects, @subjects if @subjects -%>
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
 <%- end -%>

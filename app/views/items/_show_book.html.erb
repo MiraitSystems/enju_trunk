@@ -122,9 +122,45 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.item.location_category') -%>:</strong>
+  <% if @item.location_category_id %>
+   <%= @item.location_category.keyname -%>
+  <% end %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.location_symbol') -%>:</strong>
+  <% if @item.location_symbol_id %>
+  <%= @item.location_symbol.keyname -%>
+  <% end %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.statistical_class') -%>:</strong>
+  <% if @item.statistical_class_id %>
+  <%= @item.statistical_class.keyname -%>
+  <% end %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.budget_category') -%>:</strong>
+  <%- if @item.budget_category -%>
+    <%= budget_category_group(@item.budget_category.group_id) if @item.budget_category.group_id %>
+    <%= @item.budget_category.display_name -%>
+  <%- end -%>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.item.item_identifier') -%>:</strong>
   <%= @item.item_identifier -%>
 </p>
+
+<%- if @item.nacsis_identifier %>
+  <p>
+    <strong><%= t('activerecord.attributes.item.nacsis_identifier') -%>:</strong>
+    <%= @item.nacsis_identifier -%>
+  </p>
+<%- end -%>
 
 <p>
   <strong><%= t('activerecord.models.bookstore') -%>:</strong>
@@ -134,6 +170,21 @@
 <p>
   <strong><%= t('activerecord.attributes.item.price') -%>:</strong>
   <%= @item.price -%>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.excluding_tax') %>:</strong>
+  <%= @item.excluding_tax %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.attributes.item.tax') %>:</strong>
+  <%= @item.tax %>
+</p>
+
+<p>
+  <strong><%= t('activerecord.models.tax_rate') %>:</strong>
+  <%= @item.try(:tax_rate).try(:display_name) %>
 </p>
 
 <p>
@@ -231,26 +282,29 @@
     <% if can? :destroy, @item %>
       <li><%= link_to t('page.destroy'), @item, :confirm => t('page.are_you_sure'), :method => :delete -%></li>
     <% end %>
-    <%- if @item.inter_library_loans.empty? -%>
-      <%- if user_signed_in? and current_user.has_role?('Librarian') -%>
-        <li><%= link_to t('item.add_new_copy'), new_manifestation_item_path(@item.manifestation, :item_id => @item) -%></li>
+    <% if defined? EnjuTrunkIll %>
+      <%- if @item.inter_library_loans.empty? -%>
+        <%- if user_signed_in? and current_user.has_role?('Librarian') -%>
+          <li><%= link_to t('item.add_new_copy'), new_manifestation_item_path(@item.manifestation, :item_id => @item) -%></li>
+        <%- end -%>
       <%- end -%>
-    <%- end -%>
+    <% end %>
     <li><%= link_to t('page.listing', :model => t('activerecord.models.lending_policy')), item_lending_policies_path(@item) -%></li>
     <%- if @item.manifestation.bookbinder -%>
       <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :item_id => @item.id}, :confirm => t('page.undo_binding')) -%></li>
     <%- end -%>
   </ul>
   <%#- if @item.manifestation.nacsis_identifier || @item.manifestation.series_statement.nacsis_series_statementid -%>
-  <%- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
+  <%#- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
+  <%- if @item.manifestation.nacsis_identifier && @item.id == (@item.manifestation.items.where('nacsis_identifier is not null').first.try(:id) || @item.id) -%>
     <br /><strong>&nbsp;
     <%= t('external_catalog.nacsis') + ' ' + t('page.edit') %>
-    <%- if @item.manifestation.nacsis_identifier %>
-      <%= " (#{t('page.nacsis_book')}) " %>
-      <%- nacsis_db_type = 'BHOLD' %>
-    <%- else %>
+    <%- if @item.manifestation.series_statement && @item.manifestation.series_statement.periodical %>
       <%= " (#{t('page.nacsis_serial')}) " %>
       <%- nacsis_db_type = 'SHOLD' %>
+    <%- else %>
+      <%= " (#{t('page.nacsis_book')}) " %>
+      <%- nacsis_db_type = 'BHOLD' %>
     <%- end %>
     </strong>
     <%- if @item.nacsis_identifier %>

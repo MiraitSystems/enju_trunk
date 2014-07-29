@@ -61,6 +61,15 @@ class PageController < ApplicationController
       end
     end
     @selected_manifestation_types = params[:manifestation_types]
+    @classification_types = ClassificationType.order("position").all
+    if params[:classifications].blank?
+      @classifications = []
+      3.times do
+        @classifications << {:classification_id => "", :classification_type_id => 2}
+      end
+    else
+      @classifications = params[:classifications]
+    end
   end
 
   def exstatistics

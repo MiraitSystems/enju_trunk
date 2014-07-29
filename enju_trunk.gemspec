@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubyzip', "= 0.9.9" # roo 1.10.1 depends on rubyzip 0.9.x (x >= 4)
   s.add_dependency 'axlsx', '~> 1.3.6'
   s.add_dependency 'spinjs-rails'
-  s.add_dependency 'kaminari'
+  s.add_dependency 'kaminari', '=0.15.1'
   s.add_dependency 'settingslogic'
   s.add_dependency 'state_machine'
   s.add_dependency 'progress_bar'
@@ -64,12 +64,13 @@ Gem::Specification.new do |s|
   s.add_dependency 'library_stdnums'
   s.add_dependency 'client_side_validations'
   s.add_dependency 'prawn', '1.0.0.rc1'
-  s.add_dependency 'rmagick'
+  s.add_dependency 'rmagick', '2.13.2'
   s.add_dependency 'rails_autolink'
   s.add_dependency 'parallel'
   s.add_dependency 'enju_trunk_subject'
   s.add_dependency 'enju_manifestation_viewer', '0.1.0.pre3'
   s.add_dependency 'enju_oai', '0.1.0.pre5'
+  s.add_dependency 'mobile-fu', '1.3.1'
 
   s.add_development_dependency 'sunspot_solr', '~> 2.0.0'
   s.add_development_dependency 'sunspot-rails-tester'

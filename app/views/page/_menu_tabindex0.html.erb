@@ -27,7 +27,9 @@
         <%- end -%>
       </li>
       <%- if current_user.has_role?('Librarian') -%>
-        <%- if SystemConfiguration.get('use_inter_library_loan') %><li><%= link_to t('activerecord.models.inter_library_loan'), inter_library_loans_path -%></li><%- end -%>
+        <% if defined? EnjuTrunkIll %>
+          <%- if SystemConfiguration.get('use_inter_library_loan') %><li><%= link_to t('activerecord.models.inter_library_loan'), inter_library_loans_path -%></li><%- end -%>
+        <% end %>
         <!-- <li><%= link_to 'NACSIS ILL', 'page/under_construction' -%></li> -->
       <%- end -%>
       <li><%= link_to t('page.checkout_history'), user_checkouts_path(current_user) -%></li>

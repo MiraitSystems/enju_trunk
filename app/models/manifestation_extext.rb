@@ -1,5 +1,5 @@
 class ManifestationExtext < ActiveRecord::Base
-  attr_accessible :manifestation_id, :name, :display_name, :position, :value
+  attr_accessible :manifestation_id, :name, :display_name, :position, :value, :type_id
  
   belongs_to :manifestation
 
@@ -13,23 +13,25 @@ class ManifestationExtext < ActiveRecord::Base
     list = []
     position = 1
     extexts.each do |key, value|
-      next if value.blank?
+      next if value['value'].blank?
       manifestation_extext = ManifestationExtext.where(
         name: key,
         manifestation_id: manifestation_id
       ).first
       if manifestation_extext
-        if value.blank?
+        if value['value'].blank?
           manifestation_extext.destroy
           next
         else
-          manifestation_extext.value = value
+          manifestation_extext.value   = value['value']
+          manifestation_extext.type_id = value['type_id']
         end
       else
-        next if value.blank?
+        next if value['value'].blank?
         manifestation_extext = ManifestationExtext.new(
           name: key,
-          value: value,
+          value: value['value'],
+          type_id: value['type_id'],
           manifestation_id: manifestation_id
         )
       end
