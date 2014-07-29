@@ -53,7 +53,8 @@ $(function(){
       $("select[name $= '[library_id]']").select2({width: '200px'});
       $('#item_item_has_operators_attributes_' + replaceCount + '_operated_at').setCalendar({src:'/assets/calendar.png'});
     
-   },
+      this.currentNumber += 1;
+    },
     remove : function (no) {
       var field = $('div#SF' + no);
       field.append('<input name=item[item_has_operators_attributes][' + no + '][_destroy] style="display:none" value="1" />');
