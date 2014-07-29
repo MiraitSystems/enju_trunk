@@ -1,0 +1,16 @@
+/opt/enju_trunk/log/*.log {
+  daily
+  missingok
+  rotate 180
+  dateext
+
+  # 圧縮設定 (圧縮は次回のローテートまで遅らせる)
+  compress
+  delaycompress
+
+  # unicorn masterプロセスに、USR1シグナルを送る
+  lastaction
+    pid=/tmp/unicorn_enju_trunk.pid 
+    test -s $pid && kill -USR1 "$(cat $pid)"
+  endscript
+}
