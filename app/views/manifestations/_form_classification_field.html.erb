@@ -105,25 +105,27 @@
 
 </script>
 
-<div class="field" id="classifications">
-  <%= f.label t('activerecord.models.classification') -%><br />
-  <table id="bless">
-    <% @classifications.each_with_index do |classification, index| -%>
-      <tr id="CLASSIFICATION<%= index %>" >
-        <td>
-          <%= select2_tag("classifications_#{index}_classification_type_id", 
-                           "classifications[][classification_type_id]", 
-                           @classification_types,
-                           classification[:classification_type_id],
-                           :width => 300, :select_attribute => :id, :display_attribute => :display_name
-                          ) %>
-        </td>
-        <td>
-            <%= text_field_tag "classifications[][classification_id]", classification[:classification_id], :id => "classifications_#{index}_classification_id", :class => "classification_id" %>
-        </td>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(#{index})" -%></td>
-      </tr>
-    <% end %>
-  </table>
+<div class="row">
+  <div><%= f.label t('activerecord.models.classification') -%></div>
+  <div id="classifications">
+    <table id="bless">
+      <% @classifications.each_with_index do |classification, index| -%>
+        <tr id="CLASSIFICATION<%= index %>" >
+          <td>
+            <%= select2_tag("classifications_#{index}_classification_type_id", 
+                            "classifications[][classification_type_id]", 
+                            @classification_types,
+                            classification[:classification_type_id],
+                            :width => 300, :select_attribute => :id, :display_attribute => :display_name
+                           ) %>
+          </td>
+          <td>
+              <%= text_field_tag "classifications[][classification_id]", classification[:classification_id], :id => "classifications_#{index}_classification_id", :class => "classification_id" %>
+          </td>
+          <td><%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" -%></td>
+          <td><%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(#{index})" -%></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
 </div>
