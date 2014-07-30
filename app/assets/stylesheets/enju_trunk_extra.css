@@ -265,6 +265,7 @@ div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
   width: 110px;
  // background-color: #ddd;
+  vertical-align: top;
 }
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
