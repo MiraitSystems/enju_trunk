@@ -45,13 +45,15 @@
   });
 </script>
 
-<div class="field">
-  <%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong><br />
-  <%= select2_tag("item_library_id", "item[library_id]", libraries, @item.library_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250) %>
-  <%- if @shelf_categories %>
-    <%= select2_tag :shelf_category, options_for_select(@shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
-    <%= f.select2 :shelf_id, @shelves, @item.shelf_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 300, :selected => @item.shelf_id %>
-  <%- else -%>
-    <%= text_field_tag "item[shelf_id]", @item[:shelf_id], :id => "item_shelf_id" %> 
-  <%- end -%> 
+<div class="row">
+  <div><%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong></div>
+  <div>
+    <%= select2_tag("item_library_id", "item[library_id]", libraries, @item.library_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250) %>
+    <%- if @shelf_categories %>
+      <%= select2_tag :shelf_category, options_for_select(@shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
+      <%= f.select2 :shelf_id, @shelves, @item.shelf_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 300, :selected => @item.shelf_id %>
+    <%- else -%>
+      <%= text_field_tag "item[shelf_id]", @item[:shelf_id], :id => "item_shelf_id" %> 
+    <%- end -%> 
+  </div>
 </div>
