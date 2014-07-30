@@ -46,7 +46,7 @@
     },
     // ClassificationType select2 options
     classificationTypeSlect2options: {
-      width: "300px",
+      width: "200px",
       matcher: function(term, text, opt) {
         return text.toUpperCase().indexOf(term.toUpperCase())==0
             || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
@@ -116,7 +116,7 @@
                             "classifications[][classification_type_id]", 
                             @classification_types,
                             classification[:classification_type_id],
-                            :width => 300, :select_attribute => :id, :display_attribute => :display_name
+                            :width => 200, :select_attribute => :id, :display_attribute => :display_name
                            ) %>
           </td>
           <td>
