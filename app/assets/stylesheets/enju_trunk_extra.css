@@ -260,13 +260,15 @@ div#table div.row>div {
   display: table-cell;
   //border: 1px solid #ccc;
   padding: 3px;
+  float: left;
 }
 div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
   width: 110px;
   text-align: right;
- // background-color: #ddd;
   vertical-align: top;
+  float: left;
+ // background-color: #ddd;
 }
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
