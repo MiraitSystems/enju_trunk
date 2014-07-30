@@ -36,28 +36,25 @@
       },
     },
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" %>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(__count__)" %>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "LANG" + this.currentNumber);
-      
-      var cloneLanguageId = $("tr[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');;
-      var cloneLanguageTypeId = $("tr[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');;
-      var cloneDummyId = $("tr[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
+      var newField = $("<div/>").attr("id", "LANG" + this.currentNumber);
+      var cloneLanguageId = $("div[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');;
+      var cloneLanguageTypeId = $("div[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');;
+      var cloneDummyId = $("div[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
       var cloneLanguage = this.cloneField(cloneLanguageId);
       var cloneLanguageType = this.cloneField(cloneLanguageTypeId);
       var cloneDummy = this.cloneField(cloneDummyId);
 
-      var td1 = $("<td/>").append(cloneLanguageType);
-      var td2 = $("<td/>").append(cloneLanguage);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
-      newField.append(td1).append(td2).append(cloneDummy).append(actionButton);
+      newField.append(cloneLanguageType).append(cloneLanguage).append(actionButton);
       
       cloneLanguage.select2(this.select2Options);
       cloneLanguageType.select2();
       
-      $("#languages > table > tbody").append(newField);
+      $("#languages").append(newField);
 
       this.currentNumber += 1;
     },
@@ -86,18 +83,24 @@
 <div class="row">
   <div><%= f.label t('activerecord.models.language') %></div>
   <div id="languages">
-    <table id="bless">
-      <%- @work_has_languages.each_with_index do |work_has_language, index| %>
-        <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
-          <tr id="LANG<%= index %>">
-            <td><%= w_f.select2 :language_type_id, @language_types, work_has_language.language_type_id, :select_attribute => :name, :display_attribute => :display_name, :width => 200 %>
-            <td><%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", work_has_language[:language_id], :id => "manifestation_work_has_languages_attributes_#{index}_language_id", :class => "language" %></td>
-            <%= w_f.hidden_field :nested, :value => 1 %></td>
-            <td><%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" -%></td>
-            <td><%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 -%></td>
-          </tr>
-        <%- end -%>
-      <%- end -%>
-     </table>
-   </div>
+    <% @work_has_languages.each_with_index do |work_has_language, index| %>
+      <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
+        <div id="LANG<%= index %>">
+          <%= w_f.select2 :language_type_id, 
+            @language_types, 
+            work_has_language.language_type_id, 
+            :select_attribute => :name, 
+            :display_attribute => :display_name, 
+            :width => 200 %>
+          <%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", 
+            work_has_language[:language_id], 
+            :id => "manifestation_work_has_languages_attributes_#{index}_language_id", 
+            :class => "language" %>
+          <%= w_f.hidden_field :nested, :value => 1 %>
+          <%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" %>
+          <%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 </div>
