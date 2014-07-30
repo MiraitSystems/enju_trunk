@@ -177,7 +177,7 @@
    * 
    */
   function removeDivField(prefix, num){
-    if($("tr[id ^= '" + prefix + "']").length == 1) return;
+    if($("div[id ^= '" + prefix + "']").length == 1) return;
     var removeRow = $('#' + prefix + num);
     if(removeRow[0]){
       // set focus

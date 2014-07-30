@@ -1,52 +1,61 @@
-  <div class="field">
-    <%= f.label :original_title %><br />
-    <%= f.text_field :original_title %>
+<div id="table">
+  <div class="row">
+    <div><%= f.label :original_title %></div>
+    <div><%= f.text_field :original_title %></div>
   </div>
-  <div class="field">
-    <%= f.label :title_transcription %><br />
-    <%= f.text_field :title_transcription %>
+
+  <div class="row">
+    <div><%= f.label :title_transcription %></div>
+    <div><%= f.text_field :title_transcription %></div>
   </div>
-  <div class="field">
-    <%= f.label :periodical %><br />
-    <% if false %>
-      <input id="series_statement_periodical" name="series_statement[periodical]" type="checkbox" value=true>
-    <% end %>
-    <%= f.check_box :periodical, :checked => true %>
+
+  <div class="row">
+    <div><%= f.label :periodical %></div>
+    <div>
+      <% if false %>
+        <input id="series_statement_periodical" name="series_statement[periodical]" type="checkbox" value=true>
+      <% end %>
+      <%= f.check_box :periodical, :checked => true %>
+    </div>
   </div>
+
+  <br />
   <div class="spinner"></div>
-  <div class="field">
-    <%= f.label :issn %><br />
-    <%= f.text_field :issn %>
+  <div class="row">
+    <div><%= f.label :issn %></div>
+    <div><%= f.text_field :issn %></div>
   </div>
+
   <!--
-  <div class="field">
-    <%= f.label :numbering %><br />
-    <%= f.text_field :numbering %>
+  <div class="row">
+    <div><%= f.label :numbering %></div>
+    <div><%= f.text_field :numbering %></div>
   </div>
-  <div class="field">
-    <%= f.label :title_subseries %><br />
-    <%= f.text_field :title_subseries %>
+  <div class="row">
+    <div><%= f.label :title_subseries %></div>
+    <div><%= f.text_field :title_subseries %></div>
   </div>
-  <div class="field">
-    <%= f.label :numbering_subseries -%><br />
-    <%= f.text_field :numbering_subseries %>
+  <div class="row">
+    <div><%= f.label :numbering_subseries -%></div>
+    <div><%= f.text_field :numbering_subseries %></div>
   </div>
   -->
-  <div class="field">
-    <%= f.label :series_statement_identifier -%><br />
-    <%= f.text_field :series_statement_identifier, :class => 'resource_item_identifier' %>
+  <div class="row">
+    <div><%= f.label :series_statement_identifier -%></div>
+    <div><%= f.text_field :series_statement_identifier, :class => 'resource_item_identifier' %></div>
   </div>
 
-  <div class="field">
-    <%= f.label :sequence_pattern -%><br />
-    <%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %>
+  <div class="row">
+    <div><%= f.label :sequence_pattern -%></div>
+    <div><%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('activerecord.models.publication_status') -%><br />
-    <%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %>
+  <div class="row">
+    <div><%= f.label t('activerecord.models.publication_status') -%></div>
+    <div><%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %></div>
   </div>
 
+  <br />
   <div class="field">
     <%= f.label :note -%><br />
     <%= f.text_area :note, :class => 'resource_textarea' -%>
@@ -55,3 +64,4 @@
   <div class="actions">
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
+</div>

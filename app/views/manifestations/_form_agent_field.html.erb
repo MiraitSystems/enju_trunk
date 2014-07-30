@@ -120,38 +120,36 @@
   var ItemFieldCreatorSelect2 = {
     currentNumber : <%= raw (@creators.size).to_json %>,
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "CF" + this.currentNumber);
+      var newField = $("<div/>").attr("id", "CF" + this.currentNumber).attr("class", 'field');
       
-      var idFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'id']").attr('id');
+      var idFieldId = $("div[id ^= 'CF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      var div1 = $("<div/>");
+      var div2 = $("<div/>");
 
-      <% if SystemConfiguration.get("add_only_exist_agent") %>
-        newField.append($("<td/>").append(cloneId));
-      <% else %>
-        var nameFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'full_name']").attr('id');
-        var transcriptionFieldId = $("tr[id ^= 'CF']:first").find("input[id $= 'full_name_transcription']").attr('id');
-        var cloneName = this.cloneField(nameFieldId);
-        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
-        newField.append($("<td/>").append(cloneId).append(cloneName));
-        newField.append($("<td/>").append(cloneFullNameTranscription));
-      <% end %>
-
-      cloneId.select2(agentSlect2options);
-      
       <% if SystemConfiguration.get("use_agent_type") %>
-        var typeFieldId = $("tr[id ^= 'CF']:first").find("select[id $= 'type_id']").attr('id');
+        var typeFieldId = $("div[id ^= 'CF']:first").find("select[id $= 'type_id']").attr('id');
         var cloneCreatorType = this.cloneFieldWithoutValue(typeFieldId);
-        newField.append($("<td/>").append(cloneCreatorType));
+        div1.append(cloneCreatorType);
         cloneCreatorType.select2(agentTypeSlect2options);
       <% end %>
       
-      newField.append(actionButton);
-
-      $("#creator_field > table > tbody").append(newField);
+      <% if SystemConfiguration.get("add_only_exist_agent") %>
+        div2.append(cloneId).append(actionButton);
+      <% else %>
+        var nameFieldId = $("div[id ^= 'CF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("div[id ^= 'CF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
+        div2.append(cloneId).append(cloneName).append(cloneFullNameTranscription).append(actionButton);
+      <% end %>
+      cloneId.select2(agentSlect2options);
+      newField.append(div1).append(div2);
+      $("#creator_field > #creators").append(newField);
 
       this.currentNumber += 1;
     },
@@ -168,8 +166,8 @@
       });
     },
     remove : function (div_num) {
-      if($("tr[id ^= 'CF']").length == 1) this.add();
-      removeItemField('CF', div_num);
+      if($("div[id ^= 'CF']").length == 1) this.add();
+      removeDivField('CF', div_num);
     }
   }
 
@@ -180,38 +178,36 @@
   var ItemFieldContributorSelect2 = {
     currentNumber : <%= raw (@contributors.size).to_json %>,
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "RF" + this.currentNumber);
+      var newField = $("<div/>").attr("id", "RF" + this.currentNumber).attr("class", 'field');
       
-      var idFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'id']").attr('id');
+      var idFieldId = $("div[id ^= 'RF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      var div1 = $("<div/>");
+      var div2 = $("<div/>");
 
-      <% if SystemConfiguration.get("add_only_exist_agent") %>
-        newField.append($("<td/>").append(cloneId));
-      <% else %>
-        var nameFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'full_name']").attr('id');
-        var transcriptionFieldId = $("tr[id ^= 'RF']:first").find("input[id $= 'full_name_transcription']").attr('id');
-        var cloneName = this.cloneField(nameFieldId);
-        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
-        newField.append($("<td/>").append(cloneId).append(cloneName));
-        newField.append($("<td/>").append(cloneFullNameTranscription));
-      <% end %>
-
-      cloneId.select2(agentSlect2options);
-      
       <% if SystemConfiguration.get("use_agent_type") %>
-        var typeFieldId = $("tr[id ^= 'RF']:first").find("select[id $= 'type_id']").attr('id');
+        var typeFieldId = $("div[id ^= 'RF']:first").find("select[id $= 'type_id']").attr('id');
         var cloneContributorType = this.cloneFieldWithoutValue(typeFieldId);
-        newField.append($("<td/>").append(cloneContributorType));
+        div1.append(cloneContributorType);
         cloneContributorType.select2(agentTypeSlect2options);
       <% end %>
       
-      newField.append(actionButton);
-
-      $("#contributor_field > table > tbody").append(newField);
+      <% if SystemConfiguration.get("add_only_exist_agent") %>
+        div2.append(cloneId).append(actionButton);
+      <% else %>
+        var nameFieldId = $("div[id ^= 'RF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("div[id ^= 'RF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
+        div2.append(cloneId).append(cloneName).append(cloneFullNameTranscription).append(actionButton);
+      <% end %>
+      cloneId.select2(agentSlect2options);
+      newField.append(div1).append(div2);
+      $("#contributor_field > #contributors").append(newField);
 
       this.currentNumber += 1;
     },
@@ -228,8 +224,8 @@
       });
     },
     remove : function (div_num) {
-      if($("tr[id ^= 'RF']").length == 1) this.add();
-      removeItemField('RF', div_num);
+      if($("div[id ^= 'RF']").length == 1) this.add();
+      removeDivField('RF', div_num);
     }
   }
 
@@ -240,38 +236,36 @@
   var ItemFieldPublisherSelect2 = {
     currentNumber : <%= raw (@publishers.size).to_json %>,
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "PF" + this.currentNumber);
+      var newField = $("<div/>").attr("id", "PF" + this.currentNumber).attr("class", 'field');
       
-      var idFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'id']").attr('id');
+      var idFieldId = $("div[id ^= 'PF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      var div1 = $("<div/>");
+      var div2 = $("<div/>");
 
-      <% if SystemConfiguration.get("add_only_exist_agent") %>
-        newField.append($("<td/>").append(cloneId));
-      <% else %>
-        var nameFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'full_name']").attr('id');
-        var transcriptionFieldId = $("tr[id ^= 'PF']:first").find("input[id $= 'full_name_transcription']").attr('id');
-        var cloneName = this.cloneField(nameFieldId);
-        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
-        newField.append($("<td/>").append(cloneId).append(cloneName));
-        newField.append($("<td/>").append(cloneFullNameTranscription));
-      <% end %>
-
-      cloneId.select2(agentSlect2options);
-      
       <% if SystemConfiguration.get("use_agent_type") %>
-        var typeFieldId = $("tr[id ^= 'PF']:first").find("select[id $= 'type_id']").attr('id');
+        var typeFieldId = $("div[id ^= 'PF']:first").find("select[id $= 'type_id']").attr('id');
         var clonePublisherType = this.cloneFieldWithoutValue(typeFieldId);
-        newField.append($("<td/>").append(clonePublisherType));
+        div1.append(clonePublisherType);
         clonePublisherType.select2(agentTypeSlect2options);
       <% end %>
       
-      newField.append(actionButton);
-
-      $("#publisher_field > table > tbody").append(newField);
+      <% if SystemConfiguration.get("add_only_exist_agent") %>
+        div2.append(cloneId).append(actionButton);
+      <% else %>
+        var nameFieldId = $("div[id ^= 'PF']:first").find("input[id $= 'full_name']").attr('id');
+        var transcriptionFieldId = $("div[id ^= 'PF']:first").find("input[id $= 'full_name_transcription']").attr('id');
+        var cloneName = this.cloneField(nameFieldId);
+        var cloneFullNameTranscription = this.cloneField(transcriptionFieldId);
+        div2.append(cloneId).append(cloneName).append(cloneFullNameTranscription).append(actionButton);
+      <% end %>
+      cloneId.select2(agentSlect2options);
+      newField.append(div1).append(div2);
+      $("#publisher_field > #publishers").append(newField);
 
       this.currentNumber += 1;
     },
@@ -288,31 +282,19 @@
       });
     },
     remove : function (div_num) {
-      if($("tr[id ^= 'PF']").length == 1) this.add();
-      removeItemField('PF', div_num);
+      if($("div[id ^= 'PF']").length == 1) this.add();
+      removeDivField('PF', div_num);
     }
   }
 </script>
 
-<div class="field" id="creator_field">
-  <strong><%= t('agent.creator') %></strong><br />
-  <table id="bless">
+<div class="row" id="creator_field">
+  <div><strong><%= t('agent.creator') %></strong></div>
+  <div id="creators">
     <% @creators.each_with_index do |creator, index| -%>
-      <tr id="CF<%= index %>" >
-        <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <td><%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %></td>
-        <% else %>
-          <td>
-            <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
-            <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
-          </td>
-          <td>
-            <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
-              :id => "creators_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
-          </td>
-        <% end %>
+      <div id="CF<%= index %>" class="field">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <td>
+          <div>
             <%= select2_tag(
               "creators_#{index}_type_id", 
               "creators[][type_id]", 
@@ -320,34 +302,32 @@
               creator[:type_id], 
               :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
-          </td>
+          </div>
         <% end %>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" -%></td>
-      </tr>
+        <% if SystemConfiguration.get("add_only_exist_agent") %>
+          <div><%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
+        <% else %>
+          <div>
+            <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
+            <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
+            <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
+              :id => "creators_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription"), :size => 35 %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%>
+        <%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" -%>
+        </div>
+      </div>
     <% end %>
-  </table>
+  </div>
 </div>
 
-<div class="field" id="contributor_field">
-  <strong><%= t('agent.contributor') %></strong><br />
-  <table id="bless">
+<div class="row" id="contributor_field">
+  <div><strong><%= t('agent.contributor') %></strong></div>
+  <div id="contributors">
     <% @contributors.each_with_index do |contributor, index| -%>
-      <tr id="RF<%= index %>" >
-        <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <td><%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %></td>
-        <% else %>
-          <td>
-            <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
-            <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
-          </td>
-          <td>
-            <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
-              :id => "contributors_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
-          </td>
-        <% end %>
+      <div id="RF<%= index %>" class="field">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <td>
+          <div>
             <%= select2_tag(
               "contributors_#{index}_type_id", 
               "contributors[][type_id]", 
@@ -355,34 +335,32 @@
               contributor[:type_id], 
               :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
-          </td>
+          </div>
         <% end %>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" -%></td>
-      </tr>
+        <% if SystemConfiguration.get("add_only_exist_agent") %>
+          <div><%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
+        <% else %>
+          <div>
+            <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
+            <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
+            <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
+              :id => "contributors_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%>
+        <%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" -%>
+        </div>
+      </div>
     <% end %>
-  </table>
+  </div>
 </div>
 
-<div class="field" id="publisher_field">
-  <strong><%= t('agent.publisher') %></strong><br />
-  <table id="bless">
+<div class="row" id="publisher_field">
+  <div><strong><%= t('agent.publisher') %></strong></div>
+  <div id="publishers">
     <% @publishers.each_with_index do |publisher, index| -%>
-      <tr id="PF<%= index %>" >
-        <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <td><%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %></td>
-        <% else %>
-          <td>
-            <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
-            <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
-          </td>
-          <td>
-            <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
-              :id => "publishers_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
-          </td>
-        <% end %>
+      <div id="PF<%= index %>" class="field">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <td>
+          <div>
             <%= select2_tag(
               "publishers_#{index}_type_id", 
               "publishers[][type_id]", 
@@ -390,11 +368,21 @@
               publisher[:type_id], 
               :width => 250, :select_attribute => :name, :display_attribute => :display_name 
             ) %>
-          </td>
+          </div>
         <% end %>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" -%></td>
-      </tr>
-    <% end %>
-  </table>
+        <% if SystemConfiguration.get("add_only_exist_agent") %>
+          <div><%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
+        <% else %>
+          <div>
+            <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
+            <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
+            <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
+            :id => "publishers_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+        <% end %>
+        <%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%>
+        <%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" -%>
+        </div>
+      </div>
+    <% end %> 
+  </div>
 </div>

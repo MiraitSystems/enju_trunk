@@ -273,3 +273,6 @@ div#table div.row>div:nth-child(odd) {
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
 }
+input[type=text]{
+  width: 200px;
+}
