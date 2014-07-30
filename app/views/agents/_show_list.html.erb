@@ -32,10 +32,6 @@
         <td><strong><%= t('activerecord.attributes.agent.full_name_alternative') -%>:</strong></td>
         <td><%= @agent.full_name_alternative -%></td>
       </tr>
-      <tr>
-        <td><strong><%= t('agent.conference.title') -%>:</strong></td>
-        <td><%= @agent.title -%></td>
-      </tr>
       <%- if @agent.user -%>
         <tr>
           <td><strong><%= t('activerecord.attributes.user.username') -%>:</strong></td>
