@@ -47,10 +47,12 @@
 </script>
 <div class="row">
   <div><%= f.label :budget_category -%></div>
-  <div>
-    <%- unless @budget_groups.blank? %>
+  <%- unless @budget_groups.blank? %>
+    <div>
       <%= select2_tag("budget_category_group_id", "budget_category_group_id", @budget_groups, @item.try(:budget_category).try(:group_id), :width => 250, :include_blank => true, :alt_display => true, :placeholder => t("budget_category.search_group_placeholder")) %>
-    <%- end %>
+    </div>
+  <%- end %>
+  <div>
     <%= text_field_tag "item[budget_category_id]", item[:budget_category_id], :id => "item_budget_category_id" %>
   </div>
 </div>
