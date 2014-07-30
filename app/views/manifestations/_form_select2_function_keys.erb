@@ -90,7 +90,7 @@
           }
           if(keyCode == removeItemKeyCode){
             var currentNumber = $(this).attr("id").match(/\d+/);
-            if($("tr[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
+            if($("div[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
             $(this).select2('close');
             ItemFieldClassificationSelect2.remove(currentNumber);
             return false;
