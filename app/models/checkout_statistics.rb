@@ -24,11 +24,11 @@ class CheckoutStatistics
   validate :checked_at_range_valid?
   
   def self.first_aggregations
-    return [[I18n.t('statistical_table.first_aggregation.user_group'), 'user_group']]
+    return [[I18n.t('statistical_table.checkout_statistics.first_aggregation.user_group'), 'user_group']]
   end
   
   def self.second_aggregations
-    return [[I18n.t('statistical_table.second_aggregation.grade'), 'grade']]
+    return [[I18n.t('statistical_table.checkout_statistics.second_aggregation.grade'), 'grade']]
   end
 
   def make_data
@@ -77,7 +77,7 @@ class CheckoutStatistics
     elsif self.aggregation_type == "classification_type"
       # 分類別
       classifications = Classification.where("classification_type_id = ?", self.classification_type_id)
-      classifications = Classification.where("classification_identifier like '1%'").limit(10)
+#      classifications = Classification.where("classification_identifier like '1%'").limit(10)
       cols = classifications
     end
     
@@ -196,7 +196,7 @@ class CheckoutStatistics
         condition << output_data[:conditions].checked_at_to
         condition << ""
         condition << I18n.t('activemodel.attributes.checkout_statistics.aggregation_type') + ":"
-        condition << I18n.t("statistical_table.aggregation_type.#{output_data[:conditions].aggregation_type}")
+        condition << I18n.t("statistical_table.checkout_statistics.aggregation_type.#{output_data[:conditions].aggregation_type}")
         if output_data[:conditions].aggregation_type == "classification_type"
           classification_type = ClassificationType.where("id = ?", output_data[:conditions].classification_type_id).first
           condition << classification_type.display_name
@@ -205,8 +205,8 @@ class CheckoutStatistics
         end
         condition << ""
         condition << I18n.t('activemodel.attributes.checkout_statistics.first_aggregation') + ":"
-        condition << I18n.t("statistical_table.first_aggregation.#{output_data[:conditions].first_aggregation}")
-        condition << I18n.t("statistical_table.second_aggregation.#{output_data[:conditions].second_aggregation}")
+        condition << I18n.t("statistical_table.checkout_statistics.first_aggregation.#{output_data[:conditions].first_aggregation}")
+        condition << I18n.t("statistical_table.checkout_statistics.second_aggregation.#{output_data[:conditions].second_aggregation}")
         condition << ""
         condition << I18n.t('statistical_table.output_date') + ":"
         condition << Date.today

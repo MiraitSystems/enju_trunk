@@ -1,0 +1,55 @@
+<script>
+  $(document).ready(function() {
+    $('#item_statistics_acquired_at_from').setCalendar({src:'/assets/calendar.png'});
+    $('#item_statistics_acquired_at_to').setCalendar({src:'/assets/calendar.png'});
+    $('#item_statistics_first_aggregation').change( function () {
+      $('#second_aggregation').empty();
+      $.ajax({
+        url: '/statistical_table/get_second_aggregation',
+        type: 'GET',
+        dataType: 'html',
+        data: {first_aggregation : $(this).val()},
+        success: function(data) {
+            $('#second_aggregation').html(data);
+        },
+      });
+    });
+  });
+</script>
+<%= form_for @item_statistics, :url => {:action => "output"} do |f| %>
+  <%= f.hidden_field :statistical_table_type -%>
+    <%= f.error_messages %>
+    <p>
+      <%= t('activerecord.attributes.item.acquired_at') -%>:
+      <%= f.text_field :acquired_at_from, :size => 12, :placeholder => @default_date-%>-
+      <%= f.text_field :acquired_at_to, :size => 12, :placeholder => @default_date-%>
+    <p>
+    <p>
+      <%= f.check_box :money_aggregation -%><%= t('statistical_table.money_aggregation') -%>
+    <p>
+    <p>
+      <%= f.check_box :remove_aggregation -%><%= t('statistical_table.remove_aggregation') -%>
+    <p>
+    <p>
+      <%= t('activerecord.models.library') -%>:
+      <%= f.collection_select :library_id, @librarlies, :id, :display_name, :include_blank => t('advanced_search.all_libraries')  -%>
+    <p>
+    <p>
+      <%= t('activemodel.attributes.item_statistics.output_condition') -%>:
+      <%= f.collection_select  :output_condition, @output_conditions, :v, :keyname  -%>
+    <p>
+    <p>
+      <%= t('activemodel.attributes.item_statistics.aggregation_type') -%>:
+      <%= f.select :aggregation_type, @aggregation_types, :include_blank => true -%>
+    <p>
+    <p>
+      <%= t('activemodel.attributes.item_statistics.first_aggregation') -%>:
+      <%= f.select :first_aggregation, @first_aggregations -%>
+      <span id="second_aggregation">
+        <%= render :partial => 'item_statistics_second_aggregation', :locals => {:f => f} %>
+      </span>
+    <p>
+    <p>
+      <%= f.submit t('statistical_table.statistical_table_output') -%>
+    <p>
+<% end %>

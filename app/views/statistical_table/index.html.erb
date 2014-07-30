@@ -23,11 +23,15 @@
   <div id="content_list">
     <div style="color: red"><%= flash[:message] -%></div>
     <p>
-      <%= t('statistical_table.statistical_table_type') -%>:<%= select_tag("statistical_table_type", options_for_select(@statistical_table_types.map{|t|[t[:display_name], t[:id]]}, @statistical_table_type), :include_blank => true)%> </td>
+      <%= t('statistical_table.statistical_table_type') -%>:
+      <%= select_tag :statistical_table_type, options_for_select(@statistical_table_types, @statistical_table_type), :include_blank => true %> </td>
     <p>
     <div id="condition">
       <% if @statistical_table_type == 'checkout_statistics' -%>
         <%= render :partial => 'checkout_statistics' %>
+      <% end -%>
+      <% if @statistical_table_type == 'item_statistics' -%>
+        <%= render :partial => 'item_statistics' %>
       <% end -%>
     </div>
   </div>

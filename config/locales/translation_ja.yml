@@ -3225,6 +3225,13 @@ ja:
         aggregation_type: 集計方法1
         first_aggregation: 集計方法2
         second_aggregation: 集計方法2
+      item_statistics:
+        acquired_at_from: 受入日開始
+        acquired_at_to: 受入日終了
+        output_condition: 出力条件
+        aggregation_type: 集計方法1
+        first_aggregation: 集計方法2
+        second_aggregation: 集計方法2
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
@@ -3366,16 +3373,29 @@ ja:
   statistical_table:
     statistical_table_output: "統計表の出力"
     statistical_table_type: "統計表の種類"
+    statistical_table_types:
+      checkout_statistics: "貸出統計表"
+      item_statistics: "蔵書統計表"
     checkout_period: "貸出期間"
     books: "冊数"
     persons: "人数"
     subtotal: "合計"
     total: "総合計"
     output_date: "出力日"
-    aggregation_type:
-      month: "月別"
-      classification_type: "分類別"
-    first_aggregation:
-      user_group: "ユーザグループ"
-    second_aggregation:
-      grade: "学年"
+    money_aggregation: 金額を集計する
+    remove_aggregation: 除籍資料を別に集計する
+    item_statistics:
+      aggregation_type:
+        statistical_class: "統計分類"
+        manifestation_type: "資料区分"
+      first_aggregation:
+        budget_category_group: "予算区分"
+        carrier_type: "資料の形態"
+    checkout_statistics:
+      aggregation_type:
+        month: "月別"
+        classification_type: "分類別"
+      first_aggregation:
+        user_group: "ユーザグループ"
+      second_aggregation:
+        grade: "学年"
