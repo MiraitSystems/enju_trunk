@@ -341,7 +341,6 @@ module EnjuTrunk
       conditions << "produces.id is not null"
       conditions << "manifestations.id != #{manifestation.id}" if manifestation.try(:id)
       conditions = conditions.join(' and ')
-
       books = Manifestation.find(
         :all,
         :readonly => false,
@@ -362,11 +361,10 @@ module EnjuTrunk
         elsif same_books.size == 1
           p "editing manifestation"
           mode = 'edit'
-          if same_books.first.items.size == 1
           item = nil
-          item = same_books.first.items.first if item_identifier.nil? || same_books.first.items.first.item_identifier == item_identifier
-            return same_books.first, mode, item
-          end
+          item = same_books.first.items.first if item_identifier.nil?
+          item = same_books.first.items.where(item_identifier: item_identifier).first if item_identifier
+          return same_books.first, mode, item
         end
       end
       p "make new manifestation"
