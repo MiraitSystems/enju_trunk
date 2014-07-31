@@ -245,7 +245,6 @@ class ExportItemListsController < ApplicationController
       tm4 = tm.alias("m4")
       ts = SeriesHasManifestation.arel_table
       ts2 = ts.alias("s2")
-      te = Exemplify.arel_table
 
       max_sn_q =
         ts.project(
@@ -284,18 +283,6 @@ class ExportItemListsController < ApplicationController
           as('m')
 
       scope = scope.
-        joins(
-          ti.join(te).on(
-            te[:item_id].eq(ti[:id])
-          ).
-          join(tm).on(
-            te[:manifestation_id].eq(tm[:id])
-          ).join_sql
-        ).
-        joins(
-          'INNER JOIN ' + max_sn_manifestation_q.to_sql +
-          ' ON ' + max_sn_manifestation_q[:id].eq(tm[:id]).to_sql
-        ).
         joins(:shelf => :library)
       order = 'libraries.id, items.acquired_at, items.bookstore_id, items.item_identifier, items.id'
 

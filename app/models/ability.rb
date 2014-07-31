@@ -3,7 +3,7 @@ require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Se
 engines = []
 engines << EnjuSubject::Engine  if defined?(EnjuTrunkSubject)
 engines << EnjuEvent::Engine    if defined?(EnjuTrunkEvent)
-engines << EnjuMessage::Engine  if defined?(EnjuTrunkMessage)
+engines << EnjuMessage::Engine  if defined?(EnjuMessage)
 engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
 engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
 engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
@@ -17,7 +17,7 @@ class Ability
     initialize_event(user, ip_address) if defined?(EnjuTrunkEvent)
     initialize_subject(user, ip_address) if defined?(EnjuTrunkSubject)
 #    initialize_theme(user,ip_address) if defined?(EnjuTrunkTheme)
-    initialize_message(user, ip_address) if defined?(EnjuTrunkMessage)
+    initialize_message(user, ip_address) if defined?(EnjuMessage)
     initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
     initialize_bookmark(user, ip_address) if defined?(EnjuBookmark)
     case user.try(:role).try(:name)
@@ -125,7 +125,6 @@ class Ability
         Department,
         Donate,
         ExchangeRate,
-        Exemplify,
         Expense,
         Family,
         FunctionClass,
@@ -308,7 +307,6 @@ class Ability
         Department,
         Donate,
         ExchangeRate,
-        Exemplify,
         Expense,
         Family,
         ImportRequest,
@@ -478,7 +476,6 @@ class Ability
         Create,
         CreateType,
 	      Department,
-        Exemplify,
         Extent,
         Frequency,
         FormOfWork,
@@ -535,7 +532,6 @@ class Ability
         Country,
         Create,
         CreateType,
-        Exemplify,
         Extent,
         Frequency,
         FormOfWork,

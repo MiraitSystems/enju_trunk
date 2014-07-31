@@ -6,7 +6,7 @@
 <%= simple_form_for(@item) do |f| -%>
 <div id="table">
   <%= f.error_messages -%>
-  <%= f.hidden_field :manifestation_id %>
+  <%= f.hidden_field :manifestation_id, , :value => @item.manifestation_id %>
 
   <%= render :partial => 'form_shelf', :locals => {:f => f} %>
 

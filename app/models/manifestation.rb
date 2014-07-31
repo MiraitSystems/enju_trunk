@@ -410,9 +410,6 @@ class Manifestation < ActiveRecord::Base
     mani1 = Manifestation.arel_table
     mani2 = mani1.alias
 
-    exem1 = Exemplify.arel_table
-    exem2 = exem1.alias
-
     shas1 = SeriesHasManifestation.arel_table
     shas2 = shas1.alias
 
@@ -422,12 +419,9 @@ class Manifestation < ActiveRecord::Base
         shas2[:manifestation_id].as('grp_manifestation_id'),
         item2[:acquired_at].minimum.as('grp_min_acquired_at')
       ).
-      join(exem2).on(
-        item2[:id].eq(exem2[:item_id]).
-        and(item2[:acquired_at].not_eq(nil))
-      ).
       join(mani2).on(
-        mani2[:id].eq(exem2[:manifestation_id])
+        mani2[:id].eq(item2[:manifestation_id]).
+        and(item2[:acquired_at].not_eq(nil))
       ).
       join(shas2).on(
         shas2[:manifestation_id].eq(mani2[:id]).
@@ -438,12 +432,9 @@ class Manifestation < ActiveRecord::Base
 
     acquired_at_q = item1.
       project(item1['*']).
-      join(exem1).on(
-        item1[:id].eq(exem1[:item_id]).
-        and(item1[:acquired_at].not_eq(nil))
-      ).
       join(mani1).on(
-        mani1[:id].eq(exem1[:manifestation_id])
+        mani1[:id].eq(item1[:manifestation_id]).
+        and(item1[:acquired_at].not_eq(nil))
       ).
       join(shas1).on(
         shas1[:manifestation_id].eq(mani1[:id]).
@@ -1943,7 +1934,6 @@ end
 #  edition                         :integer
 #  note                            :text
 #  produces_count                  :integer         default(0), not null
-#  exemplifies_count               :integer         default(0), not null
 #  embodies_count                  :integer         default(0), not null
 #  work_has_subjects_count         :integer         default(0), not null
 #  repository_content              :boolean         default(FALSE), not null
