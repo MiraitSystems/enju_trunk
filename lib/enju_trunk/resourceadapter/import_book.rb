@@ -110,7 +110,7 @@ module EnjuTrunk
         manifestation_type = set_manifestation_type(field, datas, item) unless manifestation_type
         check_book_datas_has_necessary_field(field, datas, item, manifestation_type)
 
-        manifestation, item, m_mode, import_textresult = fetch_book(field, datas, manifestation_type, item, import_textresult)
+        manifestation, item, m_mode, import_textresult = fetch_book(field, datas, manifestation_type, item, import_textresult, item_identifier)
         item, i_mode, import_textresult = create_book_item(field, datas, textfile, numbering, auto_numbering, manifestation, item, import_textresult)
         import_textresult.manifestation = manifestation
         import_textresult.item = item
@@ -140,7 +140,7 @@ module EnjuTrunk
       end
     end
 
-    def fetch_book(field, datas, manifestation_type, item = nil, import_textresult = nil)
+    def fetch_book(field, datas, manifestation_type, item = nil, import_textresult = nil, item_identifier = nil)
       mode = 'create'
       manifestation = nil
 
@@ -149,7 +149,7 @@ module EnjuTrunk
         mode = 'edit'
       end
       series_statement = find_series_statement(field, datas, manifestation, manifestation_type)
-      manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement) unless manifestation
+      manifestation, mode, item, error_msg = exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement, item_identifier) unless manifestation
       isbn = datas[field[I18n.t('resource_import_textfile.excel.book.isbn')]].to_s
       manifestation = import_isbn(isbn) unless manifestation
       series_statement = create_series_statement(field, datas, mode, manifestation_type, manifestation, series_statement)
@@ -310,7 +310,7 @@ module EnjuTrunk
       return manifestation, item, mode, import_textresult
     end
 
-    def exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement = nil)
+    def exist_same_book?(field, datas, manifestation_type, mode, manifestation, series_statement = nil, item_identifier = nil)
       error_msg = ""
       original_title    = datas[field[I18n.t('resource_import_textfile.excel.book.original_title')]]
       pub_date          = datas[field[I18n.t('resource_import_textfile.excel.book.pub_date')]]
@@ -363,7 +363,9 @@ module EnjuTrunk
           p "editing manifestation"
           mode = 'edit'
           if same_books.first.items.size == 1
-            return same_books.first, mode, same_books.first.items.first
+          item = nil
+          item = same_books.first.items.first if item_identifier.nil? || same_books.first.items.first.item_identifier == item_identifier
+            return same_books.first, mode, item
           end
         end
       end
