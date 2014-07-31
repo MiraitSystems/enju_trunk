@@ -56,23 +56,22 @@
     },
     currentNumber : <%= raw (@subjects.size).to_json %>,
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" %>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(__count__)" %>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "SUBJECT" + this.currentNumber);
-      var typeFieldId = $("tr[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
-      var termFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'subject_id']").attr('id');
-      var termTranscriptionFieldId = $("tr[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
+      var newField = $("<div/>").attr("id", "SUBJECT" + this.currentNumber).attr("class", 'field');
+      var typeFieldId = $("div[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
+      var termFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'subject_id']").attr('id');
+      var termTranscriptionFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
       var cloneType = this.cloneField(typeFieldId);
       var cloneTerm = this.cloneField(termFieldId);
       var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
-      
-      var td1 = $("<td/>").append(cloneType);
-      var td2 = $("<td/>").append(cloneTerm);
-      var td3 = $("<td/>").append(cloneTermTranscription);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      
+      var div1 = $("<div/>").append(cloneType);
+      var div2 = $("<div/>").append(cloneTerm).append(cloneTermTranscription).append(actionButton);
 
-      newField.append(td1).append(td2).append(td3).append(actionButton);
+      newField.append(div1).append(div2);
       
       // select2の設定
       cloneType.select2(this.subjectTypeSelect2options);
@@ -80,7 +79,7 @@
       cloneTerm.select2(ItemFieldSubjectSelect2.subjectSelect2options);
       cloneTermTranscription.val('');
 
-      $("#subjects > table > tbody").append(newField);
+      $("#subjects").append(newField);
 
       this.currentNumber += 1;
     },
@@ -91,8 +90,8 @@
       });
     },
     remove : function (trNum) {
-      if($("tr[id ^= 'SUBJECT']").length == 1) this.add();
-      removeItemField('SUBJECT', trNum)
+      if($("div[id ^= 'SUBJECT']").length == 1) this.add();
+      removeDivField('SUBJECT', trNum)
     }
   }
 
@@ -119,25 +118,29 @@
   });
 </script>
 
-<div class="field" id="subjects">
-  <%= f.label t('activerecord.attributes.manifestation.subject') -%><br />
-  <table id="bless">
+<div class="row">
+  <div><%= f.label t('activerecord.attributes.manifestation.subject') %></div>
+  <div id="subjects">
     <% @subjects.each_with_index do |subject, index| -%>
-      <tr id="SUBJECT<%= index %>" >
-        <td>
+      <div class='field' id="SUBJECT<%= index %>" >
+        <div> 
           <%= select2_tag("subjects_#{index}_subject_type_id",
-                           "subjects[][subject_type_id]",
-                           @subject_types,
-                           subject[:subject_type_id],
-                           :width => 300, :select_attribute => :id, :display_attribute => :display_name) %>
-        </td>
-        <td>
+                          "subjects[][subject_type_id]",
+                          @subject_types,
+                          subject[:subject_type_id],
+                          :width => 200, :select_attribute => :id, :display_attribute => :display_name) %>
+        </div>
+        <div>
           <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
-        </td>
-        <td><%= text_field_tag "subjects[][term_transcription]", subject[:term_transcription], :id => "subjects_#{index}_term_transcription", :placeholder => t("activerecord.attributes.subject.term_transcription") %></td>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%></td>
-      </tr>
+        <%= text_field_tag "subjects[][term_transcription]", 
+          subject[:term_transcription], 
+          :id => "subjects_#{index}_term_transcription", 
+          :placeholder => t("activerecord.attributes.subject.term_transcription"),
+          :style => 'width: 200px;' %>
+        <%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%>
+        <%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%>
+      </div>
+      </div>
     <% end %>
-  </table>
+  </div>
 </div>

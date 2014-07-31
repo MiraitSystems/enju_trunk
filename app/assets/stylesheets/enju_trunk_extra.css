@@ -254,18 +254,27 @@ div#table {
   display: table; 
 }
 div#table div.row {
-  //display: table-row;
+  display: table-row;
 }
 div#table div.row>div {
   display: table-cell;
+  //border: 1px solid #ccc;
   padding: 3px;
-  border-bottom: 1px solid #fff;
+  float: left;
 }
 div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
   width: 110px;
+  text-align: right;
+  vertical-align: top;
+  float: left;
  // background-color: #ddd;
 }
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
 }
+/**
+input[type=text]{
+  width: 200px;
+}
+**/

@@ -42,12 +42,7 @@ class ExchangeManifestationsController < ApplicationController
           @titem.save!
         end 
         @titem.manifestation = @dest_manifestation       
-        unless @titem.manifestation.save
-          e = Exemplify.where(:item_id => @titem.id).first
-          e.manifestation_id = @dest_manifestation.id
-          e.save!(:validate => false)
-          @titem.index
-        end
+        @titem.save!
       end
     rescue => e
       logger.fatal "error. item_exchange unsuccess."

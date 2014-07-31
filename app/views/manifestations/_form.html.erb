@@ -108,7 +108,8 @@ $(document).keydown(function(e) {
 <%= simple_form_for(@manifestation, :html => { :multipart => true }) do |f| -%>
   <%= f.error_messages -%>
 
-  <div class="field">
+<div id="table" %>
+  <div class="row">
     <%- if !@manifestation.new_record? and @manifestation.series_statement -%>
       <%= f.hidden_field :series_statement_id, :value => @manifestation.series_statement.id -%>
       <%= f.hidden_field :periodical, :value => @manifestation.series_statement.periodical %>
@@ -128,57 +129,52 @@ $(document).keydown(function(e) {
     <%- end -%>
   </div>
 
-  <table style='border:none; margin: -4px;'>
-    <tr>
-      <td style='border:none;'>
-        <div class="field">
-          <%= f.label :original_title -%><br />
-          <%= f.text_field :original_title, :class => 'resource_title' -%>
-        </div>
-      </td>
-      <td style='border:none;'>
-        <div id="search_manifestation"></div>
-      </td>
-    </tr>
-    <tr>
-      <td style='border:none;'>
-        <div class="field">
-          <%= f.label :title_transcription -%><br />
-          <%= f.text_field :title_transcription, :class => 'resource_title' -%>
-        </div>
-        <div class="field">
-          <%= f.label :title_alternative -%><br />
-         <%= f.text_field :title_alternative, :class => 'resource_title' -%>
-        </div>
-        <div class="field" id="article_title_field">
-          <%= f.label :article_title %><br />
-          <%= f.text_field :article_title, :class => 'resource_title' %>
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div class="row">
+    <div><%= f.label :original_title -%></div>
+    <div><%= f.text_field :original_title, :class => 'resource_title' -%></div>
+    <div id="search_manifestation"></div>
+  </div>
+
+  <div class="row">
+    <div><%= f.label :title_transcription -%></div>
+    <div><%= f.text_field :title_transcription, :class => 'resource_title' -%></div>
+  </div>
+
+  <div class="row">
+    <div><%= f.label :title_alternative -%></div>
+    <div><%= f.text_field :title_alternative, :class => 'resource_title' -%></div>
+  </div>
+
+  <div class="row" id="article_title_field">
+    <div><%= f.label :article_title %></div>
+    <div><%= f.text_field :article_title, :class => 'resource_title' %></div>
+  </div>
 
   <% if SystemConfiguration.get('manifestation.use_titles') %>
     <%= render :partial => 'form_work_has_title', :locals => {:f => f, :manifestation => @manifestation} %>
   <% end %>
 
-  <div class="field">
-    <%= f.label :identifier %><br />
-    <%= f.text_field :identifier %>
-    <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
-    <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+  <div class="row">
+    <div><%= f.label :identifier %></div>
+    <div>
+      <%= f.text_field :identifier %>
+      <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
+      <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+    </div>
   </div>
 
   <%= render 'form_agent_field', :f => f %>
-  <div class="field">
-    <%= f.label t('page.file') -%><br />
-    <%= f.file_field :attachment -%>
-    <% unless @manifestation.new_record? %>
-      <%- unless @manifestation.attachment_file_name.blank? -%>
-        <%= f.check_box :delete_attachment, :onClick => "toggle_upload()" -%><%= t('manifestation.delete_attachment') -%>
-        <%= render 'manifestations/attachment_file', :manifestation => @manifestation -%>
-      <%- end -%>
-    <% end %>
+  <div class="row">
+    <div><%= f.label t('page.file') -%></div>
+    <div>
+      <%= f.file_field :attachment -%>
+      <% unless @manifestation.new_record? %>
+        <%- unless @manifestation.attachment_file_name.blank? -%>
+          <%= f.check_box :delete_attachment, :onClick => "toggle_upload()" -%><%= t('manifestation.delete_attachment') -%>
+          <%= render 'manifestations/attachment_file', :manifestation => @manifestation -%>
+        <%- end -%>
+      <% end %>
+    </div>
   </div>
 
   <script type="text/javascript">
@@ -193,34 +189,34 @@ $(document).keydown(function(e) {
 
   <%= render :partial => 'form_carrier_type_field', :locals => {:f => f, :manifestation => @manifestation, :carrier_types => @carrier_types} %>
 
-  <div class="field">
-    <%= f.label t('activerecord.models.manifestation_type') -%>
-    <%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) %>
+  <div class="row">
+    <div><%= f.label t('activerecord.models.manifestation_type') -%></div>
+    <div><%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) %></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %>
-    <%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => 'id', :display_attribute => 'display_name')  %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %></div>
+    <div><%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => 'id', :display_attribute => 'display_name')  %></div>
   </div>
 
-  <div class="field" id="frequency_field">
-    <%= f.label t('activerecord.models.frequency') -%>
-    <%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%>
+  <div class="row" id="frequency_field">
+    <div><%= f.label t('activerecord.models.frequency') -%></div>
+    <div><%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :pub_date, :class => 'pub_date' -%>
-    <%= f.text_field :pub_date, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011, 2011-04-12"-%>
+  <div class="row">
+    <div><%= f.label :pub_date, :class => 'pub_date' -%></div>
+    <div><%= f.text_field :pub_date, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011, 2011-04-12"-%></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%>
-    <%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.country_of_publication') -%></div>
+    <div><%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.place_of_publication') -%>
-    <%= f.text_field :place_of_publication %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.place_of_publication') -%></div>
+    <div><%= f.text_field :place_of_publication %></div>
   </div>
 
   <%= render :partial => 'form_work_has_language', :locals => {:f => f, :manifestation => @manifestation} %>
@@ -228,33 +224,45 @@ $(document).keydown(function(e) {
   <%- if @manifestation.series_statement -%>
     <%= render :partial => 'manifestations/serial_form', :locals => {:f => f, :manifestation => @manifestation} -%>
   <%- else -%>
-    <div class="field">
-      <%= f.label :edition_display_value -%>
-      <%= f.text_field :edition_display_value, :size=>"10" -%>
-      <%= f.label :volume_number_string -%>
-      <%= f.text_field :volume_number_string, :size=>"10" -%>
-      <%= f.label :issue_number_string -%>
-      <%= f.text_field :issue_number_string, :size=>"10" -%>
+    <div class="row">
+      <div><%= f.label :edition_display_value -%></div>
+      <div><%= f.text_field :edition_display_value, :size=>"10" -%></div>
     </div>
 
-    <div class="field">
-      <%= f.label :isbn -%>
-      <%= f.text_field :isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
-      <%= link_to_function t('activerecord.attributes.manifestation.wrong_isbn'), "$('#manifestation_wrong_isbn').toggle()" -%>
-      <%= f.text_field :wrong_isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled; display: none' -%>
+    <div class="row">
+      <div><%= f.label :volume_number_string -%></div>
+      <div><%= f.text_field :volume_number_string, :size=>"10" -%></div>
     </div>
-    <div class="field">
-      <%= f.label :lccn -%>
-      <%= f.text_field :lccn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
+
+    <div class="row">
+      <div><%= f.label :issue_number_string -%></div>
+      <div><%= f.text_field :issue_number_string, :size=>"10" -%></div>
     </div>
-    <div class="field">
-      <%= f.label :marc_number -%>
-      <%= f.text_field :marc_number, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
+
+    <div class="row">
+      <div><%= f.label :isbn -%></div>
+      <div><%= f.text_field :isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+      <div>
+        <%= link_to_function t('activerecord.attributes.manifestation.wrong_isbn'), "$('#manifestation_wrong_isbn').toggle()" -%>
+        <%= f.text_field :wrong_isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled; display: none' -%>
+      </div>
     </div>
-    <div class="field">
-      <%= f.label :jan_magazine %>
-      <%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%>
+
+    <div class="row">
+      <div><%= f.label :lccn -%></div>
+      <div><%= f.text_field :lccn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
     </div>
+
+    <div class="row">
+      <div><%= f.label :marc_number -%></div>
+      <div><%= f.text_field :marc_number, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :jan_magazine %></div>
+      <div><%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+    </div>
+
     <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
   <%- end -%>
 
@@ -262,133 +270,84 @@ $(document).keydown(function(e) {
     <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation, :identifiers => @identifiers} %>
   <%- end %> 
 
-  <div class="field">
-    <%= f.label :start_page -%>
-    <%= f.text_field :start_page, :class => 'resource_integer' -%>
-    <%= f.label :end_page -%>
-    <%= f.text_field :end_page, :class => 'resource_integer' -%>
+  <div class="row">
+    <div><%= f.label :start_page -%></div>
+    <div><%= f.text_field :start_page, :class => 'resource_integer' -%></div>
+    <div><%= f.label :end_page -%></div>
+    <div><%= f.text_field :end_page, :class => 'resource_integer' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :height -%>(cm)
-    <%= f.text_field :height, :class => 'resource_integer' -%>
-    <%= f.label :width -%>(cm)
-    <%= f.text_field :width, :class => 'resource_integer' -%>
-    <%= f.label :depth -%>(cm)
-    <%= f.text_field :depth, :class => 'resource_integer' -%>
+  <div class="row">
+    <div><%= f.label :height -%>(cm)</div>
+    <div><%= f.text_field :height, :class => 'resource_integer' -%></div>
+    <div><%= f.label :width -%>(cm)</div>
+    <div><%= f.text_field :width, :class => 'resource_integer' -%></div>
+    <div><%= f.label :depth -%>(cm)</div>
+    <div><%= f.text_field :depth, :class => 'resource_integer' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :price -%>
-    <%= f.text_field :price, :class => 'resource_integer' -%>
+  <div class="row">
+    <div><%= f.label :price -%></div>
+    <div><%= f.text_field :price, :class => 'resource_integer' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :access_address -%><br />
-    <%= f.url_field :access_address, :class => 'resource_url' -%>
+  <div class="row">
+    <div><%= f.label :access_address -%></div>
+    <div><%= f.url_field :access_address, :class => 'resource_url' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :repository_content -%>
-    <%= f.check_box :repository_content -%>
+  <div class="row">
+    <div><%= f.label :repository_content -%></div>
+    <div><%= f.check_box :repository_content -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('role.required_role') -%>
-    <%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %>
+  <div class="row">
+    <div><%= f.label t('role.required_role') -%></div>
+    <div><%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
   </div>
 
-  <div class="field">
-    <%= f.label :except_recent -%>
-    <%= f.check_box :except_recent -%>
+  <div class="row">
+    <div><%= f.label :except_recent -%></div>
+    <div><%= f.check_box :except_recent -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :description -%><br />
-    <%= f.text_area :description, :class => 'resource_textarea' -%>
+  <div class="row">
+    <div><%= f.label :description -%></div>
+    <div><%= f.text_area :description, :class => 'resource_textarea' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :supplement -%><br />
-    <%= f.text_area :supplement, :class => 'resource_textarea' -%>
+  <div class="row">
+    <div><%= f.label :supplement -%></div>
+    <div><%= f.text_area :supplement, :class => 'resource_textarea' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :note -%><br />
-    <%= f.text_area :note, :class => 'resource_textarea' -%>
+  <div class="row">
+    <div><%= f.label :note -%></div>
+    <div><%= f.text_area :note, :class => 'resource_textarea' -%></div>
   </div>
 
   <%= render :partial => 'form_subject_field', :locals => {:f => f, :manifestation => @manifestation} %>
 
   <% if defined?(EnjuTrunkTheme) %>
-    <div class="field">
-      <strong><%= t('activerecord.models.theme') %></strong><br />
-      <%= f.text_field :theme, :id => 'manifestation_theme', :value => @keep_themes %>
+    <div class="row">
+      <div><strong><%= t('activerecord.models.theme') %></strong></div>
+      <div><%= f.text_field :theme, :id => 'manifestation_theme', :value => @keep_themes %></div>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.missing_issue') -%>
-    <%= f.select2 :missing_issue, missing_issue_statuses, @manifestation.missing_issue, :select_attribute => :id, :display_attribute => :display_name, :width => 200, :include_blank => true %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.missing_issue') -%></div>
+    <div><%= f.select2 :missing_issue, missing_issue_statuses, @manifestation.missing_issue, :select_attribute => :id, :display_attribute => :display_name, :width => 200, :include_blank => true %></div>
   </div>
 
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.acceptance_number') %>
-    <%= f.text_field :acceptance_number, :class => "resource_integer" %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.acceptance_number') %></div>
+    <div><%= f.text_field :acceptance_number, :class => "resource_integer" %></div>
   </div>
 
-<% if false %> 
-  <%#= TODO for exinfo: change property_name(=> exinfo1) when use this form. %>
-  <div class="field">
-    <label>exinfo</label><br /> 
-    <%= text_field :exinfos, :exinfo1, :value => @exinfo1, :class => "" %>
-  </div>
-  <%#= TODO for extext: change property_name(=> extext1) when use this form. %>
-  <div class="field">
-    <label>extext</label><br /> 
-    <%= text_field :extexts, "extext1[value]", :value => @extext1, :class => "" %>
-  </div>
-<% end %>
-<!--
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_2') %>
-    <%= f.text_field :exinfo_2, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_3') %>
-    <%= f.text_field :exinfo_3, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_4') %>
-    <%= f.text_field :exinfo_4, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_5') %>
-    <%= f.text_field :exinfo_5, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_6') %>
-    <%= f.text_field :exinfo_6, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_7') %>
-    <%= f.text_field :exinfo_7, :class => "resource_integer" %>
-  </div>
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.exinfo_8') %>
-    <%= f.text_field :exinfo_8, :class => "resource_integer" %>
-  </div>
--->
-
-  <div class="field">
-    <%= f.label t('activerecord.attributes.manifestation.use_license_id') %><br />
-    <%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %>
+  <div class="row">
+    <div><%= f.label t('activerecord.attributes.manifestation.use_license_id') %></div>
+    <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
   </div>
 
   <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
@@ -398,4 +357,6 @@ $(document).keydown(function(e) {
     <%= hidden_field_tag :manifestation_id, @original_manifestation.id if @original_manifestation -%>
     <%= f.submit :disable_with => t('page.wait') %>
   </div>
+
+</div>
 <%- end -%>

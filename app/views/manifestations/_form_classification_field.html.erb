@@ -8,7 +8,7 @@
     classificationSlect2options: {
       multiple: false,
       minimumInputLength: 1,
-      width: "250px",
+      width: "204px",
       allowClear: true,
       placeholder: <%= raw t("classification.search_placeholder").to_json %>,
       formatNoMatches: function(term) {
@@ -46,7 +46,7 @@
     },
     // ClassificationType select2 options
     classificationTypeSlect2options: {
-      width: "300px",
+      width: "200px",
       matcher: function(term, text, opt) {
         return text.toUpperCase().indexOf(term.toUpperCase())==0
             || opt.attr("alt").toUpperCase().indexOf(term.toUpperCase())==0;
@@ -54,31 +54,29 @@
     },
     currentNumber : <%= raw (@classifications.size).to_json %>,
     actionTemplate : ''
-      + '<td><%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" -%></td>'
-      + '<td><%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(__count__)" -%>',
+      + '<%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" %>'
+      + '<%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(__count__)" %>',
     add : function () {
-      var newField = $("<tr/>").attr("id", "CLASSIFICATION" + this.currentNumber);
-      var classificationTypeFieldId = $("tr[id ^= 'CLASSIFICATION']:first").find("select[id $= 'classification_type_id']").attr('id');
-      var classificationFieldId = $("tr[id ^= 'CLASSIFICATION']:first").find("input[id $= 'classification_id']").attr('id');
+      var newField = $("<div/>").attr("id", "CLASSIFICATION" + this.currentNumber);
+      var classificationTypeFieldId = $("div[id ^= 'CLASSIFICATION']:first").find("select[id $= 'classification_type_id']").attr('id');
+      var classificationFieldId = $("div[id ^= 'CLASSIFICATION']:first").find("input[id $= 'classification_id']").attr('id');
       var cloneClassificationType = this.cloneField(classificationTypeFieldId);
       var cloneClassificationId = this.cloneField(classificationFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
       
-      newField.append($("<td/>").append(cloneClassificationType));
-      newField.append($("<td/>").append(cloneClassificationId));
-      newField.append(actionButton);
+      newField.append(cloneClassificationType).append(cloneClassificationId).append(actionButton);
 
       cloneClassificationType.select2(this.classificationTypeSlect2options);
       cloneClassificationId.val('');
       cloneClassificationId.select2(this.classificationSlect2options);
 
-      $("#classifications > table > tbody").append(newField);
+      $("#classifications").append(newField);
 
       this.currentNumber += 1;
     },
     remove : function (trNumber) {
-      if($("tr[id ^= 'CLASSIFICATION']").length == 1) this.add();
-      removeItemField('CLASSIFICATION', trNumber);
+      if($("div[id ^= 'CLASSIFICATION']").length == 1) this.add();
+      removeDivField('CLASSIFICATION', trNumber);
     },
     cloneField : function (fieldId) {
       return $('#' + fieldId).clone().attr({
@@ -105,25 +103,24 @@
 
 </script>
 
-<div class="field" id="classifications">
-  <%= f.label t('activerecord.models.classification') -%><br />
-  <table id="bless">
+<div class="row">
+  <div><%= f.label t('activerecord.models.classification') -%></div>
+  <div id="classifications">
     <% @classifications.each_with_index do |classification, index| -%>
-      <tr id="CLASSIFICATION<%= index %>" >
-        <td>
-          <%= select2_tag("classifications_#{index}_classification_type_id", 
-                           "classifications[][classification_type_id]", 
-                           @classification_types,
-                           classification[:classification_type_id],
-                           :width => 300, :select_attribute => :id, :display_attribute => :display_name
-                          ) %>
-        </td>
-        <td>
-            <%= text_field_tag "classifications[][classification_id]", classification[:classification_id], :id => "classifications_#{index}_classification_id", :class => "classification_id" %>
-        </td>
-        <td><%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" -%></td>
-        <td><%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(#{index})" -%></td>
-      </tr>
+      <div id="CLASSIFICATION<%= index %>" >
+        <%= select2_tag("classifications_#{index}_classification_type_id", 
+                        "classifications[][classification_type_id]", 
+                        @classification_types,
+                        classification[:classification_type_id],
+                        :width => 200, :select_attribute => :id, :display_attribute => :display_name
+                        ) %>
+        <%= text_field_tag "classifications[][classification_id]",
+          classification[:classification_id], 
+          :id => "classifications_#{index}_classification_id", 
+          :class => "classification_id" %>
+        <%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" %>
+        <%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(#{index})" %>
+      </div>
     <% end %>
-  </table>
+  </div>
 </div>

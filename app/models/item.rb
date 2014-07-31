@@ -12,7 +12,7 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, :manifestation_id
 
   self.extend ItemsHelper
  
@@ -100,7 +100,6 @@ class Item < ActiveRecord::Base
   belongs_to :budget_category
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
-  # validates_associated :exemplify, :message => I18n.t('import_request.isbn_taken')
   validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
   validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   before_validation :set_circulation_status, :on => :create
@@ -108,7 +107,7 @@ class Item < ActiveRecord::Base
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   #after_save :check_price, :except => :delete
   after_save :reindex
-
+  after_create :create_lending_policy, :unless => proc{SystemConfiguration.isWebOPAC}
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
 
@@ -577,6 +576,12 @@ class Item < ActiveRecord::Base
     make_audio_list_tsv(tsv_file, @items) if file_type.nil? || file_type == "tsv"
     # make pdf
     make_audio_list_pdf(pdf_file, @items) if file_type.nil? || file_type == "pdf"
+  end
+
+  def create_lending_policy
+    UserGroupHasCheckoutType.available_for_item(self).each do |rule|
+      LendingPolicy.create!(:item_id => self.id, :user_group_id => rule.user_group_id, :fixed_due_date => rule.fixed_due_date, :loan_period => rule.checkout_period, :renewal => rule.checkout_renewal_limit)
+    end
   end
 
   private

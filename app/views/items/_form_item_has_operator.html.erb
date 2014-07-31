@@ -9,49 +9,41 @@ $(function(){
 <script>
   var ItemField = {
     currentNumber : <%= @item.item_has_operators.size %>,
-    itemTemplate : ''
-                 + '<label class="integer optional" for="item_item_has_operators_attributes___count___user_id"><%= t('activerecord.attributes.item_has_operator.user_id') %></label>'
-                 + '<input onclick="ItemField.add();" type="button" value="+" />'
-                 + '<input type="button" value="-" onClick="ItemField.remove(__count__);" /><br />'
-                 + '<input id="item_has_operators_attributes___count___username" name="item[item_has_operators_attributes][__count__][username]" type="text" />'
-                 + '</div>'
-                 + '<div class="field">'
-                 + '<label class="datetime optional" for="item_item_has_operators_attributes___count___operated_at"><%= t('activerecord.attributes.item_has_operator.operated_at') %></label><br />'
-                 + '<input id="item_item_has_operators_attributes___count___operated_at" name="item[item_has_operators_attributes][__count__][operated_at]" size="30" type="text" value="<%= Date.today %>" />'
-                 + '</div>'
-
-                 + '<div class="field">'
-                 + '<label class="integer optional" for="item_item_has_operators_attributes___count___library_id"><%= t('activerecord.attributes.item_has_operator.library_id') %></label><br />'
-                 + ' <select id="item_item_has_operators_attributes___count___library_id" name="item[item_has_operators_attributes][__count__][library_id]">'
-
-                 <% @libraries.map do |l| %>
-                 + '<option value="<%= l.id %>" <%= "selected = \"selected\"" if l.id == @item.library_id %>><%= l.display_name.localize %></option>'
-                 <% end %>
-                 + '</select>'
-                 + '</div>'
-
-                 + '<div class="field">'
-                 + '<label class="integer optional" for="item_item_has_operators_attributes___count___library_ad"><%= t('activerecord.attributes.item_has_operator.note') %></label><br />'
-
-                 + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20"></textarea>',
     itemDeleteTemplate : ''
-
                  + '<input id="item_item_has_operators_attributes___count___user_id" name="item[item_has_operators_attributes][__count__][user_id]" type="hidden" value="" />'
-
                  + '<input id="item_item_has_operators_attributes___count___operated_at" name="item[item_has_operators_attributes][__count__][operated_at]" size="30" type="text" value="" />'
-
                  + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20" value="" ></textarea>',
-
     add : function () {
-      var replaceCount = this.currentNumber;
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "SF" + replaceCount);
-      new_area.setAttribute("class", "field");
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      new_area.innerHTML = newItem;
-      $("div#operators").append(new_area);
+      var cloneField = $('div#SF0').clone().attr("id", "SF" + this.currentNumber);
+
+      var cloneOperatorUserId = $("div[id ^= 'SF']:first").find("input[id $= 'username']").attr('id'); 
+      cloneField.find('#' + cloneOperatorUserId).attr({
+          'id' : cloneOperatorUserId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + cloneOperatorUserId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+      var cloneOperatorOperatedAtId = $("div[id ^= 'SF']:first").find("input[id $= 'operated_at']").attr('id'); 
+      cloneField.find('img').remove();
+      cloneField.find('#' + cloneOperatorOperatedAtId).attr({
+          'id' : cloneOperatorOperatedAtId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + cloneOperatorOperatedAtId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+      var cloneOperatorLibraryId = $("div[id ^= 'SF']:first").find("select[id $= 'library_id']").attr('id'); 
+      cloneField.find('#' + cloneOperatorLibraryId).attr({
+          'id' : cloneOperatorLibraryId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + cloneOperatorLibraryId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+      cloneField.find("div[id $= 'library_id']").remove();
+      var cloneOperatorNoteId = $("div[id ^= 'SF']:first").find("textarea[id $= 'note']").attr('id'); 
+      cloneField.find('#' + cloneOperatorNoteId).attr({
+          'id' : cloneOperatorNoteId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
+          'name' : $('#' + cloneOperatorNoteId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+
+      cloneField.find(':button').parent().append('<input type="button" value="-" onClick="ItemField.remove(' + this.currentNumber + ');" />');
+
+      $("div#operators").append(cloneField);
+      $('#item_item_has_operators_attributes_' + this.currentNumber + '_operated_at').setCalendar({src:'/assets/calendar.png'});
       $("select[name $= '[library_id]']").select2({width: '200px'});
-      $('#item_item_has_operators_attributes_' + replaceCount + '_operated_at').setCalendar({src:'/assets/calendar.png'});
     
       this.currentNumber += 1;
     },
@@ -69,28 +61,34 @@ $(function(){
 <%- @item.item_has_operators.each_with_index do  |item_operator, i| %>
   <%= f.fields_for :item_has_operators, item_operator do |operator| %>
     <div id="SF<%= i %>">
-    <div class="field">
-      <%= operator.label :user_id %>
-      <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%><br />
-      <%- if item_operator.username %>
-        <%= operator.text_field :username %>
-      <%- else -%>
-        <%= operator.text_field :username, :value => item_operator.try(:user).try(:username) %>
-      <%- end -%>
+    <div class="row">
+      <div>
+        <%= operator.label :user_id %>
+      </div>
+      <div>
+        <%- if item_operator.username %>
+          <%= operator.text_field :username %>
+        <%- else -%>
+          <%= operator.text_field :username, :value => item_operator.try(:user).try(:username) %>
+        <%- end -%>
+      </div>
     </div>
-    <div class="field">
-      <%= operator.label :operated_at %><br />
-      <%= operator.text_field :operated_at %>
-    </div>
-
-    <div class="field">
-      <%= operator.label :library_id %><br />
-      <%= operator.select2 :library_id, @libraries, nil, :width => 200, :display_attribute => 'display_name', :select_attribute => 'id' %>
+    <div class="row">
+      <div><%= operator.label :operated_at %></div>
+      <div><%= operator.text_field :operated_at %></div>
     </div>
 
-    <div class="field">
-      <%= operator.label :note %><br />
-      <%= operator.text_area :note %>
+    <div class="row">
+      <div><%= operator.label :library_id %></div>
+      <div><%= operator.select2 :library_id, @libraries, nil, :width => 200, :display_attribute => 'display_name', :select_attribute => 'id' %></div>
+    </div>
+
+    <div class="row">
+      <div><%= operator.label :note %></div>
+      <div>
+        <%= operator.text_area :note %>
+        <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%>
+      </div>
     </div>
     </div>
   <% end %>

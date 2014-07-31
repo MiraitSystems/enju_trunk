@@ -73,7 +73,7 @@
           }
           if(keyCode == removeItemKeyCode){
             var currentNumber = $(this).attr("id").match(/\d+/);
-            if($("tr[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
+            if($("div[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
             $(this).select2('close');
             ItemFieldSubjectSelect2.remove(currentNumber);
             return false;
@@ -90,7 +90,7 @@
           }
           if(keyCode == removeItemKeyCode){
             var currentNumber = $(this).attr("id").match(/\d+/);
-            if($("tr[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
+            if($("div[id ^= 'CLASSIFICATION']").length == 1) ItemFieldClassificationSelect2.add();
             $(this).select2('close');
             ItemFieldClassificationSelect2.remove(currentNumber);
             return false;
@@ -164,7 +164,7 @@
       }
       if(keyCode == removeItemKeyCode){
         var currentNumber = e.target.id.match(/\d+/);
-        if($("tr[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
+        if($("div[id ^= 'SUBJECT']").length == 1) ItemFieldSubjectSelect2.add();
         ItemFieldSubjectSelect2.remove(currentNumber);
         return false;
       }
@@ -172,6 +172,26 @@
 
    });
 
+  /**
+   * 入力フィールドの削除(div)
+   * 
+   */
+  function removeDivField(prefix, num){
+    if($("div[id ^= '" + prefix + "']").length == 1) return;
+    var removeRow = $('#' + prefix + num);
+    if(removeRow[0]){
+      // set focus
+      var firstNumber = $("div[id ^= '" + prefix + "']:first").attr("id").match(/\d+/);
+      if(num == firstNumber){
+        var nextElement = removeRow.next().find('input,select').first();
+        if(nextElement[0]) nextElement.focus();
+      }else{
+        var prevElement = removeRow.prev().find('input,select').first();
+        if(prevElement[0]) prevElement.focus();
+      }
+      removeRow.remove(); // remove
+    }
+  }
 
   /**
    * 入力フィールドの削除
