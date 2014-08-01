@@ -3,7 +3,7 @@
     subCarrierTypeSelect2options: {
       multiple: false,
       maximumSelectionSize: 10,
-      width: "300px",
+      width: "250px",
       allowClear: true,
       placeholder: <%= raw t("sub_carrier_type.search_placeholder").to_json %>, 
       formatNoMatches: function(term) {
@@ -46,6 +46,8 @@
 
 <div class="row">
   <div><%= f.label t('activerecord.models.carrier_type') -%></div>
-  <div><%= f.select2(:carrier_type_id, carrier_types, manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) %></div>
-  <div><%= text_field_tag "manifestation[sub_carrier_type_id]", manifestation[:sub_carrier_type_id], :id => 'manifestation_sub_carrier_type_id' %></div>
+  <div>
+    <%= f.select2(:carrier_type_id, carrier_types, manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) %>
+    <%= text_field_tag "manifestation[sub_carrier_type_id]", manifestation[:sub_carrier_type_id], :id => 'manifestation_sub_carrier_type_id', :width => 10 %>
+  </div>
 </div>

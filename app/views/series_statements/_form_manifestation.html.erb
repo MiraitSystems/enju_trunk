@@ -1,4 +1,7 @@
 <script>
+$(document).ready(function(){
+  $('#series_statement_pub_date').setCalendar({src:'/assets/calendar.png'});
+}
 jQuery(function(){
   var article_title = "<%= @series_statement.root_manifestation.article_title %>"
   displayArticleTitle(article_title);
@@ -45,23 +48,23 @@ function displayArticleTitle(article_title) {
     <%= render :partial => 'manifestations/form_work_has_title', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation} %>
   <% end %>
 
-  <br />
   <div class="row">
     <div><%= f_m.label :identifier %></div>
-    <div><%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 200 %></div>
-    <div><%= f_m.text_field :identifier, :width => 200 %></div>
-    <div><%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %></div>
+    <div><%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250 %></div>
+    <div>
+      <%= f_m.text_field :identifier, :class => 'series_string' %>
+      <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+    </div>
   </div>
  
-  <br />
   <%= render 'manifestations/form_agent_field', :f => f_m %>
 
-  <br />
   <div class="row">
     <div><%= f_m.label t('page.file') -%></div>
     <div><%= f_m.file_field :attachment -%></div>
     <%- unless @series_statement.root_manifestation.attachment_file_name.blank? -%>
-      <div><%= f_m.check_box :delete_attachment, :onClick => "toggle_upload()" -%></div><div><%= t('manifestation.delete_attachment') -%></div>
+      <div><%= f_m.check_box :delete_attachment, :onClick => "toggle_upload()" -%></div>
+      <div><%= t('manifestation.delete_attachment') -%></div>
       <%= render 'manifestations/attachment_file', :manifestation => @series_statement.root_manifestation -%>
     <%- end -%>
   </div>
@@ -70,32 +73,42 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label t('activerecord.models.manifestation_type') -%></div>
-    <div><%= f_m.select2(:manifestation_type_id, @manifestation_types, @series_statement.root_manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) -%></div>
+    <div>
+      <%= f_m.select2(:manifestation_type_id,
+        @manifestation_types, @series_statement.root_manifestation.manifestation_type_id, 
+        :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) 
+      -%>
+    </div>
   </div>
 
   <div class="row">
     <div><%= f_m.label t('activerecord.attributes.manifestation.jpn_or_foreign') %></div>
-    <div><%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => :name, :display_attribute => :display_name) %></div>
+    <div><%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @series_statement.root_manifestation.jpn_or_foreign, :width => 310, :include_blank => true, :select_attribute => :name, :display_attribute => :display_name) %></div>
   </div>
 
   <div class="row">
     <div><%= f_m.label t('activerecord.models.frequency') -%></div>
-    <div><%= f_m.select2(:frequency_id, @frequencies, @series_statement.root_manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%></div>
+    <div><%= f_m.select2(:frequency_id, @frequencies, @series_statement.root_manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) -%></div>
   </div>
 
+    <script>
+      $(function(){
+        $('#manifestation_pub_date').setCalendar({src:'/assets/calendar.png'});
+      });
+    </script>
   <div class="row">
-    <div><%= f_m.label :pub_date -%></div>
+    <div><%= f_m.label :pub_date, :class => 'pub_date' -%></div>
     <div><%= f_m.text_field :pub_date, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011, 2011-04-12"-%></div>
   </div>
 
   <div class="row">
     <div><%= f_m.label t('activerecord.attributes.manifestation.country_of_publication') -%></div>
-    <div><%= f_m.select2(:country_of_publication_id, @countries, @series_statement.root_manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %></div>
+    <div><%= f_m.select2(:country_of_publication_id, @countries, @series_statement.root_manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 400) %></div>
   </div>
 
   <div class="row">
     <div><%= f_m.label t('activerecord.attributes.manifestation.place_of_publication') -%></div>
-    <div><%= f_m.text_field :place_of_publication %></div>
+    <div><%= f_m.text_field :place_of_publication, :class => 'series_large_string' %></div>
   </div>
 
   <div class="row">
@@ -104,19 +117,23 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label :edition_display_value -%></div>
-    <div><%= f_m.text_field :edition_display_value, :size => '10' -%></div>
-    <div><%= f_m.label :volume_number_string -%></div>
-    <div><%= f_m.text_field :volume_number_string, :size => '10' -%></div>
-    <div><%= f_m.label :issue_number_string -%></div>
-    <div><%= f_m.text_field :issue_number_string, :size => '10' -%></div>
+    <div>
+      <%= f_m.text_field :edition_display_value, :class => 'series_small_string' -%>
+      <%= f_m.label :volume_number_string -%>
+      <%= f_m.text_field :volume_number_string, :class => 'series_small_string' -%>
+      <%= f_m.label :issue_number_string -%>
+      <%= f_m.text_field :issue_number_string, :class => 'series_small_string' -%>
+    </div>
   </div>
+
   <div class="row">
     <div><%= f_m.label :jan_magazine %></div>
-    <div><%= f_m.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' %></div>
+    <div><%= f_m.text_field :jan_magazine, :class => 'series_small_string', :style => 'ime-mode: disabled' %></div>
   </div>
+
   <div class="row">
     <div><%= f_m.label :price -%></div>
-    <div><%= f_m.text_field :price, :class => 'resource_integer' -%></div>
+    <div><%= f_m.text_field :price, :class => 'series_small_string' -%></div>
   </div>
 
   <div class="row">
@@ -124,7 +141,6 @@ function displayArticleTitle(article_title) {
     <div><%= f_m.url_field :access_address, :class => 'resource_url' -%></div>
   </div>
 
-  <br />
   <div class="row">
     <div><%= f_m.label :repository_content -%></div>
     <div><%= f_m.check_box :repository_content -%></div>
@@ -132,7 +148,7 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label t('role.required_role') -%></div>
-    <div><%= f_m.select2(:required_role_id, @roles, @series_statement.root_manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
+    <div><%= f_m.select2(:required_role_id, @roles, @series_statement.root_manifestation.required_role_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
   </div>
 
   <div class="row">
@@ -142,15 +158,15 @@ function displayArticleTitle(article_title) {
 
   <br />
   <div class="row">
-    <%= f_m.label :description -%><br />
-    <%= f_m.text_area :description, :class => 'resource_textarea' -%>
+    <div><%= f_m.label :description -%></div>
+    <div><%= f_m.text_area :description, :class => 'resource_textarea' -%></div>
   </div>
 
   <%= render :partial => 'manifestations/form_subject_field', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation} %>
 
   <div class="row">
     <div><%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %></div>
-    <div><%= f_m.select2 :use_license_id, @use_licenses, @series_statement.root_manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name'%></div>
+    <div><%= f_m.select2 :use_license_id, @use_licenses, @series_statement.root_manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name'%></div>
   </div>
 
 

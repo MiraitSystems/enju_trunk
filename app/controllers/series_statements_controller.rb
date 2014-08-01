@@ -78,9 +78,12 @@ class SeriesStatementsController < ApplicationController
     if original_series_statement
       @series_statement = original_series_statement.dup
       @series_statement.root_manifestation = original_series_statement.root_manifestation.dup
+      @classifications = get_classification_values(original_series_statement.root_manifestation)
     else
       @series_statement.initialize_root_manifestation
+      @classifications = get_classification_values(@series_statement.root_manifestation)
     end
+
     set_root_manifestation_instance_vals(@series_statement.root_manifestation)
     respond_to do |format|
       format.html # new.html.erb
@@ -95,6 +98,7 @@ class SeriesStatementsController < ApplicationController
     @contributors = @series_statement.root_manifestation.try(:contributors).present? ? @series_statement.root_manifestation.contributors.order(:position) : [{}] unless @contributors
     @publishers = @series_statement.root_manifestation.try(:publishers).present? ? @series_statement.root_manifestation.publishers.order(:position) : [{}] unless @publishers
     @subjects = @series_statement.root_manifestation.try(:subjects).present? ? @series_statement.root_manifestation.subjects : [{}] unless @subjects
+    @classifications = get_classification_values(@series_statement.root_manifestation)
     set_root_manifestation_instance_vals(@series_statement.root_manifestation)
   end
 
@@ -218,6 +222,12 @@ class SeriesStatementsController < ApplicationController
     @use_licenses = UseLicense.all    
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
+    if SystemConfiguration.get('manifestation.use_identifiers')
+      @identifier_types = IdentifierType.find(:all, :select => "id, display_name, name", :order => "position") || []
+      @identifiers = @series_statement.root_manifestation.identifiers rescue []
+      @identifiers << Identifier.new if @identifiers.blank?
+    end
+    @classification_types = ClassificationType.order("position").all
   end
 
   def set_and_create_root_manifestation(params)
@@ -226,6 +236,8 @@ class SeriesStatementsController < ApplicationController
     params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
     params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
+    @classifications = params[:classifications]
+    @series_statement.root_manifestation.classifications = create_classification_values(@classifications);
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
       { subjects: create_subject_values(@subjects), 
@@ -233,5 +245,35 @@ class SeriesStatementsController < ApplicationController
         realizes: create_contributor_values(@contributors),
         produces: create_publisher_values(@publishers),
         exinfos: params[:exinfos], extexts: params[:extexts]})
+  end
+
+  #
+  # create classification vaules
+  #
+  def create_classification_values(add_classifications)
+    classifications = []
+    add_classifications.each do |add_classification|
+      next if add_classification[:classification_id].blank?
+      classification = Classification.where(:id => add_classification[:classification_id]).first
+      classifications << classification if classification.present?
+    end
+    return classifications
+  end
+
+  #
+  # get classification vaules
+  #
+  def get_classification_values(manifestation)
+    classifications = []
+    manifestation_has_classifications = manifestation.manifestation_has_classifications.order(:position)
+    if manifestation_has_classifications.present?
+      manifestation_has_classifications.each do |manifestation_has_classification|
+        classifications << {:classification_type_id => manifestation_has_classification.classification.classification_type_id,
+                            :classification_id => manifestation_has_classification.classification_id}
+      end
+    else
+      classifications << {}
+    end
+    return classifications
   end
 end

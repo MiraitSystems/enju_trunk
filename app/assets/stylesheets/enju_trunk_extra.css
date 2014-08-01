@@ -273,8 +273,15 @@ div#table div.row>div:nth-child(odd) {
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
 }
-/**
-input[type=text]{
-  width: 200px;
+
+input.series_string{
+  width: 250px;
 }
-**/
+
+input.series_large_string{
+  width: 400px;
+}
+
+input.series_small_string{
+  width: 130px;
+}

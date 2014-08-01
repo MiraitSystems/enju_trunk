@@ -56,7 +56,21 @@ module Devise
               end
               success!(user)
             else
-              fail(:invalid_login)
+              Rails.logger.info "ldap bind (5) : invalid ldap user"
+              Rails.logger.info "ldap bind (6) : try local auth"
+             
+              resource = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
+
+              if validate(resource){ resource.valid_password?(password) }
+                resource.after_database_authentication
+                success!(resource)
+              elsif !halted?
+                Rails.logger.info "ldap bind (7) : try local auth"
+                fail(:invalid)
+              end
+
+              return
+              #fail(:invalid_login)
             end
           else
             Rails.logger.info "ldap search (2) : auth try"
