@@ -4,4 +4,8 @@ class Title < ActiveRecord::Base
   has_many :work_has_titles
   has_many :manifestations, :through => :work_has_titles
 
+  def self.create_with_title_type(manifestation, title_type, attributes)
+    title = Title.create(attributes)
+    manifestation.work_has_titles.create(:title_id => title.id, :title_type_id => title_type.id) 
+  end
 end

@@ -166,19 +166,20 @@ class SeriesStatement < ActiveRecord::Base
     manifestation
   end
 
-  def self.create_root_manifestation(series_statement, objs)
+  def self.create_root_manifestation(series_statement, objs = {})
     root_manifestation = series_statement.root_manifestation
     root_manifestation = series_statement.initialize_root_manifestation(root_manifestation)
     root_manifestation.save!
-
-    root_manifestation.subjects = objs[:subjects]
-    root_manifestation.creates = objs[:creates]
-    root_manifestation.realizes = objs[:realizes]
-    root_manifestation.produces = objs[:produces]
-    root_manifestation.manifestation_exinfos = ManifestationExinfo.
-      add_exinfos(objs[:exinfos], root_manifestation.id) if objs[:exinfos]
-    root_manifestation.manifestation_extexts = ManifestationExtext.
-      add_extexts(objs[:extexts], root_manifestation.id) if objs[:extexts]
+    unless objs.blank?
+      root_manifestation.subjects = objs[:subjects]
+      root_manifestation.creates = objs[:creates]
+      root_manifestation.realizes = objs[:realizes]
+      root_manifestation.produces = objs[:produces]
+      root_manifestation.manifestation_exinfos = ManifestationExinfo.
+        add_exinfos(objs[:exinfos], root_manifestation.id) if objs[:exinfos]
+      root_manifestation.manifestation_extexts = ManifestationExtext.
+        add_extexts(objs[:extexts], root_manifestation.id) if objs[:extexts]
+  end
     return root_manifestation
   end
 
