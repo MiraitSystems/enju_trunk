@@ -1,12 +1,12 @@
 <div id="table">
   <div class="row">
     <div><%= f.label :original_title %></div>
-    <div><%= f.text_field :original_title %></div>
+    <div><%= f.text_field :original_title, :class => 'resource_title' %></div>
   </div>
 
   <div class="row">
     <div><%= f.label :title_transcription %></div>
-    <div><%= f.text_field :title_transcription %></div>
+    <div><%= f.text_field :title_transcription, :class => 'resource_title' %></div>
   </div>
 
   <div class="row">
@@ -23,7 +23,7 @@
   <div class="spinner"></div>
   <div class="row">
     <div><%= f.label :issn %></div>
-    <div><%= f.text_field :issn %></div>
+    <div><%= f.text_field :issn, :class => 'resource_isbn_issn' %></div>
   </div>
 
   <!--
@@ -47,18 +47,18 @@
 
   <div class="row">
     <div><%= f.label :sequence_pattern -%></div>
-    <div><%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %></div>
+    <div><%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true, :width => 200 %></div>
   </div>
 
   <div class="row">
     <div><%= f.label t('activerecord.models.publication_status') -%></div>
-    <div><%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true %></div>
+    <div><%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true, :width => 200 %></div>
   </div>
 
   <br />
-  <div class="field">
-    <%= f.label :note -%><br />
-    <%= f.text_area :note, :class => 'resource_textarea' -%>
+  <div class="row">
+    <div><%= f.label :note -%></div>
+    <div><%= f.text_area :note, :class => 'resource_textarea' -%></div>
   </div>
 
   <div class="actions">

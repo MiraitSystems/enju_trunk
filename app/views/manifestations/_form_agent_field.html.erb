@@ -311,7 +311,9 @@
             <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
             <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
             <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
-              :id => "creators_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription"), :size => 35 %>
+              :id => "creators_#{index}_full_name_transcription", :class => 'series_string', 
+              :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
+            %>
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" -%>
@@ -344,7 +346,9 @@
             <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
             <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
             <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
-              :id => "contributors_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+              :id => "contributors_#{index}_full_name_transcription", :class => 'series_string',
+              :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
+            %>
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" -%>
@@ -377,7 +381,9 @@
             <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
             <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
             <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
-            :id => "publishers_#{index}_full_name_transcription", :placeholder => t("activerecord.attributes.agent.full_name_transcription") %>
+              :id => "publishers_#{index}_full_name_transcription", :class => 'series_string',
+              :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
+            %>
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" -%>
