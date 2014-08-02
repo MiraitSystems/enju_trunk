@@ -1,8 +1,8 @@
 <%# cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'show_index', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
   <strong>
     <%- if [1, 2].include?(manifestation.missing_issue) %><%= t('manifestation.missing') %><%- end %>
-    <%= t('manifestation.periodical') if manifestation.periodical_master? %>
-    <% if manifestation.periodical_master %>
+    <%= t('manifestation.periodical') if manifestation.root_of_series? %>
+    <% if manifestation.root_of_series? %>
       <%= link_to highlight(manifestation.series_statement.original_title), 
         series_statement_manifestations_path(manifestation.series_statement, reset_facet_params(params)) %>
     <% else %>
@@ -11,7 +11,7 @@
   </strong>
   <%= t('manifestation.format_volume', :volume => manifestation.volume_number_string) unless manifestation.volume_number_string.blank? %>
   <%= t('manifestation.format_issue', :issue => manifestation.issue_number_string) unless manifestation.issue_number_string.blank? %>
-  <% if manifestation.periodical_master? %>
+  <% if manifestation.root_of_series? %>
     <%- if manifestation.series_statement.try(:first_issue) and manifestation.series_statement.try(:latest_issue) -%>
       <%= manifestation.series_statement.first_issue.date_of_publication.try(:year) -%>
       -
