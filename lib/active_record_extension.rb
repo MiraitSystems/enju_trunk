@@ -4,10 +4,12 @@ module ActiveRecordExtension
       class_eval <<-EOF
         attr_accessible :#{arg}_id
         def #{arg}_id=(obj)
-          if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
-            exinfo.update_attributes(:value => obj)
-          else
-            self.#{self.name.underscore}_exinfos.build(:name => '#{arg}', :value => obj)
+          unless obj.blank?
+            if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
+              exinfo.update_attributes(:value => obj)
+            else
+              self.#{self.name.underscore}_exinfos.build(:name => '#{arg}', :value => obj)
+            end
           end
         end
         def #{arg}
@@ -25,10 +27,12 @@ module ActiveRecordExtension
       class_eval <<-EOF
         attr_accessible :#{arg}
         def #{arg}=(obj)
-          if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
-            exinfo.update_attributes(:value => obj)
-          else
-            self.#{self.name.underscore}_exinfos.build(:name => '#{arg}', :value => obj)
+          unless obj.blank?
+            if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
+              exinfo.update_attributes(:value => obj)
+            else
+              self.#{self.name.underscore}_exinfos.build(:name => '#{arg}', :value => obj)
+            end
           end
         end
         def #{arg}
@@ -43,10 +47,12 @@ module ActiveRecordExtension
       class_eval <<-EOF
         attr_accessible :#{arg}, :#{arg}_type_id
         def #{arg}=(obj)
-          if extext = #{self.name.underscore}_extexts.where(:name => '#{arg}').first
-            extext.update_attributes(:value => obj)
-          else
-            self.#{self.name.underscore}_extexts.build(:name => '#{arg}', :value => obj)
+          unless obj.blank?
+            if extext = #{self.name.underscore}_extexts.where(:name => '#{arg}').first
+              extext.update_attributes(:value => obj)
+            else
+              self.#{self.name.underscore}_extexts.build(:name => '#{arg}', :value => obj)
+            end
           end
         end
         def #{arg}
@@ -54,11 +60,13 @@ module ActiveRecordExtension
         end
 
         def #{arg}_type_id=(obj)
-          if extext = #{self.name.underscore}_extexts.where(:name => '#{arg}').first
-            extext.update_attributes(:type_id => obj)
-          else
-            self.#{self.name.underscore}_extexts.build(:name => '#{arg}', :type_id => obj)
-          end
+          unless obj.blank?
+            if extext = #{self.name.underscore}_extexts.where(:name => '#{arg}').first
+              extext.update_attributes(:type_id => obj)
+            else
+              self.#{self.name.underscore}_extexts.build(:name => '#{arg}', :type_id => obj)
+            end
+          end 
         end
         def #{arg}_type_id
           #{self.name.underscore}_extexts.where(:name => '#{arg}').first.type_id rescue nil
