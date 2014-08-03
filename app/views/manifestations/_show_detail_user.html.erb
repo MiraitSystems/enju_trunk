@@ -149,6 +149,9 @@
             <td>
               <%- manifestation.subjects.each do |subject| -%>
                 <%= link_to subject.term, subject -%>
+                 <% if subject.subject_type %>
+                   (<%= link_to subject.subject_type.try(:display_name).try(:localize), subject.subject_type %>)
+                 <% end %>
               <%- end -%>
             </td>
           </tr>

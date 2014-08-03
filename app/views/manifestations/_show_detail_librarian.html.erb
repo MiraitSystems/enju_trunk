@@ -214,13 +214,9 @@
                 <%- manifestation.subjects.each do |subject| -%>
                   <li>
                     <%= link_to subject.term, subject -%>
-                    <%- unless subject.classifications.empty? -%>
-                      (
-                      <%- subject.classifications.each do |classification| -%>
-                        <%= classification.classification_type.name -%>: <%= link_to classification.category, classification -%>
-                      <%- end -%>
-                      )
-                    <%- end -%>
+                    <% if subject.subject_type %>
+                      (<%= link_to subject.subject_type.try(:display_name).try(:localize), subject.subject_type %>)
+                    <% end %>
                   </li>
                 <%- end -%>
               </ul>
