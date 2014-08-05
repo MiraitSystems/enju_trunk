@@ -963,13 +963,6 @@ class ManifestationsController < ApplicationController
   # PUT /manifestations/1
   # PUT /manifestations/1.json
   def update
-    if params[:manifestation][:work_has_titles_attributes]
-      params[:manifestation][:work_has_titles_attributes].each do |key, title_attributes|
-        if title_attributes[:title].blank? && title_attributes[:title_transcription].blank? && title_attributes[:title_alternative].blank?
-          params[:manifestation][:work_has_titles_attributes]["#{key}"][:_destroy] = 1
-        end
-      end
-    end
     if params[:manifestation][:identifiers_attributes]
       params[:manifestation][:identifiers_attributes].each do |key, identifier_attributes|
         if identifier_attributes[:body].blank?

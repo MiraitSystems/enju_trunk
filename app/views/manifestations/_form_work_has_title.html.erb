@@ -1,7 +1,8 @@
 <script id="script_add_title">
   function remove_field(div_num, id_name) {
     var field = $("div#" + id_name + div_num);
-    if(field != null){
+    if ($("div:visible[id ^= 'VF']").length == 1) ItemField_title.add();
+    if (field != null){
       field.append('<input name=manifestation[work_has_titles_attributes][' + div_num + '][_destroy] style="display:none" value="1" />');
       field.hide();
     }
@@ -9,14 +10,19 @@
 
   var ItemField_title = {
     currentNumber: <%= raw (@work_has_titles.size).to_json %>,
+    actionTemplate : ''
+      + '<%= button_to_function t('page.add_line'), "ItemField_title.add()" %>'
+      + '<%= button_to_function t('page.del_line'), "ItemField_title.remove(__count__)" %>',
     add : function () {
       var fieldId = this.currentNumber;
       var cloneField = $('#VF0').clone().attr({
                        'id' : 'VF' + fieldId
                        });
       cloneField.children('div').remove();
+      cloneField.children("input[type='button']").remove();
       cloneField.children('input.resource_title').val('');
-      cloneField.append('<input type="button" value="-" onClick="ItemField_title.remove(' + fieldId + ');" /> ');
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      cloneField.append(actionButton);
 
       $('#titles').append(cloneField);
       cloneField.children('input, select').each(function(){
@@ -70,7 +76,7 @@
           <% end %>
           <%= w_f.hidden_field :nested %>
           <%= button_to_function '+', 'ItemField_title.add()' %>
-          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' if index > 0 %>
+          <%= button_to_function '-', 'ItemField_title.remove(' + index.to_s + ')' %>
         </div>
       <% end %>
     <% end %>

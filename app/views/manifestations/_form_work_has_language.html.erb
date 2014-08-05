@@ -5,7 +5,6 @@
       multiple: false,
       minimumInputLength: 1,
       width: "200px",
-      placeholder: <%= raw t("activerecord.models.language").to_json %>,
       formatSearching: function() {
         return <%= raw t("agent.search_searching").to_json %>;
       },
@@ -25,13 +24,18 @@
       },
       initSelection: function(element, callback) {
         var id = $(element).val();
+        console.log(id);
         if (id != "" && id == parseInt(id)) {
+          console.log('language_id');
           $.ajax("/languages/search_name.json?language_id=" + id, {
               dataType: "json"
-          }).done(function(data) { callback(data); });
-        }
-        else{
-          callback({ id: id, text: id });
+          }).done(function(data) {callback(data); });
+        } else {
+          console.log('unknown');
+          $.ajax("/languages/search_name.json", {
+            dataType: 'json',
+            data: {search_phrase: 'unknown'}
+          }).done(function(data) {callback(data)});
         }
       },
     },
@@ -45,13 +49,13 @@
       var cloneDummyId = $("div[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
       var cloneLanguage = this.cloneField(cloneLanguageId);
       var cloneLanguageType = this.cloneField(cloneLanguageTypeId);
-      var cloneDummy = this.cloneField(cloneDummyId);
+      var cloneDummy = this.cloneField(cloneDummyId).val('1');
 
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
 
-      newField.append(cloneLanguageType).append(cloneLanguage).append(actionButton);
+      newField.append(cloneLanguageType).append(cloneLanguage).append(cloneDummy).append(actionButton);
       
-      cloneLanguage.select2(this.select2Options);
+      cloneLanguage.select2(this.select2Options).select2('val',[]);
       cloneLanguageType.select2();
       
       $("#languages").append(newField);
@@ -66,39 +70,40 @@
     },
     remove : function (trNum) {
       var field = $("#LANG" + trNum);
+      if($("div:visible[id ^= 'LANG']").length == 1) this.add();
       if(field != null){
         field.append('<input name=manifestation[work_has_languages_attributes][' + trNum + '][_destroy] style="display:none" value="1" />');
         field.hide();
-      }       
+      } 
     }
   }
 
   $(document).ready(function() {
-    $('.language').select2(ItemFieldLanguageSelect2.select2Options);
-    $("select[name$='[language_type_id]']").select2();
+    $("input[id $= 'language_id']").select2(ItemFieldLanguageSelect2.select2Options);
   });
 
 </script>
 
 <div class="row">
-  <div><%= f.label t('activerecord.models.language') %></div>
-  <div id="languages">
+  <div><%= f.label t('activerecord.models.language'), :required => true %></div>
+  <div id="languages" class="field">
     <% @work_has_languages.each_with_index do |work_has_language, index| %>
       <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
         <div id="LANG<%= index %>">
-          <%= w_f.select2 :language_type_id, 
-            @language_types, 
-            work_has_language.language_type_id, 
-            :select_attribute => :name, 
-            :display_attribute => :display_name, 
-            :width => 200 %>
-          <%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", 
+           <%= select2_tag "manifestation_work_has_languages_attributes_#{index}_language_type_id", 
+                          "manifestation[work_has_languages_attributes][#{index}][language_type_id]",
+                          @language_types, 
+                          work_has_language.language_type_id, 
+                          :select_attribute => :name, 
+                          :display_attribute => :display_name, 
+                          :width => 200 %>
+           <%= text_field_tag "manifestation[work_has_languages_attributes][#{index}][language_id]", 
             work_has_language[:language_id], 
             :id => "manifestation_work_has_languages_attributes_#{index}_language_id", 
             :class => "language" %>
-          <%= w_f.hidden_field :nested, :value => 1 %>
-          <%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" %>
-          <%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" if index > 0 %>
+           <%= w_f.hidden_field :nested, :value => 1 %>
+           <%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" %>
+           <%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(#{index})" %>
         </div>
       <% end %>
     <% end %>
