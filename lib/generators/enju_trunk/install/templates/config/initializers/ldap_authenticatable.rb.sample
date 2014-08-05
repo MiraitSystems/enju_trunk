@@ -37,6 +37,39 @@ module Devise
 
           if SystemConfiguration.get("ldap.type") == "ldapbind"
             Rails.logger.info "ldap bind (2) : auth try."
+
+            user_basedn = ""
+            
+            ldap_search_auth = {
+              :username => SystemConfiguration.get("ldap.search.auth.username"), 
+              :password => SystemConfiguration.get("ldap.search.auth.password")
+            }
+
+            ldap_search_server_config = ldap_search_config.merge({:auth => ldap_search_auth})
+            ldap_search = Net::LDAP.new(ldap_search_server_config)
+            ldap_search_treebase = SystemConfiguration.get("ldap.search.treebase")
+
+            unless ldap_search.get_operation_result.code == 0
+              # invalid parameter
+              Rails.logger.info "unsuccess ldap_search (1) code=#{ldap_search.get_operation_result.code} error_message=#{ldap_search.get_operation_result.error_message} "
+              fail(:invalid)
+            end
+
+            filter = Net::LDAP::Filter.eq("uid", username)
+            ldap_search.search(:base => treebase, :filter => filter) do |entry|
+              userbasedn = entry.dn
+              #TODO 
+              username = userbasedn
+            end
+
+            unless ldap_search.get_operation_result.code == 0
+              # invalid parameter
+              Rails.logger.info "unsuccess ldap_search (2) code=#{ldap_search.get_operation_result.code} error_message=#{ldap_search.get_operation_result.error_message} "
+              fail(:invalid)
+            end
+
+            Rails.logger.info "ldap_search (3) user=#{username}"
+
             ldap.auth username, password
 
             Rails.logger.info "ldap bind (3) : ldap bind try."
