@@ -346,7 +346,7 @@ $(document).keydown(function(e) {
   </div>
 
   <div class="row">
-    <div><%= f.label t('activerecord.attributes.manifestation.use_license_id') %></div>
+    <div><%= f.label hbr( t('activerecord.attributes.manifestation.use_license_id') ) %></div>
     <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
   </div>
 

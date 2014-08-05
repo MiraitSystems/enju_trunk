@@ -264,7 +264,7 @@ div#table div.row>div {
 }
 div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
-  width: 110px;
+  width: 130px;
   text-align: right;
   vertical-align: top;
   float: left;
