@@ -157,8 +157,8 @@ $(document).keydown(function(e) {
   <div class="row">
     <div><%= f.label :identifier %></div>
     <div>
-      <%= f.text_field :identifier %>
       <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
+      <%= f.text_field :identifier, :class => 'series_string' %>
       <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
     </div>
   </div>
@@ -191,17 +191,17 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label t('activerecord.models.manifestation_type'), :required => true -%></div>
-    <div><%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 300) %></div>
+    <div><%= f.select2(:manifestation_type_id, @manifestation_types, @manifestation.manifestation_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) %></div>
   </div>
 
   <div class="row">
     <div><%= f.label t('activerecord.attributes.manifestation.jpn_or_foreign') %></div>
-    <div><%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, :width => 200, :include_blank => true, :select_attribute => 'id', :display_attribute => 'display_name')  %></div>
+    <div><%= select2_tag(:jpn_or_foreign, "manifestation[jpn_or_foreign]", Manifestation::JPN_OR_FOREIGN, @manifestation.jpn_or_foreign, :width => 310, :include_blank => true, :select_attribute => 'id', :display_attribute => 'display_name')  %></div>
   </div>
 
   <div class="row" id="frequency_field">
     <div><%= f.label t('activerecord.models.frequency') -%></div>
-    <div><%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 250) -%></div>
+    <div><%= f.select2(:frequency_id, @frequencies, @manifestation.frequency_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) -%></div>
   </div>
 
   <div class="row">
@@ -211,12 +211,12 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label t('activerecord.attributes.manifestation.country_of_publication'), :required => true -%></div>
-    <div><%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250) %></div>
+    <div><%= f.select2(:country_of_publication_id, @countries, @manifestation.country_of_publication_id, :select_attribute => 'name', :display_attribute => 'display_name', :width => 400) %></div>
   </div>
 
   <div class="row">
     <div><%= f.label t('activerecord.attributes.manifestation.place_of_publication') -%></div>
-    <div><%= f.text_field :place_of_publication %></div>
+    <div><%= f.text_field :place_of_publication, :class => 'series_large_string' %></div>
   </div>
 
   <%= render :partial => 'form_work_has_language', :locals => {:f => f, :manifestation => @manifestation} %>
@@ -226,41 +226,37 @@ $(document).keydown(function(e) {
   <%- else -%>
     <div class="row">
       <div><%= f.label :edition_display_value -%></div>
-      <div><%= f.text_field :edition_display_value, :size=>"10" -%></div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :volume_number_string -%></div>
-      <div><%= f.text_field :volume_number_string, :size=>"10" -%></div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :issue_number_string -%></div>
-      <div><%= f.text_field :issue_number_string, :size=>"10" -%></div>
+      <div>
+        <%= f.text_field :edition_display_value, :class => 'series_small_string' -%>
+        <%= f.label :volume_number_string -%>
+        <%= f.text_field :volume_number_string, :class => 'series_small_string' -%>
+        <%= f.label :issue_number_string -%>
+        <%= f.text_field :issue_number_string, :class => 'series_small_string' -%>
+      </div>
     </div>
 
     <div class="row">
       <div><%= f.label :isbn -%></div>
-      <div><%= f.text_field :isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+      <div><%= f.text_field :isbn, :class => 'series_small_string', :style => 'ime-mode: disabled' -%></div>
       <div>
         <%= link_to_function t('activerecord.attributes.manifestation.wrong_isbn'), "$('#manifestation_wrong_isbn').toggle()" -%>
-        <%= f.text_field :wrong_isbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled; display: none' -%>
+        <%= f.text_field :wrong_isbn, :class => 'series_small_string', :style => 'ime-mode: disabled; display: none' -%>
       </div>
     </div>
 
     <div class="row">
       <div><%= f.label :lccn -%></div>
-      <div><%= f.text_field :lccn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+      <div><%= f.text_field :lccn, :class => 'series_small_string', :style => 'ime-mode: disabled' -%></div>
     </div>
 
     <div class="row">
       <div><%= f.label :marc_number -%></div>
-      <div><%= f.text_field :marc_number, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+      <div><%= f.text_field :marc_number, :class => 'series_small_string', :style => 'ime-mode: disabled' -%></div>
     </div>
 
     <div class="row">
       <div><%= f.label :jan_magazine %></div>
-      <div><%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+      <div><%= f.text_field :jan_magazine, :class => 'series_small_string', :style => 'ime-mode: disabled' -%></div>
     </div>
 
     <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
@@ -272,23 +268,23 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label :start_page -%></div>
-    <div><%= f.text_field :start_page, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :start_page, :class => 'series_small_string' -%></div>
     <div><%= f.label :end_page -%></div>
-    <div><%= f.text_field :end_page, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :end_page, :class => 'series_small_string' -%></div>
   </div>
 
   <div class="row">
     <div><%= f.label :height -%>(cm)</div>
-    <div><%= f.text_field :height, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :height, :class => 'series_small_string' -%></div>
     <div><%= f.label :width -%>(cm)</div>
-    <div><%= f.text_field :width, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :width, :class => 'series_small_string' -%></div>
     <div><%= f.label :depth -%>(cm)</div>
-    <div><%= f.text_field :depth, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :depth, :class => 'series_small_string' -%></div>
   </div>
 
   <div class="row">
     <div><%= f.label :price -%></div>
-    <div><%= f.text_field :price, :class => 'resource_integer' -%></div>
+    <div><%= f.text_field :price, :class => 'series_small_string' -%></div>
   </div>
 
   <div class="row">
@@ -303,7 +299,7 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label t('role.required_role'), :required => true -%></div>
-    <div><%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
+    <div><%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
   </div>
 
   <div class="row">
@@ -347,7 +343,7 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label hbr( t('activerecord.attributes.manifestation.use_license_id') ) %></div>
-    <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 150, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
+    <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
   </div>
 
   <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
