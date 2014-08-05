@@ -157,9 +157,11 @@ $(document).keydown(function(e) {
   <div class="row">
     <div><%= f.label :identifier %></div>
     <div>
-      <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
-      <%= f.text_field :identifier, :class => 'series_string' %>
-      <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+      <div class="row2">
+        <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250  %>
+        <%= f.text_field :identifier, :class => 'series_string' %>
+        <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+      </div>
     </div>
   </div>
 

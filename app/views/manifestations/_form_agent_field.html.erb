@@ -123,7 +123,7 @@
       + '<%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<div/>").attr("id", "CF" + this.currentNumber).attr("class", 'field');
+      var newField = $("<div/>").attr("id", "CF" + this.currentNumber).attr("class", 'row2');
       
       var idFieldId = $("div[id ^= 'CF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
@@ -181,7 +181,7 @@
       + '<%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<div/>").attr("id", "RF" + this.currentNumber).attr("class", 'field');
+      var newField = $("<div/>").attr("id", "RF" + this.currentNumber).attr("class", 'row2');
       
       var idFieldId = $("div[id ^= 'RF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
@@ -239,7 +239,7 @@
       + '<%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(__count__)" -%>',
     add : function () {
-      var newField = $("<div/>").attr("id", "PF" + this.currentNumber).attr("class", 'field');
+      var newField = $("<div/>").attr("id", "PF" + this.currentNumber).attr("class", 'row2');
       
       var idFieldId = $("div[id ^= 'PF']:first").find("input[id $= 'id']").attr('id');
       var cloneId = this.cloneField(idFieldId);
@@ -292,32 +292,28 @@
   <div><strong><%= t('agent.creator') %></strong></div>
   <div id="creators">
     <% @creators.each_with_index do |creator, index| -%>
-      <div id="CF<%= index %>" class="field">
+      <div id="CF<%= index %>" class="row2">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <div>
-            <%= select2_tag(
-              "creators_#{index}_type_id", 
-              "creators[][type_id]", 
-              @create_types,
-              creator[:type_id], 
-              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
-            ) %>
-          </div>
+          <%= select2_tag(
+            "creators_#{index}_type_id", 
+            "creators[][type_id]", 
+            @create_types,
+            creator[:type_id], 
+            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+          ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <div><%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
+          <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
         <% else %>
-          <div>
-            <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
-            <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
-            <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
+          <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
+          <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
+          <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
               :id => "creators_#{index}_full_name_transcription", :class => 'series_string', 
               :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
-            %>
+          %>
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldCreatorSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldCreatorSelect2.remove(#{index})" -%>
-        </div>
       </div>
     <% end %>
   </div>
@@ -327,22 +323,19 @@
   <div><strong><%= t('agent.contributor') %></strong></div>
   <div id="contributors">
     <% @contributors.each_with_index do |contributor, index| -%>
-      <div id="RF<%= index %>" class="field">
+      <div id="RF<%= index %>" class="row2">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <div>
-            <%= select2_tag(
-              "contributors_#{index}_type_id", 
-              "contributors[][type_id]", 
-              @realize_types,
-              contributor[:type_id], 
-              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
-            ) %>
-          </div>
+          <%= select2_tag(
+            "contributors_#{index}_type_id", 
+            "contributors[][type_id]", 
+            @realize_types,
+            contributor[:type_id], 
+            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+          ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <div><%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
+          <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
         <% else %>
-          <div>
             <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
             <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
             <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
@@ -352,7 +345,6 @@
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldContributorSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldContributorSelect2.remove(#{index})" -%>
-        </div>
       </div>
     <% end %>
   </div>
@@ -362,22 +354,19 @@
   <div><strong><%= t('agent.publisher') %></strong></div>
   <div id="publishers">
     <% @publishers.each_with_index do |publisher, index| -%>
-      <div id="PF<%= index %>" class="field">
+      <div id="PF<%= index %>" class="row2">
         <% if SystemConfiguration.get("use_agent_type") %>
-          <div>
-            <%= select2_tag(
-              "publishers_#{index}_type_id", 
-              "publishers[][type_id]", 
-              @produce_types,
-              publisher[:type_id], 
-              :width => 250, :select_attribute => :name, :display_attribute => :display_name 
-            ) %>
-          </div>
+          <%= select2_tag(
+            "publishers_#{index}_type_id", 
+            "publishers[][type_id]", 
+            @produce_types,
+            publisher[:type_id], 
+            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+          ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <div><%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
+          <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
         <% else %>
-          <div>
             <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
             <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
             <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
@@ -387,7 +376,6 @@
         <% end %>
         <%= button_to_function t('page.add_line'), "ItemFieldPublisherSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldPublisherSelect2.remove(#{index})" -%>
-        </div>
       </div>
     <% end %> 
   </div>

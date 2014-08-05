@@ -43,7 +43,7 @@
       + '<%= button_to_function t('page.add_line'), "ItemFieldLanguageSelect2.add()" %>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(__count__)" %>',
     add : function () {
-      var newField = $("<div/>").attr("id", "LANG" + this.currentNumber);
+      var newField = $("<div/>").attr("id", "LANG" + this.currentNumber).attr('class', 'row2');
       var cloneLanguageId = $("div[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');;
       var cloneLanguageTypeId = $("div[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');;
       var cloneDummyId = $("div[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
@@ -86,10 +86,10 @@
 
 <div class="row">
   <div><%= f.label t('activerecord.models.language'), :required => true %></div>
-  <div id="languages" class="field">
+  <div id="languages">
     <% @work_has_languages.each_with_index do |work_has_language, index| %>
       <%= f.fields_for :work_has_languages, work_has_language do |w_f| %>
-        <div id="LANG<%= index %>">
+        <div id="LANG<%= index %>" class='row2'>
            <%= select2_tag "manifestation_work_has_languages_attributes_#{index}_language_type_id", 
                           "manifestation[work_has_languages_attributes][#{index}][language_type_id]",
                           @language_types, 

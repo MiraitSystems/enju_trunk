@@ -44,7 +44,7 @@
   <div id='titles'>
     <% @work_has_titles.each_with_index do |work_has_title, index| %>
       <%= f.fields_for :work_has_titles, work_has_title do |w_f| %>
-        <div class="field" id="VF<%= index %>">
+        <div id="VF<%= index %>" class="row2">
           <%= select2_tag("manifestation_work_has_titles_attributes_#{index}_title_type_id",
                            "manifestation[work_has_titles_attributes][#{index}][title_type_id]",
                            @title_types,

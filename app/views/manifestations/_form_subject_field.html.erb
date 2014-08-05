@@ -59,7 +59,7 @@
       + '<%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" %>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(__count__)" %>',
     add : function () {
-      var newField = $("<div/>").attr("id", "SUBJECT" + this.currentNumber).attr("class", 'field');
+      var newField = $("<div/>").attr("id", "SUBJECT" + this.currentNumber).attr("class", 'row2');
       var typeFieldId = $("div[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
       var termFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'subject_id']").attr('id');
       var termTranscriptionFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
@@ -68,10 +68,7 @@
       var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
       
-      var div1 = $("<div/>").append(cloneType);
-      var div2 = $("<div/>").append(cloneTerm).append(cloneTermTranscription).append(actionButton);
-
-      newField.append(div1).append(div2);
+      newField.append(cloneType).append(cloneTerm).append(cloneTermTranscription).append(actionButton);
       
       // select2の設定
       cloneType.select2(this.subjectTypeSelect2options);
@@ -122,15 +119,12 @@
   <div><%= f.label t('activerecord.attributes.manifestation.subject') %></div>
   <div id="subjects">
     <% @subjects.each_with_index do |subject, index| -%>
-      <div class='field' id="SUBJECT<%= index %>" >
-        <div> 
+      <div id="SUBJECT<%= index %>" class="row2">
           <%= select2_tag("subjects_#{index}_subject_type_id",
                           "subjects[][subject_type_id]",
                           @subject_types,
                           subject[:subject_type_id],
                           :width => 200, :select_attribute => :id, :display_attribute => :display_name) %>
-        </div>
-        <div>
           <%= text_field_tag "subjects[][subject_id]", subject[:id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
           <%= text_field_tag "subjects[][term_transcription]", 
             subject[:term_transcription], 
@@ -139,7 +133,6 @@
             :style => 'width: 200px;' %>
         <%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%>
-      </div>
       </div>
     <% end %>
   </div>

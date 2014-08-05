@@ -5,7 +5,7 @@
       + '<input type="button" value="+" onClick="ItemField_identifier.add();" /> '
       + '<input type="button" value="-" onClick="ItemField_identifier.remove(__count__);" />',
     add : function () {
-      var newField = $("<div/>").attr("id", "identifiers_" + this.currentNumber);
+      var newField = $("<div/>").attr("id", "identifiers_" + this.currentNumber).attr('class', 'row2');
       var cloneIdentifier = this.cloneField($("div[id ^= 'identifiers_']:first").find("input[id $= 'body']").attr('id'));
       var cloneIdentifierType = this.cloneField($("div[id ^= 'identifiers_']:first").find("select[id $= 'identifier_type_id']").attr('id'));
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
@@ -21,7 +21,7 @@
       }).val('');
     },
     remove : function (currentNumber) {
-      if ( currentNumber == 0) { return; }
+      if($("div:visible[id ^= 'identifiers_']").length == 1) this.add();
       var field = $('#identifiers_' + currentNumber);
       field.append('<input name=manifestation[identifiers_attributes][' + currentNumber + '][_destroy] style="display:none" value="1" />');
       field.hide();
@@ -33,7 +33,7 @@
   <div><%= f.label t('activerecord.models.identifier') %></div>
   <div id="identifiers">
     <% identifiers.each_with_index do |identifier, index| %>
-      <div id="identifiers_<%= index %>">
+      <div id="identifiers_<%= index %>" class='row2'>
         <%= f.fields_for :identifiers, identifier do |i_f| %>
           <%= i_f.select2 :identifier_type_id, 
             @identifier_types, 
@@ -43,7 +43,7 @@
             :width => 200 %>
           <%= i_f.text_field :body, style: 'width:200px;' %>
           <%= button_to_function '+', 'ItemField_identifier.add()' %>
-          <%= button_to_function '-', "ItemField_identifier.remove(#{index})" if index > 0 %>
+          <%= button_to_function '-', "ItemField_identifier.remove(#{index})" %>
         <% end %>
       </div>
     <% end %>

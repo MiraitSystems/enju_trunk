@@ -259,8 +259,8 @@ div#table div.row {
 div#table div.row>div {
   display: table-cell;
   //border: 1px solid #ccc;
-  padding: 3px;
   float: left;
+  padding: 3px;
 }
 div#table div.row>div:nth-child(odd) {
   white-space: nowrap;
@@ -268,10 +268,17 @@ div#table div.row>div:nth-child(odd) {
   text-align: right;
   vertical-align: top;
   float: left;
- // background-color: #ddd;
+  //background-color: #ddd;
 }
 div#table div.row>div:nth-child(even) {
   white-space: nowrap;
+}
+
+div.row2 {
+  display: table-row;
+}
+div.row2 div, div.row2 input {
+  padding: 3px 3px 3px 0px;
 }
 
 input.series_string{
