@@ -2,8 +2,8 @@
   var ItemField_identifier = {
     currentNumber: <%= raw (identifiers.size).to_json %>,
     actionTemplate : ''
-      + '<input type="button" value="+" onClick="ItemField_identifier.add();" /> '
-      + '<input type="button" value="-" onClick="ItemField_identifier.remove(__count__);" />',
+      + '<%= button_to_function t('page.add_line'), "ItemField_identifier.add()", class: "add_margin_add" -%>'
+      + '<%= button_to_function t('page.del_line'), "ItemField_identifier.remove(__count__)" -%>',
     add : function () {
       var newField = $("<div/>").attr("id", "identifiers_" + this.currentNumber);
       var cloneIdentifier = this.cloneField($("div[id ^= 'identifiers_']:first").find("input[id $= 'body']").attr('id'));

@@ -285,3 +285,20 @@ input.series_large_string{
 input.series_small_string{
   width: 130px;
 }
+
+.add_margin_default{
+  margin: 7px;
+  margin-left: 5px;
+}
+.add_margin_add{
+  margin: 5px;
+}
+/* chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .add_margin_default{
+    margin: 7px;
+  }
+  .add_margin_add{
+    margin: 7px;
+  }
+}

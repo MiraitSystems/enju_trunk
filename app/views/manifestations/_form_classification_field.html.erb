@@ -54,7 +54,7 @@
     },
     currentNumber : <%= raw (@classifications.size).to_json %>,
     actionTemplate : ''
-      + '<%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()" %>'
+      + '<%= button_to_function t('page.add_line'), "ItemFieldClassificationSelect2.add()", class: "add_margin_add" %>'
       + '<%= button_to_function t('page.del_line'), "ItemFieldClassificationSelect2.remove(__count__)" %>',
     add : function () {
       var newField = $("<div/>").attr("id", "CLASSIFICATION" + this.currentNumber);
