@@ -485,6 +485,11 @@ defaults: &defaults
     ldaps: false          # true or false
     account: "username"   # binddn 
     password: "password"
+    search:
+      auth:
+        username: "uid=admin,ou=Computing Service,ou=People,o=example,c=jp"
+        password: "password"
+      treebase: "ou=People,o=example,c=jp"
     basedn: "cn=example.com"
     bind_column:
       username: "uid"
