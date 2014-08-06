@@ -132,7 +132,6 @@ div#search_footer{
 
 div#submenu_block{
   float: right;
-  margin-left: -100%;
   margin-right: -200px;
   width: 190px;
 }
@@ -144,14 +143,11 @@ div.submenu_block_inner{
 }
 
 div#submenu{
-  //margin-left: 10px;
   width: 190px;
   padding: 5px;
-  //float: left;
-  border: 1px solid #5970B2;
-  //margin-left: -100%;
-  //margin-right: -210px;
   float: right;
+  border: 1px solid #5970B2;
+  margin-right: -210px;
 }
 
 div#social_bookmark{
@@ -190,12 +186,11 @@ div#manifestation_bookmark_buttons{
 }
 
 div#content_detail{
-  //width: 700px;
   float: left;
   margin-bottom: 5px;
   border: 1px solid #5970B2;
   width: 100%;
-  min-width: 880px;
+  min-width: 850px;
 }
 
 div#content_list{
