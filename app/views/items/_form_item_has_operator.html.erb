@@ -9,10 +9,9 @@ $(function(){
 <script>
   var ItemField = {
     currentNumber : <%= @item.item_has_operators.size %>,
-    itemDeleteTemplate : ''
-                 + '<input id="item_item_has_operators_attributes___count___user_id" name="item[item_has_operators_attributes][__count__][user_id]" type="hidden" value="" />'
-                 + '<input id="item_item_has_operators_attributes___count___operated_at" name="item[item_has_operators_attributes][__count__][operated_at]" size="30" type="text" value="" />'
-                 + '<textarea cols="40" id="item_item_has_operators_attributes___count___note" name="item[item_has_operators_attributes][__count__][note]" rows="20" value="" ></textarea>',
+    actionTemplate : ''
+      + '<%= button_to_function t('page.add_line'), "ItemField.add()" %>'
+      + '<%= button_to_function t('page.del_line'), "ItemField.remove(__count__)" %>',
     add : function () {
       var cloneField = $('div#SF0').clone().attr("id", "SF" + this.currentNumber);
 
@@ -23,6 +22,7 @@ $(function(){
       }).val('');
       var cloneOperatorOperatedAtId = $("div[id ^= 'SF']:first").find("input[id $= 'operated_at']").attr('id'); 
       cloneField.find('img').remove();
+      cloneField.find(':button').remove();
       cloneField.find('#' + cloneOperatorOperatedAtId).attr({
           'id' : cloneOperatorOperatedAtId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
           'name' : $('#' + cloneOperatorOperatedAtId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
@@ -38,8 +38,8 @@ $(function(){
           'id' : cloneOperatorNoteId.replace(/_\d+_/, '_' + this.currentNumber + '_'),
           'name' : $('#' + cloneOperatorNoteId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
       }).val('');
-
-      cloneField.find(':button').parent().append('<input type="button" value="-" onClick="ItemField.remove(' + this.currentNumber + ');" />');
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+      cloneField.find('div.row:last-child>div:last-child').append(actionButton);
 
       $("div#operators").append(cloneField);
       $('#item_item_has_operators_attributes_' + this.currentNumber + '_operated_at').setCalendar({src:'/assets/calendar.png'});
@@ -48,6 +48,7 @@ $(function(){
       this.currentNumber += 1;
     },
     remove : function (no) {
+      if($("div:visible[id ^= 'SF']").length == 1) this.add();
       var field = $('div#SF' + no);
       field.append('<input name=item[item_has_operators_attributes][' + no + '][_destroy] style="display:none" value="1" />');
       field.hide();
@@ -87,7 +88,7 @@ $(function(){
       <div><%= operator.label :note %></div>
       <div>
         <%= operator.text_area :note %>
-        <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})"  if( i > 0) -%>
+        <%= button_to_function '+', 'ItemField.add()' -%><%= button_to_function '-', "ItemField.remove(#{i})" -%>
       </div>
     </div>
     </div>
