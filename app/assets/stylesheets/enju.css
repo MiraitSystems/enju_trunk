@@ -428,12 +428,12 @@ input.resource_url{
 }
 
 input.resource_isbn_issn, input.resource_item_identifier, input.resource_user_number, input.resource_user{
-  width: 10em;
+  width: 130px;
   ime-mode: disabled;
 }
 
 input.resource_integer{
-  width: 5em;
+  width: 130px;
   ime-mode: disabled;
 }
 
@@ -443,6 +443,7 @@ input.year_field, input.month_field, input.day_field{
 }
 
 input.date_field{
+  width: 195px;
   ime-mode: disabled;
 }
 

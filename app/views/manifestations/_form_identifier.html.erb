@@ -41,7 +41,7 @@
             :select_attribute => :id, 
             :display_attribute => :display_name,
             :width => 200 %>
-          <%= i_f.text_field :body, style: 'width:200px;' %>
+          <%= i_f.text_field :body, :class => 'medium_string' %>
           <%= button_to_function '+', 'ItemField_identifier.add()' %>
           <%= button_to_function '-', "ItemField_identifier.remove(#{index})" %>
         <% end %>

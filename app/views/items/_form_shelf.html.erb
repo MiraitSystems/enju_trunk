@@ -4,7 +4,7 @@
     shelfSelect2options: {
       multiple: false,
       maximumSelectionSize: 10,
-      width: "250px",
+      width: "300px",
       placeholder: <%= raw t("shelf.search_placeholder").to_json %>, 
       formatNoMatches: function(term) {
         return "'" + term + "' " + <%= raw t("shelf.search_nomatch").to_json %>; 
@@ -49,8 +49,6 @@
   <div><%= f.label t('activerecord.models.library'), :required => true -%><strong> / <%= t('activerecord.models.shelf') -%></strong></div>
   <div>
     <%= select2_tag("item_library_id", "item[library_id]", libraries, @item.library_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250) %>
-  </div>
-  <div>
     <%- if @shelf_categories %>
       <%= select2_tag :shelf_category, options_for_select(@shelf_categories.map{|c|[i18n_shelf_category(c),c]}), {:include_blank => ''} %>
       <%= f.select2 :shelf_id, @shelves, @item.shelf_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 300, :selected => @item.shelf_id %>

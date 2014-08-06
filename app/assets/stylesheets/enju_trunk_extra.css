@@ -281,14 +281,14 @@ div.row2 div, div.row2 input {
   padding: 3px 3px 3px 0px;
 }
 
-input.series_string{
+input.medium_string{
   width: 250px;
 }
 
-input.series_large_string{
+input.large_string{
   width: 395px;
 }
 
-input.series_small_string{
+input.small_string{
   width: 130px;
 }
