@@ -528,7 +528,7 @@ system_configuration_00075:
 system_configuration_00076:
   id: 76
   keyname: use_family
-  v: "true"
+  v: "false"
   typename: Boolean
   description: "家族機能を利用する"
   category: 'user'

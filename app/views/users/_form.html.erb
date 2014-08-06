@@ -67,7 +67,7 @@
     });
 
     // seach_family
-    <%- if SystemConfiguration.get('use_family') && current_user.has_role?('Librarian') -%>
+    <%- if false #TODO SystemConfiguration.get('use_family') && current_user.has_role?('Librarian') -%>
       $("#agent_telephone_number_1").change(function(){
         clear_family_search();
         search_family();
@@ -149,7 +149,7 @@
   </div>
 
   <div class="row">
-<% if false %>
+<% if false #TODO for family %>
     <span id="name_person">
       <%- if SystemConfiguration.get("family_name_first") == true -%>
         <%= render 'agents/form_family_name_first', :f => f -%>
