@@ -1,92 +1,97 @@
   <!-- 所蔵情報 -->
-  <br />
   <h2><%= t('activerecord.models.item') -%></h2>
   <%= f.fields_for :items do |item| %>
     
     <%= render :partial => 'items/form_shelf', :locals => {:f => item} %>
 
-    <div class="field">
-      <%= item.label t('activerecord.models.checkout_type') -%><br />
-      <%= item.select2 :checkout_type_id, @checkout_types, @item.checkout_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.checkout_type') -%></div>
+      <div><%= item.select2 :checkout_type_id, @checkout_types, @item.checkout_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
-    <div class="field">
-      <%= item.label t('activerecord.models.accept_type') -%><br />
-      <%= item.select2 :accept_type_id, @accept_types, @item.accept_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.accept_type') -%></div>
+      <div><%= item.select2 :accept_type_id, @accept_types, @item.accept_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
-    <div class="field">
-      <%= item.label t('activerecord.models.circulation_status') -%><br />
-      <%= item.select2 :circulation_status_id, @circulation_statuses, @item.circulation_status_id, :width => 500, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.circulation_status') -%></div>
+      <div><%= item.select2 :circulation_status_id, @circulation_statuses, @item.circulation_status_id, :width => 500, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
-    <div class="field">
-      <%= item.label t('activerecord.models.retention_period') -%><br />
-      <%= item.select2 :retention_period_id, @retention_periods, @item.retention_period_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.retention_period') -%></div>
+      <div><%= item.select2 :retention_period_id, @retention_periods, @item.retention_period_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
-    <div class="field">
-      <%= item.label :call_number -%><br />
-      <%= item.text_field :call_number -%>
+    <div class="row">
+      <div><%= item.label :call_number -%></div>
+      <div><%= item.text_field :call_number -%></div>
     </div>
-    <div class="field">
-      <%= item.label t('activerecord.models.bookstore') -%>
-      <%= item.select2 :bookstore_id, @bookstores, @item.bookstore_id, :width => 150, :select_attribute => :id, :display_attribute => :name, :include_blank => true%>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.bookstore') -%></div>
+      <div><%= item.select2 :bookstore_id, @bookstores, @item.bookstore_id, :width => 150, :select_attribute => :id, :display_attribute => :name, :include_blank => true%></div>
     </div>
-    <div class="field">
-      <%= f.label :price -%><br />
-      <%= item.text_field :price -%>
+    <div class="row">
+      <div><%=f.label :price -%></div>
+      <div><%= item.text_field :price -%></div>
     </div>
-    <div class="field">
-      <%= f.label :url -%><br />
-      <%= item.url_field :url, :class => 'resource_url' -%>
+    <div class="row">
+      <div><strong><%= t('activerecord.attributes.item.url') %></strong></div>
+      <div><%= item.url_field :url, :class => 'resource_url' -%></div>
     </div>
-    <div class="field">
-      <%= item.label :include_supplements -%>
-      <%= item.check_box :include_supplements -%>
+    <div class="row">
+      <div><%= item.label :include_supplements -%></div>
+      <div><%= item.check_box :include_supplements -%></div>
     </div>
-    <div class="field">
-      <%= item.label t('activerecord.models.use_restriction') -%>
-      <%= item.select2 :use_restriction_id, @use_restrictions, @use_restriction_id, :width => 400, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('activerecord.models.use_restriction') -%></div>
+      <div><%= item.select2(:use_restriction_id, @use_restrictions, @use_restriction_id, :width => 400, :select_attribute => :id, :display_attribute => :display_name) %></div>
     </div>
-    <div class="field">
-      <%= item.label t('role.required_role') -%>
-      <%= item.select2 :required_role_id, @roles, @item.required_role_id, :width => 150, :select_attribute => :id, :display_attribute => :display_name %>
+    <div class="row">
+      <div><%= item.label t('role.required_role') -%></div>
+      <div><%= item.select2(:required_role_id, @roles, @item.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'name') %></div>
     </div>
-    <div class="field">
-      <%= item.label :non_searchable %>
-      <%= item.check_box :non_searchable %>
+    <div class="row">
+      <div><%= item.label :non_searchable %></div>
+      <div><%= item.check_box :non_searchable %></div>
     </div>
-    <div class="field">
-      <script>
-      $(function(){
-        $('#manifestation_items_attributes_0_acquired_at_string').setCalendar({src:'/assets/calendar.png'});
-      });
-      </script>
-      <%= item.label :acquired_at_string -%>
-      <%= item.text_field :acquired_at_string, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011-04-12"-%>
+<script>
+  $(function(){
+    $('#manifestation_items_attributes_0_acquired_at_string').setCalendar({src:'/assets/calendar.png'});
+  });
+</script>
+    <div class="row">
+      <div><%= item.label :acquired_at_string -%></div>
+      <div><%= item.text_field :acquired_at_string, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011-04-12"-%></div>
     </div>
-    <div class="field">
-      <%= item.label :note -%><br />
-      <%= item.text_area :note, :class => 'resource_textarea' -%>
+    <div class="row">
+      <div><%= item.label :note -%></div>
+      <div><%= item.text_area :note, :class => 'resource_textarea' -%></div>
     </div>
     <% if SystemConfiguration.get('manifestation.manage_item_rank') %>
-      <div class="field">
-        <%= item.label t('activerecord.attributes.item.rank') %><br />
-        <%= item.select(:rank, item_ranks.collect{|r| [i18n_rank(r), r]}) %>
+      <div class="row">
+        <div><%= item.label t('activerecord.attributes.item.rank') %></div>
+        <div><%= item.select2(:rank, item_ranks, @item.rank, :select_attribute => :id, :display_attribute => :text) %></div>
       </div>
     <% end %>
-    <div class="field">
-      <%= item.label :item_identifier -%><br />
-      <%= select2_tag "item_numbering_type", "numbering[type]", @item_numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false %>
-      <%= link_to t('activerecord.models.numbering'), {}, :onClick => "item_numbering();false", :remote => true %>
-      <%= item.text_field :item_identifier, :class => 'resource_item_identifier' -%>
+    <div class="row">
+      <div><%= item.label :item_identifier -%></div>
+      <div class="row2">
+        <%= select2_tag "item_numbering_type", "numbering[type]", @item_numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false %>
+          <%= item.text_field :item_identifier, :class => 'resource_item_identifier' -%>
+          <%= link_to t('activerecord.models.numbering'), {}, :onClick => "item_numbering();false", :remote => true %>
+      </div>
     </div>
     <% unless @claim_types.blank? %> 
-      <div class="field">
-        <%= item.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
-          <%= f_claim.label :claim_type_id %><br />
-          <%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :select_attribute => :id, :display_attribute => :display_name, :include_blank => true %><br />
-          <%= f_claim.label :note %><br />
-          <%= f_claim.text_area :note, :class => 'resource_text_area' -%>
-        <% end %>
-      </div>
+      <%= item.fields_for :claim, @item.claim || Claim.new do |f_claim| %> 
+        <div class="row">
+          <div><%= f_claim.label :claim_type_id %></div>
+          <div><%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :select_attribute => :id, :display_attribute => :display_name, :include_blank => true %></div>
+        </div>
+        <div class="row">
+          <div><%= f_claim.label :note %></div>
+          <div><%= f_claim.text_area :note, :class => 'resource_text_area' -%></div>
+        </div>
+      <% end %>
     <% end %>
     <%= render(:partial => 'items/form_item_has_operator', :locals=>{:f => item}) if SystemConfiguration.get('manifestation.use_item_has_operator') %>
   <% end %>
+</div>
+

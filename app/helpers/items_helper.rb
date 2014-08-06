@@ -14,7 +14,12 @@ module ItemsHelper
   end
 
   def item_ranks
-    return [0, 1, 2]
+    rank = Struct.new(:id, :text)
+    ranks = []
+    ranks << rank.new(0, i18n_rank(0))
+    ranks << rank.new(1, i18n_rank(1))
+    ranks << rank.new(2, i18n_rank(2))
+    return ranks
   end
 
   def i18n_rank(item)

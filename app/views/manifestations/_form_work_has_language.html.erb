@@ -24,14 +24,11 @@
       },
       initSelection: function(element, callback) {
         var id = $(element).val();
-        console.log(id);
         if (id != "" && id == parseInt(id)) {
-          console.log('language_id');
           $.ajax("/languages/search_name.json?language_id=" + id, {
               dataType: "json"
           }).done(function(data) {callback(data); });
         } else {
-          console.log('unknown');
           $.ajax("/languages/search_name.json", {
             dataType: 'json',
             data: {search_phrase: 'unknown'}
