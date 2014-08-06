@@ -44,7 +44,6 @@ Rails.application.routes.draw do
   resources :agent_aliases
   resources :numberings
   resources :departments
-  resources :classmarks
   resources :user_statuses
   resources :sheets
 

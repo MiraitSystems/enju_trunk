@@ -43,7 +43,7 @@ $(function(){
 
       $("div#operators").append(cloneField);
       $('#item_item_has_operators_attributes_' + this.currentNumber + '_operated_at').setCalendar({src:'/assets/calendar.png'});
-      $("select[name $= '[library_id]']").select2({width: '200px'});
+      $("select[name $= '[library_id]']").select2({width: '250px'});
     
       this.currentNumber += 1;
     },
@@ -68,20 +68,20 @@ $(function(){
       </div>
       <div>
         <%- if item_operator.username %>
-          <%= operator.text_field :username %>
+          <%= operator.text_field :username, :class => 'medium_string' %>
         <%- else -%>
-          <%= operator.text_field :username, :value => item_operator.try(:user).try(:username) %>
+          <%= operator.text_field :username, :class => 'medium_string', :value => item_operator.try(:user).try(:username) %>
         <%- end -%>
       </div>
     </div>
     <div class="row">
       <div><%= operator.label :operated_at %></div>
-      <div><%= operator.text_field :operated_at %></div>
+      <div><%= operator.text_field :operated_at, :class => 'medium_string' %></div>
     </div>
 
     <div class="row">
       <div><%= operator.label :library_id %></div>
-      <div><%= operator.select2 :library_id, @libraries, nil, :width => 200, :display_attribute => 'display_name', :select_attribute => 'id' %></div>
+      <div><%= operator.select2 :library_id, @libraries, nil, :width => 250, :display_attribute => 'display_name', :select_attribute => 'id' %></div>
     </div>
 
     <div class="row">

@@ -11,6 +11,8 @@ class Department < ActiveRecord::Base
   after_save :name_save
   has_many :users
 
+  acts_as_list
+
   def self.add_department(name)
     return nil if name.blank?
     names = [name]

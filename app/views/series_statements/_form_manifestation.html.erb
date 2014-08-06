@@ -53,7 +53,7 @@ function displayArticleTitle(article_title) {
     <div>
       <div class="row2">
         <%= select2_tag :numbering_type, "numbering[type]", numberings, nil, :select_attribute => 'name', :display_attribute => 'display_name', :width => 250 %>
-        <%= f_m.text_field :identifier, :class => 'series_string' %>
+        <%= f_m.text_field :identifier, :class => 'medium_string' %>
         <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
       </div>
     </div>
@@ -110,7 +110,7 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label t('activerecord.attributes.manifestation.place_of_publication') -%></div>
-    <div><%= f_m.text_field :place_of_publication, :class => 'series_large_string' %></div>
+    <div><%= f_m.text_field :place_of_publication, :class => 'large_string' %></div>
   </div>
 
   <div class="row">
@@ -119,23 +119,21 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label :edition_display_value -%></div>
-    <div>
-      <%= f_m.text_field :edition_display_value, :class => 'series_small_string' -%>
-      <%= f_m.label :volume_number_string -%>
-      <%= f_m.text_field :volume_number_string, :class => 'series_small_string' -%>
-      <%= f_m.label :issue_number_string -%>
-      <%= f_m.text_field :issue_number_string, :class => 'series_small_string' -%>
-    </div>
+    <div><%= f_m.text_field :edition_display_value, :class => 'small_string' -%></div>
+    <div><%= f_m.label :volume_number_string -%></div>
+    <div><%= f_m.text_field :volume_number_string, :class => 'small_string' -%></div>
+    <div><%= f_m.label :issue_number_string -%></div>
+    <div><%= f_m.text_field :issue_number_string, :class => 'small_string' -%></div>
   </div>
 
   <div class="row">
     <div><%= f_m.label :jan_magazine %></div>
-    <div><%= f_m.text_field :jan_magazine, :class => 'series_small_string', :style => 'ime-mode: disabled' %></div>
+    <div><%= f_m.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' %></div>
   </div>
 
   <div class="row">
     <div><%= f_m.label :price -%></div>
-    <div><%= f_m.text_field :price, :class => 'series_small_string' -%></div>
+    <div><%= f_m.text_field :price, :class => 'resource_integer' -%></div>
   </div>
 
   <div class="row">
