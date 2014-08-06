@@ -135,11 +135,11 @@
     });
   }
 </script>
-
+<div class='table'>
   <%- if current_user.has_role?('Librarian') -%>
-    <div class="field">
-      <%= f.label t('activerecord.models.agent_type') -%>
-      <%= f.select(:agent_type_id, @agent_types.collect{|p| [p.display_name.localize, p.id]}) -%>
+    <div class="row">
+      <div><%=f.label t('activerecord.models.agent_type') -%></div>
+      <div><%= f.select2(:agent_type_id, @agent_types, agent.agent_type_id, :select_attribute => :id, :display_attribute => :display_name) -%></div>
     </div>
   <%- end -%>
 
@@ -148,7 +148,8 @@
     <%= render :partial => "search_family"  %>
   </div>
 
-  <div class="field">
+  <div class="row">
+<% if false %>
     <span id="name_person">
       <%- if SystemConfiguration.get("family_name_first") == true -%>
         <%= render 'agents/form_family_name_first', :f => f -%>
@@ -156,64 +157,72 @@
         <%= render 'agents/form_family_name_last', :f => f -%>
       <%- end -%>
     </span>
-    <%= f.label :full_name -%><br />
-    <div id="annotation" class="agent_full_name_note"><%= t('activerecord.attributes.agent.full_name_note') -%><br /></div>
-    <%= f.text_field :full_name, :class => 'resource_title' -%><br />
-    <%= f.label :full_name_transcription -%><br />
-    <%= f.text_field :full_name_transcription, :class => 'resource_title' -%><br />
-    <%= link_to_function t('activerecord.attributes.agent.full_name_alternative'), "$('#full_name_alternative').toggle()" -%>
-    <span id="full_name_alternative" style="display: none">
-      <br />
+<% end %>
+    <div><%=f.label :full_name -%></div>
+    <div>
+         <%= t('activerecord.attributes.agent.full_name_note') -%><br />
+         <%= f.text_field :full_name, :class => 'resource_title' -%>
+    </div>
+  </div>
+  <div class="row">
+    <div><%=f.label :full_name_transcription -%></div>
+    <div><%= f.text_field :full_name_transcription, :class => 'resource_title' -%></div>
+  </div>
+  <div class="row">
+    <div><%= link_to_function t('activerecord.attributes.agent.full_name_alternative'), "$('#full_name_alternative').toggle()" -%></div>
+    <div id="full_name_alternative" style="display: none">
       <%= f.text_area :full_name_alternative, :class => 'resource_textarea' -%>
-    </span>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :date_of_birth -%><br />
-    <%= f.text_field :birth_date, :class => 'date_field' -%>
+  <div class="row">
+    <div><%=f.label :date_of_birth -%></div>
+    <div><%= f.text_field :birth_date, :class => 'date_field' -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :gender -%><br />
-    <%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200, :include_blank => "",
+  <div class="row">
+    <div><%=f.label :gender -%></div>
+    <div><%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200, :include_blank => "",
 		  :select2options => {
 	            "placeholder" => "\"#{t('activerecord.attributes.agent.select_gender_reason')}\""
                   }
 		 ) %>
+    </div>
   </div>
 
   <% if SystemConfiguration.get("agent.manage_grade") %>
-  <div class="field">
-    <%= f.label :grade -%><br />
-    <%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
+  <div class="row">
+    <div><%=f.label :grade -%></div>
+    <div><%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
 		  :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
+    </div>
   </div>
   <% end %>
 
   <% unless @user.id.blank? %>
     <%- if current_user.has_role?('Librarian') -%>
-      <div class="field">
-        <%= f.label :date_of_death -%><br />
-        <%= f.text_field :death_date, :class => 'date_field' -%>
+      <div class="row">
+        <div><%=f.label :date_of_death -%></div>
+        <div><%= f.text_field :death_date, :class => 'date_field' -%></div>
       </div>
     <%- else -%>
       <%- if @agent_type_person != @user.agent.agent_type.id -%>
-        <div class="field">
-          <%= f.label :date_of_death -%><br />
-          <%= f.text_field :death_date, :class => 'date_field' -%>
+        <div class="row">
+          <div><%=f.label :date_of_death -%></div>
+          <div><%= f.text_field :death_date, :class => 'date_field' -%></div>
         </div>
       <%- end -%>
     <%- end -%>
   <% end %>
 
-  <div class="field">
-    <%= f.label t('activerecord.models.country') -%>
-    <%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 350) -%>
+  <div class="row">
+    <div><%=f.label t('activerecord.models.country') -%></div>
+    <div><%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 350) -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :url -%><br />
-    <%= f.url_field :url, :class => 'resource_url' -%>
+  <div class="row">
+    <div><%=f.label :url -%></div>
+    <div><%= f.url_field :url, :class => 'resource_url' -%></div>
   </div>
 
   <div class="actions">
@@ -222,96 +231,107 @@
 
   <hr />
 
-  <div id="address_1">
-  <div class="field">
-    <%= f.label :zip_code_1 -%><br />
-    <%= f.text_field :zip_code_1, :class => 'resource_zip_code' -%>
+  <div id="address_1" class="table">
+    <div class="row">
+      <div><%= f.label :zip_code_1 -%></div>
+      <div><%= f.text_field :zip_code_1, :class => 'resource_zip_code' -%></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :address_1 -%></div>
+      <div><%= f.text_area :address_1, :class => 'resource_textarea' -%></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :telephone_number_1 -%></div>
+      <div>
+        <%= f.phone_field :telephone_number_1, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :telephone_number_1_type_id, telephone_types, agent.telephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :extelephone_number_1 -%></div>
+      <div>
+        <%= f.phone_field :extelephone_number_1, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :extelephone_number_1_type_id, telephone_types, agent.extelephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :fax_number_1 -%></div>
+      <div>
+        <%= f.phone_field :fax_number_1, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :fax_number_1_type_id, telephone_types, agent.fax_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :address_1_note -%></div>
+      <div><%= f.text_area :address_1_note, :class => 'resource_textarea' -%></div>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :address_1 -%><br />
-    <%= f.text_area :address_1, :class => 'resource_textarea' -%>
+  <div class="row"><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
   </div>
 
-  <div class="field">
-    <%= f.label :telephone_number_1 -%><br />
-    <%= f.phone_field :telephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_1_type_id, telephone_types, :include_blank => true -%>
-  </div>
+  <div id="address_2" class="table" style="display: none">
 
-  <div class="field">
-    <%= f.label :extelephone_number_1 -%><br />
-    <%= f.phone_field :extelephone_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_1_type_id, telephone_types, :include_blank => true -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :fax_number_1 -%><br />
-    <%= f.phone_field :fax_number_1, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_1_type_id, telephone_types, :include_blank => true -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :address_1_note -%><br />
-    <%= f.text_area :address_1_note, :class => 'resource_textarea' -%>
-  </div>
-  <div class="field"><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
-  </div>
-
-  <div id="address_2" style="display: none">
   <hr />
-  <div class="field">
-    <%= f.label :zip_code_2 -%><br />
-    <%= f.text_field :zip_code_2, :class => 'resource_zip_code' -%>
-  </div>
 
-  <div class="field">
-    <%= f.label :address_2 -%><br />
-    <%= f.text_area :address_2, :class => 'resource_textarea' -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :telephone_number_2 -%><br />
-    <%= f.phone_field :telephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :telephone_number_2_type_id, telephone_types, :include_blank => true -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :extelephone_number_2 -%><br />
-    <%= f.phone_field :extelephone_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :extelephone_number_2_type_id, telephone_types, :include_blank => true -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :fax_number_2 -%><br />
-    <%= f.phone_field :fax_number_2, :class => 'resource_telephone_number' -%>
-    <%= f.select :fax_number_2_type_id, telephone_types, :include_blank => true -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :address_2_note -%><br />
-    <%= f.text_area :address_2_note, :class => 'resource_textarea' -%>
-  </div>
-
+    <div class="row">
+      <div><%=f.label :zip_code_2 -%></div>
+      <div><%= f.text_field :zip_code_2, :class => 'resource_zip_code' -%></div>
+    </div>
+    <div class="row">
+      <div><%=f.label :address_2 -%></div>
+      <div><%= f.text_area :address_2, :class => 'resource_textarea' -%></div>
+    </div>
+    <div class="row">
+      <div><%=f.label :telephone_number_2 -%></div>
+      <div>
+        <%= f.phone_field :telephone_number_2, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :telephone_number_2_type_id, telephone_types, agent.telephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :extelephone_number_2 -%></div>
+      <div>
+        <%= f.phone_field :extelephone_number_2, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :extelephone_number_2_type_id, telephone_types, agent.extelephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :fax_number_2 -%></div>
+      <div>
+        <%= f.phone_field :fax_number_2, :class => 'resource_telephone_number' -%>
+        <%= f.select2 :fax_number_2_type_id, telephone_types, agent.fax_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+      </div>
+    </div>
+    <div class="row">
+      <div><%=f.label :address_2_note -%></div>
+      <div><%= f.text_area :address_2_note, :class => 'resource_textarea' -%></div>
+    </div>
   </div>
 
   <%- if current_user.has_role?('Librarian') -%>
-    <hr />
-    <div class="field">
-      <%= f.label :note -%>
-      <%- if @agent.note_update_at -%>
-        &nbsp;<%= t('agent.last_update_at') -%>: <%= l(@agent.note_update_at) -%>
-        <%- if @agent.note_update_by -%>
-          &nbsp;<%= t('agent.last_update_by') -%>: <%= @agent.note_update_by -%>
-        <%- end -%>
-        <%- if @agent.note_update_library -%>
-          (<%= @agent.note_update_library-%>)
-        <%- end -%>
-      <%- end -%>
-      <br />
-      <%= f.text_area :note, :class => 'resource_textarea' -%>
+    <div class="table">
+      <hr />
+      <div class="row">
+        <div><%=f.label :note -%></div>
+        <div>
+          <%- if @agent.note_update_at -%>
+            &nbsp;<%= t('agent.last_update_at') -%>: <%= l(@agent.note_update_at) -%>
+            <%- if @agent.note_update_by -%>
+              &nbsp;<%= t('agent.last_update_by') -%>: <%= @agent.note_update_by -%>
+            <%- end -%>
+            <%- if @agent.note_update_library -%>
+              (<%= @agent.note_update_library-%>)
+            <%- end -%>
+            <br />
+          <%- end -%>
+          <%= f.text_area :note, :class => 'resource_textarea' -%>
+        </div>
+      </div>
     </div>
   <%- end -%>
+
+  <br style="clear: both;"/>
 
   <div class="actions">
     <%= hidden_field_tag 'work_id', @work.id if @work -%>
@@ -321,4 +341,5 @@
     <%= f.hidden_field :user_username -%>
     <%= u_form.submit :disable_with => t('page.wait') -%>
   </div>
+</div>
 

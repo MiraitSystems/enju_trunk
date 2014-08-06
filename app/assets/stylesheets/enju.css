@@ -149,8 +149,8 @@ div#submenu{
   padding: 5px;
   //float: left;
   border: 1px solid #5970B2;
-  margin-left: -100%;
-  margin-right: -210px;
+  //margin-left: -100%;
+  //margin-right: -210px;
   float: right;
 }
 
@@ -224,7 +224,7 @@ div#right_pane{
 div#left_pane_detail{
   margin-top: 5px;
   float: left;
-  width: 330px;
+  //width: 330px;
   word-break: break-all;
 }
 
@@ -232,7 +232,7 @@ div#right_pane_detail{
   margin-top: 5px;
   float: left;
   margin-left: 10px;
-  width: 330px;
+  //width: 330px;
   word-break: break-all;
 }
 

@@ -39,12 +39,13 @@ module UsersHelper
   end
 
   def telephone_types
-    types = {}
-    types.store(t('activerecord.attributes.agent.extension'), 5)
-    types.store(t('activerecord.attributes.agent.home_phone'), 1)
-    types.store(t('activerecord.attributes.agent.fax'),  2)
-    types.store(t('activerecord.attributes.agent.mobile_phone'), 3)
-    types.store(t('activerecord.attributes.agent.company_phone'), 4)
+    type = Struct.new(:id, :text)
+    types = []
+    types << type.new(5, t('activerecord.attributes.agent.extension'))
+    types << type.new(1, t('activerecord.attributes.agent.home_phone'))
+    types << type.new(2, t('activerecord.attributes.agent.fax'))
+    types << type.new(3, t('activerecord.attributes.agent.mobile_phone'))
+    types << type.new(4, t('activerecord.attributes.agent.company_phone'))
     types
   end
 

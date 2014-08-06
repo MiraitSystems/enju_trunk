@@ -701,7 +701,11 @@ module ActionView
         display_attribute = options[:display_attribute] || :keyname
         post_attribute = options[:post_attribute] || :id
 
-        html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+        unless options[:readonly]
+          html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
+        else
+          html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\" disabled>\n")
+        end
         if include_blank
           #html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
           html.concat( raw ("<option></option>\n") )
@@ -717,7 +721,7 @@ module ActionView
             html.concat( raw ("#{ row.send(select_attribute) }:") )
           end
 
-          html.concat( raw (" #{ row.send(display_attribute).localize }") )
+          html.concat( raw (" #{ row.send(display_attribute).try(:localize) }") )
 
           html.concat( raw ("</option>\n") )
         end

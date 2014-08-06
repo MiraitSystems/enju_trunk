@@ -250,27 +250,28 @@ span.not_rent_item {
   font-weight: bold;
 }
 
-div#table {
+div#table, div.table {
   display: table; 
 }
-div#table div.row {
+div#table div.row, div.table div.row {
   display: table-row;
 }
-div#table div.row>div {
+div#table div.row>div, div.table div.row>div {
   display: table-cell;
   //border: 1px solid #ccc;
   float: left;
   padding: 3px;
 }
-div#table div.row>div:nth-child(odd) {
-  white-space: nowrap;
-  width: 130px;
+div#table div.row>div:nth-child(odd), 
+div.table div.row>div:nth-child(odd) {
+  width: 150px;
   text-align: right;
   vertical-align: top;
   float: left;
   //background-color: #ddd;
 }
-div#table div.row>div:nth-child(even) {
+div#table div.row>div:nth-child(even), 
+div.table div.row>div:nth-child(even) {
   white-space: nowrap;
 }
 
