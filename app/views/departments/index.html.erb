@@ -11,10 +11,11 @@
     <th id="edit_icons"></th>
   </tr>
 
-<%- @departments.each_with_index do |department, i| -%>
+<%- @departments.each do |department| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td>
       <%- if can? :update, department -%>
+        <%= move_position(department) -%>
       <%- end -%>
     </td>
     <td><%= link_to department.name, department -%> </td>

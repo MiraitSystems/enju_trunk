@@ -2,7 +2,7 @@ class DepartmentsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @departments = Department.page(params[:page])
+    @departments = Department.unscoped.order(:position).page(params[:page])
   end
 
   def create
@@ -21,13 +21,10 @@ class DepartmentsController < ApplicationController
 
   def update
     @department = Department.find(params[:id])
-=begin
     if params[:move]
       move_position(@department, params[:move])
       return
     end
-    update!
-=end
 
     respond_to do |format|
       if @department.update_attributes(params[:department])
