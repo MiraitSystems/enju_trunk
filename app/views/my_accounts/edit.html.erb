@@ -8,13 +8,13 @@
   <div class="actions" style="clear: both">
     <%= f.submit %>
   </div>
-  <div style="clear: both">
-    <div class="field">
-      <%= f.label :keyword_list -%><br />
-      <%= f.text_area :keyword_list, :class => 'resource_textarea' -%>
+  <div style="clear: both" class="table">
+    <div class="row">
+      <div><%= f.label :keyword_list -%></div>
+      <div><%= f.text_area :keyword_list, :class => 'resource_textarea' -%></div>
     </div>
-    <div class="field">
-      <%= f.label t('user.reset_checkout_icalendar_url') -%><br />
+    <div class="row">
+      <div><%= f.label t('user.reset_checkout_icalendar_url') -%></div>
       <div id="feed_token">
         <%- if @user.checkout_icalendar_token -%>
           <%= link_to checkouts_url(:icalendar_token => @user.checkout_icalendar_token, :format => :ics), checkouts_url(:icalendar_token => @user.checkout_icalendar_token, :format => :ics) -%>
@@ -23,21 +23,10 @@
         <input onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#feed_token').html(request);}, type:'get', url:'<%= edit_user_path(@user, :mode => 'feed_token') %>'});" type="button" value="<%= t('page.reset') %>" />
         <input onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#feed_token').html(request);}, type:'get', url:'<%= edit_user_path(@user, :disable => true, :mode => 'feed_token') %>'});" type="button" value="<%= t('page.delete') %>" />
       </div>
-      <br />
     </div>
-
-    <!--
-    <h1 class="title"><%= t('page.history') -%></h1>
-    <div class="field">
-      <%= f.check_box :save_search_history -%> <%= ('Save search history') -%>
-    </div>
-    <div class="field">
-      <%= f.check_box :save_checkout_history -%> <%= ('Save checkout history') -%>
-    </div>
-    -->
     <div class="actions">
-    <%= f.submit %>
-  </div>
+      <%= f.submit %>
+    </div>
 <%- end -%>
 </div>
 </div>
