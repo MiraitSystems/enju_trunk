@@ -278,8 +278,11 @@ div.table div.row>div:nth-child(even) {
 div.row2 {
   display: table-row;
 }
-div.row2 div, div.row2 input {
+div.row2 div{
   padding: 3px 3px 3px 0px;
+}
+div.row2 input{
+  margin: 3px 3px 3px 0px;
 }
 
 input.medium_string{

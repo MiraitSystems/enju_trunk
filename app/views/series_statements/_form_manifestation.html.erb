@@ -119,11 +119,13 @@ function displayArticleTitle(article_title) {
 
   <div class="row">
     <div><%= f_m.label :edition_display_value -%></div>
-    <div><%= f_m.text_field :edition_display_value, :class => 'small_string' -%></div>
-    <div><%= f_m.label :volume_number_string -%></div>
-    <div><%= f_m.text_field :volume_number_string, :class => 'small_string' -%></div>
-    <div><%= f_m.label :issue_number_string -%></div>
-    <div><%= f_m.text_field :issue_number_string, :class => 'small_string' -%></div>
+    <div>
+      <%= f_m.text_field :edition_display_value, :class => 'small_string' -%>
+      <%= f_m.label :volume_number_string -%>
+      <%= f_m.text_field :volume_number_string, :class => 'small_string' -%>
+      <%= f_m.label :issue_number_string -%>
+      <%= f_m.text_field :issue_number_string, :class => 'small_string' -%>
+    </div>
   </div>
 
   <div class="row">
