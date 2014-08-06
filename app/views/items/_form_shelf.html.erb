@@ -46,7 +46,7 @@
 </script>
 
 <div class="row">
-  <div><%= f.label t('activerecord.models.library') -%><strong> / <%= t('activerecord.models.shelf') -%></strong></div>
+  <div><%= f.label t('activerecord.models.library'), :required => true -%><strong> / <%= t('activerecord.models.shelf') -%></strong></div>
   <div>
     <%= select2_tag("item_library_id", "item[library_id]", libraries, @item.library_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250) %>
   </div>

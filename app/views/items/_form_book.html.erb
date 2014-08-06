@@ -2,7 +2,8 @@
   <%= render 'manifestations/title', :manifestation => manifestation -%>
 <%- end -%>
 
-<%#= render 'page/required_field' %>
+<%= render 'page/required_field' %>
+<%= render 'observe_field' %>
 <%= simple_form_for(@item) do |f| -%>
 <div id="table">
   <%= f.error_messages -%>
@@ -11,22 +12,22 @@
   <%= render :partial => 'form_shelf', :locals => {:f => f} %>
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.checkout_type') -%></div>
+    <div><%= f.label t('activerecord.models.checkout_type'), :required => true -%></div>
     <div><%= f.select2(:checkout_type_id, @checkout_types, @item.checkout_type_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200) %></div>
   </div>
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.accept_type') -%></div>
+    <div><%= f.label t('activerecord.models.accept_type'), :required => true -%></div>
     <div><%= f.select2(:accept_type_id, @accept_types, @item.accept_type_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200) %></div>
   </div>
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.circulation_status') -%></div>
+    <div><%= f.label t('activerecord.models.circulation_status'), :required => true -%></div>
     <div><%= f.select2(:circulation_status_id, @circulation_statuses, @item.circulation_status_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 500) %></div>
   </div>
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.retention_period') -%></div>
+    <div><%= f.label t('activerecord.models.retention_period'), :required => true -%></div>
     <div><%= f.select2(:retention_period_id, @retention_periods, @item.retention_period_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200) %></div>
   </div>
 
@@ -54,7 +55,7 @@
 
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.bookstore') -%></div>
+    <div><%= f.label t('activerecord.models.bookstore'), :required => true -%></div>
     <div><%= f.select2(:bookstore_id, @bookstores, @item.bookstore_id, :display_attribute => 'name', :select_attribute => 'id', :witdh => 150) %></div>
   </div>
 
@@ -94,12 +95,12 @@
   </div>
 
   <div class="row">
-    <div><%= f.label t('activerecord.models.use_restriction') -%></div>
+    <div><%= f.label t('activerecord.models.use_restriction'), :required => true -%></div>
     <div><%= f.select2(:use_restriction_id, @use_restrictions, @item.use_restriction_id, :display_attribute => 'display_name', :select_attribute => 'id', :width => 400) %></div>
   </div>
 
   <div class="row">
-    <div><%= f.label t('role.required_role') -%></div>
+    <div><%= f.label t('role.required_role'), :required => true  -%></div>
     <div><%= f.select2(:required_role_id, @roles, @item.required_role_id, :display_attribute => 'name', :select_attribute => 'id', :width => 150) %></div>
   </div>
 
@@ -133,16 +134,18 @@ $(function(){
   <div class="row">
     <div><%= f.label :item_identifier -%></div>
     <div>
-      <%= select2_tag("numbering_type", "numbering[type]", numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false) %>
-      <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
-      <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
+      <div class="row2">
+        <%= select2_tag("numbering_type", "numbering[type]", numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false) %>
+        <%= f.text_field :item_identifier, :class => 'resource_item_identifier' -%>
+        <%= link_to t('activerecord.models.numbering'), {}, :onClick => "numbering();false", :remote => true %>
+      </div>
    </div>
   </div>
 
   <% unless @claim_types.blank? %> 
     <%= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
       <div class="row">
-        <div><%= f_claim.label :claim_type_id %></div>
+        <div><%= f_claim.label :claim_type_id, :required => false  %></div>
         <div><%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include_blank => true %></div>
       </div>
       <div class="row">
