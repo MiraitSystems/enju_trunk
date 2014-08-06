@@ -136,7 +136,9 @@ class ItemsController < ApplicationController
       @item.circulation_status = CirculationStatus.where(:name => 'Not Available').first unless @item.try(:circulation_status)
       @item.checkout_type = CheckoutType.where(:name => 'article').first unless @item.try(:checkout_type)
       @item.use_restriction_id = UseRestriction.where(:name => 'Not For Loan').select(:id).first.id unless @item.use_restriction_id
-      @item.shelf = @library.article_shelf unless @item.try(:shelf)
+
+      #@item.shelf = @library.article_shelf unless @item.try(:shelf)
+      @item.shelf = @library.shelves.first unless @item.try(:shelf)
     end
     @item.acquired_at_string = Date.today unless @item.acquired_at_string
     prepare_options
