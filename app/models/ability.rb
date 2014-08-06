@@ -1,7 +1,7 @@
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'ability') if Setting.operation
 
 engines = []
-engines << EnjuSubject::Engine  if defined?(EnjuTrunkSubject)
+engines << EnjuSubject::Engine  if defined?(EnjuSubject)
 engines << EnjuEvent::Engine    if defined?(EnjuTrunkEvent)
 engines << EnjuMessage::Engine  if defined?(EnjuMessage)
 engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
@@ -15,7 +15,7 @@ class Ability
     # TODO
     initialize_circulation(user, ip_address) if Setting.operation
     initialize_event(user, ip_address) if defined?(EnjuTrunkEvent)
-    initialize_subject(user, ip_address) if defined?(EnjuTrunkSubject)
+    initialize_subject(user, ip_address) if defined?(EnjuSubject)
 #    initialize_theme(user,ip_address) if defined?(EnjuTrunkTheme)
     initialize_message(user, ip_address) if defined?(EnjuMessage)
     initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
