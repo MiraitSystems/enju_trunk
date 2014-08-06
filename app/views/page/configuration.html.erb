@@ -13,7 +13,9 @@
         </li>
         <li><%= link_to t('activerecord.models.user_group'), user_groups_path -%></li>
         <li><%= link_to t('activerecord.models.user_status'), user_statuses_path -%></li>
+        <% if SystemConfiguration.get("use_family") -%>
         <li><%= link_to t('activerecord.models.family'), families_path -%></li>
+        <% end %>
         <li><%= link_to t('activerecord.models.checkout_type'), checkout_types_path -%>
           <ul>
             <li><%= link_to t('activerecord.models.user_group_has_checkout_type'), user_group_has_checkout_types_path -%></li>
