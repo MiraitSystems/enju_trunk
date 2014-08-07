@@ -475,16 +475,17 @@ module EnjuTrunk
       if series_statement && !is_root
         manifestation.series_statement = series_statement
       end
-      manifestation
+      manifestation.save!
+      return manifestation
     end
 
     def update_manifestation_agents(sheet, datas, field, manifestation, error_msgs)
       create_new = SystemConfiguration.get("add_only_exist_agent") == true
 
       [
-        ["#{field}.creator", :creators=, :creates],
-        ["#{field}.publisher", :publishers=, :produces],
-        ["#{field}.contributor", :contributors=, :realizes],
+        ["#{field}.creator", :creates=, :creates],
+        ["#{field}.publisher", :produces=, :produces],
+        ["#{field}.contributor", :realizes=, :realizes],
       ].each do |field_key, writer, assoc_name|
         if Manifestation.separate_output_columns?
           writer = "#{assoc_name}="
@@ -513,7 +514,6 @@ module EnjuTrunk
             end
             assoc_records << record
           end
-
         else
           value = sheet.field_data(datas, field_key)
           next if value.nil?

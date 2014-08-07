@@ -41,9 +41,9 @@
       + '<%= button_to_function t('page.del_line'), "ItemFieldLanguageSelect2.remove(__count__)" %>',
     add : function () {
       var newField = $("<div/>").attr("id", "LANG" + this.currentNumber).attr('class', 'row2');
-      var cloneLanguageId = $("div[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');;
-      var cloneLanguageTypeId = $("div[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');;
-      var cloneDummyId = $("div[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');;
+      var cloneLanguageId = $("div[id ^= 'LANG']:first").find("input[id $= 'language_id']").attr('id');
+      var cloneLanguageTypeId = $("div[id ^= 'LANG']:first").find("select[id $= 'language_type_id']").attr('id');
+      var cloneDummyId = $("div[id ^= 'LANG']:first").find("input[id $= 'nested']").attr('id');
       var cloneLanguage = this.cloneField(cloneLanguageId);
       var cloneLanguageType = this.cloneField(cloneLanguageTypeId);
       var cloneDummy = this.cloneField(cloneDummyId).val('1');

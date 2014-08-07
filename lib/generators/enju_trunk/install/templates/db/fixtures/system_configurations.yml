@@ -1045,13 +1045,6 @@ system_configuration_00148:
   typename: Boolean
   description: "利用者通知書の出力ボタンを表示するか"
   category: 'user'
-system_configuration_00149:
-  id: 149
-  keyname: add_only_exist_agent
-  v: "true"
-  typename: Boolean
-  description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
-  category: 'manifestation'
 system_configuration_00150:
   id: 150
   keyname: use_agent_type
