@@ -6,7 +6,7 @@ module ActiveRecordExtension
         def #{arg}_id=(obj)
           if obj.blank?
             if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
-              extext.destroy
+              exinfo.destroy
             end
           else
             if exinfo = #{self.name.underscore}_exinfos.where(:name => '#{arg}').first
