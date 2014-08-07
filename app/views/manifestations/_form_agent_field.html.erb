@@ -56,7 +56,9 @@
 
   $(document).ready(function() {
     $(".creator, .contributor, .publisher").select2(agentSlect2options);
-    $("select[name$='[type_id]']").select2(agentTypeSlect2options);
+    $("select[name $= 'create_type_id']").select2(agentTypeSlect2options);
+    $("select[name $= 'realize_type_id']").select2(agentTypeSlect2options);
+    $("select[name $= 'produce_type_id']").select2(agentTypeSlect2options);
   });
 
   /**
