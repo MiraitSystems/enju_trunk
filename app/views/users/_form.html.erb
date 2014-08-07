@@ -45,8 +45,8 @@
       $("label[for='agent_date_of_death']").text('<%= t('activerecord.attributes.agent.date_of_dissolution') -%>');
     }
     // change agent_type
-    $("select#agent_agent_type_id").change(function(){
-      str = $("select#agent_agent_type_id option:selected").val();
+    $("select#agent_type_id").change(function(){
+      str = $("select#agent_type_id option:selected").val();
       if (str == <%= @agent_type_person -%>) {
         $("div.agent_full_name_note").show();
         $("#name_person").show();
@@ -148,20 +148,18 @@
     <%= render :partial => "search_family"  %>
   </div>
 
-  <div class="row">
-<% if false #TODO for family %>
-    <span id="name_person">
+  <div id="name_person" class="table">
       <%- if SystemConfiguration.get("family_name_first") == true -%>
         <%= render 'agents/form_family_name_first', :f => f -%>
       <%- else -%>
         <%= render 'agents/form_family_name_last', :f => f -%>
       <%- end -%>
-    </span>
-<% end %>
-    <div><%=f.label :full_name -%></div>
-    <div>
-         <%= t('activerecord.attributes.agent.full_name_note') -%><br />
-         <%= f.text_field :full_name, :class => 'resource_title' -%>
+    <div class="row">
+      <div><%=f.label :full_name -%></div>
+      <div>
+        <%= t('activerecord.attributes.agent.full_name_note') -%><br />
+        <%= f.text_field :full_name, :class => 'resource_title' -%>
+      </div>
     </div>
   </div>
   <div class="row">
