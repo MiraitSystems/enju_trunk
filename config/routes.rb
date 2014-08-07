@@ -564,4 +564,6 @@ Rails.application.routes.draw do
   match '/retained_manifestations/informed' => 'retained_manifestations#informed'
   match '/system_configurations' => 'system_configurations#index'
   match '/system_configurations/update' => 'system_configurations#update'
+  match '/system_maintenance/execute' => 'system_maintenance#execute'
+  match '/system_maintenance' => 'system_maintenance#index'
 end
