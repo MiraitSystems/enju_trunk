@@ -301,7 +301,10 @@ $(document).keydown(function(e) {
 
   <div class="row">
     <div><%= f.label t('role.required_role'), :required => true -%></div>
-    <div><%= f.select2(:required_role_id, @roles, @manifestation.required_role_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name') %></div>
+    <div>
+      <%= select2_tag 'manifestation_required_role_id', 'manifestation[required_role_id]',
+                      @roles, @manifestation.required_role_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %>
+    </div>
   </div>
 
   <div class="row">

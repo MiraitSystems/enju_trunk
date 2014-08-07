@@ -46,7 +46,10 @@
     </div>
     <div class="row">
       <div><%= item.label t('role.required_role') -%></div>
-      <div><%= item.select2(:required_role_id, @roles, @item.required_role_id, :width => 150, :select_attribute => 'id', :display_attribute => 'name') %></div>
+      <div>
+        <%= select2_tag 'item_required_role_id', 'manifestation[items_attributes][0][required_role_id]',
+                        @roles, @item.required_role_id, :width => 150, :select_attribute => :id, :display_attribute => :display_name %>
+      </div>
     </div>
     <div class="row">
       <div><%= item.label :non_searchable %></div>
