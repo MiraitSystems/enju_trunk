@@ -6,31 +6,31 @@
 
     <div class="row">
       <div><%= item.label t('activerecord.models.checkout_type') -%></div>
-      <div><%= item.select2 :checkout_type_id, @checkout_types, @item.checkout_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
+      <div><%= item.select2 :checkout_type_id, @checkout_types, @item.checkout_type_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
     <div class="row">
       <div><%= item.label t('activerecord.models.accept_type') -%></div>
-      <div><%= item.select2 :accept_type_id, @accept_types, @item.accept_type_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
+      <div><%= item.select2 :accept_type_id, @accept_types, @item.accept_type_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
     <div class="row">
       <div><%= item.label t('activerecord.models.circulation_status') -%></div>
-      <div><%= item.select2 :circulation_status_id, @circulation_statuses, @item.circulation_status_id, :width => 500, :select_attribute => :id, :display_attribute => :display_name %></div>
+      <div><%= item.select2 :circulation_status_id, @circulation_statuses, @item.circulation_status_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
     <div class="row">
       <div><%= item.label t('activerecord.models.retention_period') -%></div>
-      <div><%= item.select2 :retention_period_id, @retention_periods, @item.retention_period_id, :width => 200, :select_attribute => :id, :display_attribute => :display_name %></div>
+      <div><%= item.select2 :retention_period_id, @retention_periods, @item.retention_period_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name %></div>
     </div>
     <div class="row">
       <div><%= item.label :call_number -%></div>
-      <div><%= item.text_field :call_number -%></div>
+      <div><%= item.text_field :call_number, :class => 'small_string' -%></div>
     </div>
     <div class="row">
       <div><%= item.label t('activerecord.models.bookstore') -%></div>
-      <div><%= item.select2 :bookstore_id, @bookstores, @item.bookstore_id, :width => 150, :select_attribute => :id, :display_attribute => :name, :include_blank => true%></div>
+      <div><%= item.select2 :bookstore_id, @bookstores, @item.bookstore_id, :width => 130, :select_attribute => :id, :display_attribute => :name, :include_blank => true%></div>
     </div>
     <div class="row">
       <div><%=f.label :price -%></div>
-      <div><%= item.text_field :price -%></div>
+      <div><%= item.text_field :price, :class => 'small_string' -%></div>
     </div>
     <div class="row">
       <div><strong><%= t('activerecord.attributes.item.url') %></strong></div>
@@ -42,13 +42,13 @@
     </div>
     <div class="row">
       <div><%= item.label t('activerecord.models.use_restriction') -%></div>
-      <div><%= item.select2(:use_restriction_id, @use_restrictions, @use_restriction_id, :width => 400, :select_attribute => :id, :display_attribute => :display_name) %></div>
+      <div><%= item.select2(:use_restriction_id, @use_restrictions, @use_restriction_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name) %></div>
     </div>
     <div class="row">
       <div><%= item.label t('role.required_role') -%></div>
       <div>
         <%= select2_tag 'item_required_role_id', 'manifestation[items_attributes][0][required_role_id]',
-                        @roles, @item.required_role_id, :width => 150, :select_attribute => :id, :display_attribute => :display_name %>
+                        @roles, @item.required_role_id, :width => 250, :select_attribute => :id, :display_attribute => :display_name %>
       </div>
     </div>
     <div class="row">
@@ -62,7 +62,7 @@
 </script>
     <div class="row">
       <div><%= item.label :acquired_at_string -%></div>
-      <div><%= item.text_field :acquired_at_string, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011-04-12"-%></div>
+      <div><%= item.text_field :acquired_at_string, :class => 'medium_string', :placeholder => "#{t('page.example')}: 2011-04-12"-%></div>
     </div>
     <div class="row">
       <div><%= item.label :note -%></div>
@@ -77,7 +77,7 @@
     <div class="row">
       <div><%= item.label :item_identifier -%></div>
       <div class="row2">
-        <%= select2_tag "item_numbering_type", "numbering[type]", @item_numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 200, :include => false %>
+        <%= select2_tag "item_numbering_type", "numbering[type]", @item_numberings, nil, :display_attribute => 'display_name', :select_attribute => 'id', :width => 250, :include => false %>
           <%= item.text_field :item_identifier, :class => 'resource_item_identifier' -%>
           <%= link_to t('activerecord.models.numbering'), {}, :onClick => "item_numbering();false", :remote => true %>
       </div>
@@ -86,7 +86,7 @@
       <%= item.fields_for :claim, @item.claim || Claim.new do |f_claim| %> 
         <div class="row">
           <div><%= f_claim.label :claim_type_id %></div>
-          <div><%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :select_attribute => :id, :display_attribute => :display_name, :include_blank => true %></div>
+          <div><%= f_claim.select2 :claim_type_id, @claim_types, @item.claim.try(:claim_type_id), :select_attribute => :id, :display_attribute => :display_name, :include_blank => true, :width => 250 %></div>
         </div>
         <div class="row">
           <div><%= f_claim.label :note %></div>
