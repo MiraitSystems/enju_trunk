@@ -296,3 +296,11 @@ input.large_string{
 input.small_string{
   width: 130px;
 }
+
+input.telephone_number{
+  width: 330px; 
+}
+
+input.identifier{
+  width: 253px;
+}

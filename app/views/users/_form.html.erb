@@ -138,8 +138,8 @@
 <div class='table'>
   <%- if current_user.has_role?('Librarian') -%>
     <div class="row">
-      <div><%=f.label t('activerecord.models.agent_type') -%></div>
-      <div><%= f.select2(:agent_type_id, @agent_types, agent.agent_type_id, :select_attribute => :id, :display_attribute => :display_name) -%></div>
+      <div><%= f.label t('activerecord.models.agent_type') -%></div>
+      <div><%= f.select2(:agent_type_id, @agent_types, agent.agent_type_id, :select_attribute => :id, :display_attribute => :display_name, :width => 200) -%></div>
     </div>
   <%- end -%>
 
@@ -215,7 +215,7 @@
 
   <div class="row">
     <div><%=f.label t('activerecord.models.country') -%></div>
-    <div><%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 350) -%></div>
+    <div><%= f.select2(:country_id, @countries, @agent.country_id, :select_attribute => 'id', :display_attribute => 'display_name', :width => 400) -%></div>
   </div>
 
   <div class="row">
@@ -241,22 +241,22 @@
     <div class="row">
       <div><%= f.label :telephone_number_1 -%></div>
       <div>
-        <%= f.phone_field :telephone_number_1, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :telephone_number_1_type_id, telephone_types, agent.telephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :telephone_number_1_type_id, telephone_types, agent.telephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :telephone_number_1, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :extelephone_number_1 -%></div>
       <div>
-        <%= f.phone_field :extelephone_number_1, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :extelephone_number_1_type_id, telephone_types, agent.extelephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :extelephone_number_1_type_id, telephone_types, agent.extelephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :extelephone_number_1, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :fax_number_1 -%></div>
       <div>
-        <%= f.phone_field :fax_number_1, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :fax_number_1_type_id, telephone_types, agent.fax_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :fax_number_1_type_id, telephone_types, agent.fax_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :fax_number_1, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
@@ -283,22 +283,22 @@
     <div class="row">
       <div><%=f.label :telephone_number_2 -%></div>
       <div>
-        <%= f.phone_field :telephone_number_2, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :telephone_number_2_type_id, telephone_types, agent.telephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :telephone_number_2_type_id, telephone_types, agent.telephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :telephone_number_2, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :extelephone_number_2 -%></div>
       <div>
-        <%= f.phone_field :extelephone_number_2, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :extelephone_number_2_type_id, telephone_types, agent.extelephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :extelephone_number_2_type_id, telephone_types, agent.extelephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :extelephone_number_2, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :fax_number_2 -%></div>
       <div>
-        <%= f.phone_field :fax_number_2, :class => 'resource_telephone_number' -%>
-        <%= f.select2 :fax_number_2_type_id, telephone_types, agent.fax_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true -%>
+        <%= f.select2 :fax_number_2_type_id, telephone_types, agent.fax_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
+        <%= f.phone_field :fax_number_2, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
