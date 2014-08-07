@@ -35,12 +35,10 @@
     <% identifiers.each_with_index do |identifier, index| %>
       <div id="identifiers_<%= index %>" class='row2'>
         <%= f.fields_for :identifiers, identifier do |i_f| %>
-          <%= i_f.select2 :identifier_type_id, 
-            @identifier_types, 
-            identifier[:identifier_type_id], 
-            :select_attribute => :id, 
-            :display_attribute => :display_name,
-            :width => 200 %>
+          <%= select2_tag "manifestation_identifiers_attributes_#{index}_identifier_type_id",
+                          "manifestation[identifiers_attributes][#{index}][identifier_type_id]",
+                          @identifier_types, identifier[:identifier_type_id],
+                          :select_attribute => :id, :display_attribute => :display_name, :width => 200 %>
           <%= i_f.text_field :body, :class => 'identifier' %>
           <%= button_to_function '+', 'ItemField_identifier.add()' %>
           <%= button_to_function '-', "ItemField_identifier.remove(#{index})" %>
