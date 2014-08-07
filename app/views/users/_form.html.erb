@@ -223,8 +223,9 @@
     <div><%= f.url_field :url, :class => 'resource_url' -%></div>
   </div>
 
-  <div class="actions">
-     <%= u_form.submit :disable_with => t('page.wait') -%>
+  <div class="actions row">
+     <div></div>
+     <div><%= u_form.submit :disable_with => t('page.wait') -%></div>
   </div>
 
   <hr />
@@ -265,7 +266,10 @@
     </div>
   </div>
 
-  <div class="row"><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
+  <div class="row">
+    <div><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
+    <div></div>
+  </div>
 
   <div id="address_2" class="table" style="display: none">
 
@@ -330,13 +334,16 @@
 
   <br style="clear: both;"/>
 
-  <div class="actions">
-    <%= hidden_field_tag 'work_id', @work.id if @work -%>
-    <%= hidden_field_tag 'expression_id', @expression.id if @expression -%>
-    <%= hidden_field_tag 'manifestation_id', @manifestation.id if @manifestation -%>
-    <%= hidden_field_tag 'item_id', @item.id if @item -%>
-    <%= f.hidden_field :user_username -%>
-    <%= u_form.submit :disable_with => t('page.wait') -%>
+  <div class="actions row">
+    <div></div>
+    <div>
+      <%= hidden_field_tag 'work_id', @work.id if @work -%>
+      <%= hidden_field_tag 'expression_id', @expression.id if @expression -%>
+      <%= hidden_field_tag 'manifestation_id', @manifestation.id if @manifestation -%>
+      <%= hidden_field_tag 'item_id', @item.id if @item -%>
+      <%= f.hidden_field :user_username -%>
+      <%= u_form.submit :disable_with => t('page.wait') -%>
+    </div>
   </div>
 </div>
 
