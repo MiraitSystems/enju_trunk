@@ -116,7 +116,7 @@ class UsersController < ApplicationController
       @agent.language = Language.where(:iso_639_1 => I18n.default_locale.to_s).first || Language.first 
       @agent.country = current_user.library.country if current_user.library
       @agent.country_id = LibraryGroup.site_config.country_id
-      @agent.telephone_number_1_type_id = 0
+      @agent.telephone_number_1_type_id = 5
       @agent.telephone_number_2_type_id = 1
       @agent.extelephone_number_1_type_id = 2
       @agent.extelephone_number_2_type_id = 2

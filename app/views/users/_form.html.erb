@@ -240,21 +240,21 @@
     </div>
     <div class="row">
       <div><%= f.label :telephone_number_1 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :telephone_number_1_type_id, telephone_types, agent.telephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :telephone_number_1, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :extelephone_number_1 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :extelephone_number_1_type_id, telephone_types, agent.extelephone_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :extelephone_number_1, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :fax_number_1 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :fax_number_1_type_id, telephone_types, agent.fax_number_1_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :fax_number_1, :class => 'telephone_number' -%>
       </div>
@@ -266,7 +266,6 @@
   </div>
 
   <div class="row"><%= link_to_function t('agent.other_address'), "$('#address_2').toggle()" -%></div>
-  </div>
 
   <div id="address_2" class="table" style="display: none">
 
@@ -282,21 +281,21 @@
     </div>
     <div class="row">
       <div><%=f.label :telephone_number_2 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :telephone_number_2_type_id, telephone_types, agent.telephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :telephone_number_2, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :extelephone_number_2 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :extelephone_number_2_type_id, telephone_types, agent.extelephone_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :extelephone_number_2, :class => 'telephone_number' -%>
       </div>
     </div>
     <div class="row">
       <div><%=f.label :fax_number_2 -%></div>
-      <div>
+      <div class="row2">
         <%= f.select2 :fax_number_2_type_id, telephone_types, agent.fax_number_2_type_id, :select_attribute => :id, :display_attribute => :text, :include_blank => true, :width => 200 -%>
         <%= f.phone_field :fax_number_2, :class => 'telephone_number' -%>
       </div>
