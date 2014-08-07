@@ -1,6 +1,11 @@
 class DepartmentsController < ApplicationController
   load_and_authorize_resource
 
+  add_breadcrumb "I18n.t('page.listing', :model => I18n.t('activerecord.models.department'))", 'departments_path', :only => [:index]
+  add_breadcrumb "I18n.t('page.showing', :model => I18n.t('activerecord.models.department'))", 'department_path(params[:id])', :only => [:show]
+  add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.department'))", 'new_department_path', :only => [:new, :create]
+  add_breadcrumb "I18n.t('page.edit', :model => I18n.t('activerecord.models.department'))", 'edit_department_path(params[:id])', :only => [:edit, :update]
+
   def index
     @departments = Department.unscoped.order(:position).page(params[:page])
   end
