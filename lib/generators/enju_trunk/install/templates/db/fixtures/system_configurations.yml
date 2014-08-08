@@ -760,11 +760,7 @@ system_configuration_00108:
   v: "true"
   typename: Boolean
   description: "資料へ人物を追加する際、既に存在する人物しか追加できないようにするか"
-  keyname: statistic_report.yearly_public
-  v: "false"
-  typename: Boolean
-  description: "年別利用統計(公共図書館向け)を利用する"
-  category: 'statistics'
+  category: 'manifestation'
 system_configuration_00109:
   id: 109
   keyname: statistic_report.users
@@ -1241,10 +1237,17 @@ system_configuration_00177:
   typename: Boolean
   description: "書名テーブルの検索を行う"
   category: 'manifestation'
-ystem_configuration_00178:
+system_configuration_00178:
   id: 178
   keyname: other_identifier.duplicate_identifier_type
   v: "false"
   typename: Boolean
   description: "その他の識別子のタイプの重複を許可する"
   category: 'manifestation'
+system_configuration_00179:
+  id: 179
+  keyname: statistic_report.yearly_public
+  v: "false"
+  typename: Boolean
+  description: "年別利用統計(公共図書館向け)を利用する"
+  category: 'statistics'
