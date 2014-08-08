@@ -281,7 +281,7 @@ div.row2 {
 div.row2 div{
   padding: 3px 3px 3px 0px;
 }
-div.row2 input{
+div.row2 input, div.row2 textarea{
   margin: 3px 3px 3px 0px;
 }
 
