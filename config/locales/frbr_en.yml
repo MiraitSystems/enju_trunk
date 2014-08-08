@@ -1,0 +1,135 @@
+en:
+  activerecord:
+    models:
+      manifestation: Manifestation
+      item: Item
+    attributes:
+      manifestation:
+        original_title: Original title
+        title_alternative: Titlte alternative
+        title_transcription: Title transcription
+        article_title: Article title
+        classification_number: Classification number
+        other_titles: Other titles
+        identifier: Manifestation identifier
+        date_of_publication: Date of publication
+        date_of_discontinuance: Date of Discontinuance
+        dis_date: Dis Date
+        country_of_publication: Country of publication
+        place_of_publication: Place of publication
+        pub_date: Date of publication
+        deleted_at: Deleted at
+        access_address: Access address
+        start_page: Start page
+        end_page: End page
+        page: Page
+        size: Size
+        height: Height
+        width: Width
+        depth: Depth
+        isbn: ISBN
+        isbn10: ISBN 10
+        wrong_isbn: Wrong ISBN
+        nbn: NBN
+        price: Price
+        volume_number_list: Volume number list
+        issue_number_list: Issue number list
+        serial_number_list: Serial number list
+        edition: Edition
+        note: Note
+        repository_content: Repository content
+        lock_version: Lock version
+        carrier_type: Manifestation form
+        sub_carrier_type: Sub Carrier Type
+        language: Language
+        lccn: LCCN
+        issn: ISSN
+        subscription_master: Subscription master
+        description: Description
+        except_recent: Except recent
+        checkouts_count: Checkouts count
+        reserves_count: Reserves count
+        last_checkout_datetim: Last checkout datetime
+        ndc: NDC
+        exinfo_1: Exinfo1
+        exinfo_2: Exinfo2
+        exinfo_3: Exinfo3
+        exinfo_4: Exinfo4
+        exinfo_5: Exinfo5
+        edition_display_value: Edition display value
+        reserves_number: Reserves number
+        detail: Detail
+        supplement: Supplement
+        per_page: Per page
+        last_checkout_datetime: Last used at
+        acceptance_number: Acceptance number
+        hold_dbname: DB name
+        hold_id: Record ID
+        hold_libabl: Library name (abbreviated)
+        hold_cln: Call number
+        hold_rgtn: Registration number
+        id: ID
+        pub_date_article: "date of publication"
+        pub_year: "year of publication"
+        price_string: Price
+        volume_number: Volume Number(integer)
+        volume_number_string: Volume Number
+        issue_number: Issue Number(integer)
+        issue_number_string: Issue Number
+        serial_number: Serial Number(integer)
+        serial_number_string: Serial Number
+        edition_string: Edition
+        marc_number: MARC number
+        jan_magazine: Jan magazine
+        table_of_contents: Table of contents
+        exinfo_6: Exinfo6
+        exinfo_7: Exinfo7
+        exinfo_8: Exinfo8
+        exinfo_9: Exinfo9
+        exinfo_10: Exinfo10
+        creator: Creator
+        contributor: Contributor
+        publisher: Publisher
+        subject: Subject
+        missing_issue: Missing Issue
+        printout_in_progress: started to export checkout confirmation card
+        external_catalog: Cataloging Authority
+        jpn_or_foreign: Japan or foreign
+        manifestation_identifier: manifestation_identifier
+        titles: Titles
+        use_license_id: UseLicense
+        nacsis_identifier: NACSIS ID
+        manifestation_type: Manifestation Type
+        original: Original
+        catalog: Original Catalog
+      item:
+        call_number: Call number
+        item_identifier: Item identifier
+        nacsis_identifier: NACSIS Item identifier
+        deleted_at: Deleted at
+        include_supplements: Include supplements
+        note: Note
+        url: URL
+        price: Price
+        excluding_tax: Excluding tax
+        tax: Tax
+        lock_version: Lock version
+        checkout_type: Checkout type
+        retention_period: Retention Period
+        acquired_at: Acquired at
+        acquired_at_string: Acquired at
+        loss_item: Loss item
+        set_status: Loss item processing
+        will_loss_item: Is status set as Lost, and Is a book returned?
+        fail_update_loss_item: Failed to update status
+        created_at: Created at
+        removed_at: Removed at
+        rank: Rank
+        non_searchable: Non Searchable
+        price_string: Purchase Price
+        items_number: Item number
+        exemplify: Item
+        location_symbol: Location Symbol
+        location_category_id: Location Category
+        statistical_class: Statistic Class
+        budget_category: Budget Category

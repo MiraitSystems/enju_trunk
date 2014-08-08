@@ -115,7 +115,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
         raise ArgumentError, "unknwon field key: #{field_key.inspect}"
       end
 
-      name = I18n.t("resource_import_textfile.excel.#{field_key}")
+      name = Manifestation::OUTPUT_COLUMN_SPEC[field_key][2][I18n.locale]
       if /\Aroot\./ =~ field_key
         I18n.t("resource_import_textfile.root_prefix") + name
       else
@@ -362,7 +362,7 @@ class ResourceImport < EnjuTrunk::ResourceAdapter::Base
 
               oo.default_sheet = sheet_name
               logger.info "start read sheet: #{sheet_name}"
-
+              
               sheet = Sheet.new_from_excelx(oo, sheet_name)
               import_sheet(sheet, sheet_extraparams(extraparams, i), resource_import_textfile)
             rescue => e

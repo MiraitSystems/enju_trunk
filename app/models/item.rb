@@ -429,6 +429,11 @@ class Item < ActiveRecord::Base
 
     else
       val = __send__(ws_col) || ''
+      if val.class == Keycode
+        val = val.keyname
+      else val.class != String
+        val = val.try(:display_name).try(:localze) || val.id
+      end
     end
 
     val
