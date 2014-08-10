@@ -28,7 +28,7 @@ class ReminderList < ActiveRecord::Base
       errors[:base] << I18n.t('checkout.no_checkout') unless checkout
     end
   end
-   
+
   def check_due_date
     errors[:base] << I18n.t('activerecord.errors.messages.reminder_list.not_overdue') unless checkout.overdue?
   end
@@ -44,7 +44,7 @@ class ReminderList < ActiveRecord::Base
 
   searchable do
     integer :id
-    integer :checkout_id 
+    integer :checkout_id
     integer :status
     integer :library_id do
       checkout.try(:item).try(:shelf).try(:library_id)
@@ -160,7 +160,7 @@ class ReminderList < ActiveRecord::Base
             row << (reminder_list.try(:checkout).try(:user).try(:agent).try(:full_name) + "(" + reminder_list.try(:checkout).try(:user_username) + ")" || "" rescue "")
           when :state
             row << reminder_list.try(:status_name) || "" rescue ""
-          when :due_date 
+          when :due_date
             row << reminder_list.try(:checkout).try(:due_date) || "" rescue ""
           when :number_of_day_overdue
             row << reminder_list.try(:checkout).try(:day_of_overdue) || "" rescue ""
@@ -175,6 +175,7 @@ class ReminderList < ActiveRecord::Base
 
   def self.output_reminder_postal_card(file, reminder_lists, user, current_user)
     logger.info "create_file=> #{file}"
+    report_path = EnjuTrunk.report_path
 
     report = ThinReports::Report.create do
       use_layout File.join(report_path, 'reminder_postal_card_back.tlf'), :default => true
@@ -231,7 +232,7 @@ class ReminderList < ActiveRecord::Base
         page.list(:list).add_row do |row|
           row.item(:address).value(name + " " + I18n.t('activerecord.attributes.reminder_list.honorific1'))
         end
-      end    
+      end
 
       # detail
       start_new_page do |page|
@@ -269,10 +270,10 @@ class ReminderList < ActiveRecord::Base
           else
             row.item(:items_num).value(I18n.t('activerecord.attributes.reminder_list.total') + " " + reminder_lists.size.to_s + " " + I18n.t('activerecord.attributes.reminder_list.items'))
           end
-        end       
+        end
       end
     end
-    report.generate_file(file) 
+    report.generate_file(file)
   end
 
   def self.output_reminder_letter(file, reminder_lists, user, current_user)
@@ -304,6 +305,6 @@ class ReminderList < ActiveRecord::Base
         end
       end
     end
-    report.generate_file(file) 
+    report.generate_file(file)
   end
 end
