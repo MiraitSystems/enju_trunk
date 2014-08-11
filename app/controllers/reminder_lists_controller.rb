@@ -13,11 +13,11 @@ class ReminderListsController < ApplicationController
       query = params[:query].to_s.strip
       @query = query.dup
       query = "#{query}*" if query.size == 1
- 
+
       tmp_state_list = params[:state] || []
       @selected_state = tmp_state_list.collect {|s| s.to_i }
       logger.info @selected_state
-      if @selected_state.blank?  
+      if @selected_state.blank?
         flash[:reserve_notice] << t('item_list.no_list_condition') + '<br />'
       end
       states = nil
@@ -39,11 +39,11 @@ class ReminderListsController < ApplicationController
 
     #puts "user_number=#{@user_number} present?=#{@user_number.present?}"
     #puts "full_name=#{@full_name} present?=#{@full_name.present?}"
-    
+
     @reminder_lists = ReminderList.search do
       fulltext query
       with(:library_id, library.to_i) if library
-      with(:status, state_ids) 
+      with(:status, state_ids)
       without(:checkin, true) if date
       with(:due_date).less_than(date)
       with(:user_number, user_number) if user_number.present?
@@ -58,7 +58,7 @@ class ReminderListsController < ApplicationController
     end.results
 
     # output reminder_list (pdf or tsv)
-    unless @selected_state.blank? 
+    unless @selected_state.blank?
       if params[:output_pdf]
         data = ReminderList.output_reminder_list_pdf(@reminder_lists)
         send_data data.generate, :filename => Setting.reminder_list_print_pdf.filename; return
@@ -86,10 +86,10 @@ class ReminderListsController < ApplicationController
     @reminder_list = ReminderList.new(params[:reminder_list])
     if @reminder_list.save
       flash[:notice] = t('controller.successfully_created', :model => t('activerecord.models.reminder_list'))
-      redirect_to(@reminder_list) 
+      redirect_to(@reminder_list)
     else
       @reminder_list.checkout_id = nil
-      render :action => "new" 
+      render :action => "new"
     end
   end
 
@@ -97,9 +97,9 @@ class ReminderListsController < ApplicationController
     @reminder_list = ReminderList.find(params[:id])
     if @reminder_list.update_attributes(params[:reminder_list])
       flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.models.reminder_list'))
-      redirect_to(@reminder_list) 
+      redirect_to(@reminder_list)
     else
-      render :action => "edit" 
+      render :action => "edit"
     end
   end
 
@@ -121,13 +121,14 @@ class ReminderListsController < ApplicationController
     @user = User.where(:user_number => user_number).first
     unless @user
       flash[:notice] = t('reminder_list.no_user')
-      render :reminder_postal_card and return 
+      render :reminder_postal_card and return
     end
     # check user has over_due_item
-    @reminder_lists = ReminderList.find(:all, :include => [:checkout => :user], :conditions => {:checkouts => {:users => {:user_number => user_number}}})
+    #@reminder_lists = ReminderList.find(:all, :include => [:checkout => :user], :conditions => {:checkouts => {:users => {:user_number => user_number}}})
+    @reminder_lists = ReminderList.includes(:checkout => :user).where(users: { user_number: user_number })
     unless @reminder_lists.size > 0
       flash[:notice] = t('reminder_list.no_item')
-      render :reminder_postal_card and return 
+      render :reminder_postal_card and return
     end
 
     begin
@@ -142,6 +143,7 @@ class ReminderListsController < ApplicationController
       render :reminder_postal_card
     rescue Exception => e
       logger.error "failed #{e}"
+      logger.error $@
       flash[:notice] = t('reminder_list.failed_output')
       render :reminder_postal_card and return
     end
@@ -153,13 +155,13 @@ class ReminderListsController < ApplicationController
     @user = User.where(:user_number => user_number).first
     unless @user
       flash[:notice] = t('reminder_list.no_user')
-      render :reminder_letter and return 
+      render :reminder_letter and return
     end
     # check user has over_due_item
     @reminder_lists = ReminderList.includes(:checkout => :user).where(["users.user_number = ?", user_number])
     unless @reminder_lists.size > 0
       flash[:notice] = t('reminder_list.no_item')
-      render :reminder_letter and return 
+      render :reminder_letter and return
     end
 
     begin
@@ -205,7 +207,7 @@ class ReminderListsController < ApplicationController
         rescue Exception => e
           flash[:message] = e
           logger.error e
-        end     
+        end
       end
     end
     redirect_to :action => :index
@@ -213,19 +215,22 @@ class ReminderListsController < ApplicationController
 
   private
   def make_file(output_type)
+    logger.info "make_file (1)"
     out_dir = "#{Rails.root}/private/system/reminder_lists/"
     FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
-    logger.info "output #{output_type}"
+    logger.info "output=#{output_type} / out_dir=#{out_dir}"
 
     case output_type
     when :reminder_postal_card
-      file = out_dir + Setting.reminder_postal_card_print.filename
-      ReminderList.output_reminder_postal_card(file, @reminder_lists, @user, current_user)
-      flash[:path] = file
+      filename = out_dir + Setting.reminder_postal_card_print.filename
+      logger.info "output=#{output_type} / filename=#{filename}"
+      ReminderList.output_reminder_postal_card(filename, @reminder_lists, @user, current_user)
+      flash[:path] = filename
     when :reminder_letter
-      file = out_dir + Setting.reminder_letter_print.filename
-      ReminderList.output_reminder_letter(file, @reminder_lists, @user, current_user)
-      flash[:path] = file
+      filename = out_dir + Setting.reminder_letter_print.filename
+      logger.info "output=#{output_type} / filename=#{filename}"
+      ReminderList.output_reminder_letter(filename, @reminder_lists, @user, current_user)
+      flash[:path] = filename
     end
   end
-end 
+end
