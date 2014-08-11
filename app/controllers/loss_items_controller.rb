@@ -20,53 +20,23 @@ class LossItemsController < ApplicationController
     query = "#{query}*" if query.size == 1
     @date_of_birth = params[:birth_date].to_s.dup
     @address = params[:address]
-    birth_date = params[:birth_date].to_s.gsub(/\D/, '') if params[:birth_date]
-    unless params[:birth_date].blank?
-      begin
-        date_of_birth = Time.zone.parse(birth_date).beginning_of_day.utc.iso8601
-      rescue
-        flash[:message] = t('user.birth_date_invalid')
-      end
-    end
-    date_of_birth_end = Time.zone.parse(birth_date).end_of_day.utc.iso8601 rescue nil
+    query_user, flash[:message] = User.set_query("", params[:birth_date], params[:address])
 
     page = params[:page] || 1
     @status = params[:status]
-    if query.blank?
-      @loss_items = LossItem.page(page) if @status.blank?
-      @loss_items = LossItem.where(:status => @status).page(page) unless @status.blank?
-    else
-      # search loss_item
-      @loss_items = LossItem.search do
-        fulltext query
-        with(:status).equal_to @status unless @status.blank?
-      end.results
+    
+    # search loss_item
+    query = "#{query} #{query_user}" if query_user.present?
+    logger.debug query
+    @loss_items = LossItem.search do
+      fulltext query
+      with(:status).equal_to @status unless @status.blank?
+    end.results
 
-      # search item
-      agent = @agent
-      manifestation = @manifestation
-      shelf = get_shelf
-      @items = Item.search do
-        with(:agent_ids).equal_to agent.id if agent
-        with(:manifestation_id).equal_to manifestation.id if manifestation
-        with(:shelf_id).equal_to shelf.id if shelf
-        fulltext query
-      end.results
-      set_list(@items, @status)
-
-      # search user
-      query = "#{query} date_of_birth_d:[#{date_of_birth} TO #{date_of_birth_end}]" unless date_of_birth.blank?
-      query = "#{query} address_text:#{@address}" unless @address.blank?
-      @users = User.search do
-        fulltext query
-      end.results
-      set_list(@users, @status)
-
-      @loss_items = @loss_items.uniq
-      @loss_items = @loss_items.sort{|a, b| b.id <=> a.id}
-      @loss_items = @loss_items.paginate({:page => params[:page], :per_page => LossItem.per_page, :total_entries => @loss_items.size})
-      #@count[:query_result] = @loss_items.total_entries
-    end
+    @loss_items = @loss_items.uniq
+    @loss_items = @loss_items.sort{|a, b| b.id <=> a.id}
+    @loss_items = Kaminari.paginate_array(@loss_items).page(page).per(25)
+    #@count[:query_result] = @loss_items.total_entries
   end
 
   def show

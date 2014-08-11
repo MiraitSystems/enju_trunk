@@ -587,24 +587,14 @@ class User < ActiveRecord::Base
   end
 
   def self.set_query(query = nil, birth = nil, add = nil)
+    date_of_birth = nil
     # query
     query = query.to_s
     query = query.gsub("-", "") if query
     query = "*#{query}*" if query.size == 1
+
     # birth date
-=begin
-    birth_date = birth.to_s.gsub(/\D/, '') if birth
-    message = nil
-    unless birth.blank?
-      begin
-        date_of_birth = Time.zone.parse(birth_date).beginning_of_day.utc.iso8601
-      rescue
-        message = I18n.t('user.birth_date_invalid')
-      end
-    end
-    date_of_birth_end = Time.zone.parse(birth_date).end_of_day.utc.iso8601 rescue nil
-=end
-    if birth
+    if birth.present?
       logger.debug "birth=#{birth}"
       birth_date_from = Date.expand_date(birth)
       birth_date_to = Date.expand_date(birth, mode: 'to')
@@ -629,8 +619,8 @@ class User < ActiveRecord::Base
     query = "#{query} date_of_birth_d:[#{date_of_birth} TO #{date_of_birth_end}]" unless date_of_birth.blank?
     query = "#{query} address_text:#{address}" unless address.blank?
 
-    logger.error "query #{query}"
-    logger.error message
+    logger.info "query #{query}"
+    logger.info message
 
     return query, message
   end

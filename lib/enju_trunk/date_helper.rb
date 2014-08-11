@@ -126,8 +126,6 @@ class Date
     # 1974-3 => 19740301,19740331
     # 1974-3-9 => 19740309,19740331
     return nil if datestr.blank?
-    yyyymmdd_from = nil 
-    yyyymmdd_to = nil 
     time = nil
 
     #puts "datestr0=#{datestrs[0]} datestr1=#{datestrs[1]}"
