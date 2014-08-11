@@ -1585,11 +1585,6 @@ class Manifestation < ActiveRecord::Base
     if val.nil?
       begin
         val = __send__(ws_col) || ''
-        if val.class == Keycode
-          val = val.keyname
-        else val.class != String
-          val = val.try(:display_name).try(:localze) || val.id
-        end  
       rescue NoMethodError
         val = ''
       end

@@ -410,12 +410,11 @@ class Item < ActiveRecord::Base
     helper.extend(ItemsHelper)
     helper.instance_eval { def t(*a) I18n.t(*a) end } # NOTE: ItemsHelper#i18n_rankの中でtを呼び出しているが、ヘルパーを直接利用しようとするとRedCloth由来のtが見えてしまうため、その回避策
     val = nil
-
     case ws_col
     when 'library'
       val = shelf.library.display_name || ''
 
-    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate'
+    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate', 'budget_category'
       val = __send__(ws_col).try(:name) || ''
 
     when 'accept_type', 'retention_period', 'remove_reason', 'shelf'
@@ -427,12 +426,23 @@ class Item < ActiveRecord::Base
     when 'use_restriction'
       val = not_for_loan? ? 'TRUE' : ''
 
+    when 'location_symbol', 'statistical_class', 'location_category'
+      val = __send__(ws_col).try(:v) || ''
+
     else
       val = __send__(ws_col) || ''
-      if val.class == Keycode
-        val = val.keyname
-      else val.class != String
-        val = val.try(:display_name).try(:localze) || val.id
+      splits = ws_col.split('.')
+      case splits[0]
+      when 'item_extext'
+        extext = ItemExtext.where(name: splits[1], item_id: __send__(:id)).first 
+        val =  extext.value if extext
+      when 'item_exinfo'
+        if val.class = Keycode
+          val = val.keyname
+        else
+          exinfo = ItemExinfo.where(name: splits[1], item_id: __send__(:id)).first
+          val =  exinfo.value 
+        end
       end
     end
 

@@ -456,16 +456,17 @@ module EnjuTrunk
         extexts = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_extext\..+$/) do |field_key|
           data = sheet.field_data(datas, field_key)
-          extexts[key] = data if data
+          # extexts[key] = data if data
+          extexts[field_key.split('.').last] = data if data
         end
         if extexts.present?
           manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
         end
-
         exinfos = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_exinfo\..+$/) do |field_key|
           data = sheet.field_data(datas, field_key)
-          extexts[key] = data if data
+          # exinfos[key] = data if data
+          exinfos[field_key.split('.').last] = data if data 
         end
         if exinfos.present?
           manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
@@ -515,6 +516,7 @@ module EnjuTrunk
             assoc_records << record
           end
         else
+          #TODO SystemConfiguration.get('import_manifestation.use_delim') == TRUE
           value = sheet.field_data(datas, field_key)
           next if value.nil?
           assoc_records = Agent.add_agents(value, nil, create_new: create_new)
@@ -925,8 +927,6 @@ module EnjuTrunk
         return
       end
 
-      item.manifestation_id = manifestation.id
-
       set_attributes(item, datas, sheet, {
         accept_type: [
           'book.accept_type',
@@ -969,6 +969,26 @@ module EnjuTrunk
           'book.item_required_role',
           [:set_data, mode, Role, default: 'Guest'],
         ],
+        location_symbol: [
+          'book.item.location_symbol',
+          [:set_data, mode, Keycode, can_blank: true, check_column: :v],
+          [:set_nil_when_blank], 
+        ],
+        statistical_class: [
+          'book.item.statistical_class',
+          [:set_data, mode, Keycode, can_blank: true, check_column: :v],
+          [:set_nil_when_blank], 
+        ],
+        location_category: [
+          'book.item.location_category',
+          [:set_data, mode, Keycode, can_blank: true, check_column: :v],
+          [:set_nil_when_blank], 
+        ],
+        budget_category: [
+          'book.item.budget_category',
+          [:set_data, mode, BudgetCategory, can_blank: true],
+          [:set_nil_when_blank], 
+        ],        
       })
 
       # use_restriction
@@ -1014,7 +1034,30 @@ module EnjuTrunk
         end
       end
 
+      item.manifestation = manifestation
       item.save!
+
+      # item_extexts / item_exinfos
+      book_columns = Manifestation.book_output_columns
+      extexts = {} 
+      book_columns.grep(/^book.item_extext\..+$/) do |field_key|
+        data = sheet.field_data(datas, field_key)
+        # extexts[key] = data if data 
+        extexts[field_key.split('.').last] = data if data
+      end  
+      if extexts.present?
+        item.item_extexts = ItemExtext.add_extexts(extexts, item.id)
+      end  
+
+      exinfos = {} 
+      book_columns.grep(/^book.item_exinfo\..+$/) do |field_key|
+        data = sheet.field_data(datas, field_key)
+        # exinfos[key] = data if data 
+        exinfos[field_key.split('.').last] = data if data
+      end  
+      if exinfos.present?
+        item.item_exinfos = ItemExinfo.add_exinfos(exinfos, item.id)
+      end  
 
       if mode == 'create'
         logger.info "created new item \##{item.id} identifier:#{item.item_identifier}"
@@ -1175,7 +1218,7 @@ module EnjuTrunk
       end
     end
 
-    def set_data(field_value, filed_name, mode, model, options = {})
+    def set_data(field_value, field_name, mode, model, options = {})
       obj = nil
       options[:can_blank]    = false    if options[:can_blank].nil?
       options[:check_column] = :name    if options[:check_column].nil?
@@ -1191,8 +1234,7 @@ module EnjuTrunk
       elsif options[:can_blank] == true and field_value.blank?
         obj = nil
       else
-        #obj = options[:model].where(options[:check_column] => field_value).first# rescue nil
-        obj = model.where(options[:check_column] => field_value).first# rescue nil
+        obj = model.where(options[:check_column] => field_value.to_s).first rescue nil
         if obj.nil?
           raise I18n.t('resource_import_textfile.error.wrong_data',
              :field => field_name, :data => field_value)

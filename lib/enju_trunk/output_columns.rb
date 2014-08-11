@@ -54,8 +54,8 @@ module EnjuTrunk
           end
 
           # default values 
-          ja = I18n.t("activerecord.attributes.#{resource_model}.#{field_ext.split('.').first}", :locale => :ja) if ja.blank?
-          en = I18n.t("activerecord.attributes.#{resource_model}.#{field_ext.split('.').first}", :locale => :en) if en.blank?
+          ja = I18n.t("activerecord.attributes.#{resource_model}.#{field_ext.split('.').last}", :locale => :ja) if ja.blank?
+          en = I18n.t("activerecord.attributes.#{resource_model}.#{field_ext.split('.').last}", :locale => :en) if en.blank?
           for_join = 'singular' if for_join.blank?
           for_separate = 'singular' if for_separate.blank?
 
