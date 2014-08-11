@@ -1,3 +1,4 @@
+#-*- encoding: utf-8 -*-
 class Date 
   def self.enju_wareki2yyyy(gengou, yy)
     return nil unless Wareki::GENGOUS.key?(gengou)
