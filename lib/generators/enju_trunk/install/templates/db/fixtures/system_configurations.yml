@@ -1251,3 +1251,32 @@ system_configuration_00179:
   typename: Boolean
   description: "年別利用統計(公共図書館向け)を利用する"
   category: 'statistics'
+system_configuration_00180:
+  id: 180
+  keyname: import_manifestation.force_create_item
+  v: "true"
+  typename: Boolean
+  description: "ファイルからのインポート時所蔵を新規作成する"
+  category: 'manifestation'
+system_configuration_00181:
+  id: 181
+  keyname: import_manifestation.exchange_manifestation
+  v: "false"
+  typename: Boolean
+  description: "ファイルからインポート時、書誌と所蔵の関係を更新する"
+  category: 'manifestation'
+system_configuration_00182:
+  id: 182
+  keyname: import_manifestation.exchange_series_statement
+  v: "false"
+  typename: Boolean
+  description: "ファイルからインポート時、シリーズ情報と書誌の関係を更新する"
+  category: 'manifestation'
+system_configuration_00183:
+  id: 183
+  keybane: import_manifestation.use_delim
+  v: "false"
+  description: "ファイルからインポート時、件名・責任表示・分類に区切り文字を利用する"
+  category: 'manifestation'
+
+
