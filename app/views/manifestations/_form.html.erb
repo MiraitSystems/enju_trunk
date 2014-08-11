@@ -223,44 +223,51 @@ $(document).keydown(function(e) {
 
   <%= render :partial => 'form_work_has_language', :locals => {:f => f, :manifestation => @manifestation} %>
 
+  <div class="row">
+    <div><%= f.label :edition_display_value -%></div>
+    <div>
+      <%= f.text_field :edition_display_value, :class => 'small_string' -%>
+      <%= f.label :volume_number_string -%>
+      <%= f.text_field :volume_number_string, :class => 'small_string' -%>
+      <%= f.label :issue_number_string -%>
+      <%= f.text_field :issue_number_string, :class => 'small_string' -%>
+      <%- if @manifestation.series_statement -%>
+        <%= f.label :serial_number_string -%>
+        <%= f.text_field :serial_number_string, :size=>"10" %>
+      <%- end -%>
+    </div>
+  </div>
+
+  <div class="row">
+    <div><%= f.label :isbn -%></div>
+    <div><%= f.text_field :isbn, :class => 'resource_isbn_issn' -%></div>
+    <div><%= link_to_function t('activerecord.attributes.manifestation.wrong_isbn'), "$('#manifestation_wrong_isbn').toggle()" -%></div>
+    <div><%= f.text_field :wrong_isbn, :class => 'resource_isbn_issn', :style =>  'display: none' -%></div>
+  </div>
+
   <%- if @manifestation.series_statement -%>
-    <%= render :partial => 'manifestations/serial_form', :locals => {:f => f, :manifestation => @manifestation} -%>
-  <%- else -%>
-    <div class="row">
-      <div><%= f.label :edition_display_value -%></div>
-      <div>
-        <%= f.text_field :edition_display_value, :class => 'small_string' -%>
-        <%= f.label :volume_number_string -%>
-        <%= f.text_field :volume_number_string, :class => 'small_string' -%>
-        <%= f.label :issue_number_string -%>
-        <%= f.text_field :issue_number_string, :class => 'small_string' -%>
-      </div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :isbn -%></div>
-      <div><%= f.text_field :isbn, :class => 'resource_isbn_issn' -%></div>
-      <div><%= link_to_function t('activerecord.attributes.manifestation.wrong_isbn'), "$('#manifestation_wrong_isbn').toggle()" -%></div>
-      <div><%= f.text_field :wrong_isbn, :class => 'resource_isbn_issn', :style =>  'display: none' -%></div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :lccn -%></div>
-      <div><%= f.text_field :lccn, :class => 'resource_isbn_issn' -%></div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :marc_number -%></div>
-      <div><%= f.text_field :marc_number, :class => 'resource_isbn_issn' -%></div>
-    </div>
-
-    <div class="row">
-      <div><%= f.label :jan_magazine %></div>
-      <div><%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
-    </div>
-
-    <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
+  <div class="row">
+    <div><%= f.label :issn -%></div>
+    <div><%= f.text_field :issn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+  </div>
   <%- end -%>
+
+  <div class="row">
+    <div><%= f.label :lccn -%></div>
+    <div><%= f.text_field :lccn, :class => 'resource_isbn_issn' -%></div>
+  </div>
+
+  <div class="row">
+    <div><%= f.label :marc_number -%></div>
+    <div><%= f.text_field :marc_number, :class => 'resource_isbn_issn' -%></div>
+  </div>
+
+  <div class="row">
+    <div><%= f.label :jan_magazine %></div>
+    <div><%= f.text_field :jan_magazine, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+  </div>
+
+  <%= render :partial => 'form_classification_field', :locals => {:f => f, :manifestation => @manifestation} %>
 
   <% if SystemConfiguration.get('manifestation.use_identifiers') %>
     <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation, :identifiers => @identifiers} %>
