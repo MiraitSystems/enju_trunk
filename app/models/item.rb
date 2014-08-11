@@ -414,8 +414,11 @@ class Item < ActiveRecord::Base
     when 'library'
       val = shelf.library.display_name || ''
 
-    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate', 'budget_category'
+    when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate'
       val = __send__(ws_col).try(:name) || ''
+ 
+    when 'item.budget_category'
+      val = __send__(ws_col.split('.').last).try(:name) || ''
 
     when 'accept_type', 'retention_period', 'remove_reason', 'shelf'
       val = __send__(ws_col).try(:display_name) || ''
@@ -426,22 +429,23 @@ class Item < ActiveRecord::Base
     when 'use_restriction'
       val = not_for_loan? ? 'TRUE' : ''
 
-    when 'location_symbol', 'statistical_class', 'location_category'
-      val = __send__(ws_col).try(:v) || ''
+    when 'item.location_symbol', 'item.statistical_class', 'item.location_category'
+      val = __send__(ws_col.split('.').last).try(:v) || ''
+
 
     else
-      val = __send__(ws_col) || ''
+      val = __send__(ws_col.split('.').last) || ''
       splits = ws_col.split('.')
       case splits[0]
       when 'item_extext'
         extext = ItemExtext.where(name: splits[1], item_id: __send__(:id)).first 
-        val =  extext.value if extext
+        val =  extext.value || ''
       when 'item_exinfo'
-        if val.class = Keycode
-          val = val.keyname
+        if val.class == Keycode
+          val = val.keyname || ''
         else
           exinfo = ItemExinfo.where(name: splits[1], item_id: __send__(:id)).first
-          val =  exinfo.value 
+          val =  exinfo.value || ''
         end
       end
     end

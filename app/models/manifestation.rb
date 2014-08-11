@@ -1552,22 +1552,21 @@ class Manifestation < ActiveRecord::Base
       splits = ws_col.split('.')
       case splits[0]
       when 'manifestation_extext'
-        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).first 
-        val =  extext.value if extext
+        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).try(:first) 
+        val =  extext.try(:value) || ''
       when 'manifestation_exinfo'
-        exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).first
-        val =  exinfo.value if exinfo
+        exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).try(:first)
+        val =  exinfo.try(:value) || ''
       end
     end
     return val unless val.nil?
 
     # その他の項目はitemまたはmanifestationの
     # 同名属性からそのまま転記する
-
     if item
-      if /\Aitem_/ =~ ws_col
+      if /\Aitem/ =~ ws_col
         begin
-          val = item.excel_worksheet_value(ws_type, $', sep_flg, ccount) || ''
+          val = item.excel_worksheet_value(ws_type, ws_col, sep_flg, ccount) || ''
         rescue NoMethodError
         end
       end

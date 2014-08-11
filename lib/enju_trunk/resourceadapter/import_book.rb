@@ -188,7 +188,7 @@ module EnjuTrunk
           raise I18n.t('resource_import_textfile.error.failed_delete_not_find')
         end
 
-        delete_record(import_textresult, item, manifestation, series_statement)
+        delete_record(error_msgs, item, manifestation, series_statement)
         import_textresult.error_msg = error_msgs.join('<br />')
         return
       end
@@ -332,6 +332,10 @@ module EnjuTrunk
           "#{field}.carrier_type",
           [:set_data, mode, CarrierType, default: 'print'],
         ],
+        sub_carrier_type: [
+          "#{field}.sub_carrier_type",
+          [:set_data, mode, SubCarrierType], [:set_nil_when_blank]
+        ],
         jpn_or_foreign: [
           "#{field}.jpn_or_foreign",
           [:check_jpn_or_foreign], [:set_nil_when_blank]
@@ -456,17 +460,16 @@ module EnjuTrunk
         extexts = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_extext\..+$/) do |field_key|
           data = sheet.field_data(datas, field_key)
-          # extexts[key] = data if data
-          extexts[field_key.split('.').last] = data if data
+          extexts[field_key.split('.').last] = {'value' => data} if data
         end
         if extexts.present?
           manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
+          puts "manifestation.extexts: #{manifestation.manifestation_extexts.size}"
         end
         exinfos = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_exinfo\..+$/) do |field_key|
           data = sheet.field_data(datas, field_key)
-          # exinfos[key] = data if data
-          exinfos[field_key.split('.').last] = data if data 
+          exinfos[field_key.split('.').last] = {'value' => data} if data 
         end
         if exinfos.present?
           manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
@@ -782,7 +785,7 @@ module EnjuTrunk
         when :creators, :publishers
           check_procs << proc do |record|
             record_agent_names = record.__send__(attr_name).pluck(:full_name).sort
-            record_agent_names == field_data.sort
+            record_agent_names == field_data.compact.sort
           end
           scope = scope.where(:"#{attr_name}_agents" => {full_name: field_data})
 
@@ -1042,8 +1045,7 @@ module EnjuTrunk
       extexts = {} 
       book_columns.grep(/^book.item_extext\..+$/) do |field_key|
         data = sheet.field_data(datas, field_key)
-        # extexts[key] = data if data 
-        extexts[field_key.split('.').last] = data if data
+        extexts[field_key.split('.').last] = {'value' => data} if data
       end  
       if extexts.present?
         item.item_extexts = ItemExtext.add_extexts(extexts, item.id)
@@ -1052,8 +1054,7 @@ module EnjuTrunk
       exinfos = {} 
       book_columns.grep(/^book.item_exinfo\..+$/) do |field_key|
         data = sheet.field_data(datas, field_key)
-        # exinfos[key] = data if data 
-        exinfos[field_key.split('.').last] = data if data
+        exinfos[field_key.split('.').last] = {'value' => data} if data
       end  
       if exinfos.present?
         item.item_exinfos = ItemExinfo.add_exinfos(exinfos, item.id)
@@ -1066,7 +1067,6 @@ module EnjuTrunk
         logger.info "updated item \##{item.id} identifier:#{item.item_identifier}"
         update_summary(:item_found)
       end
-
       item.agents << shelf.library.agent if mode == 'create'
       item.manifestation = manifestation
       unless item.remove_reason.nil?
@@ -1292,10 +1292,10 @@ module EnjuTrunk
         if options[:mode] == 'input'
           return user.library
         else
-          return nil
+          return Library.first # default library
         end
       else
-        library = Library.where(:display_name => input_library.to_s).first
+        library = Library.where(:display_name => input_library.to_s).try(:first)
         if library.nil?
           raise I18n.t('resource_import_textfile.error.book.not_exsit_library', :library => input_library)
         else
@@ -1308,13 +1308,12 @@ module EnjuTrunk
       if input_shelf.nil?
         if options[:mode] == 'input'
           if library.nil?
-            return user.library.in_process_shelf
+            shelf = user.library.in_process_shelf
           else
-            return library.in_process_shelf
+            shelf = library.in_process_shelf
           end
-        else
-          return nil
         end
+        return shelf || library.shelves.first
       else
         shelf = nil
         if library.nil?
