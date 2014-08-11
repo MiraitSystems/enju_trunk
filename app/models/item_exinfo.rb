@@ -17,21 +17,33 @@ class ItemExinfo < ActiveRecord::Base
           name: key,
           item_id: item_id
         ).first
-
+      keycode = Keycode.where(:name => "item.#{key}", :keyname => value['value']).try(:first)
       if item_exinfo
         if value.blank?
           item_exinfo.destroy
           next
         else
-          item_exinfo.value = value
+          if keycode
+            item_exinfo.value = keycode.id
+          else
+            item_exinfo.value = value['value']
+          end
         end
       else
         next if value.blank?
-        item_exinfo = ItemExinfo.new(
-          name: key,
-          value: value,
-          item_id: item_id
-        )
+        if keycode 
+          item_exinfo = ItemExinfo.new(
+            name: key,
+            value: keycode.id,
+            item_id: item_id
+          )
+        else
+          item_exinfo = ItemExinfo.new(
+            name: key,
+            value: value['value'],
+            item_id: item_id
+          )
+        end
       end
       item_exinfo.position = position
       item_exinfo.save
