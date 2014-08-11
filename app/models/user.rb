@@ -592,6 +592,7 @@ class User < ActiveRecord::Base
     query = query.gsub("-", "") if query
     query = "*#{query}*" if query.size == 1
     # birth date
+=begin
     birth_date = birth.to_s.gsub(/\D/, '') if birth
     message = nil
     unless birth.blank?
@@ -602,6 +603,26 @@ class User < ActiveRecord::Base
       end
     end
     date_of_birth_end = Time.zone.parse(birth_date).end_of_day.utc.iso8601 rescue nil
+=end
+    if birth
+      logger.debug "birth=#{birth}"
+      birth_date_from = Date.expand_date(birth)
+      birth_date_to = Date.expand_date(birth, mode: 'to')
+      logger.debug "birth_date_from=#{birth_date_from} birth_date_to=#{birth_date_to}"
+      unless birth_date_from
+        message = I18n.t('user.birth_date_invalid')
+      else
+        begin
+          #date_of_birth = Time.zone.parse(birth_date_from).beginning_of_day.utc.iso8601
+          date_of_birth = birth_date_from.utc.iso8601
+        rescue
+          message = I18n.t('user.birth_date_invalid')
+        end
+        #date_of_birth_end = Time.zone.parse(birth_date_to).end_of_day.utc.iso8601 rescue nil
+        date_of_birth_end = birth_date_to.utc.iso8601 rescue nil
+      end
+      logger.debug "from=#{date_of_birth} to=#{date_of_birth_end}"
+    end
     # address
     address = add
 
