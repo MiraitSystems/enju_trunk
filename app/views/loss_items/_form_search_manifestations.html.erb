@@ -53,7 +53,7 @@ function search_manifestations() {
 
   <div class="field">
     <%= f.label t('activerecord.attributes.user.user_number') -%><br />
-    <%= text_field_tag :user_number, @user_number, :class => 'resource_user_number' -%>
+    <%= text_field_tag :user_number, @user_number, :class => 'resource_user_number', :autofocus => true -%>
   </div>
 
   <div class="field">
