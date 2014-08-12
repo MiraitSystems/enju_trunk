@@ -142,6 +142,13 @@ $(function(){
    </div>
   </div>
 
+  <%- if SystemConfiguration.get('item.use_different_identifier') %>  
+    <div class="row">
+      <div><%= f.label :identifier -%></div>
+      <div><%= f.text_field :identifier -%></div>
+    </div>
+  <%- end -%> 
+
   <% unless @claim_types.blank? %> 
     <%= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
       <div class="row">

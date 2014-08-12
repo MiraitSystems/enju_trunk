@@ -3,7 +3,7 @@ class ManifestationExtext < ActiveRecord::Base
  
   belongs_to :manifestation
 
-  acts_as_list
+  acts_as_list :scope => [:name, :type_id]
   default_scope :order => "position"
 
   has_paper_trail
@@ -11,12 +11,14 @@ class ManifestationExtext < ActiveRecord::Base
   def self.add_extexts(extexts, manifestation_id)
     return [] if extexts.blank?
     list = []
-    position = 1
     extexts.each do |key, value|
       next if value['value'].blank?
+      name = key.split('_').first
+      kid = key.split('_').last.to_i + 1
       manifestation_extext = ManifestationExtext.where(
-        name: key,
-        manifestation_id: manifestation_id
+        name: name,
+        manifestation_id: manifestation_id,
+        position: kid
       ).first
       if manifestation_extext
         if value['value'].blank?
@@ -28,17 +30,15 @@ class ManifestationExtext < ActiveRecord::Base
         end
       else
         next if value['value'].blank?
-        manifestation_extext = ManifestationExtext.new(
-          name: key,
+        manifestation_extext = ManifestationExtext.create(
+          name: name,
           value: value['value'],
           type_id: value['type_id'],
-          manifestation_id: manifestation_id
+          manifestation_id: manifestation_id,
+          position: kid
         )
       end
-      manifestation_extext.position = position
-      manifestation_extext.save
       list << manifestation_extext
-      position += 1
     end
     return list
   end

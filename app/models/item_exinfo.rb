@@ -11,13 +11,15 @@ class ItemExinfo < ActiveRecord::Base
   def self.add_exinfos(exinfos, item_id)
     return [] if exinfos.blank?
     list = []
-    position = 1
     exinfos.each do |key, value|
+      name = key.split('_').first 
+      kid = key.split('_').last.to_i + 1
       item_exinfo = ItemExinfo.where(
-          name: key,
-          item_id: item_id
+          name: name,
+          item_id: item_id,
+          position: kid
         ).first
-      keycode = Keycode.where(:name => "item.#{key}", :keyname => value['value']).try(:first)
+      keycode = Keycode.where(:name => "item.#{name}", :keyname => value['value']).try(:first)
       if item_exinfo
         if value.blank?
           item_exinfo.destroy
@@ -32,23 +34,22 @@ class ItemExinfo < ActiveRecord::Base
       else
         next if value.blank?
         if keycode 
-          item_exinfo = ItemExinfo.new(
-            name: key,
+          item_exinfo = ItemExinfo.create(
+            name: name,
             value: keycode.id,
-            item_id: item_id
+            item_id: item_id,
+            position: kid
           )
         else
-          item_exinfo = ItemExinfo.new(
-            name: key,
+          item_exinfo = ItemExinfo.create(
+            name: name,
             value: value['value'],
-            item_id: item_id
+            item_id: item_id,
+            position: kid
           )
         end
       end
-      item_exinfo.position = position
-      item_exinfo.save
       list << item_exinfo
-      position += 1
     end
     return list
   end

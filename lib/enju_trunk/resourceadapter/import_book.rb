@@ -459,17 +459,26 @@ module EnjuTrunk
 
         extexts = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_extext\..+$/) do |field_key|
-          data = sheet.field_data(datas, field_key)
-          extexts[field_key.split('.').last] = {'value' => data} if data
+          next if field_key =~ /type$/
+          extext_datas = sheet.field_data_set(datas, [field_key, "#{field_key}.type"])
+          next if extext_datas.blank?
+          extext_datas.each_with_index do |d, index|
+            key = field_key.split('.').last
+            type_id = Keycode.where(:name => "manifestation_extext.#{key.singularize}_type", :keyname => d["#{field_key}.type"]).try(:first).try(:id) || nil
+            extexts["#{key}_#{index}"] = {'value' => d[field_key], 'type_id' => type_id} if d[field_key]
+          end
         end
         if extexts.present?
           manifestation.manifestation_extexts = ManifestationExtext.add_extexts(extexts, manifestation.id)
-          puts "manifestation.extexts: #{manifestation.manifestation_extexts.size}"
         end
+
         exinfos = {}
         book_columns.grep(/^#{Regexp.quote(field)}\.manifestation_exinfo\..+$/) do |field_key|
-          data = sheet.field_data(datas, field_key)
-          exinfos[field_key.split('.').last] = {'value' => data} if data 
+          exinfo_datas = sheet.field_data_set(datas, [field_key])
+          next if exinfo_datas.blank?
+          exinfo_datas.each_with_index do |d, index|
+            exinfos["#{field_key.split('.').last}_#{index}"] = {'value' => d[field_key]} if d[fiedld_key]
+          end
         end
         if exinfos.present?
           manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(exinfos, manifestation.id)
@@ -1042,10 +1051,14 @@ module EnjuTrunk
 
       # item_extexts / item_exinfos
       book_columns = Manifestation.book_output_columns
-      extexts = {} 
+      extexts = {}
       book_columns.grep(/^book.item_extext\..+$/) do |field_key|
-        data = sheet.field_data(datas, field_key)
-        extexts[field_key.split('.').last] = {'value' => data} if data
+        extext_datas = sheet.field_data_set(datas, [field_key])
+        next if extext_datas.blank?
+        extext_datas.each_with_index do |d, index|
+          key = field_key.split('.').last
+          extexts["#{key}_#{index}"] = {'value' => d[field_key]} if d[field_key]
+        end
       end  
       if extexts.present?
         item.item_extexts = ItemExtext.add_extexts(extexts, item.id)
@@ -1053,8 +1066,11 @@ module EnjuTrunk
 
       exinfos = {} 
       book_columns.grep(/^book.item_exinfo\..+$/) do |field_key|
-        data = sheet.field_data(datas, field_key)
-        exinfos[field_key.split('.').last] = {'value' => data} if data
+        exinfo_datas = sheet.field_data_set(datas, [field_key])
+        next if exinfo_datas.blank?
+        exinfo_datas.each_with_index do |d, index|
+          exinfos["#{field_key.split('.').last}_#{index}"] = d[field_key] if d[field_key]
+        end
       end  
       if exinfos.present?
         item.item_exinfos = ItemExinfo.add_exinfos(exinfos, item.id)

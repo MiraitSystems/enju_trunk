@@ -12,7 +12,8 @@ class Item < ActiveRecord::Base
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, :manifestation_id
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, 
+                  :manifestation_id, :identifier
 
   self.extend ItemsHelper
  
@@ -434,19 +435,27 @@ class Item < ActiveRecord::Base
 
 
     else
-      val = __send__(ws_col.split('.').last) || ''
       splits = ws_col.split('.')
       case splits[0]
       when 'item_extext'
-        extext = ItemExtext.where(name: splits[1], item_id: __send__(:id)).first 
-        val =  extext.value || ''
-      when 'item_exinfo'
-        if val.class == Keycode
-          val = val.keyname || ''
-        else
-          exinfo = ItemExinfo.where(name: splits[1], item_id: __send__(:id)).first
-          val =  exinfo.value || ''
+        val = [nil]*ccount
+        extexts = ItemExtext.where(name: splits[1], item_id: __send__(:id)).order(:position)
+        extexts.each_with_index do |record, i| 
+          val[i] =  record.value
         end
+      when 'item_exinfo'
+        val = [nil]*ccount
+        exinfos = ItemExinfo.where(name: splits[1], item_id: __send__(:id))
+        exinfos.each_with_index do |record, i|
+          v = __send__(:"#{splits.last}")
+          if v.class == Keycode
+            val[i] = v.keyname
+          else
+            val[i] = record.value
+          end
+        end
+      else
+        val = __send__(ws_col.split('.').last) || ''
       end
     end
 

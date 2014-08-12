@@ -101,6 +101,7 @@ ja:
       item: 
         call_number: 請求記号
         item_identifier: 所蔵情報ID
+        identifier: 所蔵識別子
         nacsis_identifier: NACSIS所蔵レコードID
         deleted_at: 削除時刻
         include_supplements: 付録を含む

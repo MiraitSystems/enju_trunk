@@ -105,6 +105,7 @@ en:
       item:
         call_number: Call number
         item_identifier: Item identifier
+        identifier: Identifier
         nacsis_identifier: NACSIS Item identifier
         deleted_at: Deleted at
         include_supplements: Include supplements

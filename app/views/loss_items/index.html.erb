@@ -12,7 +12,7 @@ $(function(){
 <%= form_for :loss_items, :url => loss_items_path, :html => {:method => 'get'} do -%>
   <p>
     <%= t('page.search_term') -%>: 
-    <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%><br />
+    <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term'), :autofocus => true} -%> &nbsp; <%= t('activerecord.attributes.loss_item.search_notice') %> <br />
     <%= t('activerecord.attributes.user.birth_date') -%>: 
     <%= text_field_tag 'birth_date', @date_of_birth, :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2011-04-12" -%>
     <%= t('activerecord.attributes.user.adddress') -%>: 
