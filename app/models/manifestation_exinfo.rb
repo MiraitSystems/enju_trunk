@@ -1,7 +1,7 @@
 class ManifestationExinfo < ActiveRecord::Base
   attr_accessible :manifestation_id, :name, :position, :value, :manifestation
 
-  acts_as_list
+  acts_as_list :scope => :name
   default_scope :order => "position"
 
   belongs_to :manifestation
@@ -11,13 +11,15 @@ class ManifestationExinfo < ActiveRecord::Base
   def self.add_exinfos(exinfos, manifestation_id)
     return [] if exinfos.blank?
     list = []
-    position = 1
     exinfos.each do |key, value|
+      name = key.split('_').first
+      kid = key.split('_').last.to_i + 1
       manifestation_exinfo = ManifestationExinfo.where(
-          name: key,
-          manifestation_id: manifestation_id
+          name: name,
+          manifestation_id: manifestation_id,
+          position: kid
         ).first
-      keycode = Keycode.where(:name => "manifestation.#{key}", :keyname => value['value']).try(:first)
+      keycode = Keycode.where(:name => "manifestation.#{name}", :keyname => value['value']).try(:first)
       if manifestation_exinfo
         if value.blank?
           manifestation_exinfo.destroy
@@ -32,23 +34,22 @@ class ManifestationExinfo < ActiveRecord::Base
       else
         next if value.blank?
         if keycode
-          manifestation_exinfo = ManifestationExinfo.new(
-            name: key,
+          manifestation_exinfo = ManifestationExinfo.create(
+            name: name,
             value: keycode.id,
-            manifestation_id: manifestation_id
+            manifestation_id: manifestation_id,
+            position: position
           )
         else
-          manifestation_exinfo = ManifestationExinfo.new(
-            name: key,
+          manifestation_exinfo = ManifestationExinfo.create(
+            name: name,
             value: value['value'],
-            manifestation_id: manifestation_id
+            manifestation_id: manifestation_id,
+            position: kid
           )
         end
       end
-      manifestation_exinfo.position = position
-      manifestation_exinfo.save
       list << manifestation_exinfo
-      position += 1
     end
     return list
   end

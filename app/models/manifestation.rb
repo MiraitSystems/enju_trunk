@@ -1058,6 +1058,14 @@ class Manifestation < ActiveRecord::Base
       # book.theme、book.theme_publishについては
       # enju_trunk_theme側でカウント方法を提供できるようにする
       table = :themes
+    when /\Amanifestation_extext/
+      table = :manifestation_extexts
+    when /\Amanifestation_exinfo/
+      table = :manifestation_exinfos
+    when /\Aitem_extext/
+      table = :item_extexts
+    when /\Aitem_exinfo/
+      table = :item_exinfos
     else
       table = nil
     end
@@ -1075,7 +1083,12 @@ class Manifestation < ActiveRecord::Base
     cache_key = [table, field]
     return outer_cache[cache_key] if outer_cache[cache_key]
 
-    if table
+    if table =~ /\Aitem/
+      count = scope.joins(:items => table).group('items.id').
+        select('count(items.id) column_count').
+        order('column_count desc').first.
+        try(:column_count).try(:to_i) || 1
+    elsif table
       count = scope.joins(table).group('manifestations.id').
         select('count(manifestations.id) column_count').
         order('column_count desc').first.
@@ -1407,7 +1420,7 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
 
-    when 'carrier_type', 'required_role', 'manifestation_type', 'country_of_publication'
+    when 'carrier_type', 'required_role', 'manifestation_type', 'country_of_publication', 'catalog'
       val = __send__(ws_col).try(:name) || ''
 
     when 'frequency'
@@ -1552,8 +1565,15 @@ class Manifestation < ActiveRecord::Base
       splits = ws_col.split('.')
       case splits[0]
       when 'manifestation_extext'
-        extext = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).try(:first) 
-        val =  extext.try(:value) || ''
+        val = [nil]*ccount
+        extexts = ManifestationExtext.where(name: splits[1], manifestation_id: __send__(:id)).order(:position) 
+        extexts.each_with_index do |record, i|
+          if splits.last == 'type'
+            val[i] = Keycode.find(record.type_id).try(:keyname) || ''
+          else
+            val[i] = record.value
+          end
+        end
       when 'manifestation_exinfo'
         exinfo = ManifestationExinfo.where(name: splits[1], manifestation_id: __send__(:id)).try(:first)
         val =  exinfo.try(:value) || ''

@@ -27,7 +27,8 @@ module EnjuTrunk
       def initialize_output_column_spec(spec_hash = OUTPUT_COLUMN_SPEC, force_all = false)
         clear_cache!
 
-        spec_file = Gem::Specification.find_by_name("enju_trunk").gem_dir + '/lib/enju_trunk/columns_spec.csv'
+        spec_file = "#{Rails.root}/lib/enju_trunk/columns_spec.csv"
+        spec_file = Gem::Specification.find_by_name("enju_trunk").gem_dir + '/lib/enju_trunk/columns_spec.csv' unless File.exist?(spec_file)
         spec = File.read(spec_file)
         first_line = true
         CSV.parse(spec) do |fields, field_ext, ja, en, for_join, for_separate, resource_model|
