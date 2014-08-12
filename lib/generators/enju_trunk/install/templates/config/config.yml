@@ -345,6 +345,10 @@ defaults: &defaults
   item_label_pdf:
     filename: "資料ラベル.pdf"
 
+  # 貸出の多い本の出力
+  bestreader_excelx: 
+    filename: "貸出の多い本.xlsx"
+    fontname: "ＭＳ ゴシック"
   # 資料の詳細画面に過去の貸出回数を表示
   manifestation:
     display_checkouts_count: true
