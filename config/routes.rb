@@ -566,4 +566,10 @@ Rails.application.routes.draw do
   match '/system_configurations/update' => 'system_configurations#update'
   match '/system_maintenance/execute' => 'system_maintenance#execute'
   match '/system_maintenance' => 'system_maintenance#index'
+
+  match '/statistical_table' => 'statistical_table#index'
+  match '/statistical_table/output' => 'statistical_table#output'
+  match '/statistical_table/get_condition' => 'statistical_table#get_condition'
+  match '/statistical_table/get_second_aggregation' => 'statistical_table#get_second_aggregation'
+
 end

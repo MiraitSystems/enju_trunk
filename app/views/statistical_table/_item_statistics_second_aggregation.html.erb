@@ -1,0 +1,3 @@
+<% if @item_statistics.first_aggregation == 'carrier_type' -%>
+  <%= select :item_statistics, :second_aggregation, @second_aggregations -%>
+<% end -%>
