@@ -16,7 +16,7 @@ class ItemExinfo < ActiveRecord::Base
       kid = key.split('_').last.to_i + 1
       item_exinfo = ItemExinfo.where(
           name: name,
-          item_id: item_id
+          item_id: item_id,
           position: kid
         ).first
       keycode = Keycode.where(:name => "item.#{name}", :keyname => value['value']).try(:first)
