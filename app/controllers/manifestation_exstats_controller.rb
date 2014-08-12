@@ -10,7 +10,7 @@ class ManifestationExstatsController < ApplicationController
     @select_librarlies = Library.find(:all).collect{|i| [ i.display_name, i.id ] }
     @rank = 1
     @ranks = []
-    @Rank = Struct.new(:rank, :manifestation)
+    @Rank = Struct.new(:rank, :manifestation, :item)
 #    @selected_library = nil
     super
   end
@@ -36,18 +36,18 @@ class ManifestationExstatsController < ApplicationController
     @checkouts = []
     while @rank <= @limit
       if @selected_library.nil? || @selected_library.empty?
-        @checkout_parts = Checkout.find_by_sql(["SELECT manifestation_id, 
+        @checkout_parts = Checkout.find_by_sql(["SELECT item_id, 
           COUNT(*) AS cnt FROM checkouts LEFT OUTER 
           JOIN items on (items.id = checkouts.item_id) 
           WHERE (checkouts.created_at >= ? and checkouts.created_at < ?) 
-          GROUP BY items.manifestation_id 
+          GROUP BY checkouts.item_id
           ORDER BY cnt DESC LIMIT ? OFFSET ?", @start_d, @end_d.to_time + 1.days, @limit, @offset]);
       else
-        @checkout_parts = Checkout.find_by_sql(["SELECT manifestation_id, 
+        @checkout_parts = Checkout.find_by_sql(["SELECT item_id, 
           COUNT(*) AS cnt FROM users, checkouts LEFT OUTER 
           JOIN items on (items.id = checkouts.item_id) 
           WHERE checkouts.user_id = users.id AND users.library_id = ? AND (checkouts.created_at >= ? and checkouts.created_at < ?) 
-          GROUP BY items.manifestation_id 
+          GROUP BY checkouts.item_id 
           ORDER BY cnt DESC LIMIT ? OFFSET ?", @selected_library, @start_d, @end_d.to_time + 1.days, @limit, @offset]);
       end
       break if @checkout_parts.length == 0
@@ -58,13 +58,23 @@ class ManifestationExstatsController < ApplicationController
 
       while i < @checkouts.length
         @rank = i + 1 unless @checkouts[i].cnt == @checkouts[i-1].cnt
-        @manifestation = Manifestation.where(:id => @checkouts[i].manifestation_id).first
-        @ranks << @Rank.new(@rank, @manifestation) if @rank <= @limit
+        @item = Item.where(:id => @checkouts[i].item_id).try(:first)
+        @manifestation = @item.try(:manifestation)
+        @ranks << @Rank.new(@rank, @manifestation, @item) if @rank <= @limit
         i += 1
       end
       @offset += @limit
     end
-    render :template => 'opac/manifestation_exstats/bestreader', :layout => 'opac' if params[:opac]
+    if params[:opac]
+      format.html {render :template => 'opac/manifestation_exstats/bestreader', :layout => 'opac' if params[:opac]}
+    elsif params[:output]
+      filepath, opts = get_result_list(:bestreader_list, @ranks, @checkouts)
+      send_opts = {
+        :filename => opts[:filename],
+        :type => opts[:mime_type] || 'application/octet-stream',
+      }
+      send_file filepath, send_opts   
+    end
   end
 
   def bestrequest
@@ -111,7 +121,53 @@ class ManifestationExstatsController < ApplicationController
       end
       @offset += @limit
     end
-
     render :template => 'opac/manifestation_exstats/bestrequest', :layout => 'opac' if params[:opac]
   end
+
+  private
+
+  def get_result_list(list_type, ranks, checkouts)
+    user_file = UserFile.new(current_user)
+    excel_filepath, excel_fileinfo = user_file.create(list_type, Setting.bestreader_excelx.filename)
+
+    begin
+      require 'axlsx_hack'
+      ws_cls = Axlsx::AppendOnlyWorksheet
+    rescue LoadError
+      require 'axlsx'
+      ws_cls = Axlsx::Worksheet
+    end  
+    pkg = Axlsx::Package.new
+    wb = pkg.workbook
+    sty = wb.styles.add_style :font_name => Setting.bestreader_excelx.fontname
+    sheet = ws_cls.new(wb)
+    
+    # header
+    row = []
+    row << I18n.t('page.exstatistics.ranknumber')
+    row << I18n.t("activerecord.attributes.item.item_identifier")
+    row << I18n.t("activerecord.attributes.item.identifier") if SystemConfiguration.get('item.use_different_identifier')
+    row << I18n.t("activerecord.attributes.manifestation.original_title")
+    row << I18n.t("activerecord.attributes.manifestation.creator")
+    row << I18n.t("activerecord.attributes.manifestation.publisher")
+    row << I18n.t("activerecord.models.classification")
+    row << I18n.t('page.exstatistics.readercount')
+    sheet.add_row row, :types => :string, :style => [sty]*row.size
+
+    # result data
+    ranks.each_with_index do |rank, i|
+      row = []
+      row << rank.rank || ''
+      row << rank.item.try(:item_identifier) || ''
+      row << rank.item.try(:identifier) || '' if SystemConfiguration.get('item.use_different_identifier')
+      row << rank.manifestation.try(:original_title) || ''
+      row << rank.manifestation.try(:creators).try(:map, &:full_name).try(:join, ',') || '' 
+      row << rank.manifestation.try(:publishers).try(:map, &:full_name).try(:join, ',') || '' 
+      row << rank.manifestation.try(:classifications).try(:map, &:category).try(:join, ',') || ''
+      row << checkouts[i].cnt
+      sheet.add_row row, :types => :string, :style => [sty]*row.size
+    end  
+    pkg.serialize(excel_filepath)
+    [excel_filepath, excel_fileinfo] 
+  end 
 end

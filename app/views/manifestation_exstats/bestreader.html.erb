@@ -16,6 +16,7 @@ $(function(){
     <%= t('advanced_search.to_date') -%>:<%= text_field_tag 'search_date_last', h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-30" -%> <br />
     <%= t('advanced_search.library') -%>:<%= select("library", "id", @select_librarlies, {:include_blank => t('advanced_search.all_libraries'), :selected=>@selected_library}  )%> </td>
     <%= submit_tag t('page.search') -%>
+    <%= submit_tag t('page.output', :model => t('page.best_reader')), :name => 'output' %>
     <br />
   </p>
 <%- end -%>
@@ -31,7 +32,13 @@ $(function(){
 <%- @ranks.each_with_index do |r, i| -%>
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= r.rank -%></td>
-    <td><%= link_to r.try(:manifestation).try(:original_title), r.try(:manifestation) if r.manifestation -%></td>
+    <td>
+      <%= link_to r.try(:manifestation).try(:original_title), r.try(:manifestation) if r.manifestation -%><br />
+      <%= t('activerecord.attributes.item.item_identifier') %>: <%= link_to r.item.try(:item_identifier), r.item if r.item %>
+      <%- if SystemConfiguration.get('item.use_different_identifier') && r.item.try(:identifier) %>
+        <%= t('activerecord.attributes.item.identifier') %>: <%= link_to r.item.try(:identifier), r.item %>
+      <%- end -%>
+    </td>
     <td><%= render 'manifestations/show_creators', :manifestation => r.try(:manifestation) if r.manifestation -%></td>
     <td><%= @checkouts[i].cnt if @checkouts[i] -%></td>
   </tr>

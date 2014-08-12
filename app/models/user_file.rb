@@ -30,6 +30,9 @@ class UserFile
     },
     resource_import_nacsisfile: {
     },
+    bestreader_list: {
+      expire: 24.hours,
+    }
   }
 
   class << self

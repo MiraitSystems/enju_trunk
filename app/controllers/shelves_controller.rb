@@ -147,7 +147,7 @@ class ShelvesController < ApplicationController
     struct_classification = Struct.new(:id, :text)
     if params[:shelf_id]
       shelf = Shelf.where(id: params[:shelf_id]).select("id, display_name, name").first
-      result = struct_classification.new(shelf.id, "#{shelf.display_name}(#{shelf.name})")
+      result = shelf ? struct_classification.new(shelf.id, "#{shelf.display_name}(#{shelf.name})") : nil
     else
       result = []
       shelves = Shelf.where(:library_id => params[:library_id])
