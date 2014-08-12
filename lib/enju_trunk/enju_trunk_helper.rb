@@ -730,12 +730,12 @@ module ActionView
 
       DEFAULT_MATCHER = "
       function(term, text, opt) {
-        return text.toUpperCase().indexOf(term.toUpperCase())==0
-        || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())==0;
+        return text.toUpperCase().indexOf(term.toUpperCase())>=0
+        || opt.attr(\"alt\").toUpperCase().indexOf(term.toUpperCase())>=0;
       }"
 
       def build_select2_script(selector_id, options = {})
-        options[:matcher] = options[:matcher] || DEFAULT_MATCHER
+        #options[:matcher] = options[:matcher] || DEFAULT_MATCHER
         options_string = ""
         options.each do |key, v|
           options_string.concat(raw("#{key}: #{v},")).concat("\n")

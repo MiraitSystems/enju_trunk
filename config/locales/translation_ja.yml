@@ -716,6 +716,7 @@ ja:
         will_cancellation: 弁償処理を取り消し、資料の貸出状態を紛失扱いにしますか。
         note: 注記
         fail_update: 紛失弁償処理に失敗しました。
+        search_notice: 検索語は、資料のタイトル、利用者のフルネーム、読み、利用者番号を対象に検索します。
       barcode:
         barcode_type: バーコードの種類
         barcodable_type: バーコード付与対象の種類

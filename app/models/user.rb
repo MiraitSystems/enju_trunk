@@ -587,29 +587,40 @@ class User < ActiveRecord::Base
   end
 
   def self.set_query(query = nil, birth = nil, add = nil)
+    date_of_birth = nil
     # query
     query = query.to_s
     query = query.gsub("-", "") if query
     query = "*#{query}*" if query.size == 1
+
     # birth date
-    birth_date = birth.to_s.gsub(/\D/, '') if birth
-    message = nil
-    unless birth.blank?
-      begin
-        date_of_birth = Time.zone.parse(birth_date).beginning_of_day.utc.iso8601
-      rescue
+    if birth.present?
+      logger.debug "birth=#{birth}"
+      birth_date_from = Date.expand_date(birth)
+      birth_date_to = Date.expand_date(birth, mode: 'to')
+      logger.debug "birth_date_from=#{birth_date_from} birth_date_to=#{birth_date_to}"
+      unless birth_date_from
         message = I18n.t('user.birth_date_invalid')
+      else
+        begin
+          #date_of_birth = Time.zone.parse(birth_date_from).beginning_of_day.utc.iso8601
+          date_of_birth = birth_date_from.utc.iso8601
+        rescue
+          message = I18n.t('user.birth_date_invalid')
+        end
+        #date_of_birth_end = Time.zone.parse(birth_date_to).end_of_day.utc.iso8601 rescue nil
+        date_of_birth_end = birth_date_to.utc.iso8601 rescue nil
       end
+      logger.debug "from=#{date_of_birth} to=#{date_of_birth_end}"
     end
-    date_of_birth_end = Time.zone.parse(birth_date).end_of_day.utc.iso8601 rescue nil
     # address
     address = add
 
     query = "#{query} date_of_birth_d:[#{date_of_birth} TO #{date_of_birth_end}]" unless date_of_birth.blank?
     query = "#{query} address_text:#{address}" unless address.blank?
 
-    logger.error "query #{query}"
-    logger.error message
+    logger.info "query #{query}"
+    logger.info message
 
     return query, message
   end

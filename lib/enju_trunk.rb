@@ -54,6 +54,7 @@ end
 require 'enju_trunk/resourceadapter'
 require 'enju_trunk/enju_trunk_controller'
 require 'enju_trunk/enju_trunk_helper'
+require 'enju_trunk/date_helper'
 require 'enju_trunk/engine'
 
 module EnjuTrunk

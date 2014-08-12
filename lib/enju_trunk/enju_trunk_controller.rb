@@ -150,7 +150,7 @@ module EnjuTrunk
         else
           I18n.locale = @locale = session[:locale] = I18n.default_locale
         end
-      rescue InvalidLocaleError
+      rescue I18n::InvalidLocale
         @locale = I18n.default_locale
       end
 

@@ -1274,7 +1274,7 @@ system_configuration_00182:
   category: 'manifestation'
 system_configuration_00183:
   id: 183
-  keybane: import_manifestation.use_delim
+  keyname: import_manifestation.use_delim
   v: "false"
   description: "ファイルからインポート時、件名・責任表示・分類に区切り文字を利用する"
   category: 'manifestation'
