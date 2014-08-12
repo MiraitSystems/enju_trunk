@@ -8,7 +8,7 @@
           <div style="color: green"><%= @family_with.agent.full_name if @family_with.agent -%>(<%= @family_with.username -%>) <%= t('family.will_be_family_with') -%></div> 
           <input type="hidden", name="family", value="<%= @family_id -%>">
         <%- end -%>
-        <%= render :partial => 'users/edit_credential', :locals => {:f => u_form, :user => @user} -%>
+        <%= render :partial => 'users/edit_credential', :locals => {:f => u_form, :user => @user, :agent => @agent } -%>
         <%= render :partial => 'users/form', :locals => {:f => p_form, :u_form => u_form, :agent => @agent}-%>
       <%- end -%>
     <%- end -%>
