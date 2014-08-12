@@ -6,7 +6,8 @@ namespace :enju_trunk do
     copy_dest = "#{Rails.root.to_s}/script/tools"
 
     puts "copy tools. copy_src=#{copy_src} copy_dest=#{copy_dest}"
-    FileUtils.copy_entry(copy_src, copy_dest)
+    #FileUtils.copy_entry(copy_src, copy_dest)
+    system "rsync -ruv #{copy_src} #{copy_dest}"
     puts "done."
 
   end
@@ -18,7 +19,8 @@ namespace :enju_trunk do
     copy_dest = "#{Rails.root.to_s}/db/fixtures/enju_trunk"
 
     puts "copy fixtures. copy_src=#{copy_src} copy_dest=#{copy_dest}"
-    FileUtils.copy_entry(copy_src, copy_dest)
+    #FileUtils.copy_entry(copy_src, copy_dest)
+    system "rsync -ruv #{copy_src} #{copy_dest}"
     puts "done."
 
   end
