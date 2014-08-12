@@ -4,7 +4,7 @@
     <%= simple_form_for(@user) do |u_form| -%>
       <%= simple_form_for(@agent) do |p_form| -%>
         <%= render 'page/required_field' %>
-        <%= render :partial => 'users/edit_credential', :locals => {:f => u_form, :user => @user} -%>
+        <%= render :partial => 'users/edit_credential', :locals => {:f => u_form, :user => @user, :agent => @agent} -%>
         <%= render :partial => 'users/form', :locals => {:f => p_form, :u_form => u_form, :agent => @agent}-%>
       <%- end -%>
     <%- end -%>
