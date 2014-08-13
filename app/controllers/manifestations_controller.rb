@@ -824,6 +824,23 @@ class ManifestationsController < ApplicationController
       if original_manifestation.manifestation_extexts
         original_manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") }
       end
+
+      @creators = original_manifestation.try(:creators).present? ? original_manifestation.creators.order(:position) : [{}]
+      @contributors = original_manifestation.try(:contributors).present? ? original_manifestation.contributors.order(:position) : [{}] 
+      @publishers = original_manifestation.try(:publishers).present? ? original_manifestation.publishers.order(:position) : [{}] 
+      @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}] 
+
+      @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles : [{}]
+      @work_has_titles << WorkHasTitle.new if @work_has_titles.blank?
+      @work_has_languages = original_manifestation.try(:work_has_languages).present? ? original_manifestation.work_has_languages : [{}]
+      @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
+
+      if SystemConfiguration.get('manifestation.use_identifiers')
+        @identifier_types = IdentifierType.find(:all, :select => "id, display_name, name", :order => "position") || []
+        @identifiers = original_manifestation.try(:identifiers).present? ? original_manifestation.identifiers : [{}]
+        @identifiers << Identifier.new if @identifiers.blank?
+      end
+
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
 
