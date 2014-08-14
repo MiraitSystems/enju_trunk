@@ -115,6 +115,7 @@ class ItemsController < ApplicationController
     if original_item
       @item = original_item.dup
       @item.item_identifier = nil
+      @item.identifier = nil
       @item.rank = 1 if original_item.rank == 0
       @item.use_restriction_id = original_item.use_restriction.id
       @item.library_id = original_item.shelf.library.id
