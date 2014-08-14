@@ -202,6 +202,9 @@ class User < ActiveRecord::Base
       user_status.name
     end
     boolean :unable
+
+    integer :department_id
+    integer :user_group_id
   end
 
   attr_accessor :first_name, :middle_name, :last_name, :full_name,

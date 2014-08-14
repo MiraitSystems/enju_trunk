@@ -15,10 +15,16 @@ class UsersController < ApplicationController
   def index
     @count = {}
 
+    # set screen option
+    @departments = Department.all
+    @user_groups = UserGroup.all
+
     # set query
     @query = params[:query].to_s.dup
     @date_of_birth = params[:birth_date].to_s.dup
     @address = params[:address]
+    @user_group = params[:user_group]
+    @department = params[:department]
     query, flash[:message] = User.set_query(params[:query], params[:birth_date], params[:address])
 
     # set sort
@@ -35,6 +41,10 @@ class UsersController < ApplicationController
       with(:agent_type).equal_to params[:agent_type] if params[:agent_type]
       with(:required_role_id).less_than_or_equal_to role.id
       with(:user_status).equal_to params[:user_status] if params[:user_status]
+
+      with(:user_group_id).equal_to params[:user_group] if params[:user_group].present?
+      with(:department_id).equal_to params[:department] if params[:department].present?
+
       order_by sort[:sort_by], sort[:order]
       if params[:format] == 'html' or params[:format].nil?
         facet :library

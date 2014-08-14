@@ -825,9 +825,9 @@ class ManifestationsController < ApplicationController
         original_manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") }
       end
 
-      @creators = original_manifestation.try(:creators).present? ? original_manifestation.creators.order(:position) : [{}]
-      @contributors = original_manifestation.try(:contributors).present? ? original_manifestation.contributors.order(:position) : [{}] 
-      @publishers = original_manifestation.try(:publishers).present? ? original_manifestation.publishers.order(:position) : [{}] 
+      @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
+      @contributors = original_manifestation.try(:realizes).present? ? original_manifestation.realizes.order(:position) : [{}] 
+      @publishers = original_manifestation.try(:produces).present? ? original_manifestation.produces.order(:position) : [{}] 
       @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}] 
 
       @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles.inject([]){|wt,t| wt << t.dup} : [{}]
@@ -847,9 +847,9 @@ class ManifestationsController < ApplicationController
       @classifications = get_classification_values(@manifestation)
     end
 
-    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
-    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
 
     @classifications = get_classification_values(@manifestation) if @classifications.blank?
@@ -878,9 +878,9 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     
-    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
-    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
     @classifications = get_classification_values(@manifestation)
     

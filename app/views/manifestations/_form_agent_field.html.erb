@@ -300,16 +300,16 @@
             "creators_#{index}_type_id", 
             "creators[][type_id]", 
             @create_types,
-            creator[:type_id], 
+            creator[:create_type_id] || creator["type_id"], 
             :width => 250, :select_attribute => :name, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
+          <%= text_field_tag "creators[][id]", creator[:agent_id] || creator["id"], :id => "creators_#{index}_id", :class => "creator" %>
         <% else %>
-          <%= text_field_tag "creators[][id]", creator[:id], :id => "creators_#{index}_id", :class => "creator" %>
-          <%= hidden_field_tag "creators[][full_name]", creator[:full_name], :id => "creators_#{index}_full_name" %>
-          <%= text_field_tag "creators[][full_name_transcription]", creator[:full_name_transcription],
+          <%= text_field_tag "creators[][id]", creator[:agent_id] || creator["id"], :id => "creators_#{index}_id", :class => "creator" %>
+          <%= hidden_field_tag "creators[][full_name]", (creator.agent.try(:full_name) rescue creator["full_name"]), :id => "creators_#{index}_full_name" %>
+          <%= text_field_tag "creators[][full_name_transcription]", (creator.agent.try(:full_name_transcription) rescue creator["full_name_transcription"]),
               :id => "creators_#{index}_full_name_transcription", :class => 'medium_string', 
               :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
           %>
@@ -331,16 +331,16 @@
             "contributors_#{index}_type_id", 
             "contributors[][type_id]", 
             @realize_types,
-            contributor[:type_id], 
+            contributor[:realize_type_id] || contributor["type_id"], 
             :width => 250, :select_attribute => :name, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
+          <%= text_field_tag "contributors[][id]", contributor[:agent_id] || contributor["id"], :id => "contributors_#{index}_id", :class => "contributor" %>
         <% else %>
-            <%= text_field_tag "contributors[][id]", contributor[:id], :id => "contributors_#{index}_id", :class => "contributor" %>
-            <%= hidden_field_tag "contributors[][full_name]", contributor[:full_name], :id => "contributors_#{index}_full_name" %>
-            <%= text_field_tag "contributors[][full_name_transcription]", contributor[:full_name_transcription],
+            <%= text_field_tag "contributors[][id]", contributor[:agent_id] || contributor["id"], :id => "contributors_#{index}_id", :class => "contributor" %>
+            <%= hidden_field_tag "contributors[][full_name]", (contributor.agent.try(:full_name) rescue contributor["full_name"]), :id => "contributors_#{index}_full_name" %>
+            <%= text_field_tag "contributors[][full_name_transcription]", (contributor.agent.try(:full_name_transcription) rescue contributor["full_name_transcription"]),
               :id => "contributors_#{index}_full_name_transcription", :class => 'medium_string',
               :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
             %>
@@ -362,16 +362,16 @@
             "publishers_#{index}_type_id", 
             "publishers[][type_id]", 
             @produce_types,
-            publisher[:type_id], 
+            publisher[:produce_type_id] || publisher["type_id"], 
             :width => 250, :select_attribute => :name, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
-          <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
+          <%= text_field_tag "publishers[][id]", publisher[:agent_id] || publisher["id"], :id => "publishers_#{index}_id", :class => "publisher" %>
         <% else %>
-            <%= text_field_tag "publishers[][id]", publisher[:id], :id => "publishers_#{index}_id", :class => "publisher" %>
-            <%= hidden_field_tag "publishers[][full_name]", publisher[:full_name], :id => "publishers_#{index}_full_name" %>
-            <%= text_field_tag "publishers[][full_name_transcription]", publisher[:full_name_transcription],
+            <%= text_field_tag "publishers[][id]", publisher[:agent_id] || publisher["id"], :id => "publishers_#{index}_id", :class => "publisher" %>
+            <%= hidden_field_tag "publishers[][full_name]", (publisher.agent.try(:full_name) rescue publisher["full_name"]), :id => "publishers_#{index}_full_name" %>
+            <%= text_field_tag "publishers[][full_name_transcription]", (publisher.agent.try(:full_name_transcription) rescue publisher["full_name_transcription"]),
               :id => "publishers_#{index}_full_name_transcription", :class => 'medium_string',
               :placeholder => t("activerecord.attributes.agent.full_name_transcription") 
             %>

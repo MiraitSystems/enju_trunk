@@ -27,6 +27,11 @@ $(function(){
     <%= t('activerecord.attributes.user.birth_date') -%>: <%= text_field_tag 'birth_date', @date_of_birth, :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2011-04-12" -%>
     <%= t('activerecord.attributes.user.adddress') -%>: <%= text_field_tag 'address', @address, :class => 'search_form' -%>
     <br />
+
+    <%= t('activerecord.attributes.user.user_group') -%>: <%= select2_tag(:user_group, "user_group", @user_groups, @user_group, :select_attribute => 'name', :display_attribute => 'display_name', :width => 300, :include_blank => true) -%>
+    <%= t('activerecord.attributes.user.department') -%>: <%= select2_tag(:department, "department", @departments, @department, :select_attribute => 'name', :display_attribute => 'display_name', :width => 300, :include_blank => true) -%>
+    <br />
+
     <%= hidden_field_tag 'agent_id', @agent.id if @agent -%>
     <%= hidden_field_tag 'library', params[:library] if params[:library] -%>
     <%= hidden_field_tag 'role', params[:role] if params[:role] -%>
@@ -57,15 +62,29 @@ $(function(){
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'user_number', :order => 'desc')) -%>
     </th>
     <th>
+      <%= t('activerecord.attributes.user.user_group') -%>
+      <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'user_group', :order => 'asc')) -%>
+      <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'user_group', :order => 'desc')) -%>
+    </th>
+     <th>
+      <%= t('activerecord.attributes.user.department') -%>
+      <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'department', :order => 'asc')) -%>
+      <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'department', :order => 'desc')) -%>
+    </th>
+    <% if false %>
+    <th>
       <%= t('activerecord.attributes.agent.telephone_number') -%>
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'telephone_number_1', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'telephone_number_1', :order => 'desc')) -%>
     </th>
+    <% end %>
+    <% if false %>
     <th>
       <%= t('page.created_at') -%>
       <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'created_at', :order => 'asc')) -%>
       <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'created_at', :order => 'desc')) -%>
     </th>
+    <% end %>
     <th><%= t('activerecord.models.checkout') -%></th>
     <th><%= t('activerecord.models.reserve') -%></th>
     <th><%= t('page.edit') -%></th>
@@ -85,6 +104,9 @@ $(function(){
       <%- end -%>
     </td>
     <td><%= user.user_number -%></td>
+    <td><%= user.user_group.display_name if user.user_group -%></td>
+    <td><%= user.department.display_name if user.department -%></td>
+    <% if false %>
     <td>
      <%- if user.agent -%>
        <%= user.agent.telephone_number_1 -%>
@@ -92,7 +114,10 @@ $(function(){
        <%= user.agent.telephone_number_2 -%>
      <%- end -%>
     </td>
+    <% end %>
+    <% if false %>
     <td><%= l(user.created_at) if user.created_at -%></td>
+    <% end %>
     <td>
       <%- if user.active_for_authentication? -%>
         <%= link_to t('activerecord.models.checkout'), new_basket_path(:user_number => user.user_number) unless user.user_number.blank? -%>
