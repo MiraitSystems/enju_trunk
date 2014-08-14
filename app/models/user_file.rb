@@ -32,6 +32,9 @@ class UserFile
     },
     bestreader_list: {
       expire: 24.hours,
+    },
+    export_file: {
+      expire: 24.hours,
     }
   }
 

@@ -357,6 +357,10 @@ defaults: &defaults
     # 正副本管理をするか
     manage_item_rank: true
 
+  # エクセル出力のデフォルト設定
+  export_excel:
+    fontname: "ＭＳ ゴシック"
+
   # 利用者一覧の色別表示
   user:
     locked:
