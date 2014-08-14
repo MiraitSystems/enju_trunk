@@ -664,6 +664,11 @@ module EnjuTrunk
       end
       return list
     end
+
+    def multi_libraries?
+      return true if Library.all.size > 1
+      return false
+    end
   end
 end
 

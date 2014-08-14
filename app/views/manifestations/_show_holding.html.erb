@@ -2,10 +2,11 @@
 <div id="holding">
 <table class="holding">
   <tr>
-    <th><%= t('activerecord.models.library') %></th>
+    <%- if multi_libraries? %><th><%= t('activerecord.models.library') %></th><%- end -%>
     <th><%= t('activerecord.models.shelf') %></th>
     <th><%= t('activerecord.attributes.item.call_number') %></th>
     <th><%= t('activerecord.attributes.item.item_identifier') %></th>
+    <%- if SystemConfiguration.get('item.use_different_identifier') %><th><%= t('activerecord.attributes.item.identifier') %></th><%- end -%>
     <% unless manifestation.article? %>
       <th><%= t('activerecord.models.circulation_status') %></th>
     <% end %>
@@ -15,16 +16,17 @@
       <% end %>
     <% end %>
   </tr>
-  <%# cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'holding', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
   <%# - manifestation.items.on_shelf.each do |item| -%>
     <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
     <% items.each do |item| %>
       <% next unless item.has_view_role?(current_user.try(:role).try(:id)) %>
       <% next if hide_item?(true, item) %>
       <tr>
-        <td>
-          <%= link_to item.shelf.library.display_name.localize, item.shelf.library if item.shelf.library %>
-        </td>
+        <%- if multi_libraries? %>
+          <td>
+            <%= link_to item.shelf.library.display_name.localize, item.shelf.library if item.shelf.library %>
+          </td>
+        <%- end -%>
         <td>
           <%= link_to item.shelf.display_name.localize, item.shelf if item.shelf %>
           <%= render 'items/shelf_picture', :item => item if item.shelf %>
@@ -39,6 +41,11 @@
             (<%= link_to t('item.no_number'), item %>)
           <% end %>
         </td>
+        <%- if SystemConfiguration.get('item.use_different_identifier') %>
+          <td>
+            <%= item.identifier %>
+          </td>
+        <%- end -%>
         <% unless manifestation.article? %>
           <td>
             <% if item.circulation_status.name != 'Available On Shelf' %>

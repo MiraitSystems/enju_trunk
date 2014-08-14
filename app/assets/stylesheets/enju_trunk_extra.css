@@ -304,3 +304,10 @@ input.telephone_number{
 input.identifier{
   width: 253px;
 }
+table.no_border {
+  border: none;
+}
+table.no_border tr td {
+  border: none;
+}
+
