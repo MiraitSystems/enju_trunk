@@ -63,14 +63,12 @@
       var typeFieldId = $("div[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
       var termFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'subject_id']").attr('id');
       var termTranscriptionFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
-      var termCreateFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'term_create']").attr('id');
       var cloneType = this.cloneField(typeFieldId);
       var cloneTerm = this.cloneField(termFieldId);
       var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
-      var cloneTermCreate = this.cloneField(termCreateFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
       
-      newField.append(cloneType).append("<br />").append(cloneTerm).append(cloneTermTranscription).append(cloneTermCreate).append(actionButton);
+      newField.append(cloneType).append("<br />").append(cloneTerm).append(cloneTermTranscription).append(actionButton);
       
       // select2の設定
       cloneType.select2(this.subjectTypeSelect2options);
@@ -108,13 +106,11 @@
         $("#subjects_" + targetNumber[1] + "_id").val(e.object.id);
         $("#subjects_" + targetNumber[1] + "_term").val(e.object.text);
         $("#subjects_" + targetNumber[1] + "_term_transcription").val(e.object.term_transcription);
-        $("#subjects_" + targetNumber[1] + "_term_create").val(false);
     }
     else{
         $("#subjects_" + targetNumber[1] + "_id").val("");
         $("#subjects_" + targetNumber[1] + "_term").val(e.object.id);
         $("#subjects_" + targetNumber[1] + "_term_transcription").val(e.object.term_transcription);
-        $("#subjects_" + targetNumber[1] + "_term_create").val(true);
     }
   });
 </script>
@@ -136,7 +132,6 @@
             :id => "subjects_#{index}_term_transcription", 
             :placeholder => t("activerecord.attributes.subject.term_transcription"),
             :style => 'width: 200px;' %>
-          <%= hidden_field_tag "subjects[][create]", false, :id => "subjects_#{index}_term_create" %>
         <%= button_to_function t('page.add_line'), "ItemFieldSubjectSelect2.add()" -%>
         <%= button_to_function t('page.del_line'), "ItemFieldSubjectSelect2.remove(#{index})" -%>
       </div>
