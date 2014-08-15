@@ -818,11 +818,17 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
-      if original_manifestation.manifestation_exinfos
-        original_manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } 
+      if original_manifestation.manifestation_exinfos.present?
+        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil }
       end
-      if original_manifestation.manifestation_extexts
-        original_manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") }
+      if original_manifestation.manifestation_exinfos.present?
+        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name}_id = '#{m.value}'") rescue nil }
+      end
+      if original_manifestation.manifestation_extexts.present?
+        original_manifestation.manifestation_extexts.map do |m| 
+          eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil 
+          eval("@manifestation.#{m.name}.type_id = '#{m.type_id}'") rescue nil
+        end
       end
 
       @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
@@ -884,10 +890,6 @@ class ManifestationsController < ApplicationController
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
     @classifications = get_classification_values(@manifestation)
     
-    @manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } if @manifestation.manifestation_exinfos
-    if @manifestation.manifestation_extexts
-      @manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } 
-    end
     if defined?(EnjuBookmark)
       if params[:mode] == 'tag_edit'
         @bookmark = current_user.bookmarks.where(:manifestation_id => @manifestation.id).first if @manifestation rescue nil
@@ -936,8 +938,6 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
-    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.save
@@ -1003,8 +1003,6 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
-    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
