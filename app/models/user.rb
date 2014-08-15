@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
 
   has_many :budgets
 
-  validates :username, :presence => true, :format => {:with => /\A[0-9A-Za-z_]+\Z/, :message => I18n.t('errors.messages.en_expected')} #, :uniqueness => true
+  validates :username, :presence => true, :format => {:with => eval(Setting.validator.username_format), :message => I18n.t('errors.messages.en_expected')} #, :uniqueness => true
   validates_uniqueness_of :username, :unless => proc{|user| SystemConfiguration.get('auto_user_number')}, :allow_blank => true
   validates_uniqueness_of :email, :scope => authentication_keys[1..-1], :case_sensitive => false, :allow_blank => true
   validates :email, :format => {:with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i}, :allow_blank => true
