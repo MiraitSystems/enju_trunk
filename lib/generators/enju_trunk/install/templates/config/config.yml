@@ -506,6 +506,7 @@ defaults: &defaults
   validator:
     user_password_length: "6..20"
     username_format: '/\A[0-9A-Za-z_]+\Z/'
+    item_identifier_format: '/\A[0-9A-Za-z_@]+\Z/' 
 
 development:
   <<: *defaults
