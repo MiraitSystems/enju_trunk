@@ -68,7 +68,7 @@
       var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
       
-      newField.append(cloneType).append(cloneTerm).append(cloneTermTranscription).append(actionButton);
+      newField.append(cloneType).append("<br />").append(cloneTerm).append(cloneTermTranscription).append(actionButton);
       
       // select2の設定
       cloneType.select2(this.subjectTypeSelect2options);
@@ -125,6 +125,7 @@
                           @subject_types,
                           subject[:subject_type_id],
                           :width => 200, :select_attribute => :id, :display_attribute => :display_name) %>
+          <br />
           <%= text_field_tag "subjects[][subject_id]", subject[:id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
           <%= text_field_tag "subjects[][term_transcription]", 
             subject[:term_transcription], 
