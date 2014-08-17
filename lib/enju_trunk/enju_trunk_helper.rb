@@ -700,7 +700,7 @@ module ActionView
 
       def build_select2(selector_id, selector_name, collection, selected_id, options)
         include_blank = options[:include_blank] || false
-        alt_display = options[:alt_display] || true
+        alt_display = options.has_key?(:alt_display) ? options[:alt_display] : true
         width = options[:width] || 300
         select_attribute = options[:select_attribute] || :v
         display_attribute = options[:display_attribute] || :keyname
