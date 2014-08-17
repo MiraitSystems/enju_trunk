@@ -705,12 +705,19 @@ module ActionView
         select_attribute = options[:select_attribute] || :v
         display_attribute = options[:display_attribute] || :keyname
         post_attribute = options[:post_attribute] || :id
+        autofocus = options.has_key?(:autofocus) ? options[:autofocus] : false
+        htmlextra = ""
 
         unless options[:readonly]
-          html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\">\n")
         else
-          html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\" disabled>\n")
+          htmlextra.concat("disable")
         end
+        if autofocus
+          htmlextra.concat(" autofocus=\"autofocus\"")
+        end
+
+        html = raw ("<select id=\"#{selector_id}\" name=\"#{selector_name}\" style=\"width:#{width}px\" #{htmlextra}>\n")
+
         if include_blank
           #html.concat( raw ("<option alt=\"blank\", value=\"\"> </option>\n") )
           html.concat( raw ("<option></option>\n") )
