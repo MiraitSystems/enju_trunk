@@ -6,7 +6,7 @@ class Create < ActiveRecord::Base
   after_save :reindex
   after_destroy :reindex
   attr_accessible :create_type_id
-  scope :readable_by, lambda{|user| {:include => :agent, :conditions => ['agents.required_role_id <= ?', user.role.id]}}
+  scope :readable_by, lambda{|user| {:include => :agent, :conditions => ['agents.required_role_id <= ?', user.try(:role).try(:id) || Role.find_by_name('Guest').id]}}
 
   paginates_per 10
 
