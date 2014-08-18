@@ -13,6 +13,11 @@ class CirculationStatus < ActiveRecord::Base
   def self.missing
     where(:name => 'Missing').first
   end
+
+  def self.removed
+    where(:name => 'Removed').first
+  end
+
 end
 
 # == Schema Information

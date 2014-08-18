@@ -54,8 +54,7 @@ class StatisticalTableController < ApplicationController
         item_statistics_prepare_options
         render :action => 'index'
       else
-        @item_statistics.make_data
-        render :text => "aaaa"
+        send_file ItemStatistics.output_excelx(@item_statistics.make_data), :filename => Setting.item_statistics_print_excelx.filename
       end
     end
   end

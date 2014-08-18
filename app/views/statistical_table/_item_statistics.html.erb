@@ -37,7 +37,7 @@
     <% if @output_conditions.present? -%>
       <p>
         <%= t('activemodel.attributes.item_statistics.output_condition') -%>:
-        <%= f.collection_select  :output_condition, @output_conditions, :v, :keyname  -%>
+        <%= f.collection_select  :output_condition, @output_conditions, :id, :keyname  -%>
       <p>
     <% end -%>
     <p>
