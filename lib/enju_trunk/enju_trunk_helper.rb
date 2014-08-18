@@ -93,31 +93,28 @@ module EnjuTrunk
       html.html_safe
     end
 
-    def agents_list(agents = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
-      return nil if agents.blank?
+    def agents_list(relations = [], options = {}, manifestation_id = nil, type = nil, mode = 'html')
+      return nil if relations.blank?
       agents_list = []
       exclude_agents = SystemConfiguration.get("exclude_agents").split(',').inject([]){ |list, word| list << word.gsub(/^[　\s]*(.*?)[　\s]*$/, '\1') }
-      agents.each do |agent|
+      relations.each do |relation|
         type_name = ''
         if manifestation_id.present? && SystemConfiguration.get("use_agent_type")
           case type
             when 'create'
-              create_type = CreateType.find(agent.creates.where(work_id: manifestation_id).first.create_type_id) rescue nil
-              type_name = (create_type and create_type.display) ? create_type.display_name : ''
+              type_name = CreateType.where(:id => relation.create_type_id, :display => true).try(:first).try(:display_name)
             when 'realize'
-              realize_type = RealizeType.find(agent.realizes.where(expression_id: manifestation_id).first.realize_type_id) rescue nil
-              type_name = (realize_type and realize_type.display) ? realize_type.display_name : ''
+              type_name = RealizeType.where(:id => relation.realize_type_id, :display => true).try(:first).try(:display_name)
             when 'produce'
-              produce_type = ProduceType.find(agent.produces.where(manifestation_id: manifestation_id).first.produce_type_id) rescue nil
-              type_name = (produce_type and produce_type.display) ? produce_type.display_name : ''
+              type_name = ProduceType.where(:id => relation.produce_type_id, :display => true).try(:first).try(:display_name) 
           end
           type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
         end
-        full_name = agent.full_name << type_name
-        if options[:nolink] or exclude_agents.include?(agent.full_name)
+        full_name = type_name ? relation.agent.full_name + type_name : relation.agent.full_name
+        if options[:nolink] or exclude_agents.include?(relation.agent.full_name)
           agent = mode == 'html' ? highlight(full_name) : full_name
         else
-          agent = mode == 'html' ? link_to(highlight(full_name), agent, options) : link_to(full_name, agent, options)
+          agent = mode == 'html' ? link_to(highlight(full_name), relation.agent, options) : link_to(full_name, relation.agent, options)
         end
         agents_list << agent
       end

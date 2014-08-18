@@ -108,6 +108,7 @@ class SeriesStatementsController < ApplicationController
     SeriesStatement.transaction do
       @series_statement = SeriesStatement.new(params[:series_statement])
       @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
+
       # set class instance variables, and create root_manifestation
       set_and_create_root_manifestation(params)
       @series_statement.save!
@@ -237,7 +238,7 @@ class SeriesStatementsController < ApplicationController
     params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     @classifications = params[:classifications]
-    @series_statement.root_manifestation.classifications = create_classification_values(@classifications);
+    @series_statement.root_manifestation.classifications = create_classification_values(@classifications) unless @classifications.blank?
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
       { subjects: create_subject_values(@subjects), 
@@ -251,6 +252,7 @@ class SeriesStatementsController < ApplicationController
   # create classification vaules
   #
   def create_classification_values(add_classifications)
+    return nil if add_classification.blank?
     classifications = []
     add_classifications.each do |add_classification|
       next if add_classification[:classification_id].blank?
