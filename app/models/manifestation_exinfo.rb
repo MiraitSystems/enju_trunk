@@ -1,7 +1,7 @@
 class ManifestationExinfo < ActiveRecord::Base
   attr_accessible :manifestation_id, :name, :position, :value, :manifestation
 
-  acts_as_list :scope => :name
+  acts_as_list :scope => [:manifestation_id, :name]
   default_scope :order => "position"
 
   belongs_to :manifestation
