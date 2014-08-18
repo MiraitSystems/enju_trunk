@@ -954,8 +954,6 @@ class ManifestationsController < ApplicationController
           @manifestation.produces = create_publisher_values(@publishers)
 
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
-          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
-          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_created', :model => t('activerecord.models.manifestation')) }
@@ -1017,12 +1015,6 @@ class ManifestationsController < ApplicationController
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
-        end
-        if params[:exinfos]
-          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
-        end
-        if params[:extexts]
-          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }
