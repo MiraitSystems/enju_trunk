@@ -109,8 +109,8 @@ class ItemStatistics
     if self.aggregation_first.present?
       if self.aggregation_first == "statistical_class"
         first_row_column = "items.statistical_class_id"
-  #      first_rows = Keycode.where(:name => 'item.statistical_class')
-        first_rows = Keycode.where(:name => 'item.statistical_class').limit(2) # for debug
+        first_rows = Keycode.where(:name => 'item.statistical_class')
+#        first_rows = Keycode.where(:name => 'item.statistical_class').limit(1) # for debug
       elsif self.aggregation_first == "manifestation_type"
         first_row_column = "manifestations.manifestation_type_id"
         first_rows = ManifestationType.all
@@ -126,6 +126,7 @@ class ItemStatistics
     elsif self.aggregation_second == "carrier_type"
       second_row_column = "manifestations.carrier_type_id"
       second_rows = CarrierType.all
+#      second_rows = CarrierType.limit(2) # for debug
     end
 
     data = []
@@ -148,7 +149,12 @@ class ItemStatistics
         sum_details = []
         record_count = cols.length + 1 # +1は未設定分
         record_count.times do
-          sum_details << sum_detail
+          sum_details << {:jpn_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                          :foreign_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                          :jpn_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                          :foreign_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                          :not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                          :donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0}}
         end
       end
 
@@ -183,7 +189,7 @@ class ItemStatistics
           details.each_with_index do |detail, index|
             detail.each do |key, value|
               value.each do |k, v|
-                sum_details[index][key][k] += v
+                sum_details[index][key][k] = sum_details[index][key][k] + v
               end
             end
           end
@@ -393,7 +399,7 @@ private
       detail[:jpn_not_donate][:book] = jpn_not_donate_presents.length
       detail[:jpn_not_donate][:book_remove] = jpn_not_donate_removes.length
       # 洋書 寄贈以外
-      foreign_not_donates = second_items.where("manifestations.jpn_or_foreign = 0 and items.accept_type_id not in (?)", AcceptType.donate)
+      foreign_not_donates = second_items.where("manifestations.jpn_or_foreign = 1 and items.accept_type_id not in (?)", AcceptType.donate)
       foreign_not_donate_presents = foreign_not_donates.where("items.circulation_status_id not in (?)", CirculationStatus.removed).uniq
       foreign_not_donate_removes = foreign_not_donates.where("items.circulation_status_id in (?)", CirculationStatus.removed).uniq
       detail[:foreign_not_donate][:book] = foreign_not_donate_presents.length
@@ -435,7 +441,7 @@ private
       jpn_not_donates = second_items.where("manifestations.jpn_or_foreign = 0 and items.accept_type_id not in (?)", AcceptType.donate).uniq
       detail[:jpn_not_donate][:book] = jpn_not_donates.length
       # 洋書 寄贈以外
-      foreign_not_donates = second_items.where("manifestations.jpn_or_foreign = 0 and items.accept_type_id not in (?)", AcceptType.donate).uniq
+      foreign_not_donates = second_items.where("manifestations.jpn_or_foreign = 1 and items.accept_type_id not in (?)", AcceptType.donate).uniq
       detail[:foreign_not_donate][:book] = foreign_not_donates.length
       # 和書 寄贈
       jpn_donates = second_items.where("manifestations.jpn_or_foreign = 0 and items.accept_type_id in (?)", AcceptType.donate).uniq
@@ -445,7 +451,7 @@ private
       detail[:foreign_donate][:book] = foreign_donates.length
       # 合計
       detail[:not_donate][:book] = jpn_not_donates.length + foreign_not_donates.length
-      detail[:donate][:book] = jpn_not_donates.length + foreign_not_donates.length
+      detail[:donate][:book] = jpn_donates.length + foreign_donates.length
       # 金額の算出
       if item_statistics.money_aggregation == true
         detail[:jpn_not_donate][:price] = jpn_not_donates.present? ? Item.sum(:price, :conditions => {:id => jpn_not_donates}) : 0
@@ -651,7 +657,12 @@ private
         grand_totals = []
         record_count = cols.length
         record_count.times do
-          grand_totals << grand_total
+          grand_totals << {:jpn_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                           :foreign_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                           :jpn_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                           :foreign_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                           :not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
+                           :donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0}}
         end
       end
     end
