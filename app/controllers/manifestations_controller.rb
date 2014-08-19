@@ -830,14 +830,14 @@ class ManifestationsController < ApplicationController
       @publishers = original_manifestation.try(:produces).present? ? original_manifestation.produces.order(:position) : [{}] 
       @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}] 
 
-      @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles.inject([]){|wt,t| wt << t.dup} : [{}]
+      @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles.inject([]){|wt,t| wt << t.dup} : []
       @work_has_titles << WorkHasTitle.new if @work_has_titles.blank?
-      @work_has_languages = original_manifestation.try(:work_has_languages).present? ? original_manifestation.work_has_languages.inject([]){|wl,l| wl << l.dup} : [{}]
+      @work_has_languages = original_manifestation.try(:work_has_languages).present? ? original_manifestation.work_has_languages.inject([]){|wl,l| wl << l.dup} : []
       @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
 
       if SystemConfiguration.get('manifestation.use_identifiers')
         @identifier_types = IdentifierType.find(:all, :select => "id, display_name, name", :order => "position") || []
-        @identifiers = original_manifestation.try(:identifiers).present? ? original_manifestation.identifiers.inject([]){|ia,i| ia << i.dup} : [{}]
+        @identifiers = original_manifestation.try(:identifiers).present? ? original_manifestation.identifiers.inject([]){|ia,i| ia << i.dup} : []
         @identifiers << Identifier.new if @identifiers.blank?
       end
 
