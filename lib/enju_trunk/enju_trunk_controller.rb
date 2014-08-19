@@ -565,9 +565,9 @@ module EnjuTrunk
              produces << produce
            end
          else
-           agent = Agent.where(:full_name => add_publishers[:full_name]).try(:first)
+           agent = Agent.where(:full_name => add_publisher[:full_name]).try(:first)
            if agent
-             agent.full_name_transcription = add_publishers[:full_name_transcription]
+             agent.full_name_transcription = add_publisher[:full_name_transcription]
            else # new record
              agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
            end
