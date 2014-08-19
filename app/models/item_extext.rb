@@ -3,7 +3,7 @@ class ItemExtext < ActiveRecord::Base
 
   belongs_to :item
 
-  acts_as_list :scope => :name
+  acts_as_list :scope => [:item_id, :name]
   default_scope :order => "position"
 
   def self.add_extexts(extexts, item_id)
