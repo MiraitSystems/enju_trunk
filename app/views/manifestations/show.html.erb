@@ -255,20 +255,22 @@ $(function(){
     <% if SystemConfiguration.get('manifestation.social_bookmark') %>
       <div id="social_bookmark" class="ui-corner-all submenu_block_inner">
         <ul>
-          <li><%= render :text => t('social_bookmark.bookmark.title') -%></li>
-          <ul>
-            <li><%= link_to t('social_bookmark.bookmark.twitter'), twitter_url(@manifestation.original_title, url_for(:only_path => false)), :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.bookmark.hatena'), hatena_url(url_for(:only_path => false)), :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.bookmark.yahoo'), yahoo_url(@manifestation.original_title, url_for(:only_path => false)), :target=>["_blank"] -%></li>
-          </ul>
-          <li><%= render :text => t('social_bookmark.publisher.title') -%></li>
-          <ul>
-            <li><%= link_to t('social_bookmark.publisher.amazon'), amazon_url(@manifestation.isbn, @manifestation.original_title), :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.publisher.seven_net'), seven_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.publisher.rakuten'), rakuten_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.publisher.kinokuniya'), kinokuniya_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
-            <li><%= link_to t('social_bookmark.publisher.junk_do'), junkdo_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
-          </ul>
+          <li><%= render :text => t('social_bookmark.bookmark.title') -%>
+            <ul>
+              <li><%= link_to t('social_bookmark.bookmark.twitter'), twitter_url(@manifestation.original_title, url_for(:only_path => false)), :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.bookmark.hatena'), hatena_url(url_for(:only_path => false)), :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.bookmark.yahoo'), yahoo_url(@manifestation.original_title, url_for(:only_path => false)), :target=>["_blank"] -%></li>
+            </ul>
+          </li>
+          <li><%= render :text => t('social_bookmark.publisher.title') -%>
+            <ul>
+              <li><%= link_to t('social_bookmark.publisher.amazon'), amazon_url(@manifestation.isbn, @manifestation.original_title), :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.publisher.seven_net'), seven_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.publisher.rakuten'), rakuten_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.publisher.kinokuniya'), kinokuniya_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
+              <li><%= link_to t('social_bookmark.publisher.junk_do'), junkdo_url(@manifestation.isbn, @manifestation.original_title) , :target=>["_blank"] -%></li>
+            </ul>
+          </li>
         <ul>
       </div>
     <% end  %>

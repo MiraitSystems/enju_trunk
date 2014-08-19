@@ -818,21 +818,44 @@ class ManifestationsController < ApplicationController
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
-      if original_manifestation.manifestation_exinfos
-        original_manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } 
+      if original_manifestation.manifestation_exinfos.present?
+        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil }
       end
-      if original_manifestation.manifestation_extexts
-        original_manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") }
+      if original_manifestation.manifestation_exinfos.present?
+        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name}_id = '#{m.value}'") rescue nil }
       end
+      if original_manifestation.manifestation_extexts.present?
+        original_manifestation.manifestation_extexts.map do |m| 
+          eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil 
+          eval("@manifestation.#{m.name}.type_id = '#{m.type_id}'") rescue nil
+        end
+      end
+
+      @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
+      @contributors = original_manifestation.try(:realizes).present? ? original_manifestation.realizes.order(:position) : [{}] 
+      @publishers = original_manifestation.try(:produces).present? ? original_manifestation.produces.order(:position) : [{}] 
+      @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}] 
+
+      @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles.inject([]){|wt,t| wt << t.dup} : [{}]
+      @work_has_titles << WorkHasTitle.new if @work_has_titles.blank?
+      @work_has_languages = original_manifestation.try(:work_has_languages).present? ? original_manifestation.work_has_languages.inject([]){|wl,l| wl << l.dup} : [{}]
+      @work_has_languages << WorkHasLanguage.new if @work_has_languages.blank?
+
+      if SystemConfiguration.get('manifestation.use_identifiers')
+        @identifier_types = IdentifierType.find(:all, :select => "id, display_name, name", :order => "position") || []
+        @identifiers = original_manifestation.try(:identifiers).present? ? original_manifestation.identifiers.inject([]){|ia,i| ia << i.dup} : [{}]
+        @identifiers << Identifier.new if @identifiers.blank?
+      end
+
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
 
       @classifications = get_classification_values(@manifestation)
     end
 
-    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
-    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
 
     @classifications = get_classification_values(@manifestation) if @classifications.blank?
@@ -861,16 +884,12 @@ class ManifestationsController < ApplicationController
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
     
-    @creators = @manifestation.try(:creators).present? ? @manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = @manifestation.try(:contributors).present? ? @manifestation.contributors.order(:position) : [{}] unless @contributors
-    @publishers = @manifestation.try(:publishers).present? ? @manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
     @classifications = get_classification_values(@manifestation)
     
-    @manifestation.manifestation_exinfos.each { |e| eval("@#{e.name} = '#{e.value}'") } if @manifestation.manifestation_exinfos
-    if @manifestation.manifestation_extexts
-      @manifestation.manifestation_extexts.each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } 
-    end
     if defined?(EnjuBookmark)
       if params[:mode] == 'tag_edit'
         @bookmark = current_user.bookmarks.where(:manifestation_id => @manifestation.id).first if @manifestation rescue nil
@@ -919,8 +938,6 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
-    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.save
@@ -937,8 +954,6 @@ class ManifestationsController < ApplicationController
           @manifestation.produces = create_publisher_values(@publishers)
 
           @manifestation.themes = Theme.add_themes(@theme) unless @theme.blank? if defined?(EnjuTrunkTheme)
-          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id) if params[:exinfos]
-          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id) if params[:extexts]
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_created', :model => t('activerecord.models.manifestation')) }
@@ -986,8 +1001,6 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
-    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
-    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
@@ -1002,12 +1015,6 @@ class ManifestationsController < ApplicationController
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
-        end
-        if params[:exinfos]
-          @manifestation.manifestation_exinfos = ManifestationExinfo.add_exinfos(params[:exinfos], @manifestation.id)
-        end
-        if params[:extexts]
-          @manifestation.manifestation_extexts = ManifestationExtext.add_extexts(params[:extexts], @manifestation.id)
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }

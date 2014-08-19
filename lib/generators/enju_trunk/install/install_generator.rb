@@ -192,10 +192,6 @@ devise_scope :user do
   def fixup_config_environments_production
     target = 'config/environments/production.rb'
 
-    gsub_file target, /^(\s*)# (config\.logger) = .*\n/, <<-'E'
-\1\2 = Logger.new("log/production.log", 'daily')
-    E
-
     gsub_file target, /^(\s*)# (config\.cache_store) = .*\n/, <<-'E'
 \1\2 = :dalli_store, {namespace: 'ENJUAPP', compress: true, expires_in: 1.day}
     E

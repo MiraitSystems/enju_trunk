@@ -29,7 +29,7 @@ class Shelf < ActiveRecord::Base
   paginates_per 10
 
   def web_shelf?
-    return true if self.id == 1
+    #TODO return true if self.id == 1
     false
   end
 

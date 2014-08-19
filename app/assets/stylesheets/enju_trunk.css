@@ -13,10 +13,10 @@
  *= require pagination
  *= require portlets
  *= require event_calendar
- *= require vendor
+ *= require_tree ./smoothness
+ *= require select2
+ *= require calendar
  *= require opac
  *= require opac_pagination
  *= require jquery.keypad
- *= require calendar
- *= require select2
 */

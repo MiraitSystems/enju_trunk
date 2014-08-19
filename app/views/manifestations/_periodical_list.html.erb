@@ -6,9 +6,9 @@
         [M]
         <%= link_to periodical.original_title, periodical -%>
         <%= form_icon(periodical.carrier_type) -%>
-        <%= agents_list(periodical.creators.readable_by(current_user)) -%>
-        <%= agents_list(periodical.contributors.readable_by(current_user)) -%>
-        <%= agents_list(periodical.publishers.readable_by(current_user)) -%>
+        <%= agents_list(periodical.creates.readable_by(current_user)) -%>
+        <%= agents_list(periodical.realizes.readable_by(current_user)) -%>
+        <%= agents_list(periodical.produces.readable_by(current_user)) -%>
         <%- if periodical.pub_date? -%>
           (<%= periodical.pub_date -%>)
         <%- end -%>

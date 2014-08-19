@@ -130,7 +130,7 @@ module EnjuTrunk
         reject {|key| /\Aarticle\./ =~ key }.
         map {|key| sheet.field_name(key) }
       unknown = sheet.field.keys.
-        reject {|name| field_names.include?(name) }
+        reject {|name| field_names.include?(name.gsub(/\d+\Z/,'')) } #TODO 複数対応項目のチェックをする
       unless unknown.blank?
         logger.info " header has column that is out of manage"
         return I18n.t('resource_import_textfile.message.out_of_manage', :columns => unknown.join(', '))

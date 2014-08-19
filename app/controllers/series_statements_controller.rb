@@ -94,9 +94,9 @@ class SeriesStatementsController < ApplicationController
   # GET /series_statements/1/edit
   def edit
     @series_statement.work = @work if @work
-    @creators = @series_statement.root_manifestation.try(:creators).present? ? @series_statement.root_manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = @series_statement.root_manifestation.try(:contributors).present? ? @series_statement.root_manifestation.contributors.order(:position) : [{}] unless @contributors
-    @publishers = @series_statement.root_manifestation.try(:publishers).present? ? @series_statement.root_manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = @series_statement.root_manifestation.try(:creates).present? ? @series_statement.root_manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = @series_statement.root_manifestation.try(:realizes).present? ? @series_statement.root_manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = @series_statement.root_manifestation.try(:produces).present? ? @series_statement.root_manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @series_statement.root_manifestation.try(:subjects).present? ? @series_statement.root_manifestation.subjects : [{}] unless @subjects
     @classifications = get_classification_values(@series_statement.root_manifestation)
     set_root_manifestation_instance_vals(@series_statement.root_manifestation)
@@ -108,6 +108,7 @@ class SeriesStatementsController < ApplicationController
     SeriesStatement.transaction do
       @series_statement = SeriesStatement.new(params[:series_statement])
       @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
+
       # set class instance variables, and create root_manifestation
       set_and_create_root_manifestation(params)
       @series_statement.save!
@@ -188,9 +189,9 @@ class SeriesStatementsController < ApplicationController
 
   private
   def set_root_manifestation_instance_vals(root_manifestation)
-    @creators = root_manifestation.try(:creators).present? ? root_manifestation.creators.order(:position) : [{}] unless @creators
-    @contributors = root_manifestation.try(:contributors).present? ? root_manifestation.contributor.order(:position) : [{}] unless @contributors
-    @publishers = root_manifestation.try(:publishers).present? ? root_manifestation.publishers.order(:position) : [{}] unless @publishers
+    @creators = root_manifestation.try(:creates).present? ? root_manifestation.creates.order(:position) : [{}] unless @creators
+    @contributors = root_manifestation.try(:realizes).present? ? root_manifestation.realizes.order(:position) : [{}] unless @contributors
+    @publishers = root_manifestation.try(:produces).present? ? root_manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = root_manifestation.try(:subjects).present? ? root_manifestation.subjects.order(:position) : [{}] unless @subjects
     root_manifestation.manifestation_exinfos.
       each { |e| eval("@#{e.name} = '#{e.value}'") } if root_manifestation.manifestation_exinfos
@@ -237,7 +238,7 @@ class SeriesStatementsController < ApplicationController
     params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     @classifications = params[:classifications]
-    @series_statement.root_manifestation.classifications = create_classification_values(@classifications);
+    @series_statement.root_manifestation.classifications = create_classification_values(@classifications) unless @classifications.blank?
     # create
     @series_statement.root_manifestation = SeriesStatement.create_root_manifestation(@series_statement,
       { subjects: create_subject_values(@subjects), 
@@ -251,6 +252,7 @@ class SeriesStatementsController < ApplicationController
   # create classification vaules
   #
   def create_classification_values(add_classifications)
+    return nil if add_classification.blank?
     classifications = []
     add_classifications.each do |add_classification|
       next if add_classification[:classification_id].blank?

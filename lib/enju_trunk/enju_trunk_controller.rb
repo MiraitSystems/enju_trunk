@@ -494,8 +494,12 @@ module EnjuTrunk
              creates << create
            end  
          else 
-           # new record
-           agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
+           agent = Agent.where(:full_name => add_creator[:full_name]).try(:first)
+           if agent
+             agent.full_name_transcription = add_creator[:full_name_transcription] 
+           else # new record
+             agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription]) 
+           end
            agent.save
            create = Create.new
            create.agent = agent
@@ -526,8 +530,12 @@ module EnjuTrunk
              realizes << realize
            end
          else
-           # new record
-           agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
+           agent = Agent.where(:full_name => add_contributor[:full_name]).try(:first)
+           if agent
+             agent.full_name_transcription = add_contributor[:full_name_transcription]
+           else # new record
+             agent = Agent.new(:full_name => add_contributor[:id], :full_name_transcription => add_contributor[:full_name_transcription])
+           end
            agent.save
            realize = Realize.new
            realize.agent = agent
@@ -557,8 +565,12 @@ module EnjuTrunk
              produces << produce
            end
          else
-           # new record
-           agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
+           agent = Agent.where(:full_name => add_publishers[:full_name]).try(:first)
+           if agent
+             agent.full_name_transcription = add_publishers[:full_name_transcription]
+           else # new record
+             agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
+           end
            agent.save
            produce = Produce.new
            produce.agent = agent

@@ -73,11 +73,11 @@ class ReminderList < ActiveRecord::Base
     end
 
     string :user_number do
-      self.checkout.user.user_number
+      self.checkout.user.user_number if self.checkout.try(:user).try(:user_number)
     end
 
     text :user_number_text do
-      self.checkout.user.user_number
+      self.checkout.user.user_number if self.checkout.try(:user).try(:user_number)
     end
 
   end
