@@ -2,15 +2,15 @@
   $(document).ready(function() {
     $('#item_statistics_acquired_at_from').setCalendar({src:'/assets/calendar.png'});
     $('#item_statistics_acquired_at_to').setCalendar({src:'/assets/calendar.png'});
-    $('#item_statistics_first_aggregation').change( function () {
-      $('#second_aggregation').empty();
+    $('#item_statistics_aggregation_second').change( function () {
+      $('#aggregation_third').empty();
       $.ajax({
-        url: '/statistical_table/get_second_aggregation',
+        url: '/statistical_table/get_aggregation_third',
         type: 'GET',
         dataType: 'html',
-        data: {first_aggregation : $(this).val()},
+        data: {aggregation_second : $(this).val()},
         success: function(data) {
-            $('#second_aggregation').html(data);
+            $('#aggregation_third').html(data);
         },
       });
     });
@@ -25,10 +25,10 @@
       <%= f.text_field :acquired_at_to, :size => 12, :placeholder => @default_date-%>
     <p>
     <p>
-      <%= f.check_box :money_aggregation -%><%= t('statistical_table.money_aggregation') -%>
+      <%= f.check_box :money_aggregation, {}, true, false -%><%= t('statistical_table.money_aggregation') -%>
     <p>
     <p>
-      <%= f.check_box :remove_aggregation -%><%= t('statistical_table.remove_aggregation') -%>
+      <%= f.check_box :remove_aggregation, {}, true, false -%><%= t('statistical_table.remove_aggregation') -%>
     <p>
     <p>
       <%= t('activerecord.models.library') -%>:
@@ -41,14 +41,17 @@
       <p>
     <% end -%>
     <p>
-      <%= t('activemodel.attributes.item_statistics.aggregation_type') -%>:
-      <%= f.select :aggregation_type, @aggregation_types, :include_blank => true -%>
+      <%= t('activemodel.attributes.item_statistics.aggregation_first') -%>:
+      <%= f.select :aggregation_first, @aggregation_first_classes, :include_blank => true -%>
     <p>
     <p>
-      <%= t('activemodel.attributes.item_statistics.first_aggregation') -%>:
-      <%= f.select :first_aggregation, @first_aggregations -%>
-      <span id="second_aggregation">
-        <%= render :partial => 'item_statistics_second_aggregation', :locals => {:f => f} %>
+      <%= t('activemodel.attributes.item_statistics.aggregation_second') -%>:
+      <%= f.select :aggregation_second, @aggregation_second_classes -%>
+    <p>
+    <p>
+      <%= t('activemodel.attributes.item_statistics.aggregation_third') -%>:
+      <span id="aggregation_third">
+        <%= render :partial => 'item_statistics_aggregation_third', :locals => {:f => f} %>
       </span>
     <p>
     <p>

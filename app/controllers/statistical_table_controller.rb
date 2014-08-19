@@ -23,11 +23,11 @@ class StatisticalTableController < ApplicationController
     render :text => html
   end
 
-  # GET /statistical_table/get_second_aggregation
-  def get_second_aggregation
-    @item_statistics = ItemStatistics.new(:first_aggregation => params[:first_aggregation])
-    @second_aggregations = ItemStatistics.second_aggregations
-    html = render_to_string :partial => 'item_statistics_second_aggregation'
+  # GET /statistical_table/get_aggregation_third
+  def get_aggregation_third
+    @item_statistics = ItemStatistics.new(:aggregation_second => params[:aggregation_second])
+    @aggregation_third_classes = ItemStatistics.aggregation_third_classes
+    html = render_to_string :partial => 'item_statistics_aggregation_third'
     render :text => html
   end
 
@@ -73,9 +73,9 @@ private
     if Rails.application.class.parent_name == "EnjuWilmina"
       @output_conditions = Keycode.where(:name => "item.asset_category")
     end
-    @aggregation_types = ItemStatistics.aggregation_types
-    @first_aggregations = ItemStatistics.first_aggregations
-    @second_aggregations = ItemStatistics.second_aggregations
+    @aggregation_first_classes = ItemStatistics.aggregation_first_classes
+    @aggregation_second_classes = ItemStatistics.aggregation_second_classes
+    @aggregation_third_classes = ItemStatistics.aggregation_third_classes
     @default_date = Time.now.strftime("%Y-%m-%d")
   end
 

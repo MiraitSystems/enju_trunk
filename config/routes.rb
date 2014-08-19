@@ -570,6 +570,6 @@ Rails.application.routes.draw do
   match '/statistical_table' => 'statistical_table#index'
   match '/statistical_table/output' => 'statistical_table#output'
   match '/statistical_table/get_condition' => 'statistical_table#get_condition'
-  match '/statistical_table/get_second_aggregation' => 'statistical_table#get_second_aggregation'
+  match '/statistical_table/get_aggregation_third' => 'statistical_table#get_aggregation_third'
 
 end

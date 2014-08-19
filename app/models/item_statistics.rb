@@ -13,10 +13,10 @@ class ItemStatistics
   
   def persisted? ; false ; end
   
-  attr_accessor :statistical_table_type, :acquired_at_from, :acquired_at_to, :aggregation_type,
+  attr_accessor :statistical_table_type, :acquired_at_from, :acquired_at_to,
                 :money_aggregation, :remove_aggregation,
                 :library_id, :output_condition,
-                :first_aggregation, :second_aggregation
+                :aggregation_first,:aggregation_second, :aggregation_third
 
   validates_presence_of :acquired_at_from
   validates_presence_of :acquired_at_to
@@ -24,16 +24,16 @@ class ItemStatistics
   validate :acquired_at_to_valid?
   validate :acquired_at_range_valid?
   
-  def self.aggregation_types
-    return I18n.t('statistical_table.item_statistics.aggregation_type').map{|k,v|[v,k]}
+  def self.aggregation_first_classes
+    return I18n.t('statistical_table.item_statistics.aggregation_first_classes').map{|k,v|[v,k]}
   end
 
-  def self.first_aggregations
-    return I18n.t('statistical_table.item_statistics.first_aggregation').map{|k,v|[v,k]}
+  def self.aggregation_second_classes
+    return I18n.t('statistical_table.item_statistics.aggregation_second_classes').map{|k,v|[v,k]}
   end
 
-  def self.second_aggregations
-    return [[I18n.t('statistical_table.item_statistics.first_aggregation.budget_category_group'), "budget_category_group"]]
+  def self.aggregation_third_classes
+    return I18n.t('statistical_table.item_statistics.aggregation_third_classes').map{|k,v|[v,k]}
   end
 
   def make_data
@@ -41,16 +41,20 @@ class ItemStatistics
     items = items.joins(:manifestation)
     items = items.joins(:budget_category)
     items = items.joins(:shelf)
-    
-    if self.money_aggregation == "1"
-      self.money_aggregation = true
-    else
-      self.money_aggregation = false
+
+    if self.money_aggregation.instance_of?(String)
+      if self.money_aggregation == "true"
+        self.money_aggregation = true
+      else
+        self.money_aggregation = false
+      end
     end
-    if self.remove_aggregation == "1"
-      self.remove_aggregation = true
-    else
-      self.remove_aggregation = false
+    if self.remove_aggregation.instance_of?(String)
+      if self.remove_aggregation == "true"
+        self.remove_aggregation = true
+      else
+        self.remove_aggregation = false
+      end
     end
 
     # 集計日付を求める
@@ -75,23 +79,39 @@ class ItemStatistics
     end
     
     # 出力条件 ItemExinfo
-#    if Rails.application.class.parent_name == "EnjuWilmina"
-#      items = items.where("items.asset_category_id = ?", self.output_condition)
-#    end
+    if Rails.application.class.parent_name == "EnjuWilmina"
+      items = items.joins(:item_exinfos)
+      items = items.where("item_exinfos.value = ?", self.output_condition)
+    end
+
+    # 前提条件 SystemConfiguration statistics preconditions
+    preconditions = SystemConfiguration.where("keyname = 'preconditions' and category = 'statistics'")
+    preconditions.each do |precondition|
+      if /#\{(.+?)\}/ =~ precondition.v
+        wheres = [precondition.v.gsub(/#\{(.+?)\}/, "?")]
+        codes = precondition.v.scan(/#\{(.+?)\}/)
+        codes.each do |code|
+          wheres << eval(code[0])
+        end
+        items = items.where(wheres)
+      else
+        items = items.where(precondition.v)
+      end
+    end
 
     # 横軸
-    if self.second_aggregation == "budget_category_group"
+    if self.aggregation_third == "budget_category_group"
       col_column = "budget_categories.group_id"
       cols =  Keycode.where(:name => 'budget_category.group')
     end
 
     # 縦軸１
-    if self.aggregation_type.present?
-      if self.aggregation_type == "statistical_class"
+    if self.aggregation_first.present?
+      if self.aggregation_first == "statistical_class"
         first_row_column = "items.statistical_class_id"
   #      first_rows = Keycode.where(:name => 'item.statistical_class')
         first_rows = Keycode.where(:name => 'item.statistical_class').limit(2) # for debug
-      elsif self.aggregation_type == "manifestation_type"
+      elsif self.aggregation_first == "manifestation_type"
         first_row_column = "manifestations.manifestation_type_id"
         first_rows = ManifestationType.all
       end
@@ -100,10 +120,10 @@ class ItemStatistics
     end
     
     # 縦軸２
-    if self.first_aggregation == "budget_category_group"
+    if self.aggregation_second == "budget_category_group"
       second_row_column = "budget_categories.group_id"
       second_rows = Keycode.where(:name => 'budget_category.group')
-    elsif self.first_aggregation == "carrier_type"
+    elsif self.aggregation_second == "carrier_type"
       second_row_column = "manifestations.carrier_type_id"
       second_rows = CarrierType.all
     end
@@ -145,9 +165,9 @@ class ItemStatistics
               sum_detail[key][k] += v
             end
           end
-          if self.first_aggregation == "budget_category_group"
+          if self.aggregation_second == "budget_category_group"
             second_row_details << {:second_row_name => second_row.keyname, :detail => detail}
-          elsif self.first_aggregation == "carrier_type"
+          elsif self.aggregation_second == "carrier_type"
             second_row_details << {:second_row_name => second_row.display_name, :detail => detail}
           end
         else # cols.blank? == false
@@ -167,9 +187,9 @@ class ItemStatistics
               end
             end
           end
-          if self.first_aggregation == "budget_category_group"
+          if self.aggregation_second == "budget_category_group"
             second_row_details << {:second_row_name => second_row.keyname, :detail => details}
-          elsif self.first_aggregation == "carrier_type"
+          elsif self.aggregation_second == "carrier_type"
             second_row_details << {:second_row_name => second_row.display_name, :detail => details}
           end
         end
@@ -184,7 +204,7 @@ class ItemStatistics
             sum_detail[key][k] += v
           end
         end
-        second_row_details << {:second_row_name => I18n.t("statistical_table.item_statistics.first_aggregation.#{self.first_aggregation}") + I18n.t('statistical_table.aggregation_other'), :detail => detail}
+        second_row_details << {:second_row_name => I18n.t("statistical_table.item_statistics.aggregation_second_classes.#{self.aggregation_second}") + I18n.t('statistical_table.aggregation_other'), :detail => detail}
       end
 
       # 小計行の追加
@@ -194,9 +214,9 @@ class ItemStatistics
         second_row_details << {:second_row_name => I18n.t('statistical_table.subtotal'), :detail => sum_details}
       end
       
-      if self.aggregation_type == "statistical_class"
+      if self.aggregation_first == "statistical_class"
         data << {:first_row_name => first_row.keyname, :second_row_details => second_row_details}
-      elsif self.aggregation_type == "manifestation_type"
+      elsif self.aggregation_first == "manifestation_type"
         data << {:first_row_name => first_row.display_name, :second_row_details => second_row_details}
       else
         data << {:second_row_details => second_row_details}
@@ -212,7 +232,7 @@ class ItemStatistics
       cols.each do |col|
         columns << col.keyname
       end
-      columns << I18n.t("statistical_table.aggregation_third_classes.#{self.second_aggregation}") + I18n.t('statistical_table.aggregation_other')
+      columns << I18n.t("statistical_table.item_statistics.aggregation_third_classes.#{self.aggregation_third}") + I18n.t('statistical_table.aggregation_other')
     end
     
     return {:data => data, :conditions => conditions, :cols => columns}
@@ -273,23 +293,23 @@ class ItemStatistics
           condition << ""
         end
         sheet.add_row condition, :types => :string, :style => default_style
-        condition = [I18n.t('statistical_table.aggregation_first') + ":"]
-        if conditions.aggregation_type.present?
-          condition << I18n.t("statistical_table.item_statistics.aggregation_type.#{conditions.aggregation_type}")
+        condition = [I18n.t('activemodel.attributes.item_statistics.aggregation_first') + ":"]
+        if conditions.aggregation_first.present?
+          condition << I18n.t("statistical_table.item_statistics.aggregation_first_classes.#{conditions.aggregation_first}")
         else
           condition << ""
         end
         sheet.add_row condition, :types => :string, :style => default_style
-        condition = [I18n.t('statistical_table.aggregation_second') + ":"]
-        if conditions.first_aggregation.present?
-          condition << I18n.t("statistical_table.item_statistics.first_aggregation.#{conditions.first_aggregation}")
+        condition = [I18n.t('activemodel.attributes.item_statistics.aggregation_second') + ":"]
+        if conditions.aggregation_second.present?
+          condition << I18n.t("statistical_table.item_statistics.aggregation_second_classes.#{conditions.aggregation_second}")
         else
           condition << ""
         end
         sheet.add_row condition, :types => :string, :style => default_style
-        condition = [I18n.t('statistical_table.aggregation_third') + ":"]
-        if conditions.second_aggregation.present?
-          condition << I18n.t("statistical_table.item_statistics.first_aggregation.budget_category_group")
+        condition = [I18n.t('activemodel.attributes.item_statistics.aggregation_third') + ":"]
+        if conditions.aggregation_third.present?
+          condition << I18n.t("statistical_table.item_statistics.aggregation_third_classes.#{conditions.aggregation_third}")
         else
           condition << ""
         end
@@ -444,7 +464,7 @@ private
     merge_style = wbstyles.add_style :font_name => Setting.item_statistics_print_excelx.fontname, :alignment => {:horizontal => :center, :vertical => :center}
     if cols.length > 0
       # 1行目
-      if conditions.aggregation_type.present?
+      if conditions.aggregation_first.present?
         columns = [""]
       else
         columns = []
@@ -471,7 +491,7 @@ private
       sheet.add_row columns, :types => :string, :style => merge_style
       # セル結合
       # 寄贈以外
-      start_col = conditions.aggregation_type.present? ? 2 : 1
+      start_col = conditions.aggregation_first.present? ? 2 : 1
       step_col = conditions.money_aggregation.present? ? 6 : 3
       from = 0
       to = 0
@@ -503,7 +523,7 @@ private
       end
       
       # 2行目
-      if conditions.aggregation_type.present?
+      if conditions.aggregation_first.present?
         columns = [""]
       else
         columns = []
@@ -534,7 +554,7 @@ private
       sheet.add_row columns, :types => :string, :style => merge_style
       # セル結合
       if conditions.money_aggregation.present?
-        start_col = conditions.aggregation_type.present? ? 2 : 1
+        start_col = conditions.aggregation_first.present? ? 2 : 1
         loops = cols.length * 3 * 2 + 3
         loops.times do |i|
           from = start_col + 2 * i
@@ -544,12 +564,12 @@ private
       end
       
       # 3行目
-      if conditions.aggregation_type.present?
-        columns = [I18n.t("statistical_table.item_statistics.aggregation_type.#{conditions.aggregation_type}")]
+      if conditions.aggregation_first.present?
+        columns = [I18n.t("statistical_table.item_statistics.aggregation_first_classes.#{conditions.aggregation_first}")]
       else
         columns = []
       end
-      columns << I18n.t("statistical_table.item_statistics.first_aggregation.#{conditions.first_aggregation}")
+      columns << I18n.t("statistical_table.item_statistics.aggregation_second_classes.#{conditions.aggregation_second}")
       loops = cols.length * 3 * 2 + 3
       loops.times do
         columns << I18n.t('statistical_table.books')
@@ -558,7 +578,7 @@ private
       sheet.add_row columns, :types => :string, :style => merge_style
     else
       # 1行目
-      if conditions.aggregation_type.present?
+      if conditions.aggregation_first.present?
         columns = [""]
       else
         columns = []
@@ -580,7 +600,7 @@ private
       columns << "" if conditions.money_aggregation.present?
       sheet.add_row columns, :types => :string, :style => merge_style
       if conditions.money_aggregation.present?
-        start_col = conditions.aggregation_type.present? ? 2 : 1
+        start_col = conditions.aggregation_first.present? ? 2 : 1
         7.times do |i|
           from = start_col + 2 * i
           to = start_col + 1 + 2 * i
@@ -589,12 +609,12 @@ private
       end
       
       # 2行目
-      if conditions.aggregation_type.present?
-        columns = [I18n.t("statistical_table.item_statistics.aggregation_type.#{conditions.aggregation_type}")]
+      if conditions.aggregation_first.present?
+        columns = [I18n.t("statistical_table.item_statistics.aggregation_first_classes.#{conditions.aggregation_first}")]
       else
         columns = []
       end
-      columns << I18n.t("statistical_table.item_statistics.first_aggregation.#{conditions.first_aggregation}")
+      columns << I18n.t("statistical_table.item_statistics.aggregation_second_classes.#{conditions.aggregation_second}")
       7.times do |i|
         columns << I18n.t('statistical_table.books')
         columns << I18n.t('statistical_table.prices') if conditions.money_aggregation.present?
@@ -620,7 +640,7 @@ private
       end
     end
 
-    if conditions.aggregation_type.present?
+    if conditions.aggregation_first.present?
       grand_total = {:jpn_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
                      :foreign_not_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
                      :jpn_donate => {:book => 0, :price => 0, :book_remove => 0, :price_remove => 0},
@@ -639,7 +659,7 @@ private
     data.each do |datum|
       datum[:second_row_details].each_with_index do |second_row, index|
         books_row = []
-        if conditions.aggregation_type.present?
+        if conditions.aggregation_first.present?
           if index == 0
             books_row = [datum[:first_row_name]]
           else
@@ -706,7 +726,7 @@ private
         sheet.add_row books_row, :types => :string, :style => default_style
       end
       # 全合計の算出
-      if conditions.aggregation_type.present?
+      if conditions.aggregation_first.present?
         if cols.present?
           datum[:second_row_details].last[:detail].each_with_index do |detail, index|
             detail.each do |key, value|
@@ -725,7 +745,7 @@ private
       end
     end
     # 全合計
-    if conditions.aggregation_type.present?
+    if conditions.aggregation_first.present?
       books_row = []
       books_row << I18n.t("statistical_table.grand_total")
       books_row << "-"
