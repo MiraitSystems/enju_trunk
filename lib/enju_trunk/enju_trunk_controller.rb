@@ -591,6 +591,8 @@ module EnjuTrunk
          if add_subject[:subject_id].to_i != 0
            subject = Subject.where(:id => add_subject[:subject_id]).first
            subject.term_transcription = add_subject[:term_transcription]
+           subject.subject_type_id = add_subject[:subject_type_id]
+           subject.save 
            subjects << subject if subject.present?
          else
            # new record
