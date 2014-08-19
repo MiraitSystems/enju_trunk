@@ -246,7 +246,7 @@ class SeriesStatementsController < ApplicationController
   # create classification vaules
   #
   def create_classification_values(add_classifications)
-    return nil if add_classification.blank?
+    return nil if add_classifications.blank?
     classifications = []
     add_classifications.each do |add_classification|
       next if add_classification[:classification_id].blank?
