@@ -1420,7 +1420,7 @@ class Manifestation < ActiveRecord::Base
         val = ''
       end
 
-    when 'carrier_type', 'required_role', 'manifestation_type', 'country_of_publication', 'catalog'
+    when 'carrier_type', 'sub_carrier_type', 'required_role', 'manifestation_type', 'country_of_publication', 'catalog'
       val = __send__(ws_col).try(:name) || ''
 
     when 'frequency'
