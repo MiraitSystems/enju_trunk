@@ -2531,6 +2531,7 @@ en:
     successfully_checked_in: This items was successfully checked in.
     not_available_for_checkin: This item is not available for checkin.
     overdue_item: This item is over due.
+    checkin_executor: Checkin Executor
   search_history:
     all_history: All search history
     failed_search: Failed searches
