@@ -507,8 +507,7 @@ module EnjuTrunk
            creates << create
          end  
        end  
-
-       return creates.uniq{ |create| create.agent_id and create.create_type_id }
+       return creates.uniq{ |create| [create[:agent_id],  create[:create_type_id]] }
      end 
   
      # 
@@ -543,7 +542,7 @@ module EnjuTrunk
            realizes << realize
          end
        end
-       return realizes.uniq{ |realize| realize.agent_id and realize.realize_type_id }
+       return realizes.uniq{ |realize| [realize[:agent_id], realize[:realize_type_id]] }
      end
 
      # 
@@ -578,7 +577,7 @@ module EnjuTrunk
            produces << produce
          end
        end
-       return produces.uniq{ |produce| produce.agent_id and produce.produce_type_id }
+       return produces.uniq{ |produce| [produce[:agent_id], produce[:produce_type_id]] }
      end
 
      # 
