@@ -824,6 +824,9 @@ class ManifestationsController < ApplicationController
       if original_manifestation.manifestation_exinfos.present?
         original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name}_id = '#{m.value}'") rescue nil }
       end
+      if original_manifestation.manifestation_extexts.present?
+        original_manifestation.manifestation_extexts.map{ |m| eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil }
+      end
 
       @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
       @contributors = original_manifestation.try(:realizes).present? ? original_manifestation.realizes.order(:position) : [{}] 
