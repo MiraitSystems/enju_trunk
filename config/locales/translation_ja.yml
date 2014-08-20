@@ -972,6 +972,7 @@ ja:
         past_due: 返却延滞中
         not_for_loan: 在架（貸出不可）
         not_available: 貸出不可
+        checkout_renewal_count: 更新回数
       subscription:
         title: タイトル
         note: 注記
