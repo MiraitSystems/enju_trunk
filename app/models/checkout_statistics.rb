@@ -76,11 +76,18 @@ class CheckoutStatistics
       cols = months
     elsif self.aggregation_type == "classification_type"
       # 分類別
-      classifications = Classification.where("classification_type_id = ?", self.classification_type_id)
-#      groups = Classification.select("group_identifier").where("classification_type_id = ?", self.classification_type_id).group("group_identifier")
-#      classification_groups = []
-#      classifications = Classification.where("classification_identifier like '1%'").limit(10)
-      cols = classifications
+      groups = Classification.select("group_identifier").where("classification_type_id = ?", self.classification_type_id).group("group_identifier")
+      classification_groups = []
+      groups.each do |group|
+        if group.group_identifier.present?
+          classification_ids = Classification.where("group_identifier = ?", group.group_identifier).pluck(:id)
+        else
+          # グループ未設定分
+          classification_ids = Classification.where("group_identifier is null").pluck(:id)
+        end
+        classification_groups << {:display_name => group.group_identifier, :classification_ids => classification_ids}
+      end
+      cols = classification_groups
     end
     
     # 集計方法2
@@ -97,54 +104,85 @@ class CheckoutStatistics
     sum_books = Array.new(cols.length, 0)
     sum_persons = Array.new(cols.length, 0)
 
+    checkouts = Checkout.joins(:user => :agent)
+    checkouts = checkouts.joins(:item => {:manifestation => :manifestation_has_classifications})
+    if self.aggregation_type == "classification_type"
+      from_date_obj = Date.parse(checked_at_from)
+      to_date_obj = Date.parse(checked_at_to)
+      checkouts = checkouts.where("checked_at >= ? and checked_at <= ?", from_date_obj.beginning_of_day, to_date_obj.end_of_day)
+    end
+    
     first_aggregations.each do |first_aggregation|
+      first_checkouts = checkouts.where("#{first_aggregation_column} = ?", first_aggregation.id)
       details = []
       second_aggregations.each do |second_aggregation|
         if User.joins(:agent).where("#{first_aggregation_column} = ?", first_aggregation.id).where("#{second_aggregation_column} = ?", second_aggregation.id).present?
-          checkouts = Checkout.joins(:user => :agent)
-          checkouts = checkouts.where("#{first_aggregation_column} = ?", first_aggregation.id)
-          checkouts = checkouts.where("#{second_aggregation_column} = ?", second_aggregation.id)
-          if self.aggregation_type == "classification_type"
-            checkouts = checkouts.joins(:item => {:manifestation => :manifestation_has_classifications})
-            from_date_obj = Date.parse(checked_at_from)
-            to_date_obj = Date.parse(checked_at_to)
-            checkouts = checkouts.where("checked_at >= ? and checked_at <= ?", from_date_obj.beginning_of_day, to_date_obj.end_of_day)
-          end
+          second_checkouts = first_checkouts.where("#{second_aggregation_column} = ?", second_aggregation.id)
           # 冊数
           books = []
           sum_book = 0
           if self.aggregation_type == "month"
             months.each do |month|
-              book = checkouts.select("checkouts.id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder("checkouts.id").uniq
+              book = second_checkouts.select("checkouts.id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder("checkouts.id").uniq
               books << book.length
             end
           elsif self.aggregation_type == "classification_type"
-            classifications.each do |classification|
-              book = checkouts.where("manifestation_has_classifications.classification_id = ?", classification.id).count()
-              books << book
+            classification_groups.each do |classification_group|
+              book = second_checkouts.select("checkouts.id").where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).reorder("checkouts.id").uniq
+              books << book.length
             end
-#            classification_groups.each do |classification_group|
-#              book = checkouts.where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).count()
-#              books << book
-#            end
           end
           # 人数
           persons = []
           sum_person = 0
           if self.aggregation_type == "month"
             months.each do |month|
-              person = checkouts.select("checkouts.user_id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder(:user_id).uniq
+              person = second_checkouts.select("checkouts.user_id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder(:user_id).uniq
               persons << person.length
             end
           elsif self.aggregation_type == "classification_type"
-            classifications.each do |classification|
-              person = checkouts.select("checkouts.user_id").where("manifestation_has_classifications.classification_id = ?", classification.id).reorder(:user_id).uniq
+            classification_groups.each do |classification_group|
+              person = second_checkouts.select("checkouts.user_id").where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).reorder(:user_id).uniq
               persons << person.length
             end
           end
           details << {:second_aggregation_name => second_aggregation.keyname, :books => books, :persons => persons}
         end
       end
+      # 学年未設定分
+      if User.joins(:agent).where("#{first_aggregation_column} = ?", first_aggregation.id).where("#{second_aggregation_column} is null").present?
+        second_checkouts = first_checkouts.where("#{second_aggregation_column} is null")
+        # 冊数
+        books = []
+        sum_book = 0
+        if self.aggregation_type == "month"
+          months.each do |month|
+            book = second_checkouts.select("checkouts.id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder("checkouts.id").uniq
+            books << book.length
+          end
+        elsif self.aggregation_type == "classification_type"
+          classification_groups.each do |classification_group|
+            book = second_checkouts.select("checkouts.id").where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).reorder("checkouts.id").uniq
+            books << book.length
+          end
+        end
+        # 人数
+        persons = []
+        sum_person = 0
+        if self.aggregation_type == "month"
+          months.each do |month|
+            person = second_checkouts.select("checkouts.user_id").where("checked_at >= ? and checked_at <= ?", month[:from_date], month[:to_date]).reorder(:user_id).uniq
+            persons << person.length
+          end
+        elsif self.aggregation_type == "classification_type"
+          classification_groups.each do |classification_group|
+              person = second_checkouts.select("checkouts.user_id").where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).reorder(:user_id).uniq
+            persons << person.length
+          end
+        end
+        details << {:second_aggregation_name => "", :books => books, :persons => persons}
+      end
+      
       # 小計
       books = Array.new(cols.length, 0)
       persons = Array.new(cols.length, 0)
@@ -156,7 +194,10 @@ class CheckoutStatistics
           sum_persons[index] += detail[:persons][index]
         end
       end
-      details << {:second_aggregation_name => I18n.t('statistical_table.subtotal'), :books => books, :persons => persons}
+      # 合計の出力は、第２集計が複数の場合のみとする
+      if details.length > 1
+        details << {:second_aggregation_name => I18n.t('statistical_table.subtotal'), :books => books, :persons => persons}
+      end
       data << {:first_aggregation_name => first_aggregation.display_name, :details => details}
     end
     # 総合計
@@ -220,14 +261,8 @@ class CheckoutStatistics
         
         # 項目名
         columns = [I18n.t('activerecord.attributes.user.user_group'), I18n.t('activerecord.attributes.agent.grade'), ""]
-        if output_data[:conditions].aggregation_type == "month"
-          output_data[:cols].each do |month|
-            columns << month[:display_name]
-          end
-        elsif output_data[:conditions].aggregation_type == "classification_type"
-          output_data[:cols].each do |classification|
-            columns << classification.category
-          end
+        output_data[:cols].each do |col|
+          columns << col[:display_name]
         end
         columns << I18n.t('statistical_table.total')
         sheet.add_row columns, :types => :string, :style => default_style
