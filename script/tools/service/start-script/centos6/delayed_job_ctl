@@ -37,11 +37,10 @@ stop() {
 
 case "$1" in
 	start)
-		rh_status_q && exit 0
-		$1
+		start	
 		;;
 	stop)
-		rh_status_q || exit 0
+		stop
 		$1
 		;;
 
