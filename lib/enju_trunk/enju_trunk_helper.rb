@@ -106,7 +106,7 @@ module EnjuTrunk
             when 'realize'
               type_name = RealizeType.where(:id => relation.realize_type_id, :display => true).try(:first).try(:display_name)
             when 'produce'
-              type_name = ProduceType.where(:id => relation.produce_type_id, :display => true).try(:first).try(:display_name) 
+              type_name = ProduceType.where(:id => relation.produce_type_id, :display => true).try(:first).try(:display_name)
           end
           type_name = type_name.blank? ? '' : '(' + type_name.localize + ')'
         end
@@ -419,8 +419,8 @@ module EnjuTrunk
         elsif name == :other_identifier
           next unless params[name]
           next unless params[name]["identifier"]
-          array << hidden_field_tag("#{name.to_s}[identifier]", params[name]["identifier"]) 
-          array << hidden_field_tag("#{name.to_s}[identifier_type_id]", params[name]["identifier_type_id"]) 
+          array << hidden_field_tag("#{name.to_s}[identifier]", params[name]["identifier"])
+          array << hidden_field_tag("#{name.to_s}[identifier_type_id]", params[name]["identifier_type_id"])
         else
           array << hidden_field_tag(name.to_s, params[name])
         end
@@ -505,7 +505,7 @@ module EnjuTrunk
             identifier = IdentifierType.find(params[:other_identifier][:identifier_type_id]) rescue nil
             other_identifier = params[:other_identifier][:identifier]
             other_identifier += "(#{identifier.display_name})"if identifier
-            summary_ary << [key, other_identifier] 
+            summary_ary << [key, other_identifier]
           end
         else
           summary_ary << [key, params[key]] if params[key].present?
@@ -679,9 +679,13 @@ module ActionView
         if options[:placeholder]
           select2_options[:placeholder] = '"' + escape_javascript(options.delete(:placeholder)) + '"'
         end
-        include_blank = options[:include_blank] || false
+        include_blank = options.has_key?(:include_blank) ? options[:include_blank] : false
         if include_blank
           select2_options[:allowClear] = true
+        end
+        readonly = options.has_key?(:readonly) ? options[:readonly] : false
+        if readonly
+          select2_options[:readonly] = true
         end
 
         # minimumInputLength 0
@@ -692,6 +696,14 @@ module ActionView
         b = ""
         b.concat(build_select2_script(selector_id, select2_options))
         b.concat(build_select2(selector_id, selector_name, collection, selected_id, options))
+
+        # TODO
+        if readonly
+          b.concat("<script type=\"text/javascript\">")
+          b.concat("$('\##{selector_id}').prop('readonly', true);")
+          b.concat("</script>")
+        end
+
         return raw(b)
       end
 
@@ -751,10 +763,10 @@ module ActionView
         end
 
         raw ("
-        <script>
+        <script type=\"text/javascript\">
           $(document).ready(function() {
             var select2options = {
-	        #{options_string}
+          #{options_string}
             };
             $(\"##{selector_id}\").select2(select2options);
           });
