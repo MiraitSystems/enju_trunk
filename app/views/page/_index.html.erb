@@ -3,7 +3,7 @@
 <% if user_signed_in? && current_user.has_role?('Librarian') -%>
 $(document).FunctionKeys(
 {
- F2:function(obj,s,c,a){document.location = '<%= new_basket_path%>';} 
+ F2:function(obj,s,c,a){document.location = '<%= new_basket_path%>';}
 ,F3:function(obj,s,c,a){document.location = '<%= checkins_path %>';}
 ,F4:function(obj,s,c,a){document.location = '<%= order_lists_path %>';}
 });
@@ -51,7 +51,7 @@ $(document).FunctionKeys(
       <%= render 'page/search_form' -%>
       <p><%= t('page.number_of_manifestations', :numdocs => Manifestation.cached_numdocs, :count => Manifestation.cached_numdocs) -%></p>
       <h3 style="display: inline"><%= link_to t('page.new_resource'), manifestations_path(:mode => 'recent') -%></h3>
-     
+
       <% if defined?(EnjuTrunkTheme) %>
         <br />
         <br />
@@ -88,6 +88,8 @@ $(document).FunctionKeys(
   <%- end -%>
 </div>
 
+
+<% if SystemConfiguration.get('view.pick_up') && defined?(EnjuBookmark) && SystemConfiguration.get('view.tag_cloud') %>
 <div class="column" id="col2">
   <% if SystemConfiguration.get('view.pick_up') %>
   <div class="portlet" id="pickup">
@@ -116,6 +118,7 @@ $(document).FunctionKeys(
     </div>
   <% end %>
 </div>
+<% end %>
 
 <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
   <div class="column" id="col3">
