@@ -301,7 +301,7 @@
             "creators[][type_id]", 
             @create_types,
             creator[:create_type_id] || creator["type_id"], 
-            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+            :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
@@ -332,7 +332,7 @@
             "contributors[][type_id]", 
             @realize_types,
             contributor[:realize_type_id] || contributor["type_id"], 
-            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+            :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
@@ -363,7 +363,7 @@
             "publishers[][type_id]", 
             @produce_types,
             publisher[:produce_type_id] || publisher["type_id"], 
-            :width => 250, :select_attribute => :name, :display_attribute => :display_name 
+            :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
         <% if SystemConfiguration.get("add_only_exist_agent") %>
