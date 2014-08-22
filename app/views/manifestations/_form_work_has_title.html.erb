@@ -18,6 +18,7 @@
       var cloneField = $('#VF0').clone().attr({
                        'id' : 'VF' + fieldId
                        });
+      cloneField.removeAttr( 'style' );
       cloneField.children('div').remove();
       cloneField.children("input[type='button']").remove();
       cloneField.children('input.resource_title').val('');

@@ -1464,14 +1464,16 @@ class Manifestation < ActiveRecord::Base
         end
       end
 
-    when 'subject', 'subject_transcription'
+    when 'subject', 'subject_transcription', 'subject_type'
       if sep_flg
         val = [nil]*ccount
         subjects.each_with_index do |record, i|
           if ws_col == 'subject'
             val[i] = record.term
-          else
+          elsif ws_col == 'subject_transcription'
             val[i] = record.term_transcription
+          else
+            val[i] = record.subject_type.try(:name)
           end
         end
 

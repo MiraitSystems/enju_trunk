@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.user'))", 'edit_user_path(params[:id])', :only => [:edit, :update]
   #before_filter :reset_params_session
   load_and_authorize_resource :except => [:search_family, :get_family_info, :get_user_info, :get_user_rent, :output_password, :edit_user_number, :update_user_number, :output_user_notice, :create]
-  helper_method :get_agent 
+  helper_method :get_agent
   before_filter :store_location, :only => [:index]
   before_filter :clear_search_sessions, :only => [:show]
   after_filter :solr_commit, :only => [:create, :update, :destroy]
@@ -74,7 +74,7 @@ class UsersController < ApplicationController
   def show
     unless @user == current_user or current_user.has_role?('Librarian')
       access_denied; return
-    end 
+    end
     session[:user_return_to] = nil
     unless @user.agent
       redirect_to new_user_agent_url(@user); return
@@ -115,15 +115,16 @@ class UsersController < ApplicationController
       @agent.note_update_by = nil
       @agent.note_update_library = nil
       @family = @family_with.id
-    else 
+    else
       @user = User.new
       @user.library = current_user.library
       @user.locale = current_user.locale
-      @user.role_id = Role.where(:name => 'User').first.id
-      @user.required_role_id = Role.where(:name => 'Librarian').first.id
+      @user.role = Role.where(:name => 'User').first
+      @user.required_role = Role.where(:name => 'Librarian').first
+      @user.function_class = FunctionClass.where(:name => "user").first
       @agent = Agent.new
-      @agent.required_role = Role.find_by_name('Librarian')
-      @agent.language = Language.where(:iso_639_1 => I18n.default_locale.to_s).first || Language.first 
+      @agent.required_role = Role.where(:name => 'Librarian').first
+      @agent.language = Language.where(:iso_639_1 => I18n.default_locale.to_s).first || Language.first
       @agent.country = current_user.library.country if current_user.library
       @agent.country_id = LibraryGroup.site_config.country_id
       @agent.telephone_number_1_type_id = 5
@@ -150,7 +151,7 @@ class UsersController < ApplicationController
   def edit
     unless @user == current_user or current_user.has_role?('Librarian')
       access_denied; return
-    end 
+    end
     unless @user.agent
       redirect_to new_user_agent_url(@user); return
     end
@@ -183,7 +184,7 @@ class UsersController < ApplicationController
           authorize! :create, @user
           @user.set_auto_generated_password
           @agent = Agent.create_with_user(params[:agent], @user)
- 
+
           logger.info @agent
           logger.info @user
 
@@ -200,7 +201,7 @@ class UsersController < ApplicationController
         prepare_options
         @agent.errors.each do |attr, msg|
           @user.errors.add(attr, msg)
-        end 
+        end
         # flash[:error] = t('user.could_not_setup_account')
         format.html { render :action => "new" }
         format.json { render :json => @user.errors, :status => :unprocessable_entity }
@@ -214,7 +215,7 @@ class UsersController < ApplicationController
   def update
     unless @user == current_user or current_user.has_role?('Librarian')
       access_denied; return
-    end 
+    end
     unless @user.agent
       redirect_to new_user_agent_url(@user); return
     end
@@ -262,10 +263,10 @@ class UsersController < ApplicationController
         format.json { head :no_content }
       end
     rescue # ActiveRecord::RecordInvalid
-      @agent = @user.agent  
+      @agent = @user.agent
       @agent.errors.each do |attr, msg|
         @user.errors.add(attr, msg)
-      end  
+      end
       family_id = FamilyUser.find(:first, :conditions => ['user_id=?', @user.id]).family_id rescue nil
       @family_users = Family.find(family_id).users if family_id
       prepare_options
@@ -318,19 +319,19 @@ class UsersController < ApplicationController
     @user = User.find_by_username(params[:id])
     if params[:new_user_number].blank?
       @user.errors.add_on_blank("new_user_number")
-      render :action => :edit_user_number 
+      render :action => :edit_user_number
       return
     end
 
-    begin 
+    begin
       @user.assign_attributes({:user_number => params[:new_user_number]}, :as => :admin)
       @user.save!
       #@user.update_attributes({:user_number => params[:new_user_number]})
       flash[:notice] = t('controller.successfully_updated', :model => t('activerecord.attributes.user.user_number'))
-      redirect_to(user_url(@user))       
+      redirect_to(user_url(@user))
     rescue # ActiveRecord::RecordInvalid
       #@user = User.find_by_username(params[:id])
-      render :action => :edit_user_number 
+      render :action => :edit_user_number
     end
   end
 
@@ -374,8 +375,8 @@ class UsersController < ApplicationController
       agent_type_person = AgentType.find_by_name('Person').id
       query = <<-SQL
         SELECT users.id, users.username
-        FROM users left join agents 
-        ON agents.user_id = users.id 
+        FROM users left join agents
+        ON agents.user_id = users.id
         WHERE translate(agents.telephone_number_1, '-', '') = :tel_1
         AND agents.last_name = :last_name
         AND agents.address_1 = :address_1
@@ -402,9 +403,9 @@ class UsersController < ApplicationController
         @users.each do |user|
           #logger.info "user.id=#{user.id}"
           all_user_ids << user.id
-        end 
+        end
       end
-      family_users = FamilyUser.find(:all, :conditions => ['user_id IN (?)', all_user_ids]) 
+      family_users = FamilyUser.find(:all, :conditions => ['user_id IN (?)', all_user_ids])
       family_user_ids = []
       @families = []
       family_users.each do |f_user|
@@ -429,12 +430,12 @@ class UsersController < ApplicationController
       #logger.info("family=#{@family}")
       unless @family.empty?
         @families.each do |f|
-          #logger.info enum_users_id(f.users)  
+          #logger.info enum_users_id(f.users)
           u2 = f.users.select {|u| u.id.to_s == @family}
           unless u2.empty?
             f.users.reject! {|u| u.id.to_s == @family}
             f.users.unshift(u2.first)
-            #logger.info enum_users_id(f.users)  
+            #logger.info enum_users_id(f.users)
             break
           end
         end
@@ -466,7 +467,7 @@ class UsersController < ApplicationController
     unless params[:user_number].blank?
       @user = User.where(:user_number => params[:user_number]).first
       if @user
-        @agent = @user.agent unless @user.blank?      
+        @agent = @user.agent unless @user.blank?
         manifestation = Manifestation.find(params[:manifestation_id])
         expired_at = manifestation.reservation_expired_period(@user).days.from_now.end_of_day
         expired_at = expired_at.try(:strftime, "%Y-%m-%d") if expired_at

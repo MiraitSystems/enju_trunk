@@ -91,14 +91,13 @@ module ActiveRecordExtension
               self.#{self.name.underscore}_extexts.build(:name => '#{arg}', :type_id => obj)
             end
           end 
-          @#{arg} = obj
+          @#{arg}_type_id = obj
         end
         def #{arg}_type_id
-          @#{arg}
           if @#{arg}.nil?
-            @#{arg} = #{self.name.underscore}_extexts.where(:name => '#{arg}').first.type_id rescue nil
+            @#{arg}_type_id = #{self.name.underscore}_extexts.where(:name => '#{arg}').first.type_id rescue nil
           end
-          return @#{arg}
+          return @#{arg}_type_id
         end
       EOF
     end

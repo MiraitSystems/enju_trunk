@@ -175,11 +175,7 @@ class SeriesStatement < ActiveRecord::Base
       root_manifestation.creates = objs[:creates]
       root_manifestation.realizes = objs[:realizes]
       root_manifestation.produces = objs[:produces]
-      root_manifestation.manifestation_exinfos = ManifestationExinfo.
-        add_exinfos(objs[:exinfos], root_manifestation.id) if objs[:exinfos]
-      root_manifestation.manifestation_extexts = ManifestationExtext.
-        add_extexts(objs[:extexts], root_manifestation.id) if objs[:extexts]
-  end
+    end
     return root_manifestation
   end
 

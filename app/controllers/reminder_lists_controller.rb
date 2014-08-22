@@ -43,7 +43,7 @@ class ReminderListsController < ApplicationController
     @reminder_lists = ReminderList.search do
       fulltext query
       with(:library_id, library.to_i) if library
-      with(:status, state_ids)
+      with(:status, state_ids) if state_ids.present?
       without(:checkin, true) if date
       with(:due_date).less_than(date)
       with(:user_number, user_number) if user_number.present?

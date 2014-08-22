@@ -193,10 +193,6 @@ class SeriesStatementsController < ApplicationController
     @contributors = root_manifestation.try(:realizes).present? ? root_manifestation.realizes.order(:position) : [{}] unless @contributors
     @publishers = root_manifestation.try(:produces).present? ? root_manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = root_manifestation.try(:subjects).present? ? root_manifestation.subjects.order(:position) : [{}] unless @subjects
-    root_manifestation.manifestation_exinfos.
-      each { |e| eval("@#{e.name} = '#{e.value}'") } if root_manifestation.manifestation_exinfos
-    root_manifestation.manifestation_extexts.
-      each { |e| eval("@#{e.name}_type_id = '#{e.type_id}'; @#{e.name}_value = '#{e.value}'") } if root_manifestation.manifestation_extexts
   end
 
   def prepare_options
@@ -234,8 +230,6 @@ class SeriesStatementsController < ApplicationController
   def set_and_create_root_manifestation(params)
     # set class instance attributes
     @creators = params[:creators]; @contributors = params[:contributors]; @publishers = params[:publishers];@subjects = params[:subjects]
-    params[:exinfos].each { |k, v| eval("@#{k} = '#{v}'") } if params[:exinfos]
-    params[:extexts].each { |k, v| eval("@#{k}_type_id = '#{v['type_id']}'; @#{k}_value = '#{v['value']}'") } if params[:extexts]
     @series_statement.root_manifestation.assign_attributes(params[:manifestation])
     @classifications = params[:classifications]
     @series_statement.root_manifestation.classifications = create_classification_values(@classifications) unless @classifications.blank?
@@ -245,14 +239,14 @@ class SeriesStatementsController < ApplicationController
         creates: create_creator_values(@creators), 
         realizes: create_contributor_values(@contributors),
         produces: create_publisher_values(@publishers),
-        exinfos: params[:exinfos], extexts: params[:extexts]})
+       })
   end
 
   #
   # create classification vaules
   #
   def create_classification_values(add_classifications)
-    return nil if add_classification.blank?
+    return nil if add_classifications.blank?
     classifications = []
     add_classifications.each do |add_classification|
       next if add_classification[:classification_id].blank?

@@ -507,8 +507,7 @@ module EnjuTrunk
            creates << create
          end  
        end  
-
-       return creates.uniq{ |create| create.agent_id and create.create_type_id }
+       return creates.uniq{ |create| [create[:agent_id],  create[:create_type_id]] }
      end 
   
      # 
@@ -543,7 +542,7 @@ module EnjuTrunk
            realizes << realize
          end
        end
-       return realizes.uniq{ |realize| realize.agent_id and realize.realize_type_id }
+       return realizes.uniq{ |realize| [realize[:agent_id], realize[:realize_type_id]] }
      end
 
      # 
@@ -565,9 +564,9 @@ module EnjuTrunk
              produces << produce
            end
          else
-           agent = Agent.where(:full_name => add_publishers[:full_name]).try(:first)
+           agent = Agent.where(:full_name => add_publisher[:full_name]).try(:first)
            if agent
-             agent.full_name_transcription = add_publishers[:full_name_transcription]
+             agent.full_name_transcription = add_publisher[:full_name_transcription]
            else # new record
              agent = Agent.new(:full_name => add_publisher[:id], :full_name_transcription => add_publisher[:full_name_transcription])
            end
@@ -578,7 +577,7 @@ module EnjuTrunk
            produces << produce
          end
        end
-       return produces.uniq{ |produce| produce.agent_id and produce.produce_type_id }
+       return produces.uniq{ |produce| [produce[:agent_id], produce[:produce_type_id]] }
      end
 
      # 
@@ -591,6 +590,8 @@ module EnjuTrunk
          if add_subject[:subject_id].to_i != 0
            subject = Subject.where(:id => add_subject[:subject_id]).first
            subject.term_transcription = add_subject[:term_transcription]
+           subject.subject_type_id = add_subject[:subject_type_id]
+           subject.save 
            subjects << subject if subject.present?
          else
            # new record
