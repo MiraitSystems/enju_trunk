@@ -178,7 +178,7 @@ ja:
       system_configuration: システム情報
       reminder_list: 督促
       expense: 購入情報
-      budget_and_results_managements: 予算実績対比 
+      budget_and_results_managements: 予算実績対比
       manifestation_type: 資料区分
       access_log: アクセス件数
       keyword_count: 検索キーワード
@@ -318,7 +318,7 @@ ja:
         id: Id
         checkout: 貸出
         checkout_id: 貸出番号
-        original_title: タイトル 
+        original_title: タイトル
         user_name: 利用者名
         status: 連絡 # 状態
         due_date: 貸出期限
@@ -331,7 +331,7 @@ ja:
         printed: 印字済
         status_name:
           accepted: 未 # 連絡
-          called: 済 # 連絡済    
+          called: 済 # 連絡済
         honorific1: 様
         honorific2: さん
         total : 全
@@ -447,7 +447,7 @@ ja:
         url: URL
         note_update_at: 注記更新時刻
         note_update_by: 注記更新者
-        note_update_library: 注記更新図書館        
+        note_update_library: 注記更新図書館
         old: 歳
         agent_identifier: 人物団体の識別番号
         keyperson_1: キーパーソン1
@@ -654,7 +654,7 @@ ja:
         position: 位置
         deleted_at: 削除時刻
         open_access: 開架区分
-        open: 閲覧室 # 開架 
+        open: 閲覧室 # 開架
         closed: 書庫 # 閉架
         stock: 保存
         in_process: 受入手続き中
@@ -687,7 +687,7 @@ ja:
         update_note: 注記の更新
       produce:
         position: 位置
-        manifestation: 出版関係 
+        manifestation: 出版関係
       role:
         name: 名前
         display_name: 表示名
@@ -824,9 +824,9 @@ ja:
         ordered_at: 発注年月日
         order_year: 発注年
         buying_payment_year: 購入費支払年
-        prepayment_settlements_of_account_year: 前払資料精算年 
+        prepayment_settlements_of_account_year: 前払資料精算年
         paid_flag: 精算済フラグ
-        number_of_acceptance_schedule: 受入予定冊数 
+        number_of_acceptance_schedule: 受入予定冊数
         meeting_holding_month_1: 開催月1
         meeting_holding_month_2: 開催月2
         adption_code: 採択
@@ -1046,7 +1046,7 @@ ja:
         position: 位置
         deleted_at: 削除時刻
       area:
-        name: 地区名   
+        name: 地区名
         address: 住所
       checkout_type:
         name: 名前
@@ -1199,7 +1199,7 @@ ja:
         date_of_birth: 生年月日
         note: 注記
       unablelist:
-        output_format: 出力形式 
+        output_format: 出力形式
       checkout_stat_has_user:
         checkouts_count: 利用者の貸出回数
       checkout_stat_has_manifestation:
@@ -1318,12 +1318,12 @@ ja:
         note: 注記
         sequence_pattern: 刊行パターン
       series_statement_relationship:
-        seq: シーケンシャル番号	 
+        seq: シーケンシャル番号
         before_series_statement_relationship: 前誌
         after_series_statement_relationship: 後誌
         before_series_statement_relationship_id: 前誌ID
         after_series_statement_relationship_id: 後誌ID
-        source: 作成機関 
+        source: 作成機関
       import_request:
         isbn: ISBN
         state: 状態
@@ -1540,7 +1540,7 @@ ja:
         request_datetime: 依頼日時
         request_type: 依頼分類
         request_type_names:
-         - 
+         -
          - 借用
          - 複写
         state: 処理状態
@@ -1568,7 +1568,7 @@ ja:
         note: 注記
       currency:
         name: 名前
-        display_name: 表示名 
+        display_name: 表示名
       exchange_rate:
         currency: 通貨単位
         currency_id: 通貨単位
@@ -1588,33 +1588,33 @@ ja:
         hidden_yes: はい
         hidden_no: いいえ
       approval:
-        manifestation_id: タイトル 
-        created_by: データ登録者名 
-        collect_user: 収集担当 
-        all_process_start_at: 全工程開始日 
-        status: 見計らい工程 
-        publication_status: 刊行物の状況 
-        sample_request_at: サンプル取り寄せ依頼日 
-        sample_arrival_at: サンプル到着日 
-        sample_carrier_type: サンプル誌の種類 
-        sample_name: サンプル誌名・巻号等 
-        collection_sources: 収集情報源 
-        sample_note: サンプル誌到着状況－備考 
-        group_user_id: グループ担当 
-        group_approval_at: グループ見計らい日 
-        group_approval_result: グループ見計らい結果 
-        group_result_reason: グループ収録不可理由 
-        group_note: グループ見計らい結果－備考 
-        adoption_report_flg: 採択可能記事がある 
+        manifestation_id: タイトル
+        created_by: データ登録者名
+        collect_user: 収集担当
+        all_process_start_at: 全工程開始日
+        status: 見計らい工程
+        publication_status: 刊行物の状況
+        sample_request_at: サンプル取り寄せ依頼日
+        sample_arrival_at: サンプル到着日
+        sample_carrier_type: サンプル誌の種類
+        sample_name: サンプル誌名・巻号等
+        collection_sources: 収集情報源
+        sample_note: サンプル誌到着状況－備考
+        group_user_id: グループ担当
+        group_approval_at: グループ見計らい日
+        group_approval_result: グループ見計らい結果
+        group_result_reason: グループ収録不可理由
+        group_note: グループ見計らい結果－備考
+        adoption_report_flg: 採択可能記事がある
         approval_result: 見計らい結果(最終)
-        reason: 収録不可理由 
-        approval_end_at: 見計らい完了日 
-        donate_request_at: 寄贈依頼日 
-        donate_request_replay_at: 寄贈依頼返信日 
-        refuse_at: 断り状送付日 
-        donate_request_result: 寄贈依頼結果 
-        all_process_end_at: 全工程完了日 
-        reception_agent_id: 担当窓口コード 
+        reason: 収録不可理由
+        approval_end_at: 見計らい完了日
+        donate_request_at: 寄贈依頼日
+        donate_request_replay_at: 寄贈依頼返信日
+        refuse_at: 断り状送付日
+        donate_request_result: 寄贈依頼結果
+        all_process_end_at: 全工程完了日
+        reception_agent_id: 担当窓口コード
         approval_extexts: 見計らいメモ
         approval_status:
           pending: 見計らい開始前
@@ -1650,7 +1650,7 @@ ja:
       title_type:
         name: 名前
         display_name: 表示名
-        note: 注記        
+        note: 注記
       payment:
         id: ID
         order_id: 発注番号
@@ -1727,7 +1727,7 @@ ja:
         rate: 税率
         rounding: 端数処理方式
         start_date: 適用開始日
-        end_date: 適用終了日     
+        end_date: 適用終了日
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1913,7 +1913,7 @@ ja:
     batch_change: "一括更新"
     batch_change_dialog: "アクションを選択"
     batch_change_description: "バスケットに入っている情報を一括更新します。<br />実行したいアクションを選択してください。"
-    batch_change_series_statement: "シリーズ情報を設定" 
+    batch_change_series_statement: "シリーズ情報を設定"
     batch_change_series_statement_updated: "シリーズ情報を %{title} に設定しました。"
     batch_change_series_statement_failed: "シリーズ情報の設定に失敗しました。"
     agent_management: "人物・団体の管理"
@@ -1981,7 +1981,7 @@ ja:
     best_reader: "貸出の多い本"
     userdetail: "利用者詳細"
     download: "ダウンロード"
-    budget_and_order: "予算と発注の管理" 
+    budget_and_order: "予算と発注の管理"
     budget: "予算"
     wait: "処理中.."
     system_configuration: "システム設定"
@@ -2257,7 +2257,7 @@ ja:
     add_lending_policy: "貸出規則の追加"
     item_removed: "資料を除籍しました。"
     item_restored: "資料の貸出状態を作業中に変更しました。"
-    update_failed: "資料の更新に失敗しました。"	
+    update_failed: "資料の更新に失敗しました。"
     new_serial: "(最新号)"
     already_removed: "この資料は除籍されています。編集できません。"
     all_type: 全ての資料区分
@@ -2294,7 +2294,7 @@ ja:
     publisher: "出版者"
     owner: "所有者"
     last_update_at: 最終更新日時
-    last_update_by: 更新者 
+    last_update_by: 更新者
     duplicate_user: "同じフルネーム(ヨミ)、電話番号１ー１、生年月日の人が既に登録されています。"
     agent_identifier: 機関を識別するための番号
     place: 所在地
@@ -2422,7 +2422,7 @@ ja:
     birth_date_invalid: "生年月日が不正な値です。例: 2011-04-12"
     already_in_family: "家族登録済みです。"
     overdue_item: "%{user} さんの貸出期限がすぎている資料が %{count} 冊あります。"
-    retained_reserve: "%{user} さんの予約資料が %{count} 冊用意されています。" 
+    retained_reserve: "%{user} さんの予約資料が %{count} 冊用意されています。"
     not_connect: "%{user}さんは連絡不能にチェックがされています。"
     create_family: "家族の作成"
     create_family_user: "家族を新規作成"
@@ -2637,7 +2637,7 @@ ja:
     start_importing: "インポートを開始しました。"
     unsuccess_start: "インポート開始に失敗しました。"
     file_type: ファイル形式
-    book: 書誌    
+    book: 書誌
     article: 文献
     series: シリーズ
     exinfo: その他
@@ -2818,7 +2818,7 @@ ja:
     title_catalog: 図書書名目録
     author_catalog: 図書著者名目録
     classified_catalog: 図書分類目録
-    
+
     invalid_file_type: "不正なファイル種別が指定されています。"
     export_job_queued: "ファイル出力結果はメッセージでお知らせします。(お知らせIDは%{job_name})"
     export_job_success_subject: "ファイル出力が完了しました [ID: %{job_name}]"
@@ -2827,7 +2827,7 @@ ja:
     export_job_error_body: "お知らせID「%{job_name}」のファイル出力を完了できませんでした。理由は次の通りです。\n%{message}"
   library_report:
     checkouts: 貸出数(冊)
-    ndc: "(NDC:%{ndc})" 
+    ndc: "(NDC:%{ndc})"
     daily_report: "%{year}年%{month}月%{date}日の日報"
     daily: 日報
     monthly: 月報
@@ -2900,7 +2900,7 @@ ja:
     boolean_db: "DB"
     boolean_and: "AND検索"
     boolean_or: "OR検索"
-    boolean_reserve_only_checkout_item: "貸出中の所蔵のみを予約対象とする" 
+    boolean_reserve_only_checkout_item: "貸出中の所蔵のみを予約対象とする"
     boolean_reserve_all_item: "全ての所蔵を予約対象とする"
     boolean_reserve_able_for_not_item: "予約できる"
     boolean_reserve_not_able_for_not_item: "予約できない"
@@ -2916,7 +2916,7 @@ ja:
       over_checkouts_print_message: "貸出表に表示できるメッセージは最大全角%{num}文字までです"
       over_reminder_postal_card_message: "督促はがきに表示できるメッセージは最大全角%{num}文字までです"
       over_reminder_letter_message: "督促書に表示できるメッセージは最大全角%{num}文字までです"
-  manifestation_relationships: 
+  manifestation_relationships:
     no_parent_id: "指定の派生元の資料ID が見つかりません。"
     no_child_id: "指定の派生先の資料ID が見つかりません。"
   function_key:
@@ -3000,7 +3000,7 @@ ja:
       holding: 所蔵あり
       reserved: 予約済
     reserves:
-      no_reserve: 予約中の資料はありません。 
+      no_reserve: 予約中の資料はありません。
     checkouts:
       checkout_at: 貸出日
       overdue_item: この資料は貸出期限が過ぎています。
@@ -3037,7 +3037,7 @@ ja:
       title: "ブックマーク"
       twitter: "Twitterにつぶやく"
       hatena: "はてなブックマーク"
-      yahoo: "Yahoo!ブックマークに追加"
+      yahoo: "Yahoo!ブックマーク"
     publisher:
       title: "出版社流通情報"
       amazon: "Amazon"
