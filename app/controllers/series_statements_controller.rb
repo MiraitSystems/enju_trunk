@@ -107,8 +107,6 @@ class SeriesStatementsController < ApplicationController
   def create
     SeriesStatement.transaction do
       @series_statement = SeriesStatement.new(params[:series_statement])
-      @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
-
       # set class instance variables, and create root_manifestation
       set_and_create_root_manifestation(params)
       @series_statement.save!
@@ -230,7 +228,7 @@ class SeriesStatementsController < ApplicationController
   def set_and_create_root_manifestation(params)
     # set class instance attributes
     @creators = params[:creators]; @contributors = params[:contributors]; @publishers = params[:publishers];@subjects = params[:subjects]
-    @series_statement.root_manifestation.assign_attributes(params[:manifestation])
+    @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
     @classifications = params[:classifications]
     @series_statement.root_manifestation.classifications = create_classification_values(@classifications) unless @classifications.blank?
     # create
