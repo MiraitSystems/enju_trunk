@@ -1513,7 +1513,7 @@ class ManifestationsController < ApplicationController
     # TODO: ページ数や大きさでの並べ替え
     case sort_by
     when 'title'
-      sort[:sort_by] = 'sort_title'
+      sort[:sort_by] = 'original_title'
       sort[:order] = 'asc'
     when 'pub_date'
       sort[:sort_by] = 'date_of_publication'
