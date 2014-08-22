@@ -24,7 +24,7 @@ class LanguagesController < InheritedResources::Base
       result = struct_language.new(language.id, language.display_name.localize)
     else
       languages = Language.where("name ilike '%#{params[:search_phrase]}%' OR display_name ilike '%#{params[:search_phrase]}%'").select("id, display_name").limit(10)
-      if languages.size == 1
+      if params[:limit_one]
         result = struct_language.new(languages.first.id, languages.first.display_name.localize)
       else
         result = []
