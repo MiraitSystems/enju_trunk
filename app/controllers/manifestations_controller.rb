@@ -763,12 +763,12 @@ class ManifestationsController < ApplicationController
       else
         redirect_to series_statement_manifestations_url(@manifestation.series_statement)
       end
-      return
+      #return
     else
       if @manifestation.series_statement && @manifestation.nacsis_identifier
         redirect_to series_statement_manifestations_url(@manifestation.series_statement)
       end
-      return
+      #return
     end
 
 
@@ -1355,7 +1355,7 @@ class ManifestationsController < ApplicationController
 
         tag = f ? "#{f}:" : ''
         if q.size == 1
-          qw << "#{tag}#{q.first}"
+          qw << "#{tag}(#{q.first})"
         elsif merge_type == 'any'
           qw << "#{tag}(#{q.join(' OR ')})"
         else

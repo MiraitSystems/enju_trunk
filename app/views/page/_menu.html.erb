@@ -1,4 +1,4 @@
-<% unless SystemConfiguration.get('view.not_shown_tabmenu.not_logged_in') %>
+<% if user_signed_in? or !SystemConfiguration.get('view.not_shown_tabmenu.not_logged_in') %>
   <div id="navibar">
     <%= render 'page/menu_tabindex0' %>
     <%= render 'page/menu_tabindex1' %>
