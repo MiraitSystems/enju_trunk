@@ -1290,3 +1290,10 @@ system_configuration_00185:
   v: "false"
   description: "書名テーブルの典拠コントロールする"
   category: 'manifestation'
+system_configuration_00186:
+  id: 186
+  keyname: 'view.not_shown_tabmenu.not_logged_in'
+  v: "false"
+  description: "未ログイン時、タブメニューを表示しない"
+  typename: Boolean
+  category: 'view'

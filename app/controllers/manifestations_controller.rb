@@ -846,13 +846,13 @@ class ManifestationsController < ApplicationController
 
     elsif @series_statement # GET /series_statements/1/manifestations/new
       @manifestation = @series_statement.new_manifestation
-
+      @work_has_languages = @manifestation.work_has_languages.present? ? @manifestation.work_has_languages : [{}]
       @classifications = get_classification_values(@manifestation)
     end
 
-    @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
-    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
-    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
+    @creators = @manifestation.try(:creates).present? ? @manifestation.creates : [{}] unless @creators
+    @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes : [{}] unless @contributors
+    @publishers = @manifestation.try(:produces).present? ? @manifestation.produces : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
 
     @classifications = get_classification_values(@manifestation) if @classifications.blank?
