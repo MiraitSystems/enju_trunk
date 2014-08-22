@@ -1001,6 +1001,19 @@ class ManifestationsController < ApplicationController
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
+ 
+    # titles
+    if SystemConfiguration.get('manifestation.use_titles')
+      params[:manifestation][:work_has_titles_attributes].each_with_index do |wf_attributes|
+        title = @manifestation.manifestation_titles.try(:[], wf_attributes[0].to_i) rescue nil
+        if title
+          title.title = wf_attributes[1]['title'] 
+          title.title_transcription = wf_attributes[1][:title_transcription]
+          title.title_alternative = wf_attributes[1][:title_alternative]
+          @manifestation.work_has_titles[wf_attributes[0].to_i].title = title 
+        end
+      end
+    end
 
     respond_to do |format|
       if @manifestation.update_attributes(params[:manifestation])
@@ -1015,6 +1028,12 @@ class ManifestationsController < ApplicationController
         if defined?(EnjuTrunkTheme)
           @manifestation.themes.destroy_all
           @manifestation.themes = Theme.add_themes(@theme)
+        end
+
+        if SystemConfiguration.get('manifestation.use_titles')
+          @manifestation.manifestation_titles.each do |title|
+            title.save if title.changed? 
+          end
         end
 
         format.html { redirect_to @manifestation, :notice => t('controller.successfully_updated', :model => t('activerecord.models.manifestation')) }

@@ -1284,5 +1284,9 @@ system_configuration_00184:
   v: "false"
   description: "所蔵情報のIDとバーコード用番号を別にする"
   category: 'manifestation'
-
-
+system_configuration_00185:
+  id: 185
+  keyname: 'title.uniform_title' 
+  v: "false"
+  description: "書名テーブルの典拠コントロールする"
+  category: 'manifestation'

@@ -15,7 +15,7 @@ class WorkHasTitle < ActiveRecord::Base
   
   def set_title
     return unless self.title
-    manifestation_title = Title.where(:title => self.title).first
+    manifestation_title = Title.where(:title => self.title).first if SystemConfiguration.get('title.uniforn_title')
     manifestation_title = Title.create(:title => self.title, :title_transcription => self.title_transcription, :title_alternative => self.title_alternative) unless manifestation_title
     self.manifestation_title = manifestation_title
   end
