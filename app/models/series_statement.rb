@@ -161,7 +161,11 @@ class SeriesStatement < ActiveRecord::Base
     manifestation ||= build_root_manifestation
     manifestation.periodical_master   = true
     manifestation.periodical          = self.periodical || false
-    manifestation.original_title      = self.original_title
+    if self.original_title.present?
+      manifestation.original_title    = self.original_title
+    else
+      manifestation.original_title    = "dummy"
+    end
     manifestation.title_transcription = self.title_transcription
     manifestation.title_alternative   = self.title_alternative
     manifestation
