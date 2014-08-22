@@ -147,7 +147,8 @@ class SeriesStatement < ActiveRecord::Base
       manifestation.place_of_publication = root_manifestation.place_of_publication
       manifestation.access_address = root_manifestation.access_address
       manifestation.required_role = root_manifestation.required_role
-      manifestation.work_has_languages = root_manifestation.work_has_languages
+      manifestation.work_has_languages = root_manifestation.work_has_languages.map{|wl| wl.id = nil; wl.work_id = nil; wl}
+      manifestation.work_has_titles = root_manifestation.work_has_titles.map{|wt| wt.id = nil; wt.work_id = nil; wt} if SystemConfiguration.get('title.uniform_title')
       manifestation.manifestation_identifier = root_manifestation.identifier
       manifestation.manifestation_has_classifications = root_manifestation.manifestation_has_classifications.order(:position)
       manifestation.subjects = root_manifestation.subjects.order(:position)
