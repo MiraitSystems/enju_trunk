@@ -136,7 +136,6 @@ class SeriesStatementsController < ApplicationController
 
       before_series_statement_periodical = @series_statement.periodical
       @series_statement.assign_attributes(params[:series_statement])
-      @series_statement.root_manifestation.assign_attributes(params[:manifestation])
 
       # set class instance variables, and update root_manifestation
       set_and_create_root_manifestation(params)
@@ -228,7 +227,11 @@ class SeriesStatementsController < ApplicationController
   def set_and_create_root_manifestation(params)
     # set class instance attributes
     @creators = params[:creators]; @contributors = params[:contributors]; @publishers = params[:publishers];@subjects = params[:subjects]
-    @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
+    if @series_statement.root_manifestation.nil?
+      @series_statement.root_manifestation = Manifestation.new(params[:manifestation])
+    else
+      @series_statement.root_manifestation.assign_attributes(params[:manifestation])
+    end
     @classifications = params[:classifications]
     @series_statement.root_manifestation.classifications = create_classification_values(@classifications) unless @classifications.blank?
     # create
