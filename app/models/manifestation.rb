@@ -492,7 +492,7 @@ class Manifestation < ActiveRecord::Base
       true if items.any? {|i| item_circulation_status_name(i) == 'In Factory' }
     end
     boolean :no_item do
-      has_items?
+      no_items?
     end
 
   end
@@ -624,13 +624,15 @@ class Manifestation < ActiveRecord::Base
     return false if periodical_master
     items.each do |i|
       return false unless i.non_searchable
+      return false if item.try(:circulation_status).try(:name) != 'Removed'
     end
     return true
   end
   
-  def has_items?
+  def no_items?
     unless root_of_series?
       return true if items.blank?
+      return true if items.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed']).blank?
     end
     return false
   end
@@ -643,6 +645,7 @@ class Manifestation < ActiveRecord::Base
                      !unsearchables.blank? && 
                      items.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)).blank?
       return false if SystemConfiguration.get('manifestation.manage_item_rank') && items.where('rank < 2').blank?
+      return false if items.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed']).blank?
     end
     return true
   end
