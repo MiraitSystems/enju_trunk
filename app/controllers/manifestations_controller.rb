@@ -1355,7 +1355,7 @@ class ManifestationsController < ApplicationController
 
         tag = f ? "#{f}:" : ''
         if q.size == 1
-          qw << "#{tag}#{q.first}"
+          qw << "#{tag}(#{q.first})"
         elsif merge_type == 'any'
           qw << "#{tag}(#{q.join(' OR ')})"
         else

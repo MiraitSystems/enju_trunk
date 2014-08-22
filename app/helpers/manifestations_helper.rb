@@ -217,6 +217,7 @@ module ManifestationsHelper
           if SystemConfiguration.get('manifestation.manage_item_rank')
             return true if item.rank == 2
           end
+          return true if item.try(:circulation_status).try(:name) == 'Removed'
         end
       end
     end

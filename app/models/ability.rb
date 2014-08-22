@@ -6,6 +6,7 @@ engines << EnjuEvent::Engine    if defined?(EnjuEvent)
 engines << EnjuMessage::Engine  if defined?(EnjuMessage)
 engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
 engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
+engines << EnjuTrunkReport::Engine if defined?(EnjuTrunkReport)
 engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
 
 class Ability
@@ -20,6 +21,7 @@ class Ability
     initialize_message(user, ip_address) if defined?(EnjuMessage)
     initialize_ill(user, ip_address) if defined?(EnjuTrunkIll)
     initialize_bookmark(user, ip_address) if defined?(EnjuBookmark)
+    initialize_report(user, ip_address) if defined?(EnjuTrunkReport)
     case user.try(:role).try(:name)
     when 'Administrator'
       can [:read, :create, :update], AcceptType
@@ -413,14 +415,15 @@ class Ability
       end
       can :index, Item
       can :show, Item do |item|
-        item.required_role_id <= 2 && item.shelf.required_role_id <= 2
+        item.required_role_id <= 2 && item.shelf.required_role_id <= 2 && item.circulation_status.name != 'Removed'
       end
       can :read, Manifestation do |manifestation|
         manifestation.required_role_id <= 2 &&
         !manifestation.items.joins(:shelf).where('items.required_role_id <= 2 AND shelves.required_role_id <= 2').blank? &&
         (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
         !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
-        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?) &&
+        manifestation.items.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed']).present?
       end
       can :edit, Manifestation #TODO not necessary?
       can [:index, :create], Question
@@ -514,14 +517,15 @@ class Ability
         agent.required_role_id == 1 #name == 'Guest'
       end
       can :read, Item do |item|
-        item.required_role_id <= 1 && item.shelf.required_role_id <= 1
+        item.required_role_id <= 1 && item.shelf.required_role_id <= 1 && item.circulation_status.name != 'Removed'
       end
       can :read, Manifestation do |manifestation|
         manifestation.required_role_id <= 1 &&
         !manifestation.items.joins(:shelf).where('items.required_role_id <= 1 AND shelves.required_role_id <= 1').blank? &&
         (!SystemConfiguration.get('manifestation.manage_item_rank') || manifestation.items.where('rank < 2').blank?) &&
         !manifestation.items.joins(:circulation_status).where('circulation_statuses.unsearchable = FALSE OR circulation_statuses.unsearchable IS NULL').blank? &&
-        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?)
+        (!SystemConfiguration.get('manifestation.search.hide_not_for_loan') || !manifestation.items.joins(:use_restriction).where('use_restrictions.name != "Not For Loan"').blank?) &&
+        manifestation.items.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed']).present?
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
       can :read, [
