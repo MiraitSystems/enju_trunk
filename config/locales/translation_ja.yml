@@ -2848,6 +2848,7 @@ ja:
     general: 全般
     user: 利用者
     manifestation: 資料
+    penalty: 貸出罰則
     checkout: 貸出
     checkin: 返却
     reserve: 予約

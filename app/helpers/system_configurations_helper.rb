@@ -4,6 +4,7 @@ module SystemConfigurationsHelper
       'general', 
       'user', 
       'manifestation', 
+      'penalty', 
       'checkout', 
       'checkin', 
       'reserve', 
@@ -28,6 +29,8 @@ module SystemConfigurationsHelper
       t('system_configuration.user')
     when 'manifestation'
       t('system_configuration.manifestation')
+    when 'penalty'
+      t('system_configuration.penalty')
     when 'checkout'
       t('system_configuration.checkout')
     when 'checkin'

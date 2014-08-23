@@ -1297,3 +1297,25 @@ system_configuration_00186:
   description: "未ログイン時、タブメニューを表示しない"
   typename: Boolean
   category: 'view'
+system_configuration_00187:
+  id: 187
+  keyname: 'penalty.user_penalty'
+  v: "false"
+  description: "貸出罰則機能を利用する。"
+  typename: Boolean
+  category: 'penalty'
+system_configuration_00188:
+  id: 188
+  keyname: 'penalty.overdue_include_closing_day'
+  v: "true"
+  description: "延滞日数の計算は、「閉館日」を含める。"
+  typename: Boolean
+  category: 'penalty'
+system_configuration_00189:
+  id: 189
+  keyname: 'penalty.days_overdue'
+  v: "1"
+  description: "延滞日数の計算は、返却期限日を起点に何日後からとするか。（デフォルト日数）"
+  typename: Numeric
+  category: 'penalty'
+
