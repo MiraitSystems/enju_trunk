@@ -146,9 +146,9 @@ class Manifestation < ActiveRecord::Base
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号のISBNのリストを取得する
         series_manifestations.
-          map {|manifestation| [manifestation.isbn, manifestation.isbn10, manifestation.wrong_isbn] }.flatten.compact
+          map {|manifestation| [manifestation.isbn, manifestation.isbn10, manifestation.wrong_isbn, manifestation.identifiers.where(identifier_type_id: [1,2,6]).pluck(:body)] }.flatten.compact
       else
-        [isbn, isbn10, wrong_isbn]
+        [isbn, isbn10, wrong_isbn, identifiers.where(identifier_type_id: [1,2,6]).pluck(:body)].flatten.compact
       end
     end
     string :issn, :multiple => true do
@@ -909,6 +909,14 @@ class Manifestation < ActiveRecord::Base
     elsif issue_number_string.present?
       "[#{issue_number_string}]"
     end
+  end
+
+  # isbn > identifier.body の順で検索して最初の識別子をかえす。
+  def call_isbn
+    if isbn.present?
+      return isbn
+    end
+    identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
   end
 
   def self.build_search_for_manifestations_list(search, query, with_filter, without_filter)
