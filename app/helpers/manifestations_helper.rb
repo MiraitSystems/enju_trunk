@@ -202,7 +202,7 @@ module ManifestationsHelper
   end
 
   def hide_item?(show_all = false, item)
-    unless SystemConfiguration.get("manifestation.show_all")
+    unless user_signed_in? and current_user.has_role?('Librarian') and SystemConfiguration.get("manifestation.show_all")
       if @removed
         return true unless item.circulation_status.name == "Removed"
       else 
