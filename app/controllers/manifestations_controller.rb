@@ -708,8 +708,8 @@ class ManifestationsController < ApplicationController
     end 
 
     if params[:isbn].present?
-      if @manifestation = Manifestation.find_by_isbn(params[:isbn])
-        redirect_to @manifestation
+      if @manifestation_redirect = Manifestation.find_by_isbn(params[:isbn])
+        redirect_to @manifestation_redirect
         return
       else
         raise ActiveRecord::RecordNotFound if @manifestation.nil?
