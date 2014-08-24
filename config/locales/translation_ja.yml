@@ -947,10 +947,13 @@ ja:
         restrict_recheckout_in_penalty: 罰則時に再貸出/貸出期間の延長を制限するか？
         restrict_checkout_in_penalty: 罰則時に貸出を制限するか？
         restrict_checkout_in_penalty_types:
-          no: いいえ
+          no0: いいえ
           yes1: はい（延滞中の資料を全て返却するまで新規貸出は出来ない）
           yes2: はい（全ての資料を返却するまで新規貸出は出来ない）
         restrict_checkout_after_penalty: 罰則時に次の貸出を制御するか？
+        restrict_checkout_after_penalty_types: 
+          no0: いいえ
+          yes1: はい（冊数制限あり）
         checkout_limit_after_penalty_in_probation: 罰則時の貸出制限冊数
       resource_import_file:
         resource_import_file_name: ファイル名
