@@ -458,8 +458,12 @@ class Manifestation < ActiveRecord::Base
     integer :item_shelf_id, :multiple => true do
       items.collect(&:shelf_id).compact
     end
-    boolean :has_available_items do
-      has_available_items?
+    string :has_available_items, :multiple => true do
+      availables = []
+      Role.all.collect(&:id).each do |required_role_id|
+        availables << "#{required_role_id}_has_available_items" if has_available_items?(required_role_id)
+      end
+      availables
     end
     boolean :hide do
       # 定期刊行物でないroot_manifestationは隠す
@@ -637,15 +641,23 @@ class Manifestation < ActiveRecord::Base
     return false
   end
 
-  def has_available_items?
+  def has_available_items?(role_id = 1)
     unless article? or root_of_series?
       return false if items.empty?
-      return false if items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id)).blank? && SystemConfiguration.get('manifestation.search.hide_not_for_loan')
-      return false if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id) && 
-                     !unsearchables.blank? && 
-                     items.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)).blank?
-      return false if SystemConfiguration.get('manifestation.manage_item_rank') && items.where('rank < 2').blank?
-      return false if items.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed']).blank?
+      is = items.where(['required_role_id <= ?', role_id])
+      if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
+        is = items.joins(:item_has_use_restriction).where('item_has_use_restrictions.use_restriction_id NOT IN (?)', UseRestriction.where(:name => 'Not For Loan').collect(&:id))
+      end
+      if unsearchables = CirculationStatus.where(:unsearchable => true).collect(&:id)
+        is = is.where('circulation_status_id NOT IN (?)', CirculationStatus.where(:unsearchable => true).collect(&:id)) unless unsearchables.blank?
+      end
+      if SystemConfiguration.get('manifestation.manage_item_rank')
+        is = is.where('rank < 2')
+      end
+      shelves = Shelf.where(['required_role_id <= ?', role_id])
+      is = is.where('shelf_id in (?)', shelves.collect(&:id))
+      is = is.joins(:circulation_status).where(['circulation_statuses.name != ?', 'Removed'])
+      return false if is.blank?
     end
     return true
   end
