@@ -2374,9 +2374,6 @@ ja:
     cannot_delete: "この図書館は削除できません。"
     already_exist_shelf: "図書館作成時のデフォルトの本棚名と同一の本棚が既に存在しています。この名前では図書館の作成ができません。"
     help_name: "半角英数字で入力してください。"
-  shelf:
-    cannot_delete: "この本棚は削除できません。"
-    other: その他
   import:
     from_file: "ファイルから"
     from_isbn: "ISBNから"
@@ -3244,3 +3241,7 @@ ja:
     search_placeholder: "本棚を入力してください"
     search_searching: "検索中..."
     search_nomatch: " の候補が見つかりません"
+    cannot_delete: "この本棚は削除できません。"
+    other: 'その他'
+    required_role_notice: "(書誌検索へは即時反映されません。更新後に索引の再作成を行います。)"
+    

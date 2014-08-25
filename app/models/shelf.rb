@@ -14,10 +14,12 @@ class Shelf < ActiveRecord::Base
   validates_associated :library
   validates_presence_of :library, :open_access
   validates_uniqueness_of :display_name, :scope => :library_id
-
+  
   acts_as_list :scope => :library
 
   has_paper_trail
+
+  after_save :delay_reindex_manifestation
 
   searchable do
     string :library do
@@ -72,6 +74,18 @@ class Shelf < ActiveRecord::Base
     rescue Exception => e
       logger.error "failed #{e}"
       return false
+    end
+  end
+
+  def delay_reindex_manifestation
+    if self.required_role_id_changed? && self.items.present?
+      self.delay.reindex_manifestation
+    end
+  end
+ 
+  def reindex_manifestation
+    self.items.collect(&:manifestation_id).compact.each do |manifestation_id|
+      Manifestation.find(manifeststaion_id).try(:index)
     end
   end
 end
