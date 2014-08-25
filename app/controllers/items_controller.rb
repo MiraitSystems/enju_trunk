@@ -126,7 +126,9 @@ class ItemsController < ApplicationController
     else
       @item = Item.new
     end
+    # TODO
     @item.manifestation_id = @manifestation.id
+    @item.manifestation = @manifestation
     unless @manifestation.article?
       @circulation_statuses = CirculationStatus.order(:position)
       @item.circulation_status = CirculationStatus.where(:name => 'In Process').first unless @item.try(:circulation_status)
@@ -157,6 +159,7 @@ class ItemsController < ApplicationController
     @item.library_id = @item.shelf.library_id
     @item.use_restriction_id = @item.use_restriction.id if @item.use_restriction
     prepare_options
+    @manifestation = @item.manifestation
   end
 
   # POST /items
@@ -364,6 +367,7 @@ class ItemsController < ApplicationController
     @tax_rates = TaxRate.all
     @budget_groups = Keycode.where(:name => 'budget_category.group')
     @budget_categories = @item.try(:budget_category).try(:group_id) ? BudgetCategory.where(:group_id => @item.budget_category.group_id):[]
+
   end
 
   def check_status
