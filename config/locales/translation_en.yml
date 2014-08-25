@@ -2839,6 +2839,7 @@ en:
   shelf:
     cannot_delete: The shelf cannnot be deleted.
     other: other
+    required_role_notice: "(Manifestation reindex is required to reflect its change)"
   checked_manifestation:
     add: Add to basket
     delete: Delere from basket

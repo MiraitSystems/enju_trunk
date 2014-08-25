@@ -23,7 +23,7 @@
   </div>
 
   <div class="field">
-    <%= f.label t('role.required_role') %><br />
+    <%= f.label t('role.required_role') %> <%= t('shelf.required_role_notice') unless @shelf.new_record?%><br />
     <%= f.select(:required_role_id, @roles.collect{|r| [r.display_name.localize, r.id]}) %>
   </div>
 
