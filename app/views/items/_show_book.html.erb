@@ -1,3 +1,12 @@
+<% if %w(show edit).include?(controller.action_name) %>
+  <% if Setting.book_jacket.source == :google %>
+    <script type="text/javascript" src="http://books.google.com/books/previewlib.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <!-- thumbnail script here -->
+    <%= render 'manifestations/google_book_thumbnail_header' %>
+  <% end %>
+<% end %>
+
 <div id="content_detail" class="ui-corner-all">
 <h1 class="title"><%= t('page.showing', :model => t('activerecord.models.item')) -%></h1>
 <div id="content_list">
@@ -28,7 +37,7 @@
   (<%= link_to @item.shelf.library.display_name.localize, @item.shelf.library -%>)
 </p>
 
-<% if SystemConfiguration.get('manifestation.manage_item_rank') %> 
+<% if SystemConfiguration.get('manifestation.manage_item_rank') %>
 <% if user_signed_in? and current_user.has_role?('Librarian') %>
   <p>
     <strong><%= t('activerecord.attributes.item.rank') -%>:</strong>
@@ -156,11 +165,11 @@
 </p>
 
 <%- if SystemConfiguration.get('item.use_different_identifier') %>
-  <p> 
+  <p>
     <strong><%= t('activerecord.attributes.item.identifier') -%>:</strong>
-    <%= @item.identifier -%> 
+    <%= @item.identifier -%>
   </p>
-<%- end -%> 
+<%- end -%>
 
 <%- if @item.nacsis_identifier %>
   <p>
