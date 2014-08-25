@@ -700,7 +700,7 @@ class ManifestationsController < ApplicationController
       unless user_signed_in?
         can_show = false if @manifestation.has_available_items?
       else
-        can_show = false if !current_user.has_role?('Librarian') and @manifestation.has_available_items?
+        can_show = false if !current_user.has_role?('Librarian') and @manifestation.has_available_items?(current_user.required_role_id)
       end
       unless can_show
         access_denied
@@ -1422,12 +1422,11 @@ class ManifestationsController < ApplicationController
       (current_user.try(:role) || Role.default_role).id
     ]
 
-    # show manifestaion without item for Librarian and Administrator
-    unless current_user.try(:has_role?, 'Librarian')
+    # hide manifestaion without available item for Guest and User
+    unless ((SystemConfiguration.get('manifestation.show_all') && 
+      current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
       current_role_id = (current_user.try(:role) || Role.default_role).id
-      shelves = Shelf.where('required_role_id <= ?', current_role_id)
-      with << [:item_shelf_id, :any_of, shelves.collect(&:id)]
-      with << [:item_required_id, :less_than_or_equal_to, current_role_id]
+      with << [:has_available_items, :equal_to, "#{current_role_id}_has_available_items"]
     end
 
     if @removed
@@ -1461,10 +1460,6 @@ class ManifestationsController < ApplicationController
     with << [:manifestation_type, :equal_to, params[:manifestation_type]] if params[:manifestation_type]
     with << [:circulation_status_in_process, :equal_to, params[:circulation_status_in_process]] if params[:circulation_status_in_process]
     with << [:circulation_status_in_factory, :equal_to, params[:circulation_status_in_factory]] if params[:circulation_status_in_factory]
-    unless ((SystemConfiguration.get('manifestation.show_all') && 
-      current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
-      without << [:has_available_items, :equal_to, false] unless @all_manifestations
-    end
     [
       [:publisher_ids, @agent],
       [:creator_ids, @index_agent[:creator]],
