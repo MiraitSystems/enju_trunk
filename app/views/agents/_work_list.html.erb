@@ -4,7 +4,7 @@
     <%- @works.each do |work| -%>
       <li>
         [W]
-        <%= link_to work.original_title, work -%>
+        <%= link_to work.original_title, work.root_of_series? ? work.series_statement : work %>
         <%= agents_list(work.creates.readable_by(current_user)) -%>
       </li>
     <%- end -%>

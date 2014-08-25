@@ -4,7 +4,7 @@
     <%- @expressions.each do |manifestation| -%>
       <li>
             [M]
-            <%= link_to manifestation.original_title, manifestation -%>
+            <%= link_to manifestation.original_title, manifestation.root_of_series? ? manifestation.series_statement : manifestation -%>
             <%= form_icon(manifestation.carrier_type) -%>
             <%= agents_list(manifestation.creates.readable_by(current_user)) -%>
             <%= agents_list(manifestation.realizes.readable_by(current_user)) -%>
