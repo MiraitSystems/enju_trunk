@@ -10,11 +10,7 @@
   <%- end -%>
 
   <% if %w(show edit).include?(controller.action_name) %>
-    <% if Setting.book_jacket.source == :google %>
-      <script type="text/javascript" src="http://books.google.com/books/previewlib.js"></script>
-      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-      <%= render 'manifestations/google_book_thumbnail_header' %>
-    <% end %>
+    <%= render 'manifestations/prepare_book_jacket' %>
   <% end %>
   <link rel="search" type="application/opensearchdescription+xml" title="<%= LibraryGroup.site_config.display_name.localize %>" href="<%= page_opensearch_url(format: :xml) %>">
 

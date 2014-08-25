@@ -76,10 +76,10 @@
 
   <div class="row">
     <div><%= f.label t('activerecord.models.tax_rate') %></div>
-    <div><%= f.select2 :tax_rate_id, @tax_rates, @item.tax_rate_id, 
-      display_attribute: 'display_name', 
+    <div><%= f.select2 :tax_rate_id, @tax_rates, @item.tax_rate_id,
+      display_attribute: 'display_name',
       select_attribute: 'name',
-      include_blank: true, 
+      include_blank: true,
       width: 130 %>
     </div>
   </div>
@@ -142,14 +142,14 @@ $(function(){
    </div>
   </div>
 
-  <%- if SystemConfiguration.get('item.use_different_identifier') %>  
+  <%- if SystemConfiguration.get('item.use_different_identifier') %>
     <div class="row">
       <div><%= f.label :identifier -%></div>
       <div><%= f.text_field :identifier -%></div>
     </div>
-  <%- end -%> 
+  <%- end -%>
 
-  <% unless @claim_types.blank? %> 
+  <% unless @claim_types.blank? %>
     <%= f.fields_for :claim, @item.claim || Claim.new do |f_claim| %>
       <div class="row">
         <div><%= f_claim.label :claim_type_id, :required => false  %></div>
