@@ -931,6 +931,16 @@ class Manifestation < ActiveRecord::Base
     identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
   end
 
+  def call_isbn?
+    identifier = ""
+    if isbn.present?
+      identifier = isbn
+    else 
+      identifier = identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
+    end
+    return identifier.present?
+  end
+
   def self.build_search_for_manifestations_list(search, query, with_filter, without_filter)
     search.build do
       fulltext query unless query.blank?

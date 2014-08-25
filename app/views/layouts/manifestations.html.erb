@@ -15,9 +15,6 @@
       <script type="text/javascript" src="https://www.google.com/jsapi"></script>
       <%= render 'manifestations/google_book_thumbnail_header' %>
     <% end %>
-    <% if Setting.book_jacket.source == :hanmoto %>
-      <%#= render 'manifestations/hanmoto_thumbnail_header' %>
-    <% end %>
   <% end %>
   <link rel="search" type="application/opensearchdescription+xml" title="<%= LibraryGroup.site_config.display_name.localize %>" href="<%= page_opensearch_url(format: :xml) %>">
 
