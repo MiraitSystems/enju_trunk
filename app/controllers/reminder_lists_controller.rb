@@ -71,7 +71,7 @@ class ReminderListsController < ApplicationController
     end
 
     if params[:output_reminder_report]
-      file, filename = Report.get_report('reminder', {:user => @user, :reminder_lists => @reminder_lists}) if defined?(EnjuTrunkReport)
+      file, filename = ReminderList.output_reminder_report(@user, @reminder_lists)
       if file
         send_data file, :filename => filename; return
       else
