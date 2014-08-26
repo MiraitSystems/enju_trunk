@@ -15,7 +15,6 @@ module EnjuTrunk
       rescue_from CanCan::AccessDenied, :with => :render_403
       rescue_from ActiveRecord::RecordNotFound, :with => :render_404
       rescue_from Errno::ECONNREFUSED, :with => :render_500
-      rescue_from RSolr::Error::Http, :with => :render_500_solr
       rescue_from ActionView::MissingTemplate, :with => :render_404_invalid_format
 
       before_filter :get_library_group, :set_locale, :set_available_languages, :set_current_user, :get_current_basket
@@ -98,29 +97,13 @@ module EnjuTrunk
       end
 
       def render_500
+        Rails.logger.fatal("please confirm that the Solr is running.")
         return if performed?
-        logger.warn $@
-        logger.warn $!
 
         #flash[:notice] = t('page.connection_failed')
         respond_to do |format|
           format.html {render :file => "#{Rails.root.to_s}/public/500.html", :layout => false, :status => 500}
           format.mobile {render :file => "#{Rails.root.to_s}/public/500.html", :layout => false, :status => 500}
-        end
-      end
-
-      def render_500_solr
-        return if performed?
-        #flash[:notice] = t('page.connection_failed')
-
-        logger.warn $@
-        logger.warn $!
-
-        respond_to do |format|
-          format.html {render :template => 'page/500', :status => 500}
-          format.mobile {render :template => 'page/500', :status => 500}
-          format.xml {render :template => 'page/500', :status => 500}
-          format.json
         end
       end
 
@@ -475,14 +458,14 @@ module EnjuTrunk
         end
       end
 
-     # 
+     #
      # create creator vaules
-     # 
+     #
      def create_creator_values(add_creators)
-       creates = [] 
+       creates = []
        add_creators.each do |add_creator|
          next if add_creator[:id].blank?
-         if add_creator[:id].to_i != 0 
+         if add_creator[:id].to_i != 0
            agent = Agent.where(:id => add_creator[:id]).first
            if agent.present?
              agent.full_name_transcription = add_creator[:full_name_transcription] if add_creator[:full_name_transcription].present?
@@ -492,27 +475,27 @@ module EnjuTrunk
              create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
              create.save
              creates << create
-           end  
-         else 
+           end
+         else
            agent = Agent.where(:full_name => add_creator[:full_name]).try(:first)
            if agent
-             agent.full_name_transcription = add_creator[:full_name_transcription] 
+             agent.full_name_transcription = add_creator[:full_name_transcription]
            else # new record
-             agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription]) 
+             agent = Agent.new(:full_name => add_creator[:id], :full_name_transcription => add_creator[:full_name_transcription])
            end
            agent.save
            create = Create.new
            create.agent = agent
            create.create_type_id = add_creator[:type_id] if add_creator[:type_id].present?
            creates << create
-         end  
-       end  
+         end
+       end
        return creates.uniq{ |create| [create[:agent_id],  create[:create_type_id]] }
-     end 
-  
-     # 
+     end
+
+     #
      # create contributor vaules
-     # 
+     #
      def create_contributor_values(add_contributors)
        realizes = []
        add_contributors.each do |add_contributor|
@@ -545,9 +528,9 @@ module EnjuTrunk
        return realizes.uniq{ |realize| [realize[:agent_id], realize[:realize_type_id]] }
      end
 
-     # 
+     #
      # create publisher vaules
-     # 
+     #
      def create_publisher_values(add_publishers)
        produces = []
        add_publishers.each do |add_publisher|
@@ -580,9 +563,9 @@ module EnjuTrunk
        return produces.uniq{ |produce| [produce[:agent_id], produce[:produce_type_id]] }
      end
 
-     # 
+     #
      # create subject vaules
-     # 
+     #
      def create_subject_values(add_subjects)
        subjects = []
        add_subjects.each do |add_subject|
@@ -591,7 +574,7 @@ module EnjuTrunk
            subject = Subject.where(:id => add_subject[:subject_id]).first
            subject.term_transcription = add_subject[:term_transcription]
            subject.subject_type_id = add_subject[:subject_type_id]
-           subject.save 
+           subject.save
            subjects << subject if subject.present?
          else
            # new record
