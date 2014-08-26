@@ -31,6 +31,7 @@ class ReminderListsController < ApplicationController
     date = 1.days.ago.end_of_day
     date = params[:days_overdue].to_i.days.ago.end_of_day if params[:days_overdue]
     user_number = @user_number = params[:user_number]
+    @user = User.where(:user_number => user_number).try(:first) unless user_number.blank?
     full_name = @full_name = params[:full_name]
     if full_name && full_name.size == 1
       full_name = "#{full_name}*"
@@ -66,6 +67,15 @@ class ReminderListsController < ApplicationController
       if params[:output_tsv]
         data = ReminderList.output_reminder_list_tsv(@reminder_lists)
         send_data data, :filename => Setting.reminder_list_print_tsv.filename; return
+      end
+    end
+
+    if params[:output_reminder_report]
+      file, filename = Report.get_report('reminder', {:user => @user, :reminder_lists => @reminder_lists}) if defined?(EnjuTrunkReport)
+      if file
+        send_data file, :filename => filename; return
+      else
+        flash[:notice] = t('reminder_list.failed_create_reminder_report')
       end
     end
   end

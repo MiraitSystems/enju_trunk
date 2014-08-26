@@ -2942,6 +2942,8 @@ en:
     successfully_sent: Reminder mail is successfully sent.
     failed_sent: Failed to send reminder mail.
     reminder_mail: Mail
+    failed_create_reminder_report: Failed to create Reminder Report
+    reminder_report: Reminder Report
   binding_item:
     bind: Bind items
     add: Add

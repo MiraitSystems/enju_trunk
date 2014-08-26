@@ -216,6 +216,7 @@ ja:
       sub_carrier_type: 資料の形態詳細
       tax_rate: 消費税区分
       budget_category: 予算区分
+      statistical_table: 統計表
 
     attributes:
       title:
@@ -560,7 +561,7 @@ ja:
         agent: 人物・団体
         library: 所属館
         reserved_library: 予約館
-        user_group: ユーザグループ
+        user_group: 利用者グループ
         full_name: フルネーム
         password: パスワード
         current_password: 現在のパスワード
@@ -2017,6 +2018,7 @@ ja:
     imported: インポート済み
     copy: コピーして新規作成
     print: このページを印刷
+    statistical_table: "統計表"
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2841,6 +2843,8 @@ ja:
     failed_sent: "督促メールの送信に失敗しました。"
     reminder_mail: "メール"
     search_notice_full_name: "利用者のフルネームと読みを部分一致で検索します。"
+    failed_create_reminder_report: ”督促状の作成に失敗しました。"
+    reminder_report: 督促状
   system_configuration:
     general: 全般
     user: 利用者
@@ -3091,10 +3095,25 @@ ja:
   activemodel:
     models:
       barcode_registration: 資料登録番号バーコード
+      checkout_statistics: 貸出統計表
+      item_statistics: 蔵書統計表
     attributes:
       barcode_registration:
         first_number: 開始番号
         last_number: 終了番号
+      checkout_statistics:
+        checked_at_from: 貸出期間開始
+        checked_at_to: 貸出期間終了
+        aggregation_type: 集計方法1
+        first_aggregation: 集計方法2
+        second_aggregation: 集計方法2
+      item_statistics:
+        acquired_at_from: 受入日開始
+        acquired_at_to: 受入日終了
+        output_condition: 出力条件
+        aggregation_first: 大分類
+        aggregation_second: 中分類
+        aggregation_third: 小分類
   title_type:
     cannot_delete: "この書名種類は削除できません"
   order:
@@ -3245,3 +3264,44 @@ ja:
     other: 'その他'
     required_role_notice: "(書誌検索へは即時反映されません。更新後に索引の再作成を行います。)"
     
+  statistical_table:
+    statistical_table_output: "統計表の出力"
+    statistical_table_type: "統計表の種類"
+    statistical_table_types:
+      checkout_statistics: "貸出統計表"
+      item_statistics: "蔵書統計表"
+    checkout_period: "貸出期間"
+    books: "冊数"
+    persons: "人数"
+    prices: "金額"
+    subtotal: "合計"
+    total: "総合計"
+    grand_total: "全合計"
+    output_date: "出力日"
+    money_aggregation: 金額を集計する
+    remove_aggregation: 除籍資料を別に集計する
+    item_statistics:
+      aggregation_first_classes:
+        statistical_class: "統計分類"
+        manifestation_type: "資料区分"
+      aggregation_second_classes:
+        budget_category_group: "予算区分"
+        carrier_type: "資料の形態"
+      aggregation_third_classes:
+        budget_category_group: "予算区分"
+    checkout_statistics:
+      aggregation_type:
+        month: "月別"
+        classification_type: "分類別"
+      first_aggregation:
+        user_group: "利用者グループ"
+      second_aggregation:
+        grade: "学年"
+    aggregation_other: "未設定"
+    item_not_remove: "除籍を除く"
+    item_remove: "除籍資料"
+    jpn: "和書"
+    foreign: "洋書"
+    jpn_donate: "寄贈(和書)"
+    foreign_donate: "寄贈(洋書)"
+    total_donate: "寄贈(合計)"

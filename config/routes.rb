@@ -61,6 +61,7 @@ Rails.application.routes.draw do
     post :output_reminder_postal_card, :on => :collection
     get :download_file, :on => :collection
     post :send_reminder, :on => :collection
+    post :output_reminder_report, :on => :collection
   end
 
   match '/series_has_manifestations/update_all' => 'series_has_manifestations#update_all'
@@ -566,4 +567,10 @@ Rails.application.routes.draw do
   match '/system_configurations/update' => 'system_configurations#update'
   match '/system_maintenance/execute' => 'system_maintenance#execute'
   match '/system_maintenance' => 'system_maintenance#index'
+
+  match '/statistical_table' => 'statistical_table#index'
+  match '/statistical_table/output' => 'statistical_table#output'
+  match '/statistical_table/get_condition' => 'statistical_table#get_condition'
+  match '/statistical_table/get_aggregation_third' => 'statistical_table#get_aggregation_third'
+
 end

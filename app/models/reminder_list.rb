@@ -307,4 +307,8 @@ class ReminderList < ActiveRecord::Base
     end
     report.generate_file(file)
   end
+
+  def self.output_reminder_report(user, reminder_lists)
+    return  Report.get_report('reminder', {:reminder_lists => reminder_lists, :user => user})
+  end
 end
