@@ -454,5 +454,17 @@ keycodes_65:
   v: '6'
   keyname: '英語科（専門教育科目）'
   started_at: 2000-04-01
-
-
+keycodes_66:
+  id: 66
+  name: 'item.circulation_restriction'
+  display_name: '資料状況'
+  v: '0'
+  keyname: '帯出可'
+  started_at: 2000-04-01
+keycodes_67:
+  id: 67
+  name: 'item.circulation_restriction'
+  display_name: '資料状況'
+  v: '1'
+  keyname: '禁帯出'
+  started_at: 2000-04-01

@@ -13,7 +13,7 @@ class Item < ActiveRecord::Base
                   :non_searchable, :item_has_operators_attributes,
                   :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
                   :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, 
-                  :manifestation_id, :identifier
+                  :manifestation_id, :identifier, :circulation_restriction_id
 
   self.extend ItemsHelper
  
@@ -97,6 +97,7 @@ class Item < ActiveRecord::Base
   belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
   belongs_to :location_category, :class_name => 'Keycode', :foreign_key => 'location_category_id'
   belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
+  belongs_to :circulation_restriction, :class_name => 'Keycode'
   belongs_to :tax_rate, :class_name => 'TaxRate', :foreign_key => 'tax_rate_id'
   belongs_to :budget_category
 

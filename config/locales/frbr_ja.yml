@@ -131,3 +131,4 @@ ja:
         statistical_class: 統計分類
         notice_call_number: 請求記号は、区切り文字 %{call_number_delimiter} で分けてください。
         budget_category: 予算区分
+        circulation_restriction: 資料状況

@@ -367,7 +367,7 @@ class ItemsController < ApplicationController
     @tax_rates = TaxRate.all
     @budget_groups = Keycode.where(:name => 'budget_category.group')
     @budget_categories = @item.try(:budget_category).try(:group_id) ? BudgetCategory.where(:group_id => @item.budget_category.group_id):[]
-
+    @circulation_restrictions = Keycode.where(:name => 'item.circulation_restriction')
   end
 
   def check_status

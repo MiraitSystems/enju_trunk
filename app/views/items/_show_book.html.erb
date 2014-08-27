@@ -153,6 +153,13 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.item.circulation_restriction') -%>:</strong>
+  <% if @item.circulation_restriction_id %>
+  <%= @item.circulation_restriction.keyname -%>
+  <% end %>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.item.item_identifier') -%>:</strong>
   <%= @item.item_identifier -%>
 </p>

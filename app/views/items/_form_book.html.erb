@@ -49,6 +49,11 @@
   <%= render :partial => 'form_budget_category', :locals => {:f => f, :item => @item} %>
 
   <div class="row">
+    <div><%= f.label :circulation_restriction %></div>
+    <div><%= f.select2(:circulation_restriction_id, @circulation_restrictions, @item.circulation_restriction_id, :width => 200, :alt_display => true) %></div>
+  </div>
+
+  <div class="row">
     <div><%= f.label :call_number -%></div>
     <div><%= f.text_field :call_number, :class => 'small_string' -%><%= t('activerecord.attributes.item.notice_call_number', :call_number_delimiter => current_user.library.call_number_delimiter) -%></div>
   </div>
