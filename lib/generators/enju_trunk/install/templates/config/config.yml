@@ -508,6 +508,15 @@ defaults: &defaults
     username_format: '/\A[0-9A-Za-z_]+\Z/'
     item_identifier_format: '/\A[0-9A-Za-z_@]+\Z/' 
 
+  # 貸出統計表の出力(Excelx)
+  checkout_statistics_print_excelx:
+    filename: "checkout_statistics.xlsx"
+    fontname: "ＭＳ ゴシック"
+  # 蔵書統計表の出力(Excelx)
+  item_statistics_print_excelx:
+    filename: "item_statistics.xlsx"
+    fontname: "ＭＳ ゴシック"
+
 development:
   <<: *defaults
 

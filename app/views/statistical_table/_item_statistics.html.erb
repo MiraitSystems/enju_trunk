@@ -1,0 +1,62 @@
+<script>
+  $(document).ready(function() {
+    $('#item_statistics_acquired_at_from').setCalendar({src:'/assets/calendar.png'});
+    $('#item_statistics_acquired_at_to').setCalendar({src:'/assets/calendar.png'});
+    $('#item_statistics_aggregation_second').change( function () {
+      $('#aggregation_third').empty();
+      $.ajax({
+        url: '/statistical_table/get_aggregation_third',
+        type: 'GET',
+        dataType: 'html',
+        data: {aggregation_second : $(this).val()},
+        success: function(data) {
+            $('#aggregation_third').html(data);
+        },
+      });
+    });
+  });
+</script>
+<%= form_for @item_statistics, :url => {:action => "output"} do |f| %>
+  <%= f.hidden_field :statistical_table_type -%>
+    <%= f.error_messages %>
+    <table class='no_border'>
+    <tr>
+      <td><%= t('activerecord.attributes.item.acquired_at') -%>:</td>
+      <td><%= f.text_field :acquired_at_from, :size => 12, :placeholder => @default_date-%>-</td>
+      <td><%= f.text_field :acquired_at_to, :size => 12, :placeholder => @default_date-%></td>
+    </tr>
+    <tr>
+      <td colspan='3'><%= f.check_box :money_aggregation, {}, true, false -%><%= t('statistical_table.money_aggregation') -%></td>
+    </tr>
+    <tr>
+      <td colspan='3'><%= f.check_box :remove_aggregation, {}, true, false -%><%= t('statistical_table.remove_aggregation') -%></td>
+    </tr>
+    <tr>
+      <td><%= t('activerecord.models.library') -%>:</td>
+      <td colspan='2'><%= f.collection_select :library_id, @librarlies, :id, :display_name, :include_blank => t('advanced_search.all_libraries')  -%></td>
+    </tr>
+    <% if @output_conditions.present? -%>
+      <tr>
+        <td><%= t('activerecord.attributes.item.asset_category') %><%# = t('activemodel.attributes.item_statistics.output_condition') -%>:</td>
+        <td colspan='2'><%= f.collection_select  :output_condition, @output_conditions, :id, :keyname  -%></td>
+      </tr>
+    <% end -%>
+    <tr>
+      <td><%= t('activemodel.attributes.item_statistics.aggregation_first') -%>:</td>
+      <td colspan='2'><%= f.select :aggregation_first, @aggregation_first_classes, :include_blank => true -%></td>
+    </tr>
+    <tr>
+      <td><%= t('activemodel.attributes.item_statistics.aggregation_second') -%>:</td>
+      <td colspan='2'><%= f.select :aggregation_second, @aggregation_second_classes -%></td>
+    </tr>
+    <tr>
+      <td><%= t('activemodel.attributes.item_statistics.aggregation_third') -%>:</td>
+      <td id="aggregation_third" colspan='2'>
+        <%= render :partial => 'item_statistics_aggregation_third', :locals => {:f => f} %>
+      </td>
+    <tr>
+    <tr>
+      <td colspan='3'><%= f.submit t('statistical_table.statistical_table_output') -%></td>
+    <tr>
+    </table>
+<% end %>
