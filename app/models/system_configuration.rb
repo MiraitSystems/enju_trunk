@@ -56,6 +56,13 @@ class SystemConfiguration < ActiveRecord::Base
     false
   end
 
+  def self.login_link_hidden?
+    pp ENV
+    return true if ENV['ENJU_WEB_OPAC'] or !SystemConfiguration.get('internal_server')
+    return true if ENV['ENJU_LOGIN_LINK_HIDDEN']
+    false
+  end
+
   private  
   def value_by_typename_is_valid
     case typename
