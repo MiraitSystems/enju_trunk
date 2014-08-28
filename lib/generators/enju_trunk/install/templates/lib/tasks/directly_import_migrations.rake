@@ -21,6 +21,7 @@ namespace :enju do
         gems << 'EnjuTrunkCirculation' if defined? EnjuTrunkCirculation
         gems << 'EnjuSubject' if defined? EnjuSubject
         gems << 'EnjuTrunkIll' if defined? EnjuTrunkIll
+        gems << 'EnjuTrunkReport' if defined? EnjuTrunkReport
         gems.each do |name|
           import_migrations(name)
         end
@@ -59,6 +60,11 @@ namespace :enju do
       desc 'Directly import jpp_customercode_transfer migrations'
       task :jpp_customercode_transfer => :environment do
         import_migrations("JppCustomercodeTransfer")
+      end
+
+      desc 'Directly import enju_trunk_report migrations'
+      task :enju_trunk_report => :environment do
+        import_migrations("EnjuTrunkReport") if defined?(EnjuTrunkReport)
       end
     end
   end
