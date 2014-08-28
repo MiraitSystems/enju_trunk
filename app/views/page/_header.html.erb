@@ -24,7 +24,7 @@
         <br />
       <% else %>
         <% unless controller_name == 'sessions' %>
-          <%- unless SystemConfiguration.isWebOPAC %>
+          <%- unless SystemConfiguration.login_link_hidden? %>
             <%= link_to t('page.sign_in'), new_user_session_path -%>
           <%- end -%>
         <% end %>
