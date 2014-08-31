@@ -102,9 +102,9 @@ class Item < ActiveRecord::Base
   belongs_to :budget_category
 
   validates_associated :circulation_status, :shelf, :bookstore, :checkout_type, :retention_period
-  validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank
+  validates_presence_of :circulation_status, :checkout_type, :retention_period, :rank, :circulation_restriction_id
   validate :is_original?, :if => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
-  before_validation :set_circulation_status, :on => :create
+  before_validation :set_circulation_status, :set_circulation_restriction, :on => :create
   before_save :set_use_restriction, :set_retention_period, :check_remove_item, :except => :delete
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   #after_save :check_price, :except => :delete
@@ -189,6 +189,10 @@ class Item < ActiveRecord::Base
     else
       self.use_restriction = UseRestriction.where(:name => 'Limited Circulation, Normal Loan Period').first
     end
+  end
+
+  def set_circulation_restriction
+     self.circulation_restriction_id = Keycode.where(:name => 'item.circulation_restriction', :v => '0').try(:first).try(:id) unless self.circulation_restriction_id
   end
 
   def checkout_status(user)
