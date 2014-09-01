@@ -273,6 +273,14 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def in_library_use_only?
+    if circulation_restriction.v == '0'
+      return false
+    else
+      return true
+    end
+  end
+
   def check_remove_item
     if self.circulation_status_id == CirculationStatus.where(name: 'Removed').first.try(:id) or self.remove_reason
       self.removed_at = Time.zone.now if self.removed_at.nil?
