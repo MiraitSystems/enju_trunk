@@ -189,6 +189,10 @@ defaults: &defaults
   # 貸出リスト(TSV)の出力
   checkout_list_print_tsv:
     filename: "checkoutlist.tsv"
+  # 貸出リスト(XLSX)の出力
+  checkout_list_print_xlsx:
+    filename: "checkoutlist.xlsx"
+    fontname: "ＭＳ ゴシック"
   # 貸出リストに利用者の年齢を表示するかどうか
   checkout_print:
     old: true
