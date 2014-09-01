@@ -640,6 +640,14 @@ module EnjuTrunk
       return true if Library.all.size > 1
       return false
     end
+
+    def other_language
+      @available_languages.each do |language|
+        if language.iso_639_1 != I18n.locale.to_s
+          return link_to "#{language.native_name || language.name}", url_for(params.merge(:locale => language.iso_639_1))
+        end
+      end
+    end
   end
 end
 
