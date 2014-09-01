@@ -14,7 +14,7 @@
         <%= check_box_tag 'all_manifestations', true %><%= t('advanced_search.all_manifestations') %><br />
       <% end %>
     <% end %>
-    (<%= link_to t('page.advanced_search'), page_advanced_search_path -%>)
+    <h4 style="display: inline"><%= link_to t('page.advanced_search'), page_advanced_search_path -%></h4>
   </p>
 <%- end -%>
 <%= javascript_tag("$('#query').focus()") -%>

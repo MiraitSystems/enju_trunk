@@ -50,7 +50,6 @@ $(document).FunctionKeys(
       <p id="notice"><%= notice %></p>
       <%= render 'page/search_form' -%>
       <p><%= t('page.number_of_manifestations', :numdocs => Manifestation.cached_numdocs, :count => Manifestation.cached_numdocs) -%></p>
-      <h3 style="display: inline"><%= link_to t('page.new_resource'), manifestations_path(:mode => 'recent') -%></h3>
 
       <% if defined?(EnjuTrunkTheme) %>
         <br />
@@ -78,11 +77,6 @@ $(document).FunctionKeys(
       <h3 class="title"><%= t('basket.my_status') -%></h3>
       <div id="my_basket_box">
         <%= render 'page/my_basket' -%>
-      </div>
-    </div>
-    <div class="portlet" id="easy_tools">
-      <div id="easy_tools_box">
-        <%= render 'page/easy_tools' -%>
       </div>
     </div>
   <%- end -%>
@@ -117,11 +111,17 @@ $(document).FunctionKeys(
       </div>
     </div>
   <% end %>
+      <h4 style="display: inline"><%= link_to t('page.new_resource'), manifestations_path(:mode => 'recent') -%></h4>
 </div>
 <% end %>
 
 <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
   <div class="column" id="col3">
+  <div class="portlet" id="easy_tools">
+    <div id="easy_tools_box">
+      <%= render 'page/easy_tools' -%>
+    </div>
+  </div>
     <div class="portlet" id="events">
       <h3 class="title"><%= t('activerecord.models.event') -%></h3>
       <div id="tag_cloud_box">
