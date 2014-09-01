@@ -1276,17 +1276,20 @@ system_configuration_00183:
   id: 183
   keyname: import_manifestation.use_delim
   v: "false"
+  typename: Boolean
   description: "ファイルからインポート時、件名・責任表示・分類に区切り文字を利用する"
   category: 'manifestation'
 system_configuration_00184:
   id: 184
   keyname: item.use_different_identifier
   v: "false"
+  typename: Boolean
   description: "所蔵情報のIDとバーコード用番号を別にする"
   category: 'manifestation'
 system_configuration_00185:
   id: 185
   keyname: 'title.uniform_title' 
+  typename: Boolean
   v: "false"
   description: "書名テーブルの典拠コントロールする"
   category: 'manifestation'

@@ -1,0 +1,32 @@
+<script>
+  $(document).ready(function() {
+    $('#checkout_statistics_checked_at_from').setCalendar({src:'/assets/calendar.png'});
+    $('#checkout_statistics_checked_at_to').setCalendar({src:'/assets/calendar.png'});
+  });
+</script>
+<%= form_for @checkout_statistics, :url => {:action => "output"} do |f| %>
+  <%= f.hidden_field :statistical_table_type -%>
+    <%= f.error_messages %>
+    <table class='no_border'>
+      <tr>
+        <td><%= t('statistical_table.checkout_period') -%>:</td>
+        <td><%= f.text_field :checked_at_from, :size => 12, :placeholder => @default_date-%>-</td>
+        <td colpsan='3'><%= f.text_field :checked_at_to, :size => 12, :placeholder => @default_date-%></td>
+      </tr>
+      <tr>
+        <td><%= t('activemodel.attributes.checkout_statistics.aggregation_type') -%>:</td>
+        <td><%= f.radio_button :aggregation_type, 'month' -%><%= t('statistical_table.checkout_statistics.aggregation_type.month') -%></td>
+        <td><%= f.radio_button :aggregation_type, 'classification_type' -%><%= t('statistical_table.checkout_statistics.aggregation_type.classification_type') -%></td>
+        <td><%= @checkout_statistics.classification_type_id -%></td>
+        <td><%= f.select2(:classification_type_id, @classification_types, @checkout_statistics.classification_type_id, :select_attribute => :name, :display_attribute => :display_name, :width => 400) %></td>
+      </tr>
+      <tr>
+        <td><%= t('activemodel.attributes.checkout_statistics.first_aggregation') -%>:</td>
+        <td><%= f.select :first_aggregation, options_for_select(@first_aggregations) -%></td>
+        <td colspan='3'><%= f.select :second_aggregation, options_for_select(@second_aggregations) -%></td>
+      </tr>
+      <tr>
+        <td colspan='5'><%= f.submit t('statistical_table.statistical_table_output') -%></td>
+      <tr>
+    </table>
+<% end %>

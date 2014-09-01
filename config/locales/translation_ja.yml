@@ -3263,7 +3263,6 @@ ja:
     cannot_delete: "この本棚は削除できません。"
     other: 'その他'
     required_role_notice: "(書誌検索へは即時反映されません。更新後に索引の再作成を行います。)"
-    
   statistical_table:
     statistical_table_output: "統計表の出力"
     statistical_table_type: "統計表の種類"
