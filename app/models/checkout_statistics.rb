@@ -128,7 +128,6 @@ class CheckoutStatistics
             classification_groups.each do |classification_group|
               book = second_checkouts.select("checkouts.id").where("manifestation_has_classifications.classification_id in (?)", classification_group[:classification_ids]).reorder("checkouts.id").uniq
               books << book.length
-              books << book.length
             end
           end
           # 人数

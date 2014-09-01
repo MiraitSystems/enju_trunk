@@ -18,8 +18,8 @@ class ItemStatistics
                 :library_id, :output_condition,
                 :aggregation_first,:aggregation_second, :aggregation_third
 
-  validates_presence_of :acquired_at_from
-  validates_presence_of :acquired_at_to
+#  validates_presence_of :acquired_at_from
+#  validates_presence_of :acquired_at_to
   validate :acquired_at_from_valid?
   validate :acquired_at_to_valid?
   validate :acquired_at_range_valid?
@@ -69,9 +69,10 @@ class ItemStatistics
     else
       acquired_at_to = self.acquired_at_to
     end
-    from_date_obj = Date.parse(acquired_at_from)
-    to_date_obj = Date.parse(acquired_at_to)
-    items = items.where("acquired_at >= ? and acquired_at <= ?", from_date_obj.beginning_of_day, to_date_obj.end_of_day)
+    from_date_obj = Date.parse(acquired_at_from) unless acquired_at_from.blank?
+    to_date_obj = Date.parse(acquired_at_to) unless acquired_at_to.blank?
+    items = items.where("acquired_at >= ?", from_date_obj.beginning_of_day) if from_date_obj
+    items = items.where("acquired_at <= ?", to_date_obj.end_of_day) if to_date_obj
     if self.library_id.present?
       items = items.where("shelves.library_id = ?", self.library_id)
     end
@@ -107,7 +108,6 @@ class ItemStatistics
         first_row_column = "items.statistical_class_id"
         first_rows = Keycode.where(:name => 'item.statistical_class')
         first_rows << Keycode.new(:name => 'item.statistical_class', :keyname => I18n.t('statistical_table.aggregation_other'))
-#        first_rows = Keycode.where(:name => 'item.statistical_class').limit(1) # for debug
       elsif self.aggregation_first == "manifestation_type"
         first_row_column = "manifestations.manifestation_type_id"
         first_rows = ManifestationType.all
@@ -123,7 +123,6 @@ class ItemStatistics
     elsif self.aggregation_second == "carrier_type"
       second_row_column = "manifestations.carrier_type_id"
       second_rows = CarrierType.all
-#      second_rows = CarrierType.limit(2) # for debug
     end
 
     data = []
