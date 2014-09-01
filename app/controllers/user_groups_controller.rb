@@ -9,6 +9,10 @@ class UserGroupsController < ApplicationController
   load_and_authorize_resource
   helper_method :get_library
 
+  before_filter :prepare_options, :except => [:index, :destroy]
+
+  class PenaltyType < Struct.new(:id, :display_name); end
+
   # GET /user_groups
   # GET /user_groups.json
   def index
@@ -32,6 +36,7 @@ class UserGroupsController < ApplicationController
   # GET /user_groups/new
   def new
     @user_group = UserGroup.new
+    prepare_options
 
     respond_to do |format|
       format.html # new.html.erb
@@ -41,6 +46,7 @@ class UserGroupsController < ApplicationController
 
   # GET /user_groups/1/edit
   def edit
+    prepare_options
   end
 
   # POST /user_groups
@@ -87,5 +93,17 @@ class UserGroupsController < ApplicationController
       format.html { redirect_to user_groups_url }
       format.json { head :no_content }
     end
+  end
+
+  private
+  def prepare_options
+    @user_group_restrict_checkout_in_penalty_types = []
+    @user_group_restrict_checkout_in_penalty_types << PenaltyType.new(0, t('activerecord.attributes.user_group.restrict_checkout_in_penalty_types.no0'))
+    @user_group_restrict_checkout_in_penalty_types << PenaltyType.new(1, t('activerecord.attributes.user_group.restrict_checkout_in_penalty_types.yes1'))
+    @user_group_restrict_checkout_in_penalty_types << PenaltyType.new(2, t('activerecord.attributes.user_group.restrict_checkout_in_penalty_types.yes2'))
+    @user_group_restrict_checkout_after_penalty_types = []
+    @user_group_restrict_checkout_after_penalty_types << PenaltyType.new(0, t('activerecord.attributes.user_group.restrict_checkout_after_penalty_types.no0'))
+    @user_group_restrict_checkout_after_penalty_types << PenaltyType.new(1, t('activerecord.attributes.user_group.restrict_checkout_after_penalty_types.yes1'))
+
   end
 end

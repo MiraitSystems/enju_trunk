@@ -16,7 +16,9 @@ class UserGroup < ActiveRecord::Base
     :greater_than_or_equal_to => 0
 
   attr_accessible :name, :display_name, :valid_period_for_new_user, :number_of_day_to_notify_due_date,
-                 :number_of_day_to_notify_overdue, :number_of_time_to_notify_overdue, :note
+                 :number_of_day_to_notify_overdue, :number_of_time_to_notify_overdue, :note,
+                 :auto_mode, :days_to_penalty, :restrict_reservation_in_penalty, :restrict_recheckout_in_penalty, 
+                 :restrict_checkout_in_penalty, :restrict_checkout_after_penalty, :checkout_limit_after_penalty_in_probation
 
   paginates_per 10
 end

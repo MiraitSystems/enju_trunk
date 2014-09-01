@@ -49,9 +49,20 @@
 </p>
 
 <p>
+  <strong><%= t('activerecord.attributes.user_group_has_checkout_type.days_overdue') -%>:</strong>
+  <%= @user_group_has_checkout_type.days_overdue -%>
+</p>
+
+<p>
   <strong><%= t('activerecord.attributes.user_group_has_checkout_type.current_checkout_count') -%>:</strong>
   <%= @user_group_has_checkout_type.current_checkout_count.to_i -%>
 </p>
+
+<p>
+  <strong><%= t('activerecord.attributes.user_group_has_checkout_type.note') -%>:</strong>
+  <%= @user_group_has_checkout_type.note -%>
+</p>
+
 
 </div>
 </div>
