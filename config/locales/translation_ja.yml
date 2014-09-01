@@ -139,7 +139,6 @@ ja:
       content_type: 内容の種類
       agent_relationship_type: 人物・団体の関係の種類
       manifestation_relationship_type: 資料の関係の種類
-      lending_policy: 貸出規則
       nii_type: NIIメタデータタイプ
       license: ライセンス
       work_to_expression_rel_type: 書いた資料と協力した資料の関係の種類
@@ -1278,13 +1277,6 @@ ja:
         display_name: 表示名
         note: 注記
         position: 位置
-      lending_policy:
-        loan_period: 貸出期間
-        fixed_due_date: 固定貸出期限
-        renewal: 貸出延長の回数
-        fine: 罰金
-        note: 注記
-        position: 位置
       nii_type:
         name: 名前
         display_name: 表示名
@@ -2256,7 +2248,6 @@ ja:
     add_new_copy: "複本を追加"
     no_manifestation: "資料なし"
     no_number: "番号なし"
-    add_lending_policy: "貸出規則の追加"
     item_removed: "資料を除籍しました。"
     item_restored: "資料の貸出状態を作業中に変更しました。"
     update_failed: "資料の更新に失敗しました。"
