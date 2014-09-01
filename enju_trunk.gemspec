@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'activerecord-import'
   s.add_dependency 'jpp_customercode_transfer', '~> 0.0.2'
   s.add_dependency 'roo', '= 1.10.1'
-  s.add_dependency 'spreadsheet', '0.9.8'
   s.add_dependency 'rubyzip', "= 0.9.9" # roo 1.10.1 depends on rubyzip 0.9.x (x >= 4)
   s.add_dependency 'axlsx', '~> 1.3.6'
   s.add_dependency 'spinjs-rails'
