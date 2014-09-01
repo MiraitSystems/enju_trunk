@@ -498,7 +498,7 @@
                 <%= link_to item.retention_period.display_name.localize, item.retention_period if item.retention_period %>
               </td>
             </tr>
-            <%- if Setting.operation -%>
+            <%- if false #TODO Setting.operation -%>
               <tr>
                 <td><%= t('activerecord.models.lending_policy') -%>:</td>
                 <td>
