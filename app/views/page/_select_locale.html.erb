@@ -1,14 +1,19 @@
 <div id="header_select_locale">
   <%- if request.get? -%>
-    <a href="#" id="select_locale_menu">Other languages</a>
-    <div id="select_locale">
-      <% @available_languages.each do |language| %>
-        <% if language.iso_639_1 == I18n.locale.to_s %>
-          <strong><%= language.native_name || language.name %></strong>
-        <% else %>
-          <%= link_to "#{language.native_name || language.name}", url_for(params.merge(:locale => language.iso_639_1)) %>
+    <% if @available_languages.size == 1 %>
+    <% elsif @available_languages.size == 2 %>
+      <%= other_language %>
+    <% elsif @available_languages.size >= 3 %>
+      <a href="#" id="select_locale_menu">Other languages</a>
+      <div id="select_locale">
+        <% @available_languages.each do |language| %>
+          <% if language.iso_639_1 == I18n.locale.to_s %>
+            <strong><%= language.native_name || language.name %></strong>
+          <% else %>
+            <%= link_to "#{language.native_name || language.name}", url_for(params.merge(:locale => language.iso_639_1)) %>
+          <% end %>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+    <%- end -%>
   <%- end -%>
 </div>
