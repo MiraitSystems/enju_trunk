@@ -245,7 +245,7 @@ table#solr_query_format td, table#solr_query_format th {
   word-break : break-all;
 }
 
-span.not_location_symbol {
+span.red_string {
   color: red;
 }
 
