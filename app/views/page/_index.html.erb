@@ -49,7 +49,6 @@ $(document).FunctionKeys(
       <% end %>
       <p id="notice"><%= notice %></p>
       <%= render 'page/search_form' -%>
-      <p><%= t('page.number_of_manifestations', :numdocs => Manifestation.cached_numdocs, :count => Manifestation.cached_numdocs) -%></p>
 
       <% if defined?(EnjuTrunkTheme) %>
         <br />

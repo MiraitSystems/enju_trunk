@@ -5,7 +5,7 @@
 </div>
 <div data-role="content">
   <div data-role="fieldcontain">
-    <%= t('page.number_of_search_results', :count => @count[:query_result], :numdocs => Manifestation.cached_numdocs, :seconds => sprintf("%.3f", @seconds)) -%>
+    <%= t('page.number_of_search_results', :count => @count[:query_result]) -%>
     <%= form_for :manifestations, :html => {:method => 'get'} do -%>
       <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%= submit_tag t('page.research') -%>
