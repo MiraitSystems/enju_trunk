@@ -117,11 +117,12 @@ $(document).FunctionKeys(
 
 <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
   <div class="column" id="col3">
-  <div class="portlet" id="easy_tools">
-    <div id="easy_tools_box">
-      <%= render 'page/easy_tools' -%>
+    <div class="portlet" id="easy_tools">
+      <h3 class="title"><%= t('page.books_information') -%></h3>
+      <div id="easy_tools_box">
+        <%= render 'page/easy_tools' -%>
+      </div>
     </div>
-  </div>
     <div class="portlet" id="events">
       <h3 class="title"><%= t('activerecord.models.event') -%></h3>
       <div id="tag_cloud_box">

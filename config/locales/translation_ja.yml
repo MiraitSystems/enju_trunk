@@ -1747,6 +1747,7 @@ ja:
     login_name: "ユーザ名"
     password: "パスワード"
     email_and_password: "電子メールとパスワード"
+    books_information: "図書情報"
     catalog_search: "資料の検索"
     search: "検索"
     research: "再検索"
