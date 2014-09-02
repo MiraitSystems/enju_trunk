@@ -5,6 +5,9 @@
     <%- if multi_libraries? %><th><%= t('activerecord.models.library') %></th><%- end -%>
     <th><%= t('activerecord.models.shelf') %></th>
     <th><%= t('activerecord.attributes.item.call_number') %></th>
+    <%- if @location_symbol_size > 0 -%>
+      <th><%= t('activerecord.attributes.item.location_symbol') %></th>
+    <%- end -%>
     <th><%= t('activerecord.attributes.item.item_identifier') %></th>
     <%- if SystemConfiguration.get('item.use_different_identifier') %><th><%= t('activerecord.attributes.item.identifier') %></th><%- end -%>
     <% unless manifestation.article? %>
@@ -32,7 +35,12 @@
           <%= render 'items/shelf_picture', :item => item if item.shelf %>
         </td>
         <td>
-          <%= call_numberformat(item) %>
+          <span class="red_string"><%= call_numberformat(item) %></span>
+        </td>
+        <td>
+          <% if item.location_symbol.present? %>
+            <span class="red_string"><%= item.location_symbol.keyname %></span>
+          <% end %>
         </td>
         <td>
           <% if item.item_identifier? %>
