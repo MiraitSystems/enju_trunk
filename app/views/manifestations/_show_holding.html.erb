@@ -5,6 +5,9 @@
     <%- if multi_libraries? %><th><%= t('activerecord.models.library') %></th><%- end -%>
     <th><%= t('activerecord.models.shelf') %></th>
     <th><%= t('activerecord.attributes.item.call_number') %></th>
+    <%- if Keycode.where(:name => 'item.location_symbol').size > 0 -%>
+      <th><%= t('activerecord.attributes.item.location_symbol') %></th>
+    <%- end -%>
     <th><%= t('activerecord.attributes.item.item_identifier') %></th>
     <%- if SystemConfiguration.get('item.use_different_identifier') %><th><%= t('activerecord.attributes.item.identifier') %></th><%- end -%>
     <% unless manifestation.article? %>
@@ -33,6 +36,11 @@
         </td>
         <td>
           <%= call_numberformat(item) %>
+        </td>
+        <td>
+          <% if item.location_symbol.present? %>
+            <span class="not_location_symbol"><%= item.location_symbol.keyname %></span>
+          <% end %>
         </td>
         <td>
           <% if item.item_identifier? %>
