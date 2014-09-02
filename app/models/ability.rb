@@ -183,7 +183,6 @@ class Ability
         EnjuTerminal,
         UseLicense,
         UserCheckoutStat,
-        UserGroupHasCheckoutType,
         UserHasRole,
         UserReserveStat,
         UserStatus,
@@ -396,7 +395,6 @@ class Ability
         EnjuTerminal,
         UseRestriction,
         UserGroup,
-        UserGroupHasCheckoutType,
         UserRequestLog,
         Wareki,
         TaxRate

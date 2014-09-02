@@ -25,6 +25,37 @@
     <%= f.label :number_of_time_to_notify_overdue %><br />
     <%= f.text_field :number_of_time_to_notify_overdue, :class => 'resource_integer' %>
   </div>
+
+  <div class="field">
+    <%= f.label :auto_mode -%>
+    <%= f.check_box :auto_mode -%>
+  </div>
+  <div class="field">
+    <%= f.label :days_to_penalty %><br />
+    <%= f.text_field :days_to_penalty, :class => 'resource_integer' %>
+  </div>
+  <div class="field">
+    <%= f.label :restrict_reservation_in_penalty -%>
+    <%= f.check_box :restrict_reservation_in_penalty -%>
+  </div>
+  <div class="field">
+    <%= f.label :restrict_recheckout_in_penalty -%>
+    <%= f.check_box :restrict_recheckout_in_penalty -%>
+  </div>
+  <div class="field">
+    <%= f.label :restrict_checkout_in_penalty -%>
+    <%= f.select2(:restrict_checkout_in_penalty, @user_group_restrict_checkout_in_penalty_types, @user_group.restrict_checkout_in_penalty, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name') -%>
+  </div>
+  <div class="field">
+    <%= f.label :restrict_checkout_after_penalty -%>
+    <%= f.select2(:restrict_checkout_after_penalty, @user_group_restrict_checkout_after_penalty_types, @user_group.restrict_checkout_after_penalty, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name') -%>
+
+  </div>
+  <div class="field">
+    <%= f.label :checkout_limit_after_penalty_in_probation %><br />
+    <%= f.text_field :checkout_limit_after_penalty_in_probation, :class => 'resource_integer' %>
+  </div>
+
   <div class="field">
     <%= f.label :note %><br />
     <%= f.text_area :note %>

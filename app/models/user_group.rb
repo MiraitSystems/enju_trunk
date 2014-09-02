@@ -7,7 +7,6 @@ class UserGroup < ActiveRecord::Base
   #has_many :carrier_types, :through => :available_carrier_types, :order => :position
   has_many :user_group_has_checkout_types, :dependent => :destroy
   has_many :checkout_types, :through => :user_group_has_checkout_types, :order => :position
-  has_many :lending_policies
   has_many :statistics
 
   validates_numericality_of :valid_period_for_new_user,
@@ -17,7 +16,9 @@ class UserGroup < ActiveRecord::Base
     :greater_than_or_equal_to => 0
 
   attr_accessible :name, :display_name, :valid_period_for_new_user, :number_of_day_to_notify_due_date,
-                 :number_of_day_to_notify_overdue, :number_of_time_to_notify_overdue, :note
+                 :number_of_day_to_notify_overdue, :number_of_time_to_notify_overdue, :note,
+                 :auto_mode, :days_to_penalty, :restrict_reservation_in_penalty, :restrict_recheckout_in_penalty, 
+                 :restrict_checkout_in_penalty, :restrict_checkout_after_penalty, :checkout_limit_after_penalty_in_probation
 
   paginates_per 10
 end

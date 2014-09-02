@@ -74,7 +74,6 @@ class Item < ActiveRecord::Base
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :checkout_type
   #belongs_to :resource_import_textresult
-  has_many :lending_policies, :dependent => :destroy
   has_many :answer_has_items, :dependent => :destroy
   has_many :answers, :through => :answer_has_items
   has_one :resource_import_result
@@ -109,7 +108,6 @@ class Item < ActiveRecord::Base
   before_save :set_rank, :unless => proc{ SystemConfiguration.get("manifestation.manage_item_rank") }
   #after_save :check_price, :except => :delete
   after_save :reindex
-  after_create :create_lending_policy, :unless => proc{SystemConfiguration.isWebOPAC}
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
 
@@ -239,7 +237,15 @@ class Item < ActiveRecord::Base
   end
 
   def lending_rule(user)
-    lending_policies.where(:user_group_id => user.user_group.id).first
+    lending_policy = Struct.new(:fixed_due_date, :loan_period, :renewal)
+    rule = UserGroupHasCheckoutType.where(:user_group_id => user.user_group.id, :checkout_type_id => self.checkout_type_id).first
+    if rule
+      lending_rule = lending_policy.new
+      lending_rule.fixed_due_date = rule.fixed_due_date
+      lending_rule.loan_period = rule.checkout_period
+      lending_rule.renewal = rule.checkout_renewal_limit
+    end
+    return lending_rule || nil
   end
 
   def owned(agent)
@@ -264,6 +270,14 @@ class Item < ActiveRecord::Base
       true
     else
       false
+    end
+  end
+
+  def in_library_use_only?
+    if circulation_restriction.v == '0'
+      return false
+    else
+      return true
     end
   end
 
@@ -611,11 +625,6 @@ class Item < ActiveRecord::Base
     make_audio_list_pdf(pdf_file, @items) if file_type.nil? || file_type == "pdf"
   end
 
-  def create_lending_policy
-    UserGroupHasCheckoutType.available_for_item(self).each do |rule|
-      LendingPolicy.create!(:item_id => self.id, :user_group_id => rule.user_group_id, :fixed_due_date => rule.fixed_due_date, :loan_period => rule.checkout_period, :renewal => rule.checkout_renewal_limit)
-    end
-  end
 
   private
   def self.agents_list(agents)

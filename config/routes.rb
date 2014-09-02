@@ -216,7 +216,6 @@ Rails.application.routes.draw do
   resources :frequencies
   resources :use_restrictions
   resources :item_has_use_restrictions
-  resources :lending_policies
   resources :agent_types
   resources :circulation_statuses
   resources :form_of_works
@@ -372,7 +371,6 @@ Rails.application.routes.draw do
   resources :items do
     resources :binding_items
     resources :item_has_use_restrictions
-    resources :lending_policies
     resources :agents
     resources :owns
     resource :exemplify

@@ -139,7 +139,6 @@ ja:
       content_type: 内容の種類
       agent_relationship_type: 人物・団体の関係の種類
       manifestation_relationship_type: 資料の関係の種類
-      lending_policy: 貸出規則
       nii_type: NIIメタデータタイプ
       license: ライセンス
       work_to_expression_rel_type: 書いた資料と協力した資料の関係の種類
@@ -942,6 +941,20 @@ ja:
         number_of_day_to_notify_due_date: 貸出期限の何日前に督促を送るか
         number_of_day_to_notify_overdue: 貸出期限の何日後に督促を送るか
         number_of_time_to_notify_overdue: 貸出期限が切れた後に何回督促を送るか
+        auto_mode: 罰則を自動で設定する。
+        days_to_penalty: 罰則を延滞日数が何日以上の場合に科すか？ 
+        restrict_reservation_in_penalty: 罰則時に予約を制限するか？
+        restrict_recheckout_in_penalty: 罰則時に再貸出/貸出期間の延長を制限するか？
+        restrict_checkout_in_penalty: 罰則時に貸出を制限するか？
+        restrict_checkout_in_penalty_types:
+          no0: いいえ
+          yes1: はい（延滞中の資料を全て返却するまで新規貸出は出来ない）
+          yes2: はい（全ての資料を返却するまで新規貸出は出来ない）
+        restrict_checkout_after_penalty: 罰則時に次の貸出を制御するか？
+        restrict_checkout_after_penalty_types: 
+          no0: いいえ
+          yes1: はい（冊数制限あり）
+        checkout_limit_after_penalty_in_probation: 罰則時の貸出制限冊数
       resource_import_file:
         resource_import_file_name: ファイル名
         resource_import_content_type: Content-Type
@@ -1100,6 +1113,7 @@ ja:
         user_group_id: 利用者グループ
         checkout_type_id: 貸出種別
         current_checkout_count: 現在の貸出数
+        days_overdue: 貸出期限日を起算日とし、何日目から延滞とするか
       carrier_type_has_checkout_type:
         carrier_type: 資料の形態
         checkout_type: 貸出区分
@@ -1276,13 +1290,6 @@ ja:
       item_relationship_type:
         name: 名前
         display_name: 表示名
-        note: 注記
-        position: 位置
-      lending_policy:
-        loan_period: 貸出期間
-        fixed_due_date: 固定貸出期限
-        renewal: 貸出延長の回数
-        fine: 罰金
         note: 注記
         position: 位置
       nii_type:
@@ -2256,7 +2263,6 @@ ja:
     add_new_copy: "複本を追加"
     no_manifestation: "資料なし"
     no_number: "番号なし"
-    add_lending_policy: "貸出規則の追加"
     item_removed: "資料を除籍しました。"
     item_restored: "資料の貸出状態を作業中に変更しました。"
     update_failed: "資料の更新に失敗しました。"
@@ -2849,6 +2855,7 @@ ja:
     general: 全般
     user: 利用者
     manifestation: 資料
+    penalty: 貸出罰則
     checkout: 貸出
     checkin: 返却
     reserve: 予約
