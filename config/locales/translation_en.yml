@@ -1724,6 +1724,7 @@ en:
     login_name: Login name
     password: Password
     email_and_password: Email and password
+    books_information: Books Information
     catalog_search: Catalog search
     search: Search
     research: Research
