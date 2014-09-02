@@ -828,6 +828,7 @@ en:
         display_name: Display name
         note: Note
         position: Position
+        icon_filename: Icon Filename
       retention_period:
         name: Name
         display_name: Display name
@@ -3243,3 +3244,5 @@ en:
     search_placeholder: Please enter sub carrier type
     search_searching: Searching...
     search_nomatch: No matches
+  carrier_type:
+    no_icon: No icon

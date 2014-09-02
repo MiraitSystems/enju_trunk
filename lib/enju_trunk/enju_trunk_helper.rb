@@ -14,20 +14,10 @@ module EnjuTrunk
     end
 
     def form_icon(carrier_type)
-      case carrier_type.name
-      when 'print'
-        image_tag('icons/book.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
-      when 'CD'
-        image_tag('icons/cd.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
-      when 'DVD'
-        image_tag('icons/dvd.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
-      when 'file'
-        image_tag('icons/monitor.png', :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
-      else
-        image_tag('icons/help.png', :size => '16x16', :alt => 'unknown', :title => 'unknown')
+      if icon_filename = carrier_type.icon_filename
+        return image_tag("icons/#{icon_filename}", :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)
       end
-    rescue NoMethodError
-      image_tag('icons/help.png', :size => '16x16', :alt => 'unknown', :title => 'unknown')
+      return ''
     end
 
     def content_type_icon(content_type)
