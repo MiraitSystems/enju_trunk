@@ -152,9 +152,11 @@ module ManifestationsHelper
 
   def carrier_type_facet(facet)
     string = ''
-    carrier_type = CarrierType.where(:name => facet.value).select([:name, :display_name]).first
+    carrier_type = CarrierType.where(:name => facet.value).select([:name, :display_name, :icon_filename]).first
     if carrier_type
-      string << form_icon(carrier_type)
+      if icon = form_icon(carrier_type)
+        string << icon
+      end 
       current = true if params[:carrier_type] == carrier_type.name
       string << '<strong>' if current
       string << link_to("#{carrier_type.display_name.localize} (" + facet.count.to_s + ")", url_for(params.merge(:carrier_type => carrier_type.name, :page => nil, :view => nil)))
