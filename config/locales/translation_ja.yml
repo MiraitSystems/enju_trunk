@@ -2871,6 +2871,7 @@ ja:
     sound: 音
     view: 表示
     nacsis: 'NACSIS-CAT/ILL'
+    attributes: アトリビュート
     disp_date:
       not_display: 非表示
       christian_era: 西暦

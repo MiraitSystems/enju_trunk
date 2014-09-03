@@ -1,63 +1,6 @@
 module SystemConfigurationsHelper
-  def system_configuration_categories
-    system_configuration_categories = [
-      'general', 
-      'user', 
-      'manifestation', 
-      'penalty', 
-      'checkout', 
-      'checkin', 
-      'reserve', 
-      'purchase_request',
-      'question', 
-      'order_list',
-      'copy_request',
-      'reminder', 
-      'statistics',
-      'function', 
-      'sound', 
-      'view',
-      'nacsis',
-    ]
-  end
-
   def i18n_system_configuration_categories(category)
-    case category
-    when 'general'
-      t('system_configuration.general')
-    when 'user'
-      t('system_configuration.user')
-    when 'manifestation'
-      t('system_configuration.manifestation')
-    when 'penalty'
-      t('system_configuration.penalty')
-    when 'checkout'
-      t('system_configuration.checkout')
-    when 'checkin'
-      t('system_configuration.checkin')
-    when 'reserve'
-      t('system_configuration.reserve')
-    when 'purchase_request'
-      t('system_configuration.purchase_request')
-    when 'question'
-      t('system_configuration.question')
-    when 'order_list'
-      t('system_configuration.order_list')
-    when 'copy_request'
-      t('system_configuration.copy_request')
-    when 'reminder'
-      t('system_configuration.reminder')
-    when 'statistics'
-      t('system_configuration.statistics')
-    when 'function'
-      t('system_configuration.function')
-    when 'sound'
-      t('system_configuration.sound')
-    when 'view'
-      t('system_configuration.view')
-    when 'nacsis'
-      t('system_configuration.nacsis')
-    end
+    t("system_configuration.#{category}")
   end
 
   def make_form(system_configuration, errors = nil)

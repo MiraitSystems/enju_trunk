@@ -2739,6 +2739,7 @@ en:
     statistics: Statistics
     function: Function
     sound: Sound
+    attributes: Attribute
     disp_date:
       not_display: Not display
       christian_era: Christian era

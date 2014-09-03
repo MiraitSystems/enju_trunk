@@ -11,6 +11,7 @@ class SystemConfigurationsController < ApplicationController
     @category = params[:system_configuration][:category] if params[:system_configuration]
     @system_configurations = SystemConfiguration.where(:category => @category)
     @roles = Role.find(:all, :select => 'name, display_name') if @category == 'purchase_request'
+    @system_configuration_categories = SystemConfiguration.select(:category).map(&:category).uniq
   end
 
   def update

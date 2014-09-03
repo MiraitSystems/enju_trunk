@@ -1321,4 +1321,17 @@ system_configuration_00189:
   description: "延滞日数の計算は、返却期限日を起点に何日後からとするか。（デフォルト日数）"
   typename: Numeric
   category: 'penalty'
-
+system_configuration_00190:
+  id: 190
+  keyname: 'attributes.manifestation.page_string'
+  v: "true"
+  description: "書誌項目のページを利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00191:
+  id: 191
+  keyname: 'attributes.manifestation.start_and_end_page'
+  v: "false"
+  description: "書誌項目の開始ページと終了ページを利用する"
+  typename: Boolean
+  category: 'attributes'

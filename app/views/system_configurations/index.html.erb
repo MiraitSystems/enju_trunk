@@ -3,7 +3,7 @@
 <div id="content_list">
 
 <%= form_for :system_configurations, :url => { :action => "index" }, :html => { :method => 'get' } do %>
-  <%= select("system_configuration", "category", system_configuration_categories.collect{ |c| [i18n_system_configuration_categories(c), c] }, { :selected => @category }, :onchange=>'submit();') %>
+  <%= select("system_configuration", "category", @system_configuration_categories.collect{ |c| [i18n_system_configuration_categories(c), c] }, { :selected => @category }, :onchange=>'submit();') %>
 <% end %>
 
 <br />
