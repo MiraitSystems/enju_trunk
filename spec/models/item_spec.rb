@@ -62,10 +62,6 @@ describe Item do
     it '' # TODO: immediately
   end
 
-  describe '#inter_library_loaned?' do
-    it '' # TODO
-  end
-
   describe '#creator' do
     it '' # TODO
   end
