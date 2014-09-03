@@ -70,7 +70,6 @@ class Item < ActiveRecord::Base
   has_one :item_has_use_restriction, :dependent => :destroy
   has_one :use_restriction, :through => :item_has_use_restriction
   has_many :reserves
-  has_many :inter_library_loans, :dependent => :destroy
   belongs_to :required_role, :class_name => 'Role', :foreign_key => 'required_role_id', :validate => true
   belongs_to :checkout_type
   #belongs_to :resource_import_textresult
@@ -205,10 +204,6 @@ class Item < ActiveRecord::Base
   def cancel_retain!
     self.circulation_status = CirculationStatus.find(:first, :conditions => ["name = ?", 'Available On Shelf'])
     self.save
-  end
-
-  def inter_library_loaned?
-    true if self.inter_library_loans.size > 0
   end
 
   def creator
