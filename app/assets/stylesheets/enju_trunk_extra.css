@@ -80,7 +80,7 @@ div#easy_tools_box{
   float: left;
 }
 .easy_tools_button_right {
-  margin: 0 5px 0 0;
+  margin-right: 5px;
 }
 a.easy_tools_button,  a:visited.easy_tools_button {
   color: #333333;
