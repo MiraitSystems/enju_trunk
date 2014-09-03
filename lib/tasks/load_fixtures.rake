@@ -15,7 +15,7 @@ namespace :enju do
       fixture_files = if ENV['FIXTURES']
                         ENV['FIXTURES'].split(',').map {|f| Dir.glob("#{fixtures_dir}/*#{f}.csv").first}
                       else
-                        Dir.glob("#{fixture_dir}/*.csv").sort
+                        Dir.glob("#{fixtures_dir}/*.csv").sort
                       end
 
       fixture_files.each do |file|
