@@ -1754,7 +1754,7 @@ ja:
     research: "再検索"
     search_term: "検索語"
     search_for: "検索対象"
-    search_local: "ローカル所蔵"
+    search_local: "%{library} 所蔵"
     search_nacsis: "NACSIS 目録"
     all_search_term: "すべて"
     any_search_term: "いずれか"
