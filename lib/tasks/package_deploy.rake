@@ -1,7 +1,9 @@
+Rails.logger = Logger.new(STDOUT);
+
 dir_prefix = "customer"
 if ENV["ENJU_CUSTOMER_PREFIX"]
 	dir_prefix = ENV["ENJU_CUSTOMER_PREFIX"]
-  puts "set prefix=#{dirprefix}"
+  Rails.logger.info "set prefix=#{dirprefix}"
 end
 
 base_dir = ENV['HOME']
@@ -29,11 +31,12 @@ namespace :enju_trunk do
       if FileTest::directory?(File.join(current_dir, ".git"))
         sh "cd #{::Rails.root}; git log -1 > GitLastLog"
       else 
-        Rails.logger.info "not git repository." 
+        Rails.logger.warn "warn: not git repository." 
         archives.delete("GitLastLog")
       end
 
       unless FileTest::directory?(File.join(current_dir, ["vendor", "cache"]))
+        Rails.logger.warn("warn: not find directory 'vendor/cache'. exec? 'bundle package --all'")
         archives.delete("vendor/cache/")
       end
 
