@@ -1,0 +1,15 @@
+<%- if SystemConfiguration.get('attributes.manifestation.page_string') %>
+  <div class='row'>  
+    <div><%= f.label :page_string %></div>
+    <div><%= f.text_field :page_string %></div>
+  </div>
+<%- end -%>
+<%- if SystemConfiguration.get('attributes.manifestation.start_and_end_page') %>
+  <div class='row'>
+    <div><%= f.label :start_page -%></div>
+    <div><%= f.text_field :start_page, :class => 'resource_integer' -%></div>
+    <div><%= f.label :end_page -%></div>
+    <div><%= f.text_field :end_page, :class => 'resource_integer' -%></div>
+  </div>
+</div>
+<%- end -%>

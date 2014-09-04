@@ -2728,6 +2728,7 @@ en:
   system_configuration:
     general: General
     user: User
+    search_user: Search User
     manifestation: Manifestation
     checkout: Checkout
     checkin: Checkin
