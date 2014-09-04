@@ -36,7 +36,7 @@
         <% end %>
         <%- if SystemConfiguration.get('nacsis.can_use') -%>
           <br />
-          <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false, {:checked => true} -%><%= t('page.search_local') -%>
+          <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false, {:checked => true} -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
           <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false -%><%= t('page.search_nacsis') -%>
           <br />
         <%- end -%>

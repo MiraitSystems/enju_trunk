@@ -7,7 +7,7 @@
       <%- if m.manifestation -%>
         <strong>
           <%= "[#{t('page.imported')}]" -%>
-          <%= link_to t('page.search_local'), m.manifestation -%>
+          <%= link_to t('page.search_local', :library => "#{LibraryGroup.first.display_name}"), m.manifestation -%>
         </strong><br />
       <%- end -%>
       <%= link_to s[:subject_heading],

@@ -19,7 +19,7 @@
         <% end %>
         <%- if SystemConfiguration.get('nacsis.can_use') -%>
           <br />
-          <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false -%><%= t('page.search_local') -%>
+          <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
           <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false, {:checked => true} -%><%= t('page.search_nacsis') -%>
           <br />
         <%- end -%>
@@ -141,7 +141,7 @@
     <%- end -%>
     <% if @nacsis_cat.manifestation %>
       <li>
-        <%= link_to t('page.search_local'), @nacsis_cat.manifestation %>
+        <%= link_to t('page.search_local', :library => "#{LibraryGroup.first.display_name}"), @nacsis_cat.manifestation %>
       </li>
     <% else %>
       <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
