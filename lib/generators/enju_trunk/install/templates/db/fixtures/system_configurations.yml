@@ -1342,3 +1342,24 @@ system_configuration_00192:
   description: "利用者検索画面にsolr検索式のタブを表示する"
   typename: Boolean
   category: 'search_user'
+system_configuration_00193:
+  id: 193
+  keyname: 'attributes.search.user.item.item_identifier'
+  v: "false"
+  description: "利用者詳細検索画面に所蔵情報IDを表示する"
+  typename: Boolean
+  category: 'search_user'
+system_configuration_00194:
+  id: 194
+  keyname: 'attributes.search.user.manifestation.identifier'
+  v: "false"
+  description: "利用者詳細検索画面に識別子を表示する"
+  typename: Boolean
+  category: 'search_user'
+system_configuration_00195:
+  id: 195
+  keyname: 'attributes.search.user.item.removed_at'
+  v: "false"
+  description: "利用者詳細検索画面に除籍日を表示する"
+  typename: Boolean
+  category: 'search_user'
