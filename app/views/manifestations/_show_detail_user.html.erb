@@ -114,7 +114,13 @@
         </tr>
         <% unless manifestation.periodical_master %>
           <tr>
-            <td><%= t('manifestation.physical_description') -%>:</td>
+            <td>
+              <%- if SystemConfiguration.get('attributes.manifestation.height_width_depth') || SystemConfiguration.get('attributes.manifestation.size') %>
+                <%= t('manifestation.physical_description') -%>:
+              <% else %>
+                <%= t('page.number_of_pages') -%>:
+              <% end %>
+            </td>
             <td>
               <%- if SystemConfiguration.get('attributes.manifestation.page_string') %>
                 <%= manifestation.page_string %>
@@ -129,16 +135,31 @@
                   <%= manifestation.end_page %>
                 <%- end -%>
               <%- end -%>
-              <!-- TODO: センチメートル以外の単位 -->
-              <%- if manifestation.height -%>
-                <%= manifestation.height -%> cm.
+
+              <%- if SystemConfiguration.get('attributes.manifestation.height_width_depth') %>
+                <!-- TODO: センチメートル以外の単位 -->
+                <%- if manifestation.height -%>
+                  <%= manifestation.height -%> cm.
+                <%- end -%>
+                <%- if manifestation.width -%>
+                  <%= manifestation.width -%> cm.
+                <%- end -%>
+                <%- if manifestation.depth -%>
+                  <%= manifestation.depth -%> cm.
+                <%- end -%>
+              <%- end -%>
+
+              <%- if SystemConfiguration.get('attributes.manifestation.size') %>
+                <%- if manifestation.size -%>
+                  <%= manifestation.size -%>
+                <%- end -%>
               <%- end -%>
             </td>
           </tr>
         <% end %>
         <% if manifestation.price.present? %>
           <tr>
-            <td><%= t('activerecord.attributes.manifestation.price') -%></td>
+            <td><%= t('activerecord.attributes.manifestation.price') -%>:</td>
             <td><%= manifestation.price -%></td>
           </tr>
         <% end %>

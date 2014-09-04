@@ -1363,3 +1363,17 @@ system_configuration_00195:
   description: "利用者詳細検索画面に除籍日を表示する"
   typename: Boolean
   category: 'search_user'
+system_configuration_00196:
+  id: 196
+  keyname: 'attributes.manifestation.size'
+  v: "true"
+  description: "書誌項目の大きさを利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00197:
+  id: 197
+  keyname: 'attributes.manifestation.height_width_depth'
+  v: "false"
+  description: "書誌項目の高さ、幅、奥行きを利用する"
+  typename: Boolean
+  category: 'attributes'
