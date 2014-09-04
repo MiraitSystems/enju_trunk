@@ -1335,3 +1335,10 @@ system_configuration_00191:
   description: "書誌項目の開始ページと終了ページを利用する"
   typename: Boolean
   category: 'attributes'
+system_configuration_00192:
+  id: 192
+  keyname: 'attributes.search.use_solr_raw_query_for_user'
+  v: "false"
+  description: "利用者検索画面にsolr検索式のタブを表示する"
+  typename: Boolean
+  category: 'search_user'
