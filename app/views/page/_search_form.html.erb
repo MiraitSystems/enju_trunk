@@ -5,7 +5,7 @@
     <%= submit_tag t('page.search') -%><br />
     <%- if SystemConfiguration.get('nacsis.can_use') -%>
       <%= t('page.search_for') -%>:
-      <%= radio_button_tag 'index', 'local', true -%><%= t('page.search_local') -%>
+      <%= radio_button_tag 'index', 'local', true -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
       <%= radio_button_tag 'index', 'nacsis', false -%><%= t('page.search_nacsis') -%>
       <br />
     <%- end -%>

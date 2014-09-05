@@ -273,23 +273,27 @@ $(document).keydown(function(e) {
     <%= render :partial => 'form_identifier', :locals => {:f => f, :manifestation => @manifestation, :identifiers => @identifiers} %>
   <%- end %> 
 
-  <div class="row">
-    <div><%= f.label :start_page -%></div>
-    <div><%= f.text_field :start_page, :class => 'resource_integer' -%></div>
-    <div><%= f.label :end_page -%></div>
-    <div><%= f.text_field :end_page, :class => 'resource_integer' -%></div>
-  </div>
+  <%= render :partial => 'form_page', :locals => {:f => f} %>
 
-  <div class="row">
-    <div><%= f.label :height -%>(cm)</div>
-    <div>
-      <%= f.text_field :height, :class => 'resource_integer' -%>
-      <%= f.label :width -%>(cm)
-      <%= f.text_field :width, :class => 'resource_integer' -%>
-      <%= f.label :depth -%>(cm)
-      <%= f.text_field :depth, :class => 'resource_integer' -%>
+  <% if SystemConfiguration.get('attributes.manifestation.height_width_depth') %>
+    <div class="row">
+      <div><%= f.label :height -%>(cm)</div>
+      <div>
+        <%= f.text_field :height, :class => 'resource_integer' -%>
+        <%= f.label :width -%>(cm)
+        <%= f.text_field :width, :class => 'resource_integer' -%>
+        <%= f.label :depth -%>(cm)
+        <%= f.text_field :depth, :class => 'resource_integer' -%>
+      </div>
     </div>
-  </div>
+  <% end %> 
+
+  <% if SystemConfiguration.get('attributes.manifestation.size') %>
+    <div class="row">
+      <div><%= f.label :size -%></div>
+      <div><%= f.text_field :size, :class => 'resource_integer' -%></div>
+    </div>
+  <% end %> 
 
   <div class="row">
     <div><%= f.label :price -%></div>

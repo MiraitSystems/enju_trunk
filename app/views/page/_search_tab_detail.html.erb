@@ -44,7 +44,7 @@ $(function(){
     <tr>
       <td><label><%= t('page.search_for') -%>:</label></td>
       <td>
-        <%= radio_button_tag 'index', 'local', true -%><%= t('page.search_local') -%>
+        <%= radio_button_tag 'index', 'local', true -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
         <%= radio_button_tag 'index', 'nacsis', false -%><%= t('page.search_nacsis') -%>
       </td>
     </tr>
@@ -131,14 +131,18 @@ $(function(){
     <td><label><%= advanced_search_label(:ncid) -%>:</label></td>
     <td><%= search_field_tag 'ncid', params[:ncid] -%>
   </tr>
-  <tr class="local-only">
-    <td><label><%= advanced_search_label(:item_identifier) -%>:</label></td>
-    <td><%= search_field_tag 'item_identifier', params[:item_identifier] -%></td>
-  </tr>
-  <tr class="local-only">
-    <td><label><%= advanced_search_label(:identifier) -%>:</label></td>
-    <td><%= search_field_tag 'identifier', params[:identifier] -%></td>
-  </tr>
+  <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.item.item_identifier") %>
+    <tr class="local-only">
+      <td><label><%= advanced_search_label(:item_identifier) -%>:</label></td>
+      <td><%= search_field_tag 'item_identifier', params[:item_identifier] -%></td>
+    </tr>
+  <% end %>
+  <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.manifestation.identifier") %>
+    <tr class="local-only">
+      <td><label><%= advanced_search_label(:identifier) -%>:</label></td>
+      <td><%= search_field_tag 'identifier', params[:identifier] -%></td>
+    </tr>
+  <% end %>
   <tr class="local-only">
     <td><label><%= advanced_search_label(:pub_date) -%>:</label></td>
     <td><%= t('advanced_search.from') -%> <%= search_field_tag 'pub_date_from', params[:pub_date_from], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>
@@ -149,7 +153,8 @@ $(function(){
     <td><%= t('advanced_search.from') -%> <%= search_field_tag 'acquired_from', params[:acquired_from], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2005, 2005-04-01" -%>
       <%= t('advanced_search.to') -%> <%= search_field_tag 'acquired_to', params[:acquired_to], :class => 'wide_date_text_field', :placeholder => "#{t('page.example')}: 2011, 2011-03-31"-%></td>
   </tr>
-  <% if user_signed_in? and current_user.has_role?('Librarian') %>
+  <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.item.removed_at") %>
+  <%# if user_signed_in? and current_user.has_role?('Librarian') %>
     <tr class="local-only">
       <td><label><%= advanced_search_label(:removed) %>:</label></td>
       <td>

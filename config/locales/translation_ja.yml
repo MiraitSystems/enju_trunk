@@ -1754,7 +1754,7 @@ ja:
     research: "再検索"
     search_term: "検索語"
     search_for: "検索対象"
-    search_local: "ローカル所蔵"
+    search_local: "%{library} 所蔵"
     search_nacsis: "NACSIS 目録"
     all_search_term: "すべて"
     any_search_term: "いずれか"
@@ -2851,11 +2851,12 @@ ja:
     failed_sent: "督促メールの送信に失敗しました。"
     reminder_mail: "メール"
     search_notice_full_name: "利用者のフルネームと読みを部分一致で検索します。"
-    failed_create_reminder_report: ”督促状の作成に失敗しました。"
+    failed_create_reminder_report: "督促状の作成に失敗しました。"
     reminder_report: 督促状
   system_configuration:
     general: 全般
     user: 利用者
+    search_user: 利用者検索
     manifestation: 資料
     penalty: 貸出罰則
     checkout: 貸出
@@ -2871,6 +2872,7 @@ ja:
     sound: 音
     view: 表示
     nacsis: 'NACSIS-CAT/ILL'
+    attributes: アトリビュート
     disp_date:
       not_display: 非表示
       christian_era: 西暦

@@ -2728,6 +2728,7 @@ en:
   system_configuration:
     general: General
     user: User
+    search_user: Search User
     manifestation: Manifestation
     checkout: Checkout
     checkin: Checkin
@@ -2739,6 +2740,7 @@ en:
     statistics: Statistics
     function: Function
     sound: Sound
+    attributes: Attribute
     disp_date:
       not_display: Not display
       christian_era: Christian era

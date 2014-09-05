@@ -23,6 +23,7 @@ en:
         start_page: Start page
         end_page: End page
         page: Page
+        page_string: Page
         size: Size
         height: Height
         width: Width
