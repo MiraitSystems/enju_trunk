@@ -705,7 +705,8 @@ module ActionView
         end
         collection.each do |row|
           html.concat( raw ("      <option alt=\"#{ row.send(select_attribute) }\", value=\"#{ row.send(post_attribute) }\"") )
-          if selected_id.try(:to_i) == row.id
+          # if selected_id.try(:to_i) == row.id
+          if selected_id == row.send(post_attribute)
             html.concat( raw (", selected=\"selected\"") )
           end
           html.concat( raw (">") )
