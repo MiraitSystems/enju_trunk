@@ -1,9 +1,7 @@
-Rails.logger = Logger.new(STDOUT);
-
 dir_prefix = "customer"
 if ENV["ENJU_CUSTOMER_PREFIX"]
 	dir_prefix = ENV["ENJU_CUSTOMER_PREFIX"]
-  Rails.logger.info "set prefix=#{dirprefix}"
+  #Rails.logger.info "set prefix=#{dirprefix}"
 end
 
 base_dir = ENV['HOME']
@@ -12,16 +10,12 @@ package_dir = File.join(base_dir, dir_prefix, "pack")
 packprefix = "enju_production"
 root = "#{::Rails.root}"
 
-def packing(packagefile, archives, excludes = "")
-  #sh "cd #{::Rails.root}; bundle package --all"
-  sh "cd #{::Rails.root}; tar cjvf #{packagefile} #{archives} --exclude #{excludes}"
-end
-
 namespace :enju_trunk do
   namespace :pack do
     desc 'Initial packing'
     task :init => :environment do
 
+      Rails.logger = Logger.new(STDOUT);
       Rails.logger.info "start script"
 
 #      archives = %w(Gemfile Gemfile.lock GitLastLog Rakefile app/ config/ config.ru db/ lib/ public/ report/ script/ solr/ spec/ vendor/fonts vendor/cache/ vendor/assets/ report/)
@@ -57,6 +51,9 @@ namespace :enju_trunk do
 
     desc 'Packaging for staging server'
     task :staging => :environment do
+
+      Rails.logger = Logger.new(STDOUT);
+
       sh "cd #{::Rails.root}; git log -1 > GitLastLog"
 #      archives = "Gemfile Gemfile.lock GitLastLog Rakefile app/ db/fixtures/ solr/conf/ config/locales/ config/routes.rb db/ lib/ public/ script/ vendor/fonts vendor/cache/ config/initializers/thinreports.rb config/initializers/*.sample config/*.sample"
       archives = "Gemfile Gemfile.lock GitLastLog Rakefile app/ db/fixtures/ solr/conf/ config/locales/ config/routes.rb db/ lib/ public/ script/ vendor/cache/"
