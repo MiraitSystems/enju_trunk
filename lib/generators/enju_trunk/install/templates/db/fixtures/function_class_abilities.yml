@@ -89,6 +89,10 @@ function_class_ability_211:
   function_id: 11
   ability: 3 # can delete
 
+function_class_ability_32:
+  function_class_id: 3 # User
+  function_id: 2
+  ability: 1 # can read
 function_class_ability_34:
   function_class_id: 3 # User
   function_id: 4
