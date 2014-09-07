@@ -104,7 +104,7 @@
       $.ajax({
         type: "GET",
         url: "<%= url_for(:controller => :users, :action => :search_family) -%>",
-        data: data, 
+        data: data,
         success: function(obj) {
           if(obj.success){
             $('#search_family').remove();
@@ -113,7 +113,7 @@
             $("input[name='family']").change(get_family_info);
           }
         }
-      });  
+      });
       return false;
     }
   }
@@ -181,10 +181,10 @@
   <div class="row">
     <div><%=f.label :gender -%></div>
     <div><%= f.select2(:gender_id, @genders, @agent.gender_id, :width => 200, :include_blank => "",
-		  :select2options => {
-	            "placeholder" => "\"#{t('activerecord.attributes.agent.select_gender_reason')}\""
+      :select2options => {
+              "placeholder" => "\"#{t('activerecord.attributes.agent.select_gender_reason')}\""
                   }
-		 ) %>
+     ) %>
     </div>
   </div>
 
@@ -192,7 +192,7 @@
   <div class="row">
     <div><%=f.label :grade -%></div>
     <div><%= f.select2(:grade_id, @grades, @agent.grade_id, :include_blank => true, :width => 200,
-		  :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
+      :placeholder => t('activerecord.attributes.agent.select_grade_reason')) %>
     </div>
   </div>
   <% end %>
@@ -227,6 +227,29 @@
      <div></div>
      <div><%= u_form.submit :disable_with => t('page.wait') -%></div>
   </div>
+
+  <% if SystemConfiguration.get("penalty.user_penalty") %>
+  <hr />
+
+  <div class="row">
+    <div><%= u_form.label :days_after_penalty -%></div>
+    <div><%= u_form.text_field :days_after_penalty, :class => 'resource_integer' -%></div>
+  </div>
+
+  <div class="row">
+    <div><%= u_form.label :in_penalty -%></div>
+    <div>
+      <%= t('page.boolean.false') -%><%= u_form.radio_button :in_penalty, false -%>&nbsp;
+      <%= t('page.boolean.true') -%><%= u_form.radio_button :in_penalty, true -%>&nbsp;
+    </div>
+  </div>
+
+  <div class="actions row">
+     <div></div>
+     <div><%= u_form.submit :disable_with => t('page.wait') -%></div>
+  </div>
+
+  <% end %>
 
   <hr />
 

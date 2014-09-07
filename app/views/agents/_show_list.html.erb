@@ -59,7 +59,7 @@
             <td>
               <%= @agent.user.user_status.display_name %>
               <%- if @agent.user.active_for_authentication? -%>
-	        <%= t('activerecord.attributes.user.locked_yes') -%>
+          <%= t('activerecord.attributes.user.locked_yes') -%>
               <%- else -%>
                 <%= t('activerecord.attributes.user.locked_no') -%>
               <%- end -%>
@@ -115,6 +115,18 @@
         <td><%= @agent.grade.keyname if @agent.grade %></td>
       </tr>
       <% end %>
+
+      <% if SystemConfiguration.get("penalty.user_penalty") %>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.user.days_after_penalty') %>: </strong></td>
+        <td><%= @agent.user.days_after_penalty %></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.user.in_penalty') %>: </strong></td>
+        <td><%= @agent.user.in_penalty ? t('page.boolean.true') : t('page.boolean.false') %></td>
+      </tr>
+      <% end %>
+
 <%- if false -%>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.other_designation') -%>:</strong></td>
