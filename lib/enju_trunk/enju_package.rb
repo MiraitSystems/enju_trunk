@@ -9,7 +9,7 @@ class EnjuPackage
     @dir_prefix = "customer"
     if ENV["ENJU_CUSTOMER_PREFIX"]
       @dir_prefix = ENV["ENJU_CUSTOMER_PREFIX"]
-      Rails.logger.info "set prefix=#{dirprefix}"
+      Rails.logger.info "set prefix=#{@dir_prefix}"
     end
 
     @base_dir = ENV['HOME']
