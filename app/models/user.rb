@@ -515,6 +515,21 @@ class User < ActiveRecord::Base
     true if checkouts.not_returned.empty? and id != 1
   end
 
+  # TODO: function name
+  def available_for_reserve?
+    if SystemConfiguration.get("penalty.user_penalty")
+      if self.user_group.restrict_reservation_in_penalty == true
+        self.checkouts.each do |checkout|
+          days_overdue = checkout.days_overdue
+          if days_overdue >= user_group.penalty_day
+            return false
+          end
+        end
+      end
+    end
+    return true
+  end
+
   def set_family(user_id)
     family = User.find(user_id).family rescue nil
     if family
