@@ -347,20 +347,26 @@ $(document).keydown(function(e) {
     </div>
   <% end %>
 
-  <div class="row">
-    <div><%= f.label t('activerecord.attributes.manifestation.missing_issue') -%></div>
-    <div><%= f.select2 :missing_issue, missing_issue_statuses, @manifestation.missing_issue, :select_attribute => :id, :display_attribute => :display_name, :width => 200, :include_blank => true %></div>
-  </div>
+  <% if SystemConfiguration.get('attributes.manifestation.missing_issue') %>
+    <div class="row">
+      <div><%= f.label t('activerecord.attributes.manifestation.missing_issue') -%></div>
+      <div><%= f.select2 :missing_issue, missing_issue_statuses, @manifestation.missing_issue, :select_attribute => :id, :display_attribute => :display_name, :width => 200, :include_blank => true %></div>
+    </div>
+  <% end %>
 
-  <div class="row">
-    <div><%= f.label t('activerecord.attributes.manifestation.acceptance_number') %></div>
-    <div><%= f.text_field :acceptance_number, :class => "resource_integer" %></div>
-  </div>
+  <% if SystemConfiguration.get('attributes.manifestation.acceptance_number') %>
+    <div class="row">
+      <div><%= f.label t('activerecord.attributes.manifestation.acceptance_number') %></div>
+      <div><%= f.text_field :acceptance_number, :class => "resource_integer" %></div>
+    </div>
+  <% end %>
 
-  <div class="row">
-    <div><%= f.label hbr( t('activerecord.attributes.manifestation.use_license_id') ) %></div>
-    <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
-  </div>
+  <% if SystemConfiguration.get('attributes.manifestation.use_license_id') %>
+    <div class="row">
+      <div><%= f.label hbr( t('activerecord.attributes.manifestation.use_license_id') ) %></div>
+      <div><%= f.select2 :use_license_id, @use_licenses, @manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name' %></div>
+    </div>
+  <% end %>
 
   <%= render :partial => 'form_merged_item', :locals => {:f => f} if SystemConfiguration.get("manifestation.has_one_item") %>  
 

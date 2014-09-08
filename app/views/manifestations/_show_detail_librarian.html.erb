@@ -346,10 +346,12 @@
             <td><%= t('manifestation.date_of_acquisition') -%>:</td>
             <td><%=l manifestation.created_at if manifestation.created_at -%></td>
           </tr>
-          <tr>
-            <td><%= t('activerecord.attributes.manifestation.acceptance_number') -%>:</td>
-            <td><%= manifestation.acceptance_number -%></td>
-          </tr>
+          <%- if SystemConfiguration.get('attributes.manifestation.acceptance_number') %>
+            <tr>
+              <td><%= t('activerecord.attributes.manifestation.acceptance_number') -%>:</td>
+              <td><%= manifestation.acceptance_number -%></td>
+            </tr>
+          <%- end -%>
           <tr>
             <td><%= t('page.updated_at') -%>:</td>
             <td><%=l manifestation.updated_at if manifestation.updated_at -%></td>
@@ -452,14 +454,16 @@
             <td><%= manifestation.extext_1 -%></td>
           </tr>
         <%- end -%>
-        <tr>
-          <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
-          <td>
-            <% if manifestation.use_license  %>
-              <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
-            <% end %>
-          </td>
-        </tr>
+        <%- if SystemConfiguration.get("attributes.manifestation.use_license_id") -%>
+          <tr>
+            <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
+            <td>
+              <% if manifestation.use_license  %>
+                <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
+              <% end %>
+            </td>
+          </tr>
+        <%- end -%>
         <% unless manifestation.periodical_master %> 
           <%- if SystemConfiguration.get("manifestation.display_checkouts_count") && Setting.operation -%>
             <tr>
@@ -489,13 +493,15 @@
               </td>
             </tr>
           <%- end -%>
-          <%- if manifestation.missing_issue %>
-            <tr>
-              <td><%= t('activerecord.attributes.manifestation.missing_issue') -%>:</td>
-              <td>
-                <%= missing_status(manifestation.missing_issue) -%>
-              </td>
-            </tr>
+          <%- if SystemConfiguration.get("attributes.manifestation.missing_issue") -%>
+            <%- if manifestation.missing_issue %>
+              <tr>
+                <td><%= t('activerecord.attributes.manifestation.missing_issue') -%>:</td>
+                <td>
+                  <%= missing_status(manifestation.missing_issue) -%>
+                </td>
+              </tr>
+            <%- end -%>
           <%- end -%>
         <% end %>
 

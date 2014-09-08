@@ -1377,3 +1377,24 @@ system_configuration_00197:
   description: "書誌項目の高さ、幅、奥行きを利用する"
   typename: Boolean
   category: 'attributes'
+system_configuration_00198:
+  id: 198
+  keyname: 'attributes.manifestation.missing_issue'
+  v: "true"
+  description: "書誌項目の欠号管理を利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00199:
+  id: 199
+  keyname: 'attributes.manifestation.acceptance_number'
+  v: "true"
+  description: "書誌項目の受入部数を利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00200:
+  id: 200
+  keyname: 'attributes.manifestation.use_license_id'
+  v: "false"
+  description: "書誌項目の著者抄録許諾を利用する"
+  typename: Boolean
+  category: 'attributes'
