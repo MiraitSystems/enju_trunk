@@ -18,6 +18,7 @@ namespace :enju_trunk do
         archives.delete("GitLastLog")
       end
 
+      current_dir = "#{::Rails.root}"
       unless FileTest::directory?(File.join(current_dir, ["vendor", "cache"]))
         Rails.logger.warn("warn: not find directory 'vendor/cache'. exec? 'bundle package --all'")
         Rails.logger.warn("warn: continue? (Y/N)")
