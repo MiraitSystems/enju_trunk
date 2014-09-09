@@ -229,11 +229,13 @@ $(document).keydown(function(e) {
       <%= f.text_field :edition_display_value, :class => 'small_string' -%>
       <%= f.label :volume_number_string -%>
       <%= f.text_field :volume_number_string, :class => 'small_string' -%>
-      <%= f.label :issue_number_string -%>
-      <%= f.text_field :issue_number_string, :class => 'small_string' -%>
-      <%- if @manifestation.series_statement -%>
-        <%= f.label :serial_number_string -%>
-        <%= f.text_field :serial_number_string, :size=>"10" %>
+      <%- unless SystemConfiguration.get("manifestation.volume_number_string_only") -%>
+        <%= f.label :issue_number_string -%>
+        <%= f.text_field :issue_number_string, :class => 'small_string' -%>
+        <%- if @manifestation.series_statement -%>
+          <%= f.label :serial_number_string -%>
+          <%= f.text_field :serial_number_string, :size=>"10" %>
+        <%- end -%>
       <%- end -%>
     </div>
   </div>

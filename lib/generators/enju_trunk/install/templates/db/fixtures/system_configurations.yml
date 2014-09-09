@@ -1398,3 +1398,17 @@ system_configuration_00200:
   description: "書誌項目の著者抄録許諾を利用する"
   typename: Boolean
   category: 'attributes'
+system_configuration_00201:
+  id: 201
+  keyname: 'manifestation.show.user_output_show'
+  v: "true"
+  description: "利用者画面に資料確認票の出力を表示する"
+  typename: Boolean
+  category: 'manifestation'
+system_configuration_00202:
+  id: 202
+  keyname: 'manifestation.volume_number_string_only'
+  v: "false"
+  description: "巻・号・通号の入力は、巻にまとめる"
+  typename: Boolean
+  category: 'manifestation'
