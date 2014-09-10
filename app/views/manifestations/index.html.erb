@@ -204,43 +204,78 @@ $(document).ready(function() {
 
           <%- if params[:sort_by].blank? -%>
             <strong><%= t('manifestation.date_of_acquisition') -%></strong>
+            <%- if params[:order] == 'asc' -%>
+              <%= image_tag('icons/arrow_up2.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')) %>
+              <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => nil, :order => 'desc')) -%>
+            <%- else -%>
+              <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => nil, :order => 'asc')) -%>
+              <%= image_tag('icons/arrow_down2.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')) %>
+            <%- end -%>
           <%- else -%>
             <%= t('manifestation.date_of_acquisition') -%>
+            <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => nil, :order => 'asc')) -%>
+            <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => nil, :order => 'desc')) -%>
           <%- end -%>
-          <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => nil, :order => 'asc')) -%>
-          <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => nil, :order => 'desc')) -%>
 
           <%- if params[:sort_by] == 'pub_date' -%>
             <strong><%= t('activerecord.attributes.manifestation.date_of_publication') -%></strong>
+            <%- if params[:order] == 'asc' -%>
+              <%= image_tag('icons/arrow_up2.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')) %>
+              <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'desc')) -%>
+            <%- elsif params[:order] == 'desc' -%>
+              <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'asc')) -%>
+              <%= image_tag('icons/arrow_down2.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')) %>
+            <%- end -%>
           <%- else -%>
             <%= t('activerecord.attributes.manifestation.date_of_publication') -%>
+            <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'asc')) -%>
+            <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'desc')) -%>
           <%- end -%>
-          <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'asc')) -%>
-          <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'pub_date', :order => 'desc')) -%>
 
           <%- if params[:sort_by] == 'title' -%>
             <strong><%= t('page.title') -%></strong>
+            <%- if params[:order] == 'asc' -%>
+              <%= image_tag('icons/arrow_up2.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')) %>
+              <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'title', :order => 'desc')) -%>
+            <%- elsif params[:order] == 'desc' -%>
+              <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'title', :order => 'asc')) -%>
+              <%= image_tag('icons/arrow_down2.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')) %>
+            <%- end -%>
           <%- else -%>
             <%= t('page.title') -%>
+            <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'title', :order => 'asc')) -%>
+            <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'title', :order => 'desc')) -%>
           <%- end -%>
-          <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'title', :order => 'asc')) -%>
-          <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'title', :order => 'desc')) -%>
 
           <%- if params[:sort_by] == 'author' -%>
             <strong><%= t('agent.creator') -%></strong>
+            <%- if params[:order] == 'asc' -%>
+              <%= image_tag('icons/arrow_up2.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')) %>
+              <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'author', :order => 'desc')) -%>
+            <%- elsif params[:order] == 'desc' -%>
+              <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'author', :order => 'asc')) -%>
+              <%= image_tag('icons/arrow_down2.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')) %>
+            <%- end -%>
           <%- else -%>
             <%= t('agent.creator') -%>
+            <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'author', :order => 'asc')) -%>
+            <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'author', :order => 'desc')) -%>
           <%- end -%>
-          <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'author', :order => 'asc')) -%>
-          <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'author', :order => 'desc')) -%>
 
           <%- if params[:sort_by] == 'carrier_type' -%>
             <strong><%= t('activerecord.models.carrier_type') -%></strong>
+            <%- if params[:order] == 'asc' -%>
+              <%= image_tag('icons/arrow_up2.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')) %>
+              <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'desc')) -%>
+            <%- elsif params[:order] == 'desc' -%>
+              <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'asc')) -%>
+              <%= image_tag('icons/arrow_down2.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')) %>
+            <%- end -%>
           <%- else -%>
             <%= t('activerecord.models.carrier_type') -%>
+            <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'asc')) -%>
+            <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'desc')) -%>
           <%- end -%>
-          <%= link_to image_tag('icons/arrow_up.png', :size => '16x16', :alt => t('page.asc'), :title => t('tooltip.asc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'asc')) -%>
-          <%= link_to image_tag('icons/arrow_down.png', :size => '16x16', :alt => t('page.desc'), :title => t('tooltip.desc')), url_for(params.merge(:sort_by => 'carrier_type', :order => 'desc')) -%>
         </p>
       </div>
 
