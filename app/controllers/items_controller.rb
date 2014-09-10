@@ -147,6 +147,17 @@ class ItemsController < ApplicationController
       @item.shelf = @library.shelves.first unless @item.try(:shelf)
     end
     @item.acquired_at_string = Date.today unless @item.acquired_at_string
+
+    # 所蔵の価格設定
+    if @manifestation.price?
+      today = Date.today.to_date
+      tax_rate = TaxRate.where(["start_date <= ? and end_date >= ?", today, today]).first
+      @item.tax = @manifestation.price * tax_rate.rate * 0.01
+      @item.price = @manifestation.price + @item.tax
+      @item.excluding_tax = @manifestation.price
+      @item.tax_rate_id = tax_rate.id
+    end
+
     prepare_options
     respond_to do |format|
       format.html # new.html.erb
