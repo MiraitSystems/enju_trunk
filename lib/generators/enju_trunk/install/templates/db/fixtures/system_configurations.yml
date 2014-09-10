@@ -1412,3 +1412,10 @@ system_configuration_00202:
   description: "巻・号・通号の入力は、巻にまとめる"
   typename: Boolean
   category: 'manifestation'
+system_configuration_00203:
+  id: 203
+  keyname: 'reserve.auto_retain'
+  v: "false"
+  description: "返却時に自動で予約資料の取置き・予約者への連絡をする"
+  typename: Boolean
+  category: 'reserve'
