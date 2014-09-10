@@ -12,17 +12,19 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :current_password,
     :remember_me, :email_confirmation, :library_id, :locale,
-    :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
-    :username, :own_password, :user_status_id, :function_class_id
+    :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id,
+    :username, :own_password, :user_status_id, :function_class_id, :department_id
   attr_accessible :email, :password, :password_confirmation, :current_password,
     :remember_me, :email_confirmation, :library_id, :locale,
-    :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id, 
+    :keyword_list, :auto_generated_password, :expired_at, :user_group_id, :role_id,
+    :days_after_penalty, :in_penalty,
     :username, :own_password, :user_status_id, :department_id, :function_class, :as => :user_change_department
   attr_accessible :email, :password, :password_confirmation, :username,
     :current_password, :user_number, :remember_me,
     :email_confirmation, :note, :user_group_id, :library_id, :locale,
     :expired_at, :locked, :unable, :required_role_id, :role_id,
     :keyword_list, :user_has_role_attributes, :auto_generated_password, :own_password,
+    :days_after_penalty, :in_penalty,
     :user_status_id, :department_id, :function_class_id, :as => :admin
 
   scope :administrators, where('roles.name = ?', 'Administrator').includes(:role)
@@ -107,6 +109,9 @@ class User < ActiveRecord::Base
   after_create :set_confirmation
   after_save :index_agent
   after_destroy :index_agent
+
+  validates :days_after_penalty, numericality: true
+  #validates :in_penalty
 
   extend FriendlyId
   friendly_id :username
@@ -452,7 +457,7 @@ class User < ActiveRecord::Base
       user.user_group_id = params[:user_group_id] ||= 1
       user.library_id = params[:library_id] ||= 1
       # user.role_id = params[:role_id] ||= 1
-      
+
       if !params[:role_id].blank? and has_role_id.blank?
         user.role_id = params[:role_id] ||= 1
         user.role = Role.find(user.role_id)
@@ -511,17 +516,17 @@ class User < ActiveRecord::Base
   end
 
   def set_family(user_id)
-    family = User.find(user_id).family rescue nil    
+    family = User.find(user_id).family rescue nil
     if family
       family.users << self
     else
-        family = Family.create() 
+        family = Family.create()
         user = User.find(user_id)
-        family.users << self         
+        family.users << self
         family.users << user
     end
   end
-  
+
   def out_of_family
     begin
       family_user = FamilyUser.find(:first, :conditions => ['user_id=?', self.id])
@@ -529,19 +534,19 @@ class User < ActiveRecord::Base
       family_user.destroy
       all_users = FamilyUser.find(:all, :conditions => ['family_id=?', family_id])
       if all_users && all_users.length == 1
-        all_users.each do |user| 
-          user.destroy 
+        all_users.each do |user|
+          user.destroy
         end
       end
     rescue Exception => e
       logger.error e
     end
   end
-  
+
   def family
     FamilyUser.find(:first, :conditions => ['user_id=?', id]).family
   end
- 
+
   def user_notice
     @messages = []
     @messages << I18n.t('user.not_connect', :user => self.username) if self.unable
@@ -571,7 +576,7 @@ class User < ActiveRecord::Base
   def delete_reserves
     items = []
     if self.reserves.not_waiting
-      self.reserves.not_waiting.each do |reserve| 
+      self.reserves.not_waiting.each do |reserve|
         if reserve.item
           items << reserve.item
           Reserve.delete(reserve)
@@ -832,15 +837,15 @@ class User < ActiveRecord::Base
         when :telephone_number_1
           telephone_number_1 = user.try(:agent).try(:telephone_number_1)
           telephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.try(:agent).try(:telephone_number_1_type_id)).try(:strip_tags)) +')' unless user.try(:agent).try(:telephone_number_1).blank?
-          row << telephone_number_1 
+          row << telephone_number_1
         when :extelephone_number_1
           extelephone_number_1 = user.try(:agent).try(:extelephone_number_1)
           extelephone_number_1 += ' (' + I18n.t(i18n_telephone_type(user.agent.extelephone_number_1_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:extelephone_number_1).blank?
-          row << extelephone_number_1 
+          row << extelephone_number_1
         when :fax_number_1
           fax_number_1 = user.try(:agent).try(:fax_number_1)
           fax_number_1 += ' (' + I18n.t(i18n_telephone_type(user.agent.fax_number_1_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:fax_number_1).blank?
-          row << fax_number_1 
+          row << fax_number_1
 =end
         when :address_1_note
           row << user.try(:agent).try(:address_1_note )
@@ -872,7 +877,7 @@ class User < ActiveRecord::Base
         when :fax_number_2
           fax_number_2 = user.try(:agent).try(:fax_number_2)
           fax_number_2 += ' (' + I18n.t(i18n_telephone_type(user.agent.fax_number_2_type_id).try(:strip_tags)) +')' unless user.try(:agent).try(:fax_number_2).blank?
-          row << fax_number_2 
+          row << fax_number_2
 =end
         when :address_2_note
           row << user.try(:agent).try(:address_2_note)
@@ -901,7 +906,7 @@ class User < ActiveRecord::Base
         else
           row << get_object_method(user, column[0].split('.')).to_s.gsub(/\r\n|\r|\n/," ").gsub(/\"/,"\"\"")
         end
-      end 
+      end
       if SystemConfiguration.get("set_output_format_type") == false
         data << '"'+row.join("\",\"")+"\"\n"
       else

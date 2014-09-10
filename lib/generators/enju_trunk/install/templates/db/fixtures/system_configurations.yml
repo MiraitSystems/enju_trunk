@@ -1377,3 +1377,45 @@ system_configuration_00197:
   description: "書誌項目の高さ、幅、奥行きを利用する"
   typename: Boolean
   category: 'attributes'
+system_configuration_00198:
+  id: 198
+  keyname: 'attributes.manifestation.missing_issue'
+  v: "true"
+  description: "書誌項目の欠号管理を利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00199:
+  id: 199
+  keyname: 'attributes.manifestation.acceptance_number'
+  v: "true"
+  description: "書誌項目の受入部数を利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00200:
+  id: 200
+  keyname: 'attributes.manifestation.use_license_id'
+  v: "false"
+  description: "書誌項目の著者抄録許諾を利用する"
+  typename: Boolean
+  category: 'attributes'
+system_configuration_00201:
+  id: 201
+  keyname: 'manifestation.show.user_output_show'
+  v: "true"
+  description: "利用者画面に資料確認票の出力を表示する"
+  typename: Boolean
+  category: 'manifestation'
+system_configuration_00202:
+  id: 202
+  keyname: 'manifestation.volume_number_string_only'
+  v: "false"
+  description: "巻・号・通号の入力は、巻にまとめる"
+  typename: Boolean
+  category: 'manifestation'
+system_configuration_00203:
+  id: 203
+  keyname: 'reserve.auto_retain'
+  v: "false"
+  description: "返却時に自動で予約資料の取置き・予約者への連絡をする"
+  typename: Boolean
+  category: 'reserve'

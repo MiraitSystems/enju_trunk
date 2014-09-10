@@ -19,7 +19,7 @@
     <p style="font-size: 200%"><%= flash[:temporary_password] -%></p>
     <%= form_tag({:action => 'output_password'}) do -%>
       <%= hidden_field_tag :password, flash[:temporary_password] -%>
-      <%= submit_tag t('page.output', :model => t('activerecord.attributes.user.password')) -%> 
+      <%= submit_tag t('page.output', :model => t('activerecord.attributes.user.password')) -%>
     <%- end -%>
   <%- end -%>
 
@@ -38,7 +38,7 @@
     <p><strong><%= t('activerecord.models.role') %>: </strong><%= user.role.display_name.localize %></p>
     <p><strong><%= t('activerecord.models.function_class') %>: </strong><%= user.try(:function_class).try(:display_name) %></p>
   <%- end -%>
-  
+
   <%- unless @family_users.blank? -%>
     <p><strong><%= t('activerecord.attributes.checkout.family_info') %>: </strong>
       <%- @family_users.each do |f_user| -%>
@@ -51,7 +51,7 @@
           &nbsp;
         <%- end -%>
       <%- end -%>
-    </p>  
+    </p>
   <%- end -%>
 
   <div><%= link_to_function t('activerecord.attributes.user.disp_user_info'), "$('#user_info').toggle()" -%></div>
@@ -59,7 +59,7 @@
     <%= render 'agents/show_list' %>
   </div>
 
-  <%- if defined?(EnjuTrunkCirculation) %> 
+  <%- if defined?(EnjuTrunkCirculation) %>
     <br />
       <div id="checkouts_list">
         <%= render 'page/checkouts_list', :user => @user -%>
@@ -111,7 +111,7 @@
       <%- if can? :create, user -%>
         <li><%= link_to t('page.new', :model => t('activerecord.models.user')), new_user_path -%></li>
         <%- if user.agent.agent_type_id == 1 && SystemConfiguration.get('use_family') -%>
-          <li><%= link_to t('user.create_family_user'), new_user_path(:family_user_id => user.id) -%></li>        
+          <li><%= link_to t('user.create_family_user'), new_user_path(:family_user_id => user.id) -%></li>
         <%- end -%>
       <% end %>
       <%- if can? :destroy, user -%>

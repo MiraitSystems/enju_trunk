@@ -1511,16 +1511,12 @@ class ManifestationsController < ApplicationController
     case sort_by
     when 'title'
       sort[:sort_by] = 'original_title'
-      sort[:order] = 'asc'
     when 'pub_date'
       sort[:sort_by] = 'date_of_publication'
-      sort[:order] = 'desc'
     when 'carrier_type'
       sort[:sort_by] = 'carrier_type'
-      sort[:order] = 'desc'
     when 'author'
       sort[:sort_by] = 'author'
-      sort[:order] = 'asc'
     else
       # デフォルトの並び方
       sort[:sort_by] = 'created_at'
