@@ -151,11 +151,11 @@ class ItemsController < ApplicationController
     # 所蔵の価格設定
     if @manifestation.price?
       today = Date.today.to_date
-      tax_rate = TaxRate.where(["start_date <= ? and end_date >= ?", today, today]).first
-      @item.tax = @manifestation.price * tax_rate.rate * 0.01
-      @item.price = @manifestation.price + @item.tax
-      @item.excluding_tax = @manifestation.price
-      @item.tax_rate_id = tax_rate.id
+      item_price, excluding_tax, tax, tax_rate_id = TaxRate.build_tax(today, @manifestation.price)
+      @item.price = item_price
+      @item.excluding_tax = excluding_tax
+      @item.tax = tax
+      @item.tax_rate_id = tax_rate_id
     end
 
     prepare_options
