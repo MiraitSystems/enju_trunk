@@ -5,7 +5,7 @@
     <%- if multi_libraries? %><th><%= t('activerecord.models.library') %></th><%- end -%>
     <th><%= t('activerecord.models.shelf') %></th>
     <th><%= t('activerecord.attributes.item.call_number') %></th>
-    <%- if @location_symbol_size > 0 -%>
+    <%- unless @location_symbol_size.blank? -%>
       <th><%= t('activerecord.attributes.item.location_symbol') %></th>
     <%- end -%>
     <th><%= t('activerecord.attributes.item.item_identifier') %></th>
