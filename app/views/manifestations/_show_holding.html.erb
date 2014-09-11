@@ -37,11 +37,13 @@
         <td>
           <span class="red_string"><%= call_numberformat(item) %></span>
         </td>
-        <td>
-          <% if item.location_symbol.present? %>
-            <span class="red_string"><%= item.location_symbol.keyname %></span>
-          <% end %>
-        </td>
+        <%- unless @location_symbol_size.blank? -%>
+          <td>
+            <% if item.location_symbol.present? %>
+              <span class="red_string"><%= item.location_symbol.keyname %></span>
+            <% end %>
+          </td>
+        <%- end -%>
         <td>
           <% if item.item_identifier? %>
             <%= link_to item.item_identifier, item %>

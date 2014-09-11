@@ -483,7 +483,7 @@ class ManifestationsController < ApplicationController
 
       @libraries = Library.real.all
       @search_engines = Rails.cache.fetch('search_engine_all') { SearchEngine.all }
-      @location_symbol_size = Keycode.where(:name => 'item.location_symbol').size
+      @location_symbol_size = Keycode.where(:name => 'item.location_symbol')
 
       if params[:bookbinder_id]
         @binder = Item.find(params[:bookbinder_id]) rescue nil
@@ -696,7 +696,7 @@ class ManifestationsController < ApplicationController
   # GET /manifestations/1
   # GET /manifestations/1.json
   def show
-    @location_symbol_size = Keycode.where(:name => 'item.location_symbol').size
+    @location_symbol_size = Keycode.where(:name => 'item.location_symbol')
     if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
       can_show = true
       unless user_signed_in?
