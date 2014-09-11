@@ -12,7 +12,6 @@ class TaxRate < ActiveRecord::Base
 
   def self.build_tax(date, price)
     tax_rate = TaxRate.where(["start_date <= ? and end_date >= ?", date, date]).first
-    logger.error "####### #{tax_rate.inspect} ########"
     if tax_rate.present?
       tax = price * tax_rate.rate * 0.01
       if tax_rate.rounding == 0
