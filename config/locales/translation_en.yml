@@ -2323,36 +2323,6 @@ en:
     library_group_answer: Answers from %{library_group_name}
     specify_question: Specify the question.
     count: Count
-  basket:
-    my_status: Your status
-    books: records
-    number_of_checkout: Number of checkout
-    number_of_reserve: Number of reserve
-    this_account_is_suspended: This account is suspended.
-    checkout_completed: Checkout completed.
-    all_manifestation: All manifestations
-    show_basket: ! 'Show basket: %{count}'
-    out: Out of basket
-  checkout:
-    user_checkout: ! '%{login_name}''s checkouts'
-    library_group_checkout: Checkouts in %{library_group_name}
-    renewal: Renewal
-    renewal_count: Renewal count
-    new_due_date: New due date
-    editing_due_date: Editing due date
-    this_item_cant_be_renewed: This item can't be renewed.
-    listing_overdue_item: Listing overdue items
-    current_user: Current user
-    this_item_is_reserved: This item is reserved.
-    you_have_overdue_item: You have overdue items.
-    excessed_renewal_limit: Excessed checkout renewal limit.
-    all_checkout: All checkouts
-    my_checkout: My checkouts
-    no_checkout: No checkouts.
-    number_of_day_overdue: Number of days overdue
-    extend: Extend
-    over_renewal_limit: Renewal count was over limited.
-    extended: Checkout term was extended.
   library:
     map: Map
     staff: Staff
