@@ -2198,6 +2198,7 @@ ja:
     edit_publisher: "出版者を編集"
     edit_expression: "協力した資料を編集"
     edit_item: "所蔵を編集"
+    create_item: "新規作成"
     agent_manifestation: "%{agent_name} の資料"
     expressions_manifestation: "%{expression_title} の出版した資料"
     library_group_manifestation: "%{library_group_name} にある資料"

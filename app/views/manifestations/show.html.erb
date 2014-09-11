@@ -193,7 +193,10 @@
             <li><%= link_to t('page.listing', :model => t('activerecord.models.subject')), work_subjects_path(@manifestation) -%></li>
             <%- unless @manifestation.bookbinder -%>
               <% unless SystemConfiguration.get("manifestation.has_one_item") %>
-                <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%></li>
+                <li>
+                  <%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%>
+                  (<%= link_to t('manifestation.create_item'), new_manifestation_item_path(@manifestation) -%>)
+                </li>
               <% end %>
             <%- end -%>
             <%- if @manifestation.bookbinder -%>
