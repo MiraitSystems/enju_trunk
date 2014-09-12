@@ -895,6 +895,11 @@ en:
         admin_networks: Admin networks
         use_dsbl: Use DSBL
         dsbl_list: DSBL list
+        colors: Colors
+        title_color: Title color
+        list_odd_color: List odd color
+        list_even_color: List even color
+        list_border_color: List border color
         note: Note
         login_banner: Login banner
         post_to_union_catalog: Post to union catalog
