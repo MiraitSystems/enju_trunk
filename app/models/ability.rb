@@ -68,7 +68,7 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and
           series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:read, :create, :update], Agent
@@ -89,7 +89,7 @@ class Ability
       can [:read, :create, :update], RetentionPeriod
       can :destroy, RetentionPeriod do |retention_period|
         retention_period.items.empty?
-      end 
+      end
       can [:read, :create, :update], RemoveReason
       can :destroy, RemoveReason do |remove_reason|
         remove_reason.items.count == 0
@@ -233,7 +233,7 @@ class Ability
       can :destroy, BudgetType do |budget_type|
         budget_type.budgets.empty?
       end
-      can [:read, :create, :update], BudgetCategory
+      can [:read, :create, :update, :search_name], BudgetCategory
       can [:read, :create, :update, :remove, :restore, :upload_to_nacsis], Item
       can :destroy, Item do |item|
         item.deletable?
@@ -249,7 +249,7 @@ class Ability
       end
       can [:read, :create, :update], SeriesStatement
       can :destroy, SeriesStatement do |series_statement|
-        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and 
+        series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and
           series_statement.root_manifestation = series_statement.manifestations.first)
       end
       can [:output], Shelf
@@ -473,7 +473,7 @@ class Ability
         Country,
         Create,
         CreateType,
-	      Department,
+        Department,
         Extent,
         Frequency,
         FormOfWork,
