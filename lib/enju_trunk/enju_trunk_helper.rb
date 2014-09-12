@@ -707,9 +707,9 @@ module ActionView
           if select_attribute.instance_of?(Array)
             if select_attribute[1].instance_of?(Array)
               relations = select_attribute[1].inject('row') { |str, i| str + ".send('#{i}')" }
-              row_select_attribute = eval("#{relations}.send(select_attribute[0])") 
+              row_select_attribute = eval("#{relations}.send(select_attribute[0])")
             else
-              row_select_attribute = row.send(select_attribute[1]).send(select_attribute[0]) 
+              row_select_attribute = row.send(select_attribute[1]).send(select_attribute[0])
             end
           else
             row_select_attribute = row.send(select_attribute)
@@ -717,9 +717,9 @@ module ActionView
           if display_attribute.instance_of?(Array)
             if display_attribute[1].instance_of?(Array)
               relations = display_attribute[1].inject('row') { |str, i| str + ".send('#{i}')" }
-              row_display_attribute = eval("#{relations}.send(display_attribute[0])") 
+              row_display_attribute = eval("#{relations}.send(display_attribute[0])")
             else
-              row_display_attribute = row.send(display_attribute[1]).send(display_attribute[0]) 
+              row_display_attribute = row.send(display_attribute[1]).send(display_attribute[0])
             end
           else
             row_display_attribute = row.send(display_attribute)
