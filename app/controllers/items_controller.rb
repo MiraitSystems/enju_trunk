@@ -147,6 +147,17 @@ class ItemsController < ApplicationController
       @item.shelf = @library.shelves.first unless @item.try(:shelf)
     end
     @item.acquired_at_string = Date.today unless @item.acquired_at_string
+
+    # 所蔵の価格設定
+    if @manifestation.price?
+      today = Date.today.to_date
+      item_price, excluding_tax, tax, tax_rate_id = TaxRate.build_tax(today, @manifestation.price)
+      @item.price = item_price
+      @item.excluding_tax = excluding_tax
+      @item.tax = tax
+      @item.tax_rate_id = tax_rate_id
+    end
+
     prepare_options
     respond_to do |format|
       format.html # new.html.erb

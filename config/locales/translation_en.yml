@@ -2173,6 +2173,7 @@ en:
     edit_publisher: Edit publishers
     edit_expression: Edit expressions
     edit_item: Edit items
+    create_item: Create items
     expressions_manifestation: Manifestations for %{expression_title}
     library_group_manifestation: Manifestations in %{library_group_name}
     reserve_this: Reserve this manifestation

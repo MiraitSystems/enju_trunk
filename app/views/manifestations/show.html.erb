@@ -67,23 +67,25 @@
         <%= render 'manifestations/show_detail_user', :manifestation => @manifestation %>
       <% end %>
     <% end %>
-    <%- if is_manifestation_autoprint?(request.remote_ip) -%>
-      <object classid="clsid:CA8A9780-280D-11CF-A24D-444553540000" id="objPdf" width="0" height="0">
-        <param name="src" value="<%= output_pdf_manifestation_path -%>">
-      </object>
-<script>
-$(function(){
-  $('#button_print_pdf').click(function(){
-    objPdf.printAll();
-    $('#notice').html("<strong><%= t('activerecord.attributes.manifestation.printout_in_progress') -%></strong>");
-  });
-});
-</script>
-      <button id="button_print_pdf"><%= t('page.output', :model => t('activerecord.attributes.manifestation.detail')) -%></button>
-    <%- else -%>
-      <%= form_tag({:action => 'output_show'}) do -%>
-        <%= submit_tag t('page.output', :model => t('activerecord.attributes.manifestation.detail')) -%>
-        <%= t('page.output_receipt_printer') %>
+    <%- if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("manifestation.show.user_output_show") -%>
+      <%- if is_manifestation_autoprint?(request.remote_ip) -%>
+        <object classid="clsid:CA8A9780-280D-11CF-A24D-444553540000" id="objPdf" width="0" height="0">
+          <param name="src" value="<%= output_pdf_manifestation_path -%>">
+        </object>
+        <script>
+          $(function(){
+            $('#button_print_pdf').click(function(){
+              objPdf.printAll();
+              $('#notice').html("<strong><%= t('activerecord.attributes.manifestation.printout_in_progress') -%></strong>");
+            });
+          });
+        </script>
+        <button id="button_print_pdf"><%= t('page.output', :model => t('activerecord.attributes.manifestation.detail')) -%></button>
+      <%- else -%>
+        <%= form_tag({:action => 'output_show'}) do -%>
+          <%= submit_tag t('page.output', :model => t('activerecord.attributes.manifestation.detail')) -%>
+          <%= t('page.output_receipt_printer') %>
+        <%- end -%>
       <%- end -%>
     <%- end -%>
   </div>
@@ -191,7 +193,10 @@ $(function(){
             <li><%= link_to t('page.listing', :model => t('activerecord.models.subject')), work_subjects_path(@manifestation) -%></li>
             <%- unless @manifestation.bookbinder -%>
               <% unless SystemConfiguration.get("manifestation.has_one_item") %>
-                <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%></li>
+                <li>
+                  <%= link_to t('manifestation.edit_item'), manifestation_items_path(@manifestation) -%>
+                  (<%= link_to t('manifestation.create_item'), new_manifestation_item_path(@manifestation) -%>)
+                </li>
               <% end %>
             <%- end -%>
             <%- if @manifestation.bookbinder -%>
