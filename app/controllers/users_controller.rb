@@ -466,6 +466,9 @@ class UsersController < ApplicationController
     return nil unless request.xhr?
     unless params[:user_number].blank?
       @user = User.where(:user_number => params[:user_number]).first
+      unless @user
+        @user = User.where(:username => params[:user_number]).first rescue nil
+      end
       if @user
         @agent = @user.agent unless @user.blank?
         manifestation = Manifestation.find(params[:manifestation_id])
