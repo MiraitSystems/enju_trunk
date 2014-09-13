@@ -2,7 +2,8 @@
 class LibraryGroup < ActiveRecord::Base
   attr_accessible :name, :display_name, :email, :url, :login_banner, 
                   :allow_bookmark_external_url, :my_networks, :admin_networks, 
-                  :use_dsbl, :dsbl_list, :note, :country_id
+                  :use_dsbl, :dsbl_list, :note, :country_id,
+                  :title_color, :list_odd_color, :list_even_color, :list_border_color
 
   #include Singleton
   #include Configurator

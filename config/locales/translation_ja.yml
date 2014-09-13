@@ -1007,6 +1007,11 @@ ja:
         admin_networks: 管理用として扱うネットワーク
         use_dsbl: DSBLを使用する
         dsbl_list: DSBLの一覧
+        colors: 色
+        title_color: タイトルの背景
+        list_odd_color: 表の背景1
+        list_even_color: 表の背景2
+        list_border_color: 枠線
         note: 注記
         login_banner: ログイン画面でのメッセージ
         post_to_union_catalog: 総合目録に登録する
