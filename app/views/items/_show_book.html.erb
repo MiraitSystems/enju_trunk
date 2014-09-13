@@ -238,7 +238,7 @@
 
 <p>
   <strong><%= t('activerecord.attributes.item.note') -%>:</strong>
-  <%= @item.note %>
+  <%= simple_format(hbr @item.note) %>
 </p>
 
 <% if @item.claim %>
