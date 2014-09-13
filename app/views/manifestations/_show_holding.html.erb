@@ -53,7 +53,7 @@
         </td>
         <%- if SystemConfiguration.get('item.use_different_identifier') %>
           <td>
-            <%= item.identifier %>
+            <%= link_to item.identifier, item if item.identifier %>
           </td>
         <%- end -%>
         <% unless manifestation.article? %>
