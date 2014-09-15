@@ -19,8 +19,11 @@ gem 'enju_trunk_event', :git => 'git://github.com/MiraitSystems/enju_trunk_event
 #gem 'enju_bookmark', :git => 'git://github.com/nabeta/enju_bookmark'
 #gem 'enju_bookmark', :git => 'git://github.com/shinozuka/enju_bookmark.git'
 gem 'enju_ssf', :git => "https://mis-enju:3M9irait@github.com/MiraitSystems/enju_ssf.git"
+#gem 'enju_ssf', :path => "../enju_ssf"
 
 gem "jpp_customercode_transfer", "~> 0.0.2"
+
+gem "configatron", '2.9.1'
 
 #
 platforms :ruby do
@@ -39,7 +42,7 @@ gem 'roo'
 gem 'axlsx'
 
 gem 'spinjs-rails'
-gem 'kaminari'
+gem 'kaminari', '~> 0.15.1'
 gem 'settingslogic'
 gem 'delayed_job_active_record'
 gem 'daemons'

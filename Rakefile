@@ -3,6 +3,10 @@
 
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
-require 'ci/reporter/rake/rspec'
+#require 'ci/reporter/rake/rspec'
+begin
+  require 'ci/reporter/rake/rspec'
+rescue LoadError
+end
 
 EnjuLeaf::Application.load_tasks
