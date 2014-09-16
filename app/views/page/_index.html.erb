@@ -123,7 +123,7 @@ $(document).FunctionKeys(
       </div>
     </div>
     <div class="portlet" id="events">
-      <h3 class="title"><%= t('activerecord.models.event') -%></h3>
+      <h3 class="title"><%= t('page.event_and_news') -%></h3>
       <div id="tag_cloud_box">
         <div>
           <% @events.each do |event| %>
@@ -142,6 +142,7 @@ $(document).FunctionKeys(
         <% if @events.size > 0 %>
           <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
         <% end %>
+        <div><%= link_to t('activerecord.models.event_calendar'), calendar_path %></div>
       </div>
     </div>
   </div>
