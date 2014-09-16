@@ -1,11 +1,17 @@
 <%# = render 'manifestations/reservable_facet' -%>
 <%= render 'manifestations/manifestation_type_facet' -%>
 <%= render 'manifestations/library_facet' -%>
-<%= render 'manifestations/in_process_facet' -%>
+<% if user_signed_in? and current_user.has_role?('Librarian') %>
+  <%= render 'manifestations/in_process_facet' -%>
+<% end %>
 <%= render 'manifestations/language_facet' -%>
 <%=
     #render 'manifestations/subject_facet'
 -%>
 <%= render 'manifestations/carrier_type_facet' -%>
-<%= render 'manifestations/missing_issue_facet' -%>
+<% if SystemConfiguration.get('attributes.manifestation.missing_issue') %>
+  <% if user_signed_in? and current_user.has_role?('Librarian') %>
+    <%= render 'manifestations/missing_issue_facet' -%>
+  <% end %>
+<% end %>
 <%= render 'manifestations/circulation_status_facet' -%>
