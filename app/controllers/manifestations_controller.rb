@@ -809,7 +809,6 @@ class ManifestationsController < ApplicationController
   # GET /manifestations/new
   # GET /manifestations/new.json
   def new
-    @manifestation = Manifestation.new
     @select_theme_tags = Manifestation.struct_theme_selects if defined?(EnjuTrunkTheme)
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
