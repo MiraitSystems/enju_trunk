@@ -1419,3 +1419,10 @@ system_configuration_00203:
   description: "返却時に自動で予約資料の取置き・予約者への連絡をする"
   typename: Boolean
   category: 'reserve'
+system_configuration_00204:
+  id: 204
+  keyname: 'attributes.search.user.advanced_search.help'
+  v: ""
+  description: "利用者の詳細検索画面のサブメニューの文言"
+  typename: Text
+  category: 'search_user'

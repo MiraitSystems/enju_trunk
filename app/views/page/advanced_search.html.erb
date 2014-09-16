@@ -76,10 +76,15 @@ $(document).ready(function(){
   <%= javascript_tag("$('#query').focus()") -%>
 </div>
 
-<div id="submenu" class="ui-corner-all">
-  <% unless SystemConfiguration.get("manifestation.isbn_unique") %>
-    <%= raw t('advanced_search.description') %>
-  <% else %>
-    <%= raw t('advanced_search.description_unique_isbn') %>
-  <% end %>
-</div>
+<% if SystemConfiguration.get("attributes.search.user.advanced_search.help").present? %>
+  <div id="submenu" class="ui-corner-all">
+  <%= raw SystemConfiguration.get("attributes.search.user.advanced_search.help") %>
+  <!--
+    <% unless SystemConfiguration.get("manifestation.isbn_unique") %>
+      <%= raw t('advanced_search.description') %>
+    <% else %>
+      <%= raw t('advanced_search.description_unique_isbn') %>
+    <% end %>
+  -->
+  </div>
+<% end %>
