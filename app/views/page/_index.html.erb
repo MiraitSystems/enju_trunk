@@ -142,6 +142,7 @@ $(document).FunctionKeys(
         <% if @events.size > 0 %>
           <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
         <% end %>
+        <div><%= link_to t('activerecord.models.event_calendar'), calendar_path %></div>
       </div>
     </div>
   </div>
