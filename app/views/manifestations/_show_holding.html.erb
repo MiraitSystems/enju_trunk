@@ -75,12 +75,15 @@
               <% end %>
             <% end %>
             <% if item.rent? %>
-              <% if user_signed_in? and current_user.has_role?('Librarian') %>
+              <% if user_signed_in? and (current_user.has_role?('Librarian') || current_user.id == item.checkout.user_id) %>
                 (
                 <%= t('activerecord.attributes.checkout.due_date') %>:
-                <%= l(item.checkouts.first.due_date, :format => :only_date) %>
-                <% if Time.zone.parse(item.checkouts.first.due_date.to_s) < Time.now %>
-                  <span class="not_rent_item"><%= t('activerecord.attributes.checkout.past_due') -%></span>
+                <%= l(item.checkout.due_date, :format => :only_date) %>
+                <% if Time.zone.parse(item.checkout.due_date.to_s) < Time.now %>
+                  <span class="not_rent_item">
+                    <%= t('activerecord.attributes.checkout.past_due') -%>
+                    <%= t('checkout.days_overdue', :days => item.checkout.day_of_overdue) %>
+                  </span>
                 <% end %>
                 )
               <% end %>
