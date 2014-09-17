@@ -184,6 +184,7 @@ module Devise
           Rails.logger.fatal $@.join("\n")
         end
 
+        return user
       end
 
       def username
