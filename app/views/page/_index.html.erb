@@ -125,7 +125,8 @@ $(document).FunctionKeys(
     <div class="portlet" id="events">
       <h3 class="title"><%= t('activerecord.models.event') -%></h3>
       <div id="tag_cloud_box">
-        <div>
+        <!--div style="font-size: 120%;"-->
+        <div class="bigger_font">
           <% @events.each do |event| %>
             <dl>
               <dt>
@@ -140,9 +141,9 @@ $(document).FunctionKeys(
           <% end %>
         </div>
         <% if @events.size > 0 %>
-          <div><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
+          <div class="bigger_font"><%= link_to t('page.listing', :model => t('activerecord.models.event')), events_path %></div>
         <% end %>
-        <div><%= link_to t('activerecord.models.event_calendar'), calendar_path %></div>
+        <div class="bigger_font"><%= link_to t('activerecord.models.event_calendar'), calendar_path %></div>
       </div>
     </div>
   </div>

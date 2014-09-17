@@ -283,6 +283,11 @@ a.title { color: white; }
 a.title:hover { color: white; }
 a.title:visited { color: white; }
 
+.bigger_font{
+  font-size: 120%;
+  font-weight: bold;
+}
+
 form{
   padding: 0;
 }

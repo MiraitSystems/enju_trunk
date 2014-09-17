@@ -673,31 +673,6 @@ a:hover.my_status_button {
   border: 1px solid #999999;
   background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x;
 }
-div#easy_tools_box{
-  padding: 10px;
-  word-wrap: break-word;
-}
-.easy_tools_button {
-  font-size: 1em;
-  width: 210px;
-  text-align: center;
-  margin: 0 0 10px 0;
-  float: left;
-}
-.easy_tools_button_right {
-  margin: 0 5px 0 0;
-}
-a.easy_tools_button,  a:visited.easy_tools_button {
-  color: #333333;
-  border: 1px solid #d3d3d3;
-  background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x;
-  text-decoration: none;
-}
-a:hover.easy_tools_button {
-  color: #000000;
-  border: 1px solid #999999;
-  background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x;
-}
 
 div#family {
   float: right;
