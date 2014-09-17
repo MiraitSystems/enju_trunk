@@ -9,7 +9,7 @@ module Devise
 
         ldap_user_cn = ""
 
-        if params[:user] 
+        if params[:user]
           Rails.logger.info "ldap auth : username=#{username}"
 
           if username == "admin"
@@ -47,9 +47,9 @@ module Devise
 
             user_basedn = ""
             ldap_bind_username = username.dup
-            
+
             ldap_search_auth = {
-              :username => SystemConfiguration.get("ldap.search.auth.username"), 
+              :username => SystemConfiguration.get("ldap.search.auth.username"),
               :password => SystemConfiguration.get("ldap.search.auth.password"),
               :method   => :simple
             }
@@ -72,7 +72,7 @@ module Devise
               #TODO array?
               ldap_user_cn = entry.cn.first
               Rails.logger.info "ldap_search (2) userbasedn=#{userbasedn}"
-              #TODO 
+              #TODO
               ldap_bind_username = userbasedn
             end
 
@@ -106,7 +106,7 @@ module Devise
               success!(user)
             else
               Rails.logger.info "ldap bind (10) : invalid ldap user. try local auth"
-             
+
               resource = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
 
               if validate(resource){ resource.valid_password?(password) }
@@ -158,7 +158,7 @@ module Devise
             Rails.logger.info "create user :      --->#{value}"
           end
         end
-        Rails.logger.info "  " 
+        Rails.logger.info "  "
 =end
 
         begin
@@ -176,6 +176,7 @@ module Devise
             user.library = Library.first
             user.locale = I18n.default_locale.to_s
             user.agent = agent
+            user.own_password = true
             user.save!
          end
         rescue => ex
