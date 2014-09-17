@@ -23,7 +23,13 @@
       <td>
         <%= l(checkout.due_date, :format => :only_date) %><br />
         <% if Time.zone.parse(checkout.due_date.to_s) < Time.now %>
-          <strong style="color: red;"><%= t('activerecord.attributes.checkout.past_due') %></strong><br />
+          <strong style="color: red;">
+            <%= t('activerecord.attributes.checkout.past_due') %>
+            <%- if user_signed_in? && (current_user.has_role?('Librarian') || current_user.id == checkout.user_id) %>
+              <%= t('checkout.days_overdue', :days => checkout.day_of_overdue) %>
+            <%- end -%>
+          </strong>
+          <br />
         <% end %>
         <%- if current_user.has_role?('Librarian') %><%= link_to t('activerecord.attributes.item.loss_item'), {:controller => 'loss_items', :action => 'new', :item_id => checkout.item_id, :user_id => checkout.user.id} -%><%- end -%>
       </td>
