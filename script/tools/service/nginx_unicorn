@@ -37,6 +37,9 @@ http {
              text/javascript application/x-javascript
              application/atom+xml;
 
+ 
+ 
+  
   # this can be any application server, not just Unicorn/Rainbows!
   upstream app_server {
     server unix:/tmp/unicorn_enju_trunk.sock fail_timeout=0;
@@ -66,7 +69,56 @@ http {
     keepalive_timeout 5;
 
     #try_files $uri/index.html $uri.html $uri @app;
+    # =================================================
+    # maintenance mode: touch /var/tmp/do_maintenance
+    # regular mode : rm /var/tmp/do_maintenance
+    if (-e /var/tmp/do_maintenance) {
+      set $maintenance true;
+    }
 
+    if ($remote_addr = 127.0.0.1) {
+      set $maintenance false;
+    }
+    #if ($remote_addr = 'aaa.bbb.ccc.ddd') {
+    #  set $maintenance false;
+    #}
+    error_page 503 @maintenance;
+    location @maintenance {
+      rewrite ^(.*)$ /maintenance.html;
+      root /opt/enju_trunk/public;
+      break;
+    }
+    if ($maintenance = true) {
+      #rewrite ^ /maintenance.html last;
+      return 503;
+    }
+    # =================================================
+  
+    # favicon
+    location = /favicon.ico {
+      error_page    404 = @favicon;
+      access_log    off;
+      log_not_found off;
+    }
+	
+    location @favicon {
+      empty_gif;
+      expires       30d;
+      access_log    off;
+      log_not_found off;
+    }
+
+    # php
+    error_page 404 @notfound;
+    location @notfound {
+      rewrite ^(.*)$ /404.html;
+      root /opt/enju_trunk/public;
+      break;
+    }
+    location ~ \.php$ {
+      return 404;
+    }
+ 
     location / {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
