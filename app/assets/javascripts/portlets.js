@@ -46,10 +46,10 @@ function restoreOrder() {
 }
 
 $(document).ready( function () {
-    $(".column").sortable({
-        connectWith: ['.column'],
-        stop: function() { saveOrder(); }
-    });
+//    $(".column").sortable({
+//        connectWith: ['.column'],
+//        stop: function() { saveOrder(); }
+//    });
 
     $(".portlet")
         .addClass("ui-widget ui-widget-content")

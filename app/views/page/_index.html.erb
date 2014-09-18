@@ -71,6 +71,12 @@ $(document).FunctionKeys(
       <% end %>
     </div>
   </div>
+  <div class="portlet" id="easy_tools">
+    <h3 class="title"><%= t('page.books_information') -%></h3>
+    <div id="easy_tools_box">
+      <%= render 'page/easy_tools' -%>
+    </div>
+  </div>
   <% if user_signed_in? && !current_user.has_role?('Librarian') -%>
     <div class="portlet" id="my_basket">
       <h3 class="title"><%= t('basket.my_status') -%></h3>
@@ -116,12 +122,6 @@ $(document).FunctionKeys(
 
 <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
   <div class="column" id="col3">
-    <div class="portlet" id="easy_tools">
-      <h3 class="title"><%= t('page.books_information') -%></h3>
-      <div id="easy_tools_box">
-        <%= render 'page/easy_tools' -%>
-      </div>
-    </div>
     <div class="portlet" id="events">
       <h3 class="title"><%= t('activerecord.models.event') -%></h3>
       <div id="tag_cloud_box">
