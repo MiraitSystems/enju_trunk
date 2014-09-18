@@ -95,7 +95,7 @@ http {
     # =================================================
   
     # favicon
-    location = /favicon.ico {
+    location ~ ^/favicon.(\w*)$ {
       error_page    404 = @favicon;
       access_log    off;
       log_not_found off;
