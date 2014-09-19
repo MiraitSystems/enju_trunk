@@ -1597,12 +1597,12 @@ en:
         sample_carrier_type: Sample carrier type
         sample_name: Sample name,number
         collection_sources: Information collection sources
-        sample_note: Sample arrival status－note
+        sample_note: note
         group_user_id: Group user
         group_approval_at: Group approval at
         group_approval_result: Group Approval Result
         group_result_reason: Group Result Reason
-        group_note: Group approval－note
+        group_note: note
         adoption_report_flg: Have adoption report
         approval_result: Approval result(last)
         reason: Reason
@@ -1614,16 +1614,6 @@ en:
         all_process_end_at: All process end at
         reception_agent_id: Reception agent
         approval_extexts: Approval extexts
-        approval_status:
-          pending: Penging
-          start_approval: Start approval
-          sample_requested: Sample requested
-          sample_arrival: Sample arrival
-          group_approved: Group approved
-          end_approved: End approved
-          donate_requested: Donate requested
-          replied_donate_request: Replied donate request
-          all_process_end: All process end
         donation_postcard: Donation postcard
         approval_report: Approval report
         sample_request: Sample request
@@ -3123,9 +3113,6 @@ en:
     confirm_update_order: "Are you sure to update acquired number and create payments?"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
-  approval:
-    no_matches_found_manifestation: "no matches found to manifestation"
-    no_blank_identifier: "can't be blank"
   order_output_csv:
     number: "No."
     full_name: "Contracting agency"
@@ -3170,6 +3157,16 @@ en:
     delayed_quantity: "Delayed quantity"
   order_search:
     notset: "Not set"
+  approval:
+    basic_information: "Basic information"
+    group_approval: "Group approval"
+    process: "Process"
+    all: "All"
+    sample: "Sample"
+    approval: "Approva"
+    donate_request: "Donate request"
+    no_matches_found_manifestation: "no matches found to manifestation"
+    no_blank_identifier: "can't be blank"
   approval_search:
     notset: "Not set"
     select_all: "Select all"

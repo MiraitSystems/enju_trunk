@@ -1,0 +1,70 @@
+<script>
+  $(function(){
+    <% approval.process_notes.each_with_index do |extext, i| %>
+      $('#approval_process_notes_attributes_<%= i %>_comment_at').setCalendar({src:'/assets/calendar.png'});
+    <% end %>
+  });
+
+  var ProcessNoteField = {
+    currentNumber : <%= raw (approval.process_notes.blank? ? 1 : approval.process_notes.size).to_json %>,
+    actionTemplate : ''
+      + '<input type="button" value="+" onClick="ProcessNoteField.add();" /> '
+      + '<input type="button" value="-" onClick="ProcessNoteField.remove(__count__);" />',
+    add : function () {
+      var newField = $("<div/>").attr("id", "PN" + this.currentNumber)
+      var cloneProcessNoteState = this.cloneField($("div[id ^= 'PN']:first").find("select[id $= 'state']").attr('id'));
+      var cloneProcessNoteCommentAt = this.cloneField($("div[id ^= 'PN']:first").find("input[id $= 'comment_at']").attr('id'));
+      var cloneProcessNoteValue = this.cloneField($("div[id ^= 'PN']:first").find("textarea[id $= 'value']").attr('id'));
+      var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
+
+      newField.append("<label><%= t('activerecord.attributes.approval_extext.state') %></label").append(cloneProcessNoteState).
+        append("<label><%= t('activerecord.attributes.approval_extext.comment_at') %></label>").
+        append(cloneProcessNoteCommentAt).append("<br/>").append(cloneProcessNoteValue).append(actionButton);
+      cloneProcessNoteState.select2(); 
+      $('div#process_notes').append(newField);
+
+      $('#approval_process_notes_attributes_' + this.currentNumber + '_comment_at').setCalendar({src:'/assets/calendar.png'});
+      this.currentNumber++;
+    },
+    cloneField : function (fieldId) {
+      return $('#' + fieldId).clone().attr({
+        'id' : $('#' + fieldId).attr('id').replace(/_\d+_/, '_' + this.currentNumber + '_'),
+        'name' : $('#' + fieldId).attr('name').replace(/\[\d+\]/, '[' + this.currentNumber + ']'),
+      }).val('');
+    },
+    remove : function (currentNumber) {
+      if($("div:visible[id ^= 'PN']").length == 1) this.add();
+      var field = $('#PN' + currentNumber);
+      field.append('<input name=manifestation[process_notes_attributes][' + currentNumber + '][_destroy] style="display:none" value="1" />');
+      field.hide();
+    }
+  };
+</script>
+
+<br />
+<div class="row">
+  <div><%= f.label :approval_extexts %></div>
+  <div id="process_notes">
+    <% approval.process_notes.each_with_index do |process_note, index| %>
+      <div id= "PN<%= index %>">
+        <%= f.fields_for :process_notes, child_index: index do |pf| %>
+          <%= pf.label :state %>
+          <%= pf.select2 :state, approval_states, process_note.state, alt_display: false, post_attribute: 'v', include_blank: true, width: 200 %>
+          <%= pf.label :comment_at %>
+          <% if process_note.comment_at %>
+            <%= pf.text_field :comment_at, :value => process_note.comment_at.to_date, class: 'date_text_field' %>
+          <% else %>
+            <%= pf.text_field :comment_at, class: 'date_text_field' %>
+          <% end %>
+          <br />
+          <%= pf.text_area :value, style: 'height: 38px;' %>
+          <%= pf.hidden_field :name, value: 'process_note' %>
+          <%= pf.hidden_field :position, value: index + 1 %>
+          <%= button_to_function '+', 'ProcessNoteField.add()' %>
+          <%= button_to_function '-', "ProcessNoteField.remove(#{index})" %>
+        <% end %>
+      </div>
+      <% unless approval.process_notes.last %><br /><% end %>
+    <% end %>
+  </div>
+</div>

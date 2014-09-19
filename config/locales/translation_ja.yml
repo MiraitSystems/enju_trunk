@@ -1615,12 +1615,12 @@ ja:
         sample_carrier_type: サンプル誌の種類
         sample_name: サンプル誌名・巻号等
         collection_sources: 収集情報源
-        sample_note: サンプル誌到着状況－備考
+        sample_note: 備考
         group_user_id: グループ担当
         group_approval_at: グループ見計らい日
         group_approval_result: グループ見計らい結果
         group_result_reason: グループ収録不可理由
-        group_note: グループ見計らい結果－備考
+        group_note: 備考
         adoption_report_flg: 採択可能記事がある
         approval_result: 見計らい結果(最終)
         reason: 収録不可理由
@@ -1632,16 +1632,6 @@ ja:
         all_process_end_at: 全工程完了日
         reception_agent_id: 担当窓口コード
         approval_extexts: 見計らいメモ
-        approval_status:
-          pending: 見計らい開始前
-          start_approval: 見計らい開始
-          sample_requested: サンプル依頼送付済
-          sample_arrival: サンプル誌到着
-          group_approved: グループ見計らい済
-          end_approved: 最終見計らい済
-          donate_requested: 寄贈依頼送付済
-          replied_donate_request: 寄贈依頼返信済
-          all_process_end: 全工程完了
         donation_postcard: 寄贈はがき
         approval_report: 見計らい伝票
         sample_request: サンプル誌依頼
@@ -3146,9 +3136,6 @@ ja:
     no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"
   item_has_operators:
     no_matches_found_user: "欄に入力された利用者番号(%{user_number})に該当する利用者が見つかりませんでした。"
-  approval:
-    no_matches_found_manifestation: "に該当する資料が見つかりませんでした。"
-    no_blank_identifier: "を入力してください。"
   order_output_csv:
     number: "No."
     full_name: "発注機関"
@@ -3193,6 +3180,16 @@ ja:
     delayed_quantity: "延着数"
   order_search:
     notset: "未設定"
+  approval:
+    basic_information: 基本情報
+    group_approval: グループ見計らい
+    process: 工程
+    all: 全体
+    sample: サンプル入手
+    approval: 見計らい
+    donate_request: 寄贈依頼       
+    no_matches_found_manifestation: "に該当する資料が見つかりませんでした。"
+    no_blank_identifier: "を入力してください。"
   approval_search:
     notset: "未設定"
     select_all: "全て選択"

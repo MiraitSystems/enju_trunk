@@ -70,9 +70,9 @@
         <%= t('activerecord.attributes.approval.status') %>:<%= check_box_tag "check_all_status", true, @check_all_status %><%= t('advanced_search.all', :model => t('activerecord.attributes.approval.status')) %>
       </p>
       <ul>
-        <% t('activerecord.attributes.approval.approval_status').each do |key, val| %>
+        <% approval_states.each do |state| %>
           <li style="list-style: none; width: 30%; float: left;">
-            <%= check_box_tag "status[]", key, @selected_status.include?(key.to_s), :class => "status" %><%= val %>
+            <%= check_box_tag "status[]", state.v, @selected_status.include?(state.v.to_s), :class => "status" %><%= state.keyname %>
           </li>
         <% end %>
         <li style="list-style: none; width: 30%; float: left;">
