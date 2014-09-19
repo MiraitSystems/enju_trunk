@@ -1426,3 +1426,10 @@ system_configuration_00204:
   description: "利用者の詳細検索画面のサブメニューの文言"
   typename: Text
   category: 'search_user'
+system_configuration_00205:
+  id: 205
+  keyname: 'attributes.manifestation.use_sub_carrier_type'
+  v: "true"
+  typename: Boolean
+  description: "書誌の項目の資料の形態詳細を利用する"
+  category: 'attributes'
