@@ -567,10 +567,26 @@ class User < ActiveRecord::Base
     @messages << I18n.t('user.not_connect', :user => self.username) if self.unable
     overdues = self.checkouts.overdue(Time.zone.today.beginning_of_day) rescue nil
     @messages << I18n.t('user.overdue_item', :user => self.username, :count => overdues.length) unless overdues.empty?
+    if SystemConfiguration.get('penalty.user_penalty') && [1,2].include?(self.user_group.restrict_checkout_in_penalty)
+      if self.in_penalty
+        @messages << I18n.t('user.in_penalty')
+      elsif self.has_penalty?
+        @messages << I18n.t('user.has_penalty')
+      elsif self.days_after_penalty > 0
+        @messages << I18n.t('user.checkout_probation', :num => self.user_group.checkout_limit_after_penalty_in_probation)
+      end
+    end
     reserves = self.reserves.hold rescue nil
     @messages << I18n.t('user.retained_reserve', :user => self.username, :count => reserves.length) unless reserves.empty?
     return @messages
   end
+
+  def has_penalty?
+    self.checkouts.not_returned.each do |c| 
+      return true if c.days_overdue >= self.user_group.days_to_penalty
+    end 
+    return false
+  end 
 
   def age
     Date.today.year - agent.date_of_birth.year
