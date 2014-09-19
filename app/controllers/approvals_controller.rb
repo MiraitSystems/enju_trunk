@@ -1,6 +1,7 @@
 class ApprovalsController < ApplicationController
   authorize_function
   load_and_authorize_resource
+  before_filter :prepare_options, :only => [:new, :edit]
 
   def initialize
     @selected_status, @selected_approval_result = [], []
@@ -12,8 +13,9 @@ class ApprovalsController < ApplicationController
     # all checked
     @check_all_status = true
     @check_all_approval_result = true
-    statuses = t('activerecord.attributes.approval.approval_status')
-    @selected_status = statuses.present? ? statuses.collect{|k,v| k.to_s} : []
+    statuses = Keycode.where("name = ? AND (started_at <= ? OR started_at IS NULL) AND (? <= ended_at OR ended_at IS NULL)",
+      "approval.states", Time.zone.now, Time.zone.now) rescue nil
+    @selected_status = statuses.present? ? statuses.collect{ |state| state.v.to_s } : []
     @selected_status << "notset" #未設定
     approval_results = self.class.helpers.select_approval_result
     @selected_approval_result = approval_results.present? ? approval_results.collect{|i| i.v} : []
@@ -24,18 +26,11 @@ class ApprovalsController < ApplicationController
   end
 
   def new
-    @approval = Approval.new
     @approval.manifestation_id = params[:manifestation_id]
     @approval.created_by = current_user.id
     @approval.all_process_start_at = Date.today
 
     @manifestation = Manifestation.find(params[:manifestation_id]) if params[:manifestation_id]
-
-    @select_user_tags = Approval.struct_user_selects
-    @select_agent_tags = Approval.struct_agent_selects
-
-    @maxposition = 0
-    @approval.approval_extexts << ApprovalExtext.new(:position => 1, :comment_at => Date.today)
   end
 
   def create
@@ -52,8 +47,7 @@ class ApprovalsController < ApplicationController
         if @approval.manifestation_id
           @manifestation = Manifestation.find(@approval.manifestation_id)
         end
-        @select_user_tags = Approval.struct_user_selects
-        @select_agent_tags = Approval.struct_agent_selects
+        prepare_options
         @identifier = params[:identifier]
         @maxposition = 0
 
@@ -66,8 +60,6 @@ class ApprovalsController < ApplicationController
     @approval = Approval.find(params[:id])
 
     @manifestation = Manifestation.find(@approval.manifestation_id)
-    @select_user_tags = Approval.struct_user_selects
-    @select_agent_tags = Approval.struct_agent_selects
 
     @maxposition = ApprovalExtext.maximum('position', :conditions => ["approval_id = ?", params[:id]])
     @countextexts = ApprovalExtext.count(:conditions => ["approval_id = ?", params[:id]])
@@ -90,9 +82,8 @@ class ApprovalsController < ApplicationController
         format.html { redirect_to @approval, :notice => t('controller.successfully_updated', :model => t('activerecord.models.approval')) }
       else
 
+        prepare_options
         @manifestation = Manifestation.find(@approval.manifestation_id)
-        @select_user_tags = Approval.struct_user_selects
-        @select_agent_tags = Approval.struct_agent_selects
 
         format.html { render :action => "edit" }
      end
@@ -401,4 +392,11 @@ class ApprovalsController < ApplicationController
     send_data(data, type: 'text/csv', filename: "approvals_list_#{Time.now.strftime('%Y_%m_%d_%H_%M_%S')}.csv")
   end
 
+  private
+  def prepare_options
+    @group_users = User.all
+    @select_agent_tags = Agent.joins(:agent_type).where(agent_types: { name: 'Contact' })
+
+    @approval.process_notes << ApprovalExtext.new if @approval.process_notes.blank?
+  end
 end

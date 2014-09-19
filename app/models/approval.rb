@@ -1,11 +1,14 @@
 class Approval < ActiveRecord::Base
-  attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_agent_id, :refuse_at, :sample_arrival_at, :sample_carrier_type, :sample_name, :sample_note, :sample_request_at, :status, :updated_at, :collection_sources,
-                  :approval_extexts_attributes,
-                  :approval_identifier, :thrsis_review_flg, :ja_text_author_summary_flg, :en_text_author_summary_flg, :proceedings_number_of_year, :excepting_number_of_year, :four_priority_areas, :document_classification_1, :document_classification_2
+  attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, 
+                  :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, 
+                  :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_agent_id, :refuse_at, :sample_arrival_at, 
+                  :sample_carrier_type, :sample_name, :sample_note, :sample_request_at, :status, :updated_at, :collection_sources,
+                  :approval_identifier, :thrsis_review_flg, :ja_text_author_summary_flg, :en_text_author_summary_flg, :proceedings_number_of_year, 
+                  :excepting_number_of_year, :four_priority_areas, :document_classification_1, :document_classification_2,
+                  :approval_extexts_attributes, :process_notes_attributes
 
   attr_accessor :identifier
 
-  has_many :approval_extexts, :dependent => :destroy, :order => "position"
   belongs_to :manifestation
   belongs_to :create_user, :class_name => "User", :foreign_key => :created_by
   belongs_to :group_user, :class_name => "User", :foreign_key => :group_user_id
@@ -18,7 +21,10 @@ class Approval < ActiveRecord::Base
   belongs_to :document_classification_1_code, :class_name => 'Keycode', :foreign_key => 'document_classification_1'
   belongs_to :document_classification_2_code, :class_name => 'Keycode', :foreign_key => 'document_classification_2'
 
-  accepts_nested_attributes_for :approval_extexts
+  #TODO accepts_nested_attributes_for :approval_extexts
+  has_many :approval_extexts, :dependent => :destroy, :order => "position"
+  has_many :process_notes, class_name: 'ApprovalExtext', dependent: :destroy, conditions: { name: 'notes' }
+  accepts_nested_attributes_for :process_notes, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? and !(ApprovalExtext.find(a[:id]) rescue nil) }
 
   validates_uniqueness_of :approval_identifier, :allow_nil => true, :allow_blank => true
 
@@ -116,39 +122,12 @@ class Approval < ActiveRecord::Base
     end
   end 
 
-  def self.struct_user_selects
-    struct_user = Struct.new(:id, :text)
-    @struct_user_array = []
-    struct_select = User.all
-    struct_select.each do |user|
-      @struct_user_array << struct_user.new(user.id, user.username)
-    end
-    return @struct_user_array
-  end
-
-
-  def self.struct_agent_selects
-    struct_agent = Struct.new(:id, :text)
-    @struct_agent_array = []
-    type_id = AgentType.find(:first, :conditions => ["name = ?", 'Contact'])
-    struct_select = Agent.find(:all, :conditions => ["agent_type_id = ?",type_id])
-    struct_select.each do |agent|
-      @struct_agent_array << struct_agent.new(agent.id, agent.full_name)
-    end
-    return @struct_agent_array
-  end
-
-
   def mark_destroy_extext
-    approval_extexts.each do |extext|
-      extext.mark_for_destruction if extext.value.blank? 
-    end
+    approval_extexts.each { |extext| extext.mark_for_destruction if extext.value.blank? } 
   end
 
   def set_created_by_extext
-    approval_extexts.each do |extext|
-      extext.created_by = User.current_user.id unless extext.created_by
-    end
+    approval_extexts.each { |extext| extext.created_by = User.current_user.id unless extext.created_by }
   end
 
 

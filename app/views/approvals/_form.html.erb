@@ -1,5 +1,6 @@
 <%- if @manifestation -%>
   <%= render 'manifestations/title', :manifestation => @manifestation -%>
+  <br />
 <%- end -%>
 
 <script>
@@ -13,407 +14,402 @@ $(function(){
   $('#approval_donate_request_replay_at').setCalendar({src:'/assets/calendar.png'});
   $('#approval_refuse_at').setCalendar({src:'/assets/calendar.png'});
   $('#approval_all_process_end_at').setCalendar({src:'/assets/calendar.png'});
-
-
-  <% @approval.approval_extexts.each_with_index do |extext, i| %>
-    $('#approval_approval_extexts_attributes_<%= i %>_comment_at').setCalendar({src:'/assets/calendar.png'});
-  <% end %>
-
 });
 </script>
 
-<script>
-  $(document).ready(function() {
-    $("#approval_group_user_id").select2({
-      multiple: false,
-      data: <%= raw @select_user_tags.to_json -%>,
-      formatNoMatches: function(user) {
-        return <%= raw t("page.approval.no_matches_found_user").to_json %>;
-      },
-      width: "300px",
-    });
-  });
-
-  $(document).ready(function() {
-    $("#approval_reception_agent_id").select2({
-      multiple: false,
-      data: <%= raw @select_agent_tags.to_json -%>,
-      formatNoMatches: function(user) {
-        return <%= raw t("page.approval.no_matches_found_agent").to_json %>;
-      },
-      width: "300px",
-    });
-  });
-
-</script>
-
-<br />
 <%= form_for(@approval) do |f| %>
-  <%= f.error_messages %>
 
-  <%= f.hidden_field :manifestation_id %>
+  <div id="table" %>
 
-  <% unless @manifestation %>
-    <div class="field">
-    <strong><%= t('activerecord.attributes.manifestation.identifier') %></strong><br />
-      <%= text_field '','identifier', :value => @identifier %>
+    <%= f.error_messages %>
+
+    <%= f.hidden_field :manifestation_id %>
+
+    <div class="row">
+      <div><h4><%= t('approval.basic_information') %></h4></div>
+      <div></div>
     </div>
-  <% end %>
 
-  <div class="field">
-    <%= f.label :created_by %><br />
-    <%= @approval.create_user.agent.full_name %>
-    <%= f.hidden_field :created_by %>
-  </div>
-
-  <div class="field">
-    <%= f.label :collect_user %><br />
-    <%= f.text_field :collect_user -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :all_process_start_at %><br />
-    <% if @approval.all_process_start_at %>
-      <%= f.text_field :all_process_start_at, :value => @approval.all_process_start_at.to_date -%>
-    <% else %>
-      <%= f.text_field :all_process_start_at %>
+    <% unless @manifestation %>
+      <div class="row">
+        <div><strong><%= t('activerecord.attributes.manifestation.identifier') %></strong></div>
+        <div><%= text_field '','identifier', :value => @identifier %></div>
+      </div>
     <% end %>
-  </div>
 
-  <div class="field">
-    <%= f.label :status %><br />
-    <%= t("activerecord.attributes.approval.approval_status.#{@approval.status}") %>
-    <%= f.hidden_field :status -%>
-  </div>
-
-  <% if select_publication_status %>
-    <div class="field">
-      <%= f.label :publication_status %><br />
-      <%= f.collection_select :publication_status, select_publication_status, :v, :keyname, :include_blank => true -%>
+    <div class="row">
+      <div><%= f.label :approval_identifier %></div>
+      <div><%= f.text_field :approval_identifier %></div>
     </div>
-  <% end %>
 
-  <div class="field">
-    <%= f.label :sample_request_at %><br />
-    <% if @approval.sample_request_at %>
-      <%= f.text_field :sample_request_at, :value => @approval.sample_request_at.to_date -%>
-    <% else %>
-      <%= f.text_field :sample_request_at %>
+    <div class="row">
+      <div><%= f.label :created_by %></div>
+      <div>
+        <%= @approval.create_user.agent.full_name %>
+        <%= f.hidden_field :created_by %>
+      </div>
+    </div>
+ 
+    <div class="row">
+      <div><%= f.label :reception_agent_id %></div>
+      <div>
+        <%= f.select2 :reception_agent_id,
+          @select_agent_tags,
+          @approval.reception_agent_id,
+          select_attribute: ['username', 'user'],
+          display_attribute: 'full_name',
+          include_blank: true, 
+          width: 250 %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :collection_sources %></div>
+      <div><%= f.text_field :collection_sources %></div>
+    </div>
+
+    <hr />
+    <div class="row">
+      <div><h4><%= t('approval.group_approval') %></h4></div>
+      <div></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :group_user_id %></div>
+      <div>
+        <%= f.select2 :group_user_id, 
+          @group_users,
+          @approval.four_priority_areas,
+          select_attribute: 'username', 
+          display_attribute: ['full_name', 'agent'],
+          include_blank: true, 
+          width: 250 %>
+      </div>
+    </div>
+
+    <% if select_four_priority_areas %>
+      <div class="row">
+        <div><%= f.label :four_priority_areas %></div>
+        <div>
+          <%= f.select2 :four_priority_areas, 
+            select_four_priority_areas,
+            @approval.four_priority_areas,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true, 
+            width: 250 %>
+        </div>
+      </div>
     <% end %>
-  </div>
-  <div class="field">
-    <%= f.label :sample_arrival_at %><br />
-    <% if @approval.sample_arrival_at %>
-      <%= f.text_field :sample_arrival_at, :value => @approval.sample_arrival_at.to_date -%>
-    <% else %>
-      <%= f.text_field :sample_arrival_at %>
-    <% end %>
-  </div>
-
-  <% if select_sample_carrier_type %>
-    <div class="field">
-      <%= f.label :sample_carrier_type %><br />
-      <%= f.collection_select :sample_carrier_type, select_sample_carrier_type, :v, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :sample_name %><br />
-    <%= f.text_field :sample_name -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :collection_sources %><br />
-    <%= f.text_field :collection_sources -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :sample_note %><br />
-    <%= f.text_field :sample_note -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :group_user_id %><br />
-    <%= f.text_field :group_user_id -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :group_approval_at %><br />
-    <% if @approval.group_approval_at %>
-      <%= f.text_field :group_approval_at, :value => @approval.group_approval_at.to_date -%>
-
-    <% else %>
-      <%= f.text_field :group_approval_at %>
-    <% end %>
-  </div>
-
-  <% if select_approval_result %>
-    <div class="field">
-      <%= f.label :group_approval_result %><br />
-      <%= f.collection_select :group_approval_result, select_approval_result, :v, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <% if select_group_result_reason %>
-    <div class="field">
-      <%= f.label :group_result_reason %><br />
-      <%= f.collection_select :group_result_reason, select_group_result_reason, :v, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :group_note %><br />
-    <%= f.text_area :group_note -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :adoption_report_flg %><br />
-    <%= f.check_box :adoption_report_flg -%>
-  </div>
-
-  <% if select_approval_result %>
-    <div class="field">
-      <%= f.label :approval_result %><br />
-      <%= f.collection_select :approval_result, select_approval_result, :v, :keyname, :include_blank => true -%>
-    
-</div>
-  <% end %>
-
-  <% if select_reason %>
-    <div class="field">
-      <%= f.label :reason %><br />
-      <%= f.collection_select :reason, select_reason, :v, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :approval_end_at %><br />
-    <% if @approval.approval_end_at %>
-      <%= f.text_field :approval_end_at, :value => @approval.approval_end_at.to_date -%>
-    <% else %>
-      <%= f.text_field :approval_end_at -%>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :donate_request_at %><br />
-    <% if @approval.donate_request_at %>
-    <%= f.text_field :donate_request_at, :value => @approval.donate_request_at.to_date -%>
-    <% else %>
-    <%= f.text_field :donate_request_at -%>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :donate_request_replay_at %><br />
-    <% if @approval.donate_request_replay_at %>
-      <%= f.text_field :donate_request_replay_at, :value => @approval.donate_request_replay_at.to_date -%>
-    <% else %>
-      <%= f.text_field :donate_request_replay_at -%>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :refuse_at %><br />
-    <% if @approval.refuse_at %>
-      <%= f.text_field :refuse_at, :value => @approval.refuse_at.to_date -%>
-    <% else %>
-      <%= f.text_field :refuse_at -%>
-    <% end %>
-  </div>
-
-  <% if select_donate_request_result  %>
-    <div class="field">
-      <%= f.label :donate_request_result %><br />
-      <%= f.collection_select :donate_request_result, select_donate_request_result, :v, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :all_process_end_at %><br />
-    <% if @approval.all_process_end_at %>
-      <%= f.text_field :all_process_end_at, :value => @approval.all_process_end_at.to_date -%>
-    <% else %>
-      <%= f.text_field :all_process_end_at -%>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :reception_agent_id %><br />
-    <%= f.text_field :reception_agent_id -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :approval_identifier %><br />
-    <%= f.text_field :approval_identifier -%>
-  </div>
-
-  <% if select_thrsis_review_flg  %>
-    <div class="field">
-      <%= f.label :thrsis_review_flg %><br />
-      <%= f.collection_select :thrsis_review_flg, select_thrsis_review_flg, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <% if select_ja_text_author_summary_flg  %>
-    <div class="field">
-      <%= f.label :ja_text_author_summary_flg %><br />
-      <%= f.collection_select :ja_text_author_summary_flg, select_ja_text_author_summary_flg, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <% if select_en_text_author_summary_flg  %>
-    <div class="field">
-      <%= f.label :en_text_author_summary_flg %><br />
-      <%= f.collection_select :en_text_author_summary_flg, select_en_text_author_summary_flg, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :proceedings_number_of_year %><br />
-    <%= f.text_field :proceedings_number_of_year -%>
-  </div>
-
-  <div class="field">
-    <%= f.label :excepting_number_of_year %><br />
-    <%= f.text_field :excepting_number_of_year -%>
-  </div>
-
-  <% if select_four_priority_areas  %>
-    <div class="field">
-      <%= f.label :four_priority_areas %><br />
-      <%= f.collection_select :four_priority_areas, select_four_priority_areas, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <% if select_document_classification_1 %>
-    <div class="field">
-      <%= f.label :document_classification_1 %><br />
-      <%= f.collection_select :document_classification_1, select_document_classification_1, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-  <% if select_document_classification_2 %>
-    <div class="field">
-      <%= f.label :document_classification_2 %><br />
-      <%= f.collection_select :document_classification_2, select_document_classification_2, :id, :keyname, :include_blank => true -%>
-    </div>
-  <% end %>
-
-<script>
-
-  var ItemField = {
-    currentNumber : <%= @maxposition %>,
-    itemTemplate : ''
-                 + '<div class="field">'
-
-                 + '<label for="approval_approval_extexts_attributes___count___value"><%= t('activerecord.attributes.approval_extext.value') %></label> '
-
-                 + '<input type="button" value="+" onClick="ItemField.add();" /> '
-                 + '<input type="button" value="-" onClick="ItemField.remove(__count__);" /><br />'
-
-                 + '<textarea cols="40" id="approval_approval_extexts_attributes___count___value" name="approval[approval_extexts_attributes][__count__][value]" rows="20"></textarea>'
-
-                 + '</div>'
-                 + '<div class="field">'
-
-                 + '<label for="approval_approval_extexts_attributes___count___state"><%= t('activerecord.attributes.approval_extext.state') %></label><br />'
-
-                 + '<select id="approval_approval_extexts_attributes___count___state" name="approval[approval_extexts_attributes][__count__][state]"><option value=""></option>'
-
-
-               <% t('activerecord.attributes.approval.approval_status').each do |key, val| %>
-                 + ' <option value="<%= key %>"><%= val %></option>'
-                <% end %>
-
-                 + '</div>'
-
-                 + '<input id="approval_approval_extexts_attributes___count___position" name="approval[approval_extexts_attributes][__count__][position]" type="hidden" value=__count__ /><br />'
-
-                 + '<div class="field">'
-
-                 + '<label for="approval_approval_extexts_attributes___count___comment_at"><%= t('activerecord.attributes.approval_extext.comment_at') %></label><br />'
-
-                 + '<input id="approval_approval_extexts_attributes___count___comment_at" name="approval[approval_extexts_attributes][__count__]][comment_at]" size="30" type="text" value="<%= Date.today %>" />'
-
-                 +'</div><br />',
-
-    add : function () {
-
-      this.currentNumber++;
-      var field = document.getElementById('SF' + this.currentNumber);
-
-      var replaceCount = this.currentNumber;
-      var newItem = this.itemTemplate.replace(/__count__/mg, replaceCount);
-      field.innerHTML = newItem
-
-      var nextNumber = this.currentNumber + 1;
-      var new_area = document.createElement("div");
-      new_area.setAttribute("id", "SF" + nextNumber);
-
-      var extext_field = document.getElementById('extexts');
-
-      extext_field.appendChild(new_area);
-
-      $('#approval_approval_extexts_attributes_' + replaceCount + '_comment_at').setCalendar({src:'/assets/calendar.png'});
-
-    },
-    remove : function (sfno) {
-      if ( this.currentNumber == 0) { return; }
-
-
-      var field = document.getElementById('SF' + (sfno));
-      var input_value = document.getElementById("approval_approval_extexts_attributes_" + sfno + "_value");
-      input_value.value = ""
-
-      var select_state = document.getElementById("approval_approval_extexts_attributes_" + sfno + "_state").getElementsByTagName('option');
-      select_state[0].selected = true;
-
-      field.style.display="none";
-
-    }
-  };
-
-</script>
-
-
-  <div id="extexts">
-    <%= f.label :approval_extexts %><br />   
-    <% i = 0 %>
-      <%= f.fields_for :approval_extexts, @approval.approval_extexts do |extext|  %>
-        <div id= "SF<%= i %>">
-          <div class="field">
-            <%= extext.label :value%>
-            <%= button_to_function '+', 'ItemField.add()' %>
-            <%= button_to_function '-', "ItemField.remove(#{i})" if i > 0 %><br />
-            <%= extext.text_area :value %>
-          </div>
-
-          <div class="field" >  
-            <%= extext.label :state %><br />
-            <%= extext.select :state, t('activerecord.attributes.approval.approval_status').invert, :include_blank => true %>
-          </div>
-
-          <div class="field">
-            <%= extext.label :comment_at %><br />
-            <% if @approval.approval_extexts[i].comment_at %>
-              <%= extext.text_field :comment_at, :value => @approval.approval_extexts[i].comment_at.to_date %>
-            <% else %>
-              <%= extext.text_field :comment_at %>
-            <% end %>
-          </div>
-
-          <%= extext.hidden_field :position %><br />
-
-        </div> 
-        <% i += 1 %>
+    <div class="row">
+      <% if select_document_classification_1 %>
+        <div><%= f.label :document_classification_1 %></div>
+        <div>
+          <%= f.select2 :document_classification_1, 
+            select_document_classification_1, 
+            @approval.document_classification_1,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
       <% end %>
-    <div id="SF<%= @maxposition+1 %>" class="field">
+      <% if select_document_classification_2 %>
+        <div><%= f.label :document_classification_2 %></div>
+        <div>
+          <%= f.select2:document_classification_2, 
+            select_document_classification_2,
+            @approval.document_classification_2,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
     </div>
- </div>
 
-  <div class="actions">
-    <%= f.submit %>
+    <% if select_thrsis_review_flg %>
+      <div class="row">
+        <div><%= f.label :thrsis_review_flg %></div>
+        <div>
+          <%= f.select2 :thrsis_review_flg, 
+            select_thrsis_review_flg, 
+            @approval.thrsis_review_flg,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="row">
+      <% if select_ja_text_author_summary_flg %>
+        <div><%= f.label :ja_text_author_summary_flg %></div>
+        <div>
+          <%= f.select2 :ja_text_author_summary_flg, 
+            select_ja_text_author_summary_flg, 
+            @approval.ja_text_author_summary_flg,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+      <% if select_en_text_author_summary_flg %>
+        <div><%= f.label :en_text_author_summary_flg %></div>
+        <div>
+          <%= f.select2 :en_text_author_summary_flg, 
+            select_en_text_author_summary_flg, 
+            @approval.en_text_author_summary_flg,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :adoption_report_flg %></div>
+      <div><%= f.check_box :adoption_report_flg %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :excepting_number_of_year %></div>
+      <div><%= f.text_field :excepting_number_of_year %></div>
+      <div><%= f.label :proceedings_number_of_year %></div>
+      <div><%= f.text_field :proceedings_number_of_year %></div>
+    </div>
+
+    <div class="row">
+      <% if select_approval_result %>
+        <div><%= f.label :group_approval_result %></div>
+        <div>
+          <%= f.select2 :group_approval_result, 
+            select_approval_result, 
+            @approval.group_approval_result,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+      <% if select_group_result_reason %>
+        <div><%= f.label :group_result_reason %></div>
+        <div>
+          <%= f.select2 :group_result_reason, 
+            select_group_result_reason,
+            @approval.group_result_reason,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :group_note %></div>
+      <div><%= f.text_area :group_note, style: "width: 657px; height: 40px;" %></div>
+    </div>
+
+    <hr />
+    <div class="row">
+      <div><h4><%= t('approval.process') %></h4></div>
+      <div></div>
+    </div>
+
+    <div class="row">
+      <div><strong>1. <%= t('approval.all') %></strong></div>
+      <div></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :all_process_start_at %></div>
+      <div>
+        <% if @approval.all_process_start_at %>
+          <%= f.text_field :all_process_start_at, :value => @approval.all_process_start_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :all_process_start_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+      <div><%= f.label :all_process_end_at %></div>
+      <div>
+        <% if @approval.all_process_end_at %>
+          <%= f.text_field :all_process_end_at, :value => @approval.all_process_end_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :all_process_end_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+    </div>
+    <div class="row">
+      <div><%= f.label :collect_user %></div>
+      <div><%= f.text_field :collect_user, style: "width: 347px;"  %></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :status %></div>
+      <div>
+        <%= t("activerecord.attributes.approval.approval_status.#{@approval.status}") %>
+        <%= f.hidden_field :status %>
+      </div>
+    </div>
+    <% if select_publication_status %>
+      <div class="row">
+        <div><%= f.label :publication_status %></div>
+        <div>
+          <%= f.select2 :publication_status,
+            select_publication_status,
+            @approval.publication_status,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 350 %>
+        </div>
+      </div>
+    <% end %>
+
+    <br />
+    <div class="row">
+      <div><strong>2. <%= t('approval.sample') %></strong></div>
+      <div></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :sample_request_at %></div>
+      <div>
+        <% if @approval.sample_request_at %>
+          <%= f.text_field :sample_request_at, :value => @approval.sample_request_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :sample_request_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+      <div><%= f.label :sample_arrival_at %></div>
+      <div>
+        <% if @approval.sample_arrival_at %>
+          <%= f.text_field :sample_arrival_at, :value => @approval.sample_arrival_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :sample_arrival_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+    </div>
+    <% if select_sample_carrier_type %>
+      <div class="row">
+        <div><%= f.label :sample_carrier_type %></div>
+        <div>
+          <%= f.select2 :sample_carrier_type,
+            select_sample_carrier_type,
+            @approval.sample_carrier_type,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      </div>
+    <% end %>
+    <div class="row">
+      <div><%= f.label :sample_note %></div>
+      <div><%= f.text_area :sample_note, style: "width: 657px; height: 40px;" %></div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div><strong>3. <%= t('approval.approval') %></strong></div>
+      <div></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :group_approval_at %></div>
+      <div>
+        <% if @approval.group_approval_at %>
+          <%= f.text_field :group_approval_at, :value => @approval.group_approval_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :group_approval_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+      <div><%= f.label :approval_end_at %></div>
+      <div>
+        <% if @approval.approval_end_at %>
+          <%= f.text_field :approval_end_at, :value => @approval.approval_end_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :approval_end_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+    </div>
+    <div class="row">
+      <% if select_approval_result %>
+        <div><%= f.label :approval_result %></div>
+        <div>
+          <%= f.select2 :approval_result,
+            select_approval_result,
+            @approval.approval_result,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+      <% if select_reason %>
+        <div><%= f.label :reason %></div>
+        <div>
+          <%= f.select2 :reason,
+            select_reason,
+            @approval.reason,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+    </div>
+
+    <br />
+    <div class="row">
+      <div><strong>4. <%= t('approval.donate_request') %></strong></div>
+      <div></div>
+    </div>
+    <div class="row">
+      <div><%= f.label :donate_request_at %></div>
+      <div>
+         <% if @approval.donate_request_at %>
+           <%= f.text_field :donate_request_at, value: @approval.donate_request_at.to_date, class: 'date_text_field' %>
+         <% else %>
+           <%= f.text_field :donate_request_at, class: 'date_text_field' %>
+         <% end %>
+      </div>
+      <div><%= f.label :donate_request_replay_at %></div>
+      <div>
+        <% if @approval.donate_request_replay_at %>
+          <%= f.text_field :donate_request_replay_at, :value => @approval.donate_request_replay_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :donate_request_replay_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+    </div>
+    <div class="row">
+      <% if select_donate_request_result %>
+        <div><%= f.label :donate_request_result %></div>
+        <div>
+          <%= f.select2 :donate_request_result, 
+            select_donate_request_result,
+            @approval.donate_request_result,
+            select_attribute: 'v', 
+            display_attribute: 'keyname',
+            include_blank: true,
+            width: 250 %>
+        </div>
+      <% end %>
+      <div><%= f.label :refuse_at %></div>
+      <div>
+        <% if @approval.refuse_at %>
+          <%= f.text_field :refuse_at, :value => @approval.refuse_at.to_date, class: 'date_text_field' %>
+        <% else %>
+          <%= f.text_field :refuse_at, class: 'date_text_field' %>
+        <% end %>
+      </div>
+    </div>
+    <%= render 'form_process_notes', f: f, approval: @approval %>
+
+    <div class="row actions">
+      <div></div>
+      <div><%= f.submit %></div>
+    </div>
   </div>
 <% end %>
-

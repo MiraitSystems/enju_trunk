@@ -72,6 +72,11 @@ module ApprovalsHelper
     return Keycode.where("name = ? AND (ended_at < ? OR ended_at IS NULL)", document_classification_2_key, Time.zone.now) rescue nil
   end
 
+  def approval_states
+    return Keycode.where("name = ? AND (started_at <= ? OR started_at IS NULL) AND (? <= ended_at OR ended_at IS NULL)", 
+      "approval.states", Time.zone.now, Time.zone.now) rescue nil
+  end
+
   def get_keyname_publication_status(v)
     if respond_to? :publication_status_key
       keycode = Keycode.find(:first, :conditions => ["name = ? and v = ?", publication_status_key, v])
@@ -162,7 +167,5 @@ module ApprovalsHelper
     end
 
   end
-
-
 end
 
