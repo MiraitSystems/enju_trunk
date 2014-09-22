@@ -73,9 +73,10 @@ class Manifestation < ActiveRecord::Base
   searchable(SUNSPOT_EAGER_LOADING) do
     text :extexts do
       if root_of_series? # 雑誌の場合
-        series_manifestations.each do |m|
-          m.manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
-        end
+        series_manifestations_manifestation_extexts_values.compact
+        #series_manifestations.each do |m|
+        #  m.manifestation_extexts.map(&:value).compact if m.manifestation_extexts.size > 0
+        #end
       else
         manifestation_extexts.map(&:value).compact if try(:manifestation_extexts).size > 0
       end
@@ -939,6 +940,14 @@ class Manifestation < ActiveRecord::Base
       identifier = identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
     end
     return identifier.present?
+  end
+
+  def series_manifestations_manifestation_extexts_values
+    values = []
+    series_manifestations.each do |m|
+      values << m.manifestation_extexts.map(&:value).compact if m.manifestation_extexts.size > 0
+    end
+    return values
   end
 
   def self.build_search_for_manifestations_list(search, query, with_filter, without_filter)
