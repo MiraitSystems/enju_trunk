@@ -957,7 +957,7 @@ ja:
         restrict_checkout_after_penalty_types:
           no0: いいえ
           yes1: はい（冊数制限あり）
-        checkout_limit_after_penalty_in_probation: 罰則時の貸出制限冊数
+        checkout_limit_after_penalty_in_probation: 罰則後の貸出制限冊数
       resource_import_file:
         resource_import_file_name: ファイル名
         resource_import_content_type: Content-Type

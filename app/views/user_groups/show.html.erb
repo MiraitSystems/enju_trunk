@@ -58,6 +58,10 @@
   <strong><%= t('activerecord.attributes.user_group.restrict_checkout_after_penalty') -%>:</strong>
   <%= i18n_restrict_checkout_after_penalty(@user_group.restrict_checkout_after_penalty) %>
 </p>
+<p>
+  <strong><%= t('activerecord.attributes.user_group.checkout_limit_after_penalty_in_probation') -%>:</strong>
+  <%= @user_group.checkout_limit_after_penalty_in_probation %>
+</p>
 
 <p>
   <strong><%= t('activerecord.attributes.user_group.note') -%>:</strong>
