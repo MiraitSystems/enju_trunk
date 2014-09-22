@@ -2318,6 +2318,11 @@ en:
     library_group_answer: Answers from %{library_group_name}
     specify_question: Specify the question.
     count: Count
+  basket:
+    all_manifestation: All manifestation
+    show_basket: Show basket
+    clear_basket: Clear basket
+    out: Out
   library:
     map: Map
     staff: Staff
