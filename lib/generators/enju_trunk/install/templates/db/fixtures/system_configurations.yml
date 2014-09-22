@@ -1442,7 +1442,7 @@ system_configuration_00206:
   category: 'attributes'
 system_configuration_00207:
   id: 207
-  keyname: 'attributes.subject.subject_transcription'
+  keyname: 'attributes.subject.term_transcription'
   v: "true"
   typename: Boolean
   description: "書誌項目の件名ヨミを利用する"
