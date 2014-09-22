@@ -588,6 +588,13 @@ class User < ActiveRecord::Base
     return false
   end 
 
+  def self.set_penalty(date = Date.yesterday)
+    return unless SystemConfiguration.get('penalty.user_penalty')
+    Checkout.overdue(date).each do |checkout|
+      checkout.user.update_attribute(:in_penalty, true) if checkout.user.has_penalty?
+    end
+  end
+
   def age
     Date.today.year - agent.date_of_birth.year
   end
