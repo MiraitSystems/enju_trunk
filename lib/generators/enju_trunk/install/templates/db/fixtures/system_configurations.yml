@@ -1433,3 +1433,10 @@ system_configuration_00205:
   typename: Boolean
   description: "書誌の項目の資料の形態詳細を利用する"
   category: 'attributes'
+system_configuration_00206:
+  id: 206
+  keyname: 'manifestation.show_holdings'
+  v: "false"
+  typename: Boolean
+  description: "書誌検索結果画面で所蔵の情報を表示する"
+  category: 'manifestation'
