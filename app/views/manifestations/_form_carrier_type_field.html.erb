@@ -1,4 +1,4 @@
-<% if SystemConfiguration.get('attributes.manifestation.use_sub_carrier_type') %>
+<% if SystemConfiguration.get('attributes.manifestation.sub_carrier_type_id') %>
 <script>
   var ManifestationFieldSubCarrierTypeSelect2 = {
     subCarrierTypeSelect2options: {
@@ -52,7 +52,7 @@
   <div>
     <div class='row2'>
       <%= f.select2(:carrier_type_id, carrier_types, manifestation.carrier_type_id, :select_attribute => 'name', :display_attribute => 'display_name', :alt_display => true, :width => 310) %>
-      <% if SystemConfiguration.get('attributes.manifestation.use_sub_carrier_type') %>
+      <% if SystemConfiguration.get('attributes.manifestation.sub_carrier_type_id') %>
         <%= text_field_tag "manifestation[sub_carrier_type_id]", manifestation[:sub_carrier_type_id], :id => 'manifestation_sub_carrier_type_id', :width => 10 %>
       <% end %>
     </div>

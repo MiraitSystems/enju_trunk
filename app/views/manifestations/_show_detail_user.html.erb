@@ -86,7 +86,7 @@
             <%= form_icon(manifestation.carrier_type) -%> <%= manifestation.carrier_type.display_name.localize -%>
           </td>
         </tr>
-        <% if SystemConfiguration.get('attributes.manifestation.use_sub_carrier_type') %>
+        <% if SystemConfiguration.get('attributes.manifestation.sub_carrier_type_id') %>
           <tr>
             <td><%= t('activerecord.models.sub_carrier_type') %>:</td>
             <td><span><%= manifestation.sub_carrier_type.display_name.localize if manifestation.sub_carrier_type %></span></td>
