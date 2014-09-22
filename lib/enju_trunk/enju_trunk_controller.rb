@@ -578,7 +578,10 @@ module EnjuTrunk
            subjects << subject if subject.present?
          else
            # new record
-           subject = Subject.new(:term => add_subject[:subject_id], :term_transcription => add_subject[:term_transcription], :subject_type_id => add_subject[:subject_type_id])
+           subject = Subject.new
+           subject.term = add_subject[:subject_id]
+           subject.term_transcription = add_subject[:term_transcription]
+           subject.subject_type_id = add_subject[:subject_type_id] || 1 #TODO
            subject.required_role = Role.where(:name => 'Guest').first
            subjects << subject
          end

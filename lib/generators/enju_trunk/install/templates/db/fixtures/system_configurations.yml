@@ -1433,3 +1433,17 @@ system_configuration_00205:
   typename: Boolean
   description: "書誌の項目の資料の形態詳細を利用する"
   category: 'attributes'
+system_configuration_00206:
+  id: 206
+  keyname: 'attributes.subject.subject_type_id'
+  v: "true"
+  typename: Boolean
+  description: "書誌項目の件名タイプを利用する"
+  category: 'attributes'
+system_configuration_00207:
+  id: 207
+  keyname: 'attributes.subject.term_transcription'
+  v: "true"
+  typename: Boolean
+  description: "書誌項目の件名ヨミを利用する"
+  category: 'attributes'
