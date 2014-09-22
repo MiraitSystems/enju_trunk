@@ -705,18 +705,13 @@ class Manifestation < ActiveRecord::Base
     (creators + contributors + publishers).flatten
   end
 
-  def reservable_with_item?(user = nil)
-    if SystemConfiguration.get("reserve.not_reserve_on_loan").nil?
-      return true
-    end
+  def reservable_with_item?(user = nil) #TODO reservabl? メソッドと重複？
+    #TODO reserve.not_reserve_on_loan 変数名と実態が異なる
+    # true で 貸出中のみ予約可能
     if SystemConfiguration.get("reserve.not_reserve_on_loan")
-      if user.try(:has_role?, 'Librarian')
-        return true
-      end
-      if items.index {|item| item.available_for_reserve_with_config? }
-        return true
-      else
-        return false
+      return true if user.try(:has_role?, 'Librarian')
+      items.each do |i|
+        return false unless i.available_for_reserve_with_config?
       end
     end
     return true
@@ -727,7 +722,12 @@ class Manifestation < ActiveRecord::Base
       return false if items.for_checkout.empty? 
     end
     return false if self.periodical_master?
-    true
+    if SystemConfiguration.get("reserve.not_reserve_on_loan")
+      items.each do |i|
+        return false unless i.available_for_reserve_with_config?
+      end
+    end
+    return true
   end
 
   def in_process?
