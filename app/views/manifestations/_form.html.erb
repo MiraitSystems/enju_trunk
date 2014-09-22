@@ -340,7 +340,7 @@ $(document).keydown(function(e) {
     <div><%= f.text_area :note, :class => 'resource_textarea' -%></div>
   </div>
 
-  <%= render :partial => 'form_subject_field', :locals => {:f => f, :manifestation => @manifestation} %>
+  <%= render :partial => 'form_subject_field', locals: { f: f, manifestation: @manifestation } %>
 
   <% if defined?(EnjuTrunkTheme) %>
     <div class="row">
