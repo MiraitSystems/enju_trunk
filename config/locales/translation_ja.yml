@@ -2344,6 +2344,11 @@ ja:
     library_group_answer: "%{library_group_name} の寄せた回答"
     specify_question: "質問を指定してください。"
     count: "回答件数"
+  basket:
+    all_manifestation: "全ての資料"
+    show_basket: "バスケットを参照: %{count}件"
+    clear_basket: "バスケットを空にする"
+    out: "解除"
   library:
     map: "地図"
     staff: "職員"

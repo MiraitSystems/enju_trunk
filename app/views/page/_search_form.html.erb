@@ -14,8 +14,8 @@
     <% unless SystemConfiguration.get("manifestation.show_all") %>
       <% if user_signed_in? and current_user.has_role?('Librarian') %>
         <%= check_box_tag 'all_manifestations', true %><%= t('advanced_search.all_manifestations') %>
+        |
       <% end %>
-      |
     <% end %>
     <style="display: inline"><%= link_to t('page.advanced_search'), page_advanced_search_path -%></style>
   </p>
