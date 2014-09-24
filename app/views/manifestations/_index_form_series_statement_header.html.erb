@@ -1,5 +1,4 @@
 <h2 class="resource_title">
-  [S]
   <%= link_to @series_statement.original_title, @series_statement, :itemprop => 'name' -%>
   <% if @series_statement.periodical %>
     <%- unless @series_statement.root_manifestation.volume_number_string.blank? %>
