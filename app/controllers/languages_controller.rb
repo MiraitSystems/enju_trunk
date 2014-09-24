@@ -1,7 +1,7 @@
 class LanguagesController < InheritedResources::Base
   respond_to :html, :json
   before_filter :check_client_ip_address
-  load_and_authorize_resource
+  load_and_authorize_resource except: :search_name
 
   def update
     @language = Language.find(params[:id])
