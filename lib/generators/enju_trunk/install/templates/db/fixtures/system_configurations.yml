@@ -1454,3 +1454,17 @@ system_configuration_00208:
   typename: Boolean
   description: "書誌検索結果画面で所蔵の情報を表示する"
   category: 'manifestation'
+system_configuration_00209:
+  id: 209
+  keyname: 'attributes.manifestation_title.title_transcription'
+  v: "true"
+  typename: Boolean
+  description: "書誌項目のその他のタイトルヨミを利用する"
+  category: 'attributes'
+system_configuration_00210:
+  id: 210
+  keyname: 'attributes.manifestation_title.title_alternative'
+  v: "true"
+  typename: Boolean
+  description: "書誌項目のその他のタイトル代替を利用する"
+  category: 'attributes'

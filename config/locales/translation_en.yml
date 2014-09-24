@@ -889,6 +889,7 @@ en:
       library_group:
         name: Name
         display_name: Display name
+        header_title: Header title
         short_name: Short name
         email: Email
         my_networks: My networks
