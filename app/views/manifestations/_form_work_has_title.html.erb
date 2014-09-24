@@ -54,26 +54,38 @@
           <% unless work_has_title.manifestation_title %>
             <%= w_f.text_field :title, 
               :class => 'resource_title', 
-              :placeholder => t('activerecord.attributes.title.title') %><br />
-            <%= w_f.text_field :title_transcription, 
-              :class => 'resource_title', 
-              :placeholder => t('activerecord.attributes.title.title_transcription') %><br />
-            <%= w_f.text_field :title_alternative, 
-              :class => 'resource_title', 
-              :placeholder => t('activerecord.attributes.title.title_alternative') %>
+              :placeholder => t('activerecord.attributes.title.title') %>
+            <% if SystemConfiguration.get('attributes.manifestation_title.title_transcription') %>
+              <br />
+              <%= w_f.text_field :title_transcription, 
+                :class => 'resource_title', 
+                :placeholder => t('activerecord.attributes.title.title_transcription') %>
+            <% end %>
+            <% if SystemConfiguration.get('attributes.manifestation_title.attributes.manifestation_title.title_alternative') %>
+              <br />
+              <%= w_f.text_field :title_alternative, 
+                :class => 'resource_title', 
+                :placeholder => t('activerecord.attributes.title.title_alternative') %>
+            <% end %>
           <% else %>
             <%= w_f.text_field :title,
               :value => work_has_title.try(:manifestation_title).try(:title), 
               :class => 'resource_title',
-              :placeholder => t('activerecord.attributes.title.title') %><br />
-            <%= w_f.text_field :title_transcription,
-              :value => work_has_title.try(:manifestation_title).try(:title_transcription), 
-              :class => 'resource_title', 
-              :placeholder => t('activerecord.attributes.title.title_transcription') %><br />
-            <%= w_f.text_field :title_alternative,
-              :value => work_has_title.try(:manifestation_title).try(:title_alternative), 
-              :class => 'resource_title',
-              :placeholder => t('activerecord.attributes.title.title_alternative') %>
+              :placeholder => t('activerecord.attributes.title.title') %>
+            <% if SystemConfiguration.get('attributes.manifestation_title.title_transcription') %>
+              <br />
+              <%= w_f.text_field :title_transcription,
+                :value => work_has_title.try(:manifestation_title).try(:title_transcription), 
+                :class => 'resource_title', 
+                :placeholder => t('activerecord.attributes.title.title_transcription') %>
+            <% end %>
+            <% if SystemConfiguration.get('attributes.manifestation_title.attributes.manifestation_title.title_alternative') %>
+              <br />
+              <%= w_f.text_field :title_alternative,
+                :value => work_has_title.try(:manifestation_title).try(:title_alternative), 
+                :class => 'resource_title',
+                :placeholder => t('activerecord.attributes.title.title_alternative') %>
+            <% end %>
           <% end %>
           <%= w_f.hidden_field :nested %>
           <%= button_to_function '+', 'ItemField_title.add()' %>
