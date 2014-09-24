@@ -197,7 +197,7 @@ devise_scope :user do
     E
 
     gsub_file target, /^(\s*)# (config\.assets\.precompile) \+= .*\n/, <<-'E'
-\1\2 += %w( mobile.js mobile.css print.css )
+\1\2 += %w( enju_trunk_mobile.css enju_trunk_mobile.js )
     E
 
     insert_into_file target, <<-'E', before: /^end\s*\z/

@@ -1001,6 +1001,7 @@ ja:
       library_group:
         name: 名前
         display_name: 表示名
+        header_title: ヘッダータイトル
         short_name: 短縮名
         email: メール
         my_networks: LANとして扱うネットワーク
