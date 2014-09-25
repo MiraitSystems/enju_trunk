@@ -41,7 +41,9 @@ $(function(){
     <td><%= r.rank -%></td>
     <td>
       <%= link_to r.try(:manifestation).try(:original_title), r.try(:manifestation) if r.manifestation -%><br />
-      <%= t('activerecord.attributes.item.item_identifier') %>: <%= link_to r.item.try(:item_identifier), r.item if r.item %>
+      <%- if r.item && r.item.try(:item_identifier) %>
+        <%= t('activerecord.attributes.item.item_identifier') %>: <%= link_to r.item.try(:item_identifier), r.item %>
+      <%- end -%>
       <%- if SystemConfiguration.get('item.use_different_identifier') && r.item.try(:identifier) %>
         <%= t('activerecord.attributes.item.identifier') %>: <%= link_to r.item.try(:identifier), r.item %>
       <%- end -%>

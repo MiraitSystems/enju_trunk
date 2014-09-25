@@ -92,6 +92,7 @@ class ManifestationExstatsController < ApplicationController
 
     @rank = 1
     i = 0
+    @rank = 1
     @reserves = []
     while @rank <= @limit
       if @selected_library.nil? || @selected_library.empty?
