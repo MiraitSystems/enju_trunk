@@ -90,6 +90,7 @@ class ManifestationExstatsController < ApplicationController
       return
     end
 
+    @rank = 1
     i = 0
     @reserves = []
     while @rank <= @limit
