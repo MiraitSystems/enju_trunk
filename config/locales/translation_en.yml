@@ -1832,6 +1832,7 @@ en:
     reset: Reset
     account: Account
     form: Form
+    result_filters: Result filters
     remove_this_facet: Remove this facet
     remove_facet: Remove
     no_subject: No subjects.

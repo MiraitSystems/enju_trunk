@@ -1856,6 +1856,7 @@ ja:
     reset: "リセット"
     account: "アカウント"
     form: "形態"
+    result_filters: "検索結果の絞り込み"
     remove_this_facet: "この絞り込みを解除"
     remove_facet: "解除"
     no_subject: "件名はついていません。"
