@@ -2489,24 +2489,6 @@ ja:
     requested: 受付済み
     shipped: 発送済み
     received: 受取済み
-  checked_item:
-    not_available_for_checkout: "この資料の貸出はできません。(状態不正)"
-    new_serial: "この資料の貸出はできません。(雑誌の最新号)"
-    not_for_loan: "この資料の貸出はできません。"
-    this_group_cannot_checkout: "この利用者種別でのこの資料の貸出はできません。"
-    item_not_found: "資料が見つかりません。"
-    already_checked_out: "この資料はすでに貸し出されています。"
-    reserved_item_included: "予約されている資料が含まれています！"
-    excessed_checkout_limit: "貸出数の上限を超えています。"
-    in_transcation: "貸出処理中です。"
-    history: "貸出履歴"
-    previous_checkout: "現在貸出中の資料"
-    previous_checkout_family: "現在家族に貸出中の資料"
-    previous_reserve: "現在予約中の資料"
-    previous_reserve_family: "現在家族が予約中の資料"
-    checkout: "上記の資料を貸し出す"
-    ignore_restriction: "制限を無視する"
-    library_closed_today: "この資料の図書館は本日休館日です。"
   checkin:
     item_not_found: "資料が見つかりません。"
     enter_item_identifier: "所蔵情報番号を入力してください。"
