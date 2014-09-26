@@ -1,5 +1,5 @@
 <% if @language_facet %>
-<h4>-<%= t('activerecord.models.language') -%></h4>
+<h4><%= t('activerecord.models.language') -%></h4>
 <ul>
   <%- languages = params[:language].blank? ? [] : params[:language] -%>
   <%- current_languages = languages.dup -%>
