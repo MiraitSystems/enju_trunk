@@ -1,6 +1,6 @@
 <% if current_user && current_user.has_role?('Librarian') %>
   <% if @circulation_status_in_process_facet.present? and @circulation_status_in_factory_facet.present? %>
-    <h4>-<%= t('activerecord.models.circulation_status') %></h4>
+    <h4><%= t('activerecord.models.circulation_status') %></h4>
     <ul>
       <% @circulation_status_in_process_facet.each do |f| %>
         <% next unless f.value %>
