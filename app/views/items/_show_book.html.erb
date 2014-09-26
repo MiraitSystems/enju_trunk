@@ -230,11 +230,18 @@
   </p>
 <% end %>
 
-
-<p>
-  <strong><%= t('activerecord.attributes.item.acquired_at_string') %>:</strong>
-  <%= @item.acquired_at_string %>
-</p>
+<%- if SystemConfiguration.get('attributes.item.acquired_at') %>
+  <p>
+    <strong><%= t('activerecord.attributes.item.acquired_at') %>:</strong>
+    <%= l(@item.acquired_at) %>
+  </p>
+<%- end -%>
+<%- if SystemConfiguration.get('attributes.item.acquired_at_string') %>
+  <p>
+    <strong><%= t('activerecord.attributes.item.acquired_at_string') %>:</strong>
+    <%= @item.acquired_at_string %>
+  </p>
+<%- end -%>
 
 <p>
   <strong><%= t('activerecord.attributes.item.note') -%>:</strong>

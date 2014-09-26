@@ -114,15 +114,29 @@
     <div><%= f.check_box :non_searchable %></div>
   </div>
 
-<script>
-$(function(){
-  $('#item_acquired_at_string').setCalendar({src:'/assets/calendar.png'});
-});
-</script>
-  <div class="row">
-    <div><%= f.label :acquired_at_string -%></div>
-    <div><%= f.text_field :acquired_at_string, :class => 'medium_string', :style => 'ime-mode: disabled;', :placeholder => "#{t('page.example')}: 2011-04-12"-%></div>
-  </div>
+  <%- if SystemConfiguration.get('attributes.item.acquired_at') %>
+    <script>
+      $(function(){
+        $('#item_acquired_at').setCalendar({src:'/assets/calendar.png'});
+      });
+    </script>
+    <div class="row">
+      <div><%= f.label :acquired_at -%></div>
+      <div>
+        <%- if @item.acquired_at %>
+          <%= f.text_field :acquired_at, :value => @item.acquired_at.try(:strftime, "%Y-%m-%d"), :class => 'date_field' -%></div>
+        <%- else %>
+          <%= f.text_field :acquired_at, :class => 'date_field', :placeholder => "#{t('page.example')}: 2011-04-12" -%></div>
+        <%- end -%>
+      </div>
+    </div>
+  <%- end -%>
+  <%- if SystemConfiguration.get('attributes.item.acquired_at_string') %>
+    <div class="row">
+      <div><%= f.label :acquired_at_string -%></div>
+      <div><%= f.text_field :acquired_at_string, :class => 'date_field' -%></div>
+    </div>
+  <%- end -%>
 
   <div class="row">
     <div><%= f.label :note -%></div>
