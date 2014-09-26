@@ -40,7 +40,7 @@ namespace :enju_trunk do
       if ENV['EXPORT_FROM']
         last_event_id = Integer(ENV['EXPORT_FROM'])
       else
-        taglogger 'please specify EXPORT_FROM=N'
+        tag_logger 'please specify EXPORT_FROM=N'
         fail 'please specify EXPORT_FROM=N'
       end
 
@@ -88,7 +88,7 @@ namespace :enju_trunk do
 
       # a.業務側からWebOPAC側に接続し、5)のstatusfileを取得
       Dir::chdir(SCRIPT_ROOT)  
-      taglogger "call task [get_status_file] start"
+      tag_logger "call task [get_status_file] start"
       sh "#{PERLBIN} #{GET_STATUS_FILE}"
       tag_logger "call task [get_status_file] end"
 

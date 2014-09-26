@@ -1,4 +1,6 @@
+# encoding: utf-8
 require 'digest/sha1'
+require 'digest/md5'
 require 'net/ftp'
 require "open3"
 
@@ -23,9 +25,9 @@ class EnjuSyncService
 
   self.extend EnjuSyncUtil
 
-  def self.build_bucket(id)
+  def self.build_bucket(bucket_id)
     # init backet
-    work_dir = File.join(DUMPFILE_PREFIX, "#{id}")
+    work_dir = File.join(DUMPFILE_PREFIX, "#{bucket_id}")
     gzip_file_name = "#{DUMPFILE_NAME}.gz"
     marsharl_full_name = File.join(work_dir, DUMPFILE_NAME)
     gzip_full_name = File.join(work_dir, gzip_file_name)
@@ -35,7 +37,7 @@ class EnjuSyncService
       # コマンドファイルが無い場合、ステータスEND、exit3で終了
       ctl_file = File.join(work_dir, "#{exec_date}-END-0.ctl")
       FileUtils.touch(ctl_file, :mtime => Time.now)
-      taglogger("Can not open #{marshal_full_name} (no update)");
+      taglogger("Can not open #{marsharl_full_name} (no update)");
       return
     end
 
@@ -47,6 +49,15 @@ class EnjuSyncService
 
     ctl_file = File.join(work_dir, "#{exec_date}-RDY-0.ctl")
     FileUtils.touch(ctl_file, :mtime => Time.now)
+
+    file_size = File.size(gzip_full_name)
+    md5sum = Digest::MD5.file(gzip_full_name).to_s
+
+    File.open(ctl_file, "w") do |io|
+      io.puts file_size
+      io.puts md5sum
+    end
+
   end
 
   def self.push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
@@ -58,7 +69,10 @@ class EnjuSyncService
       bucket_dir = File.join(ftp_site_base_dir, "#{bucket_id}")
       ftp.passive = true
       ftp.chdir(ftp_site_base_dir)
-      ftp.mkdir(bucket_dir)
+      unless ftp.dir(File.join(ftp_site_base_dir, bucket_dir))
+        tag_logger "mkdir #{bucket_dir}"
+        ftp.mkdir(bucket_dir)
+      end
 
       push_target_files.each do |file_name|
         site_file_name = File.basename(file_name)
@@ -103,8 +117,12 @@ class EnjuSyncService
 
       bucket_id = $1
 
-      target_dir_s = File.join(target_dir, "*")
+      # compress and write checksum
+      build_bucket(bucket_id)
+
+      target_dir_s = File.join(target_dir, "enjudump.marshal.gz")
       push_target_files = Dir.glob(target_dir_s).sort 
+      push_target_files << "#{ctl_file_name}"
 
       push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
     end
