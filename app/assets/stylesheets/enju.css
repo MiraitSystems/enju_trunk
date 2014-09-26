@@ -207,7 +207,7 @@ div#search_result{
 }
 
 div#content_list{
-  padding: 10px;
+  padding: 0px;
   word-wrap: break-word;
 }
 

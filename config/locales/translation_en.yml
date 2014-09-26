@@ -1933,6 +1933,8 @@ en:
     add_on: Add-ons
     asc: ascendent
     desc: descendent
+    sort_asc: "Ascendent of %{sort_by}"
+    sort_desc: "Descendent of %{sort_by}"
     error_occured: An error occured.
     error_file: Not able to output file.
     did_you_mean: Did you mean

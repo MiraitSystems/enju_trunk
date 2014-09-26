@@ -70,6 +70,19 @@ class Manifestation < ActiveRecord::Base
     ]
   }
 
+  SORT_PLANS = {
+    1 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.attributes.manifestation.date_of_publication' },
+    2 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.attributes.manifestation.date_of_publication' },
+    3 => { "sort" => 'page.sort_desc', "sort_by" => 'manifestation.date_of_acquisition' },
+    4 => { "sort" => 'page.sort_asc', "sort_by" => 'manifestation.date_of_acquisition' },
+    5 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.attributes.manifestation.original_title' },
+    6 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.attributes.manifestation.original_title' },
+    7 => { "sort" => 'page.sort_desc', "sort_by" => 'agent.creator' },
+    8 => { "sort" => 'page.sort_asc', "sort_by" => 'agent.creator' },
+    9 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.models.carrier_type' },
+    10 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.models.carrier_type' }
+  }
+
   searchable(SUNSPOT_EAGER_LOADING) do
     text :extexts do
       if root_of_series? # 雑誌の場合

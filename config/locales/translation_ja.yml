@@ -1440,7 +1440,7 @@ ja:
         list_condition: 抽出条件
         list_number: 件数
         page_number: ページ数(PDF)
-        sort_by: ソート順
+        sort_by: 並び順
       item_register:
         list_type: リストの種類
         file_type: ファイル形式
@@ -1956,6 +1956,8 @@ ja:
     add_on: "アドオン"
     asc: "昇順"
     desc: "降順"
+    sort_asc: "%{sort_by}の昇順"
+    sort_desc: "%{sort_by}の降順"
     error_occured: "エラーが発生しました。"
     error_file: "ファイル出力できませんでした。"
     did_you_mean: "もしかして"
