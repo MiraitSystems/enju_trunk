@@ -26,12 +26,6 @@
         <td><%= @agent.agent_identifier -%></td>
       </tr>
       <%- end -%>
-      <%- unless @agent.agent_identifier.blank? -%>
-      <tr>
-        <td><strong><%= t('agent.agent_identifier') -%>:</strong></td>
-        <td><%= @agent.agent_identifier -%></td>
-      </tr>
-    <%- end -%>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.full_name') -%>:</strong></td>
         <td><span class="fn"><%= @agent.full_name -%></span></td>
