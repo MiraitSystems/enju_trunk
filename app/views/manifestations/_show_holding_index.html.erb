@@ -61,6 +61,7 @@
           <td>
             <% if item.circulation_status.name != 'Available On Shelf' %>
               <span class="not_rent_item">
+                <%- if item.circulation_restriction.v != 0 %><%= item.circulation_restriction.keyname %><%- end -%>
                 <%= item.circulation_status.display_name.localize if item.circulation_status %>
                 <% if item.use_restriction.try(:name) == 'Not For Loan' %>
                   (<%= t('activerecord.attributes.checkout.not_available') %>)
