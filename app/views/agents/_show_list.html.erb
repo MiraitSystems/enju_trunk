@@ -20,6 +20,18 @@
 
   <div id="detail">
     <table class="index vcard">
+      <%- unless @agent.agent_identifier.blank? -%>
+      <tr>
+        <td><strong><%= t('agent.agent_identifier') -%>:</strong></td>
+        <td><%= @agent.agent_identifier -%></td>
+      </tr>
+      <%- end -%>
+      <%- unless @agent.agent_identifier.blank? -%>
+      <tr>
+        <td><strong><%= t('agent.agent_identifier') -%>:</strong></td>
+        <td><%= @agent.agent_identifier -%></td>
+      </tr>
+    <%- end -%>
       <tr>
         <td><strong><%= t('activerecord.attributes.agent.full_name') -%>:</strong></td>
         <td><span class="fn"><%= @agent.full_name -%></span></td>
@@ -116,7 +128,7 @@
       </tr>
       <% end %>
 
-      <% if SystemConfiguration.get("penalty.user_penalty") %>
+      <% if @agent.user && SystemConfiguration.get("penalty.user_penalty") %>
       <tr>
         <td><strong><%= t('activerecord.attributes.user.days_after_penalty') %>: </strong></td>
         <td><%= @agent.user.days_after_penalty %></td>
@@ -267,12 +279,6 @@
           </td>
         </tr>
       <%- end -%>
-      <%- unless @agent.agent_identifier.blank? -%>
-      <tr>
-        <td><strong><%= t('agent.agent_identifier') -%>:</strong></td>
-        <td><%= @agent.agent_identifier -%></td>
-      </tr>
-    <%- end -%>
       <tr>
         <td><strong><%= t('page.created_at') -%>:</strong></td>
         <td><%= l(@agent.created_at) -%></td>
