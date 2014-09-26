@@ -141,6 +141,10 @@
       <div><%= f.label t('activerecord.models.agent_type') -%></div>
       <div><%= f.select2(:agent_type_id, @agent_types, agent.agent_type_id, :select_attribute => :id, :display_attribute => :display_name, :width => 200) -%></div>
     </div>
+    <div class="row">
+      <div><%= f.label :agent_identifier %></div>
+      <div><%= f.text_field :agent_identifier %></div>
+    </div>
   <%- end -%>
 
   <div id="family">
