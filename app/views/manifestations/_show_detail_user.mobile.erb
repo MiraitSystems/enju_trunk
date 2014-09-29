@@ -115,7 +115,7 @@
       <td><%= t('activerecord.models.subject') -%>:</td>
       <td>
         <%- manifestation.subjects.each do |subject| -%>
-          <%= link_to subject.term, subject -%>
+          <%= link_to subject.term, subject_works_path(subject) -%>
         <%- end -%>
       </td>
     <%- end -%>

@@ -151,7 +151,7 @@ div#submenu{
 }
 
 div#facet_menu{
-  min-width: 190px;
+  width: 190px;
   float: left;
 }
 
@@ -301,21 +301,19 @@ a.title { color: white; }
 a.title:hover { color: white; }
 a.title:visited { color: white; }
 
-.facet_title{
-  color: white;
-  background-color: #5970B2;
-  padding: 5px;
-  margin: 0px;
+#facet_menu h4.title {
   text-align: center;
+  border-radius: 30px;
+  margin: 0px;
+}
+
+#facet_menu h4, #facet_menu ul {
+  margin: 5px;
 }
 
 .bigger_font{
   font-size: 120%;
   font-weight: bold;
-}
-
-.facet_margin{
-  margin: 5px;
 }
 
 form{
