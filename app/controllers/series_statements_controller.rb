@@ -213,7 +213,7 @@ class SeriesStatementsController < ApplicationController
     @work_has_titles = [WorkHasTitle.new] if @work_has_titles.blank?
     @work_has_languages = @series_statement.root_manifestation.work_has_languages if @series_statement.root_manifestation
     @work_has_languages = [WorkHasLanguage.new] if @work_has_languages.blank?
-    @use_licenses = UseLicense.all    
+    @use_licenses = UseLicense.all if defined? EnjuTrunkOrder 
     @sequence_patterns = SequencePattern.all
     @publication_statuses = PublicationStatus.all
     if SystemConfiguration.get('manifestation.use_identifiers')

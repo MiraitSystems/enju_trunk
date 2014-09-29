@@ -1,7 +1,6 @@
 en:
   activerecord:
     models:
-      use_license: Use license
       abbreviation: Abbreviation
       library: Library
       question: Question
@@ -218,25 +217,6 @@ en:
         title_transcription: Title transcription
         title_alternative: Title alternative
         note: Note
-      use_license:
-        target: Target
-        author: Author
-        author_fee: Author fee
-        agency_name: Agency name
-        agency_address: Agency address
-        responsible_name: Responsible name
-        responsible_tel: Responsible tel
-        responsible_mail: Responsible mail
-        bank_name: Bank name
-        bank_code: Bank code
-        branch_name: Branch name
-        branch_number: Branch number
-        account_name: Account name
-        account_number: Account number
-        account_kind: Account kind
-        account_kinds:
-          "normal": Normal
-          "current": Current
       abbreviation:
         keyword: Keyword
         v: V

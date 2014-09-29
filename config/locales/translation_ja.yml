@@ -1,7 +1,6 @@
 ja:
   activerecord:
     models:
-      use_license: 利用許諾
       abbreviation: 略語辞書
       wareki: 和暦
       user_request_log: 利用者操作履歴
@@ -223,25 +222,6 @@ ja:
         title_transcription: 書名(ヨミ)
         title_alternative: 代替書名
         note: 注記
-      use_license:
-        target: 利用許諾対象
-        author: 著者抄録許諾
-        author_fee: 著者抄録許諾料金
-        agency_name: 許諾機関名称
-        agency_address: 許諾機関住所
-        responsible_name: 担当者名
-        responsible_tel: 担当者電話
-        responsible_mail: 担当者メール
-        bank_name: 銀行名
-        bank_code: 銀行コード
-        branch_name: 支店名
-        branch_number: 支店番号
-        account_name: 口座名
-        account_number: 口座番号
-        account_kind: 口座種類
-        account_kinds:
-          "normal": 普通
-          "current": 当座
       abbreviation:
         keyword: キーワード
         v: 略語

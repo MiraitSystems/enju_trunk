@@ -29,7 +29,8 @@ module SystemConfigurationsHelper
       when 'header.disp_date',
            'user.locked.background',
            'user.unable.background',
-           'purchase_request.can_use'
+           'purchase_request.can_use',
+           'manifestation.search_sort'
         string = make_form_selector(string, system_configuration)
       else
         string << "<input type='text' "
@@ -86,6 +87,14 @@ module SystemConfigurationsHelper
        string << "selected='selected'" if system_configuration.v == role.name
        string << ">"
        string << role.display_name
+       string << "</option>"
+     end
+   when 'manifestation.search_sort'
+     Manifestation::SORT_PLANS.each_pair do |key, value|
+       string << "<option value=#{key} "
+       string << "selected='selected'" if system_configuration.v.to_i == key
+       string << ">"
+       string << t(value["sort"], :sort_by => t(value["sort_by"]))
        string << "</option>"
      end
    end

@@ -1,4 +1,6 @@
 <% if manifestation.items.exists? %>
+  <hr>
+  <br />
   <div id="holding">
     <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
     <ol data-role="listview">
@@ -67,4 +69,6 @@
       <% end %>
     </ol> 
   </div>
+  <br />
+  <hr>
 <% end %>

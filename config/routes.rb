@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     post :output_csv, :on => :collection
   end
   resources :keycodes
-  resources :use_licenses
   resources :function_classes do
     resources :function_class_abilities, :only => [:index] do
       post :update_all, :on => :collection
