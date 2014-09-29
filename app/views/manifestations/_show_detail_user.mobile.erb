@@ -171,7 +171,6 @@
       <td><%=l manifestation.updated_at if manifestation.updated_at -%></td>
     </div>
   <% end %>
-  <hr>
 
   <% if manifestation.description.present? %>
     <td><%= t('activerecord.attributes.manifestation.description') -%>:</td>
@@ -188,10 +187,6 @@
     <% end %>
   <% end %>
 
-<hr>
 <%# - if manifestation.items.on_shelf.exists? -%>
-<%- if manifestation.items.exists? -%>
-  <%= render 'manifestations/show_holding', :manifestation => manifestation -%>
-<%- end -%>
-<hr>
+<%= render 'manifestations/show_holding', :manifestation => manifestation -%>
 <%= render 'page/footer' %>
