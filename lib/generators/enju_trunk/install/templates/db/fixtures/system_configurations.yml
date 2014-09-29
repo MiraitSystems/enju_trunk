@@ -1482,4 +1482,10 @@ system_configuration_00212:
   typename: Boolean
   description: "所蔵項目の受入日(String Field)を利用する"
   category: 'attributes'
-
+system_configuration_00213:
+  id: 213
+  keyname: 'manifestation.search_sort'
+  v: 1
+  typename: Numeric
+  description: "書誌検索結果のデフォルトソート"
+  category: 'manifestation'

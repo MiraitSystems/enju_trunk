@@ -478,6 +478,12 @@ class ManifestationsController < ApplicationController
       get_subject
       set_in_process
       @index_agent = get_index_agent
+      
+      @sort_plan_id = params[:sort_plan] || 1
+      @sort_plan = {}
+      (1..10).each do |id|
+        @sort_plan[t(Manifestation::SORT_PLANS[id]["sort"], :sort_by => t(Manifestation::SORT_PLANS[id]["sort_by"]))] = id
+      end
       @per_page = search_opts[:per_page]
       @all_manifestations = params[:all_manifestations] if params[:all_manifestations]
 
@@ -534,7 +540,7 @@ class ManifestationsController < ApplicationController
             @highlight = /(#{Regexp.union(highlight)})/
           end
           @solr_query = query # フォーム入力から生成したSolr検索式
-          sort = search_result_order(params[:sort_by], params[:order])
+          sort = search_result_order(params[:sort_plan])
         end
         logger.debug "  SOLR Query string:<#{@solr_query}>"
 
@@ -1503,29 +1509,31 @@ class ManifestationsController < ApplicationController
     [with, without]
   end
 
-  def search_result_order(sort_by, order)
+  def search_result_order(sort_id)
     sort = {}
 
+    sort_id = sort_id.to_i
     # TODO: ページ数や大きさでの並べ替え
-    case sort_by
-    when 'title'
+    case sort_id
+    when 3, 4
+      sort[:sort_by] = 'created_at'
+    when 5, 6
       sort[:sort_by] = 'original_title'
-    when 'pub_date'
-      sort[:sort_by] = 'date_of_publication'
-    when 'carrier_type'
-      sort[:sort_by] = 'carrier_type'
-    when 'author'
+    when 7, 8
       sort[:sort_by] = 'author'
+    when 9, 10
+      sort[:sort_by] = 'carrier_type'
     else
       # デフォルトの並び方
-      sort[:sort_by] = 'created_at'
+      sort[:sort_by] = 'date_of_publication'
       sort[:order] = 'desc'
     end
 
-    if order == 'asc'
-      sort[:order] = 'asc'
-    elsif order == 'desc'
+    order_id = sort_id % 2
+    if order_id == 1
       sort[:order] = 'desc'
+    elsif order_id == 0
+      sort[:order] = 'asc'
     end
 
     sort
