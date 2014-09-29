@@ -479,7 +479,7 @@ class ManifestationsController < ApplicationController
       set_in_process
       @index_agent = get_index_agent
       
-      @sort_plan_id = params[:sort_plan] || 1
+      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort")
       @sort_plan = {}
       (1..10).each do |id|
         @sort_plan[t(Manifestation::SORT_PLANS[id]["sort"], :sort_by => t(Manifestation::SORT_PLANS[id]["sort_by"]))] = id
@@ -1511,10 +1511,12 @@ class ManifestationsController < ApplicationController
 
   def search_result_order(sort_id)
     sort = {}
-
+    sort_id = SystemConfiguration.get("manifestation.search_sort") if sort_id.nil? 
     sort_id = sort_id.to_i
     # TODO: ページ数や大きさでの並べ替え
     case sort_id
+    when 1, 2
+      sort[:sort_by] = 'date_of_publication'
     when 3, 4
       sort[:sort_by] = 'created_at'
     when 5, 6
@@ -1523,10 +1525,6 @@ class ManifestationsController < ApplicationController
       sort[:sort_by] = 'author'
     when 9, 10
       sort[:sort_by] = 'carrier_type'
-    else
-      # デフォルトの並び方
-      sort[:sort_by] = 'date_of_publication'
-      sort[:order] = 'desc'
     end
 
     order_id = sort_id % 2
