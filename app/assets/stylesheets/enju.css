@@ -211,6 +211,11 @@ div#content_list{
   word-wrap: break-word;
 }
 
+div#content_list_search_result{
+  padding: 0px;
+  word-wrap: break-word;
+}
+
 div#manifestation_footer{
   margin-top: 1em;
   clear: both;
