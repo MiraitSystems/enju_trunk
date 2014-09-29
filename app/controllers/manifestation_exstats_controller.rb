@@ -49,7 +49,7 @@ class ManifestationExstatsController < ApplicationController
     sql << " AND users.user_group_id = #{@selected_user_group}" unless @selected_user_group.blank?
     sql << " AND users.department_id = #{@selected_department}" unless @selected_department.blank?
     sql << " AND agents.grade_id = #{@selected_grade}" unless @selected_grade.blank?
-    sql << " GROUP BY checkouts.item_id ORDER BY cnt ASC LIMIT #{@limit} OFFSET #{@offset}"
+    sql << " GROUP BY checkouts.item_id ORDER BY cnt DESC LIMIT #{@limit} OFFSET #{@offset}"
     @checkouts = Checkout.find_by_sql(sql)
 
     while i < @checkouts.length
