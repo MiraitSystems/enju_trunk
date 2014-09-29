@@ -148,7 +148,7 @@ $(document).ready(function() {
 </script>
 
 <div id="search_result" class="ui-corner-all">
-<div id="content_list">
+<div id="content_list_search_result">
   <div style="color: green"><%= flash[:message] || flash[:notice] -%></div>
   <%= render 'manifestations/title', :manifestation => @manifestation if @manifestation -%>
   <% if @basket %>

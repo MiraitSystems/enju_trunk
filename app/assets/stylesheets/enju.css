@@ -207,6 +207,11 @@ div#search_result{
 }
 
 div#content_list{
+  padding: 10px;
+  word-wrap: break-word;
+}
+
+div#content_list_search_result{
   padding: 0px;
   word-wrap: break-word;
 }
