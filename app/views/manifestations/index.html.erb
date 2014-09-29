@@ -147,6 +147,38 @@ $(document).ready(function() {
 });
 </script>
 
+<%- unless params[:index] && params[:index] == 'nacsis' -%>
+<div id="facet_menu" class="ui-corner-all">
+  <%- if @manifestations && (@manifestations.total_count > 0) -%>
+    <h4 class="title"><%= t('page.result_filters') %></h4>
+    <%- if @subject %>
+      <h4><%= t('activerecord.models.subject') %></h4>
+      <ul>
+        <li><%= @subject.term %></li>
+        <li><%= link_to t('page.remove_this_facet'), manifestations_path(params.merge(:subject_id => nil)) %></li>
+      </ul>
+    <%- end -%>
+    <%= render 'manifestations/all_facet' -%>
+    <br />
+  <%- end -%>
+  <% if @series_statement and can?(:update, @series_statement) %>
+    <%= render 'submenu_series_statement' %>
+  <% end %>
+  <%- if params[:library_id].blank? -%>
+    <%= link_to (image_tag 'icons/feed.png', :size => '16x16', :alt => t('page.feed'), :title => t('tooltip.feed'), :class => 'icon'), url_for(params.merge(:format => :rss, :page => nil, :library_id => nil)) -%> <%= link_to t('page.search_result_feed'), url_for(params.merge(:format => :rss, :page => nil, :library_id => nil, :commit => nil)) -%>
+  <%- else -%>
+    <%= link_to (image_tag 'icons/feed.png', :size => '16x16', :alt => t('page.feed'), :title => t('tooltip.feed'), :class => 'icon'), url_for(params.merge(:format => :rss, :page => nil)) -%> <%= link_to t('page.search_result_feed'), url_for(params.merge(:format => :rss, :page => nil, :commit => nil)) -%>
+  <%- end -%>
+  <% if user_signed_in? and current_user.has_role?('Librarian') %>
+    <h5 style='margin-top:15px;'><%= t('tooltip.icons_info') -%></h5>
+    <ul>
+      <li><%= image_tag('icons/book_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.book_edit')) -%>:&nbsp;<%=t('page.edit')-%></li>
+      <li><%= image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('manifestation.add_derivation'), :title => t('tooltip.add_derivation')) -%>:&nbsp;<%=t('manifestation.add_derivation')-%></li>
+    </ul>
+  <% end %>
+</div>
+<%- end -%>
+
 <div id="search_result" class="ui-corner-all">
 <div id="content_list_search_result">
   <div style="color: green"><%= flash[:message] || flash[:notice] -%></div>
@@ -271,34 +303,6 @@ $(document).ready(function() {
   </div>
 </div>
 
-<%- unless params[:index] && params[:index] == 'nacsis' -%>
-<div id="facet_menu" class="ui-corner-all">
-  <%- if @manifestations && (@manifestations.total_count > 0) -%>
-    <h4 class="facet_title"><%= t('page.result_filters') %></h4>
-    <%= render 'manifestations/all_facet' -%>
-    <br />
-  <%- end -%>
-  <% if @series_statement and can?(:update, @series_statement) %>
-    <%= render 'submenu_series_statement' %>
-  <% end %>
-  <div class="facet_margin">
-    <%- if params[:library_id].blank? -%>
-      <%= link_to (image_tag 'icons/feed.png', :size => '16x16', :alt => t('page.feed'), :title => t('tooltip.feed'), :class => 'icon'), url_for(params.merge(:format => :rss, :page => nil, :library_id => nil)) -%> <%= link_to t('page.search_result_feed'), url_for(params.merge(:format => :rss, :page => nil, :library_id => nil, :commit => nil)) -%>
-    <%- else -%>
-      <%= link_to (image_tag 'icons/feed.png', :size => '16x16', :alt => t('page.feed'), :title => t('tooltip.feed'), :class => 'icon'), url_for(params.merge(:format => :rss, :page => nil)) -%> <%= link_to t('page.search_result_feed'), url_for(params.merge(:format => :rss, :page => nil, :commit => nil)) -%>
-    <%- end -%>
-    <% if user_signed_in? and current_user.has_role?('Librarian') %>
-      <div id="iconmenu" class="ui-corner-all">
-        <strong><%= t('tooltip.icons_info') -%></strong>
-        <ul>
-          <li><%= image_tag('icons/book_edit.png', :size => '16x16', :alt => t('page.edit'), :title => t('tooltip.book_edit')) -%>:&nbsp;<%=t('page.edit')-%></li>
-          <li><%= image_tag('icons/arrow_divide.png', :size => '16x16', :alt => t('manifestation.add_derivation'), :title => t('tooltip.add_derivation')) -%>:&nbsp;<%=t('manifestation.add_derivation')-%></li>
-        </ul>
-      </div>
-    <% end %>
-  </div>
-</div>
-<%- end -%>
 
 <% if defined?(EnjuBookmark) %>
   <script type="text/javascript">

@@ -76,8 +76,18 @@ $(document).ready(function(){
   <%= javascript_tag("$('#query').focus()") -%>
 </div>
 
-<% if SystemConfiguration.get("attributes.search.user.advanced_search.help").present? %>
+<%- if SystemConfiguration.get("attributes.search.user.advanced_search.help").present? ||
+       SystemConfiguration.get("attributes.search.user.manifestation.classifications") ||
+       SystemConfiguration.get("attributes.search.user.manifestation.subjects")  %>
   <div id="submenu" class="ui-corner-all">
-    <%= raw SystemConfiguration.get("attributes.search.user.advanced_search.help") %>
+    <%= raw SystemConfiguration.get("attributes.search.user.advanced_search.help") if SystemConfiguration.get("attributes.search.user.advanced_search.help").present? %>
+    <ul>
+      <%- if SystemConfiguration.get("attributes.search.user.manifestation.classifications") %>
+        <li><%= link_to t('page.listing', :model => t('activerecord.models.classification')), classifications_path %></li>
+      <%- end -%>
+      <%- if SystemConfiguration.get("attributes.search.user.manifestation.subjects") %>
+        <li><%= link_to t('page.listing', :model => t('activerecord.models.subject')), subjects_path %></li>
+      <%- end -%>
+    </ul>
   </div>
-<% end %>
+<%- end -%>
