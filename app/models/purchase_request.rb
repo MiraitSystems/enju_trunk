@@ -165,10 +165,12 @@ class PurchaseRequest < ActiveRecord::Base
       [:author, 'activerecord.attributes.purchase_request.author'],
       [:publisher, 'activerecord.attributes.purchase_request.publisher'],
       [:created_at, 'activerecord.attributes.purchase_request.created_at'],
-      [:title, 'activerecord.attributes.order_list.title'],
-      [:ordered_at, 'activerecord.attributes.order_list.ordered_at'],
-      [:bookstore, 'activerecord.attributes.order_list.bookstore'],
     ]
+    if defined? EnjuTrunkOrder
+     columns << [:title, 'activerecord.attributes.order_list.title']
+     columns << [:ordered_at, 'activerecord.attributes.order_list.ordered_at']
+     columns << [:bookstore, 'activerecord.attributes.order_list.bookstore']
+    end
 
     # title column
     row = columns.map {|column| I18n.t(column[1])}

@@ -23,7 +23,9 @@
           <li><%= link_to t('manifestation.edit_item'), manifestation_items_path(@series_statement.root_manifestation) -%></li>
         <% end %>
       <%- end -%>
-      <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
+      <% if defined? EnjuTrunkOrder %>
+        <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@series_statement.root_manifestation) %></li>
+      <% end %>
     <% end %>
   </ul>
   <br>

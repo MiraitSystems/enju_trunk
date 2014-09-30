@@ -44,6 +44,7 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
         EnjuTrunkIll
         EnjuManifestationViewer
         JppCustomercodeTransfer
+        EnjuTrunkOrder
       ).each do |name|
         engine_path = eval("#{name}::Engine").root.to_s rescue nil
         puts "directly import migration files from #{engine_path} to #{main_path}"
@@ -51,6 +52,7 @@ class EnjuTrunk::InstallGenerator < Rails::Generators::Base
       end
     else
       %w(
+        enju_trunk_order
         jpp_customercode_transfer
         enju_event_engine
         enju_trunk_engine

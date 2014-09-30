@@ -1593,7 +1593,7 @@ class ManifestationsController < ApplicationController
       @identifiers = @manifestation.identifiers
       @identifiers << Identifier.new if @identifiers.blank?
     end
-    @use_licenses = UseLicense.all
+    @use_licenses = UseLicense.all if defined? EnjuTrunkOrder
     @classification_types = ClassificationType.order("position").all
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する

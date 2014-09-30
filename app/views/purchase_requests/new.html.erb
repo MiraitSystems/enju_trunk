@@ -1,4 +1,4 @@
-<%- if @order_list -%>
+<%- if defined? EnjuTrunkOrder and @order_list -%>
   <%= render 'new_order_list' -%>
 <%- else -%>
   <%= render 'new' -%>

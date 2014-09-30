@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'item')
 require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'item') if Setting.operation
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'item') if defined? EnjuTrunkOrder
 class Item < ActiveRecord::Base
   extend ActiveRecordExtension
   attr_accessible :library_id, :shelf_id, :checkout_type_id, :circulation_status_id,
@@ -11,7 +12,7 @@ class Item < ActiveRecord::Base
                   :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo, :claim_attributes, :payment_id, :location_category_id, :location_symbol_id, 
+                  :non_searchable, :item_exinfo, :claim_attributes, :location_category_id, :location_symbol_id, 
                   :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, 
                   :manifestation_id, :identifier, :circulation_restriction_id
 
@@ -91,7 +92,6 @@ class Item < ActiveRecord::Base
   end
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
-  belongs_to :order
   belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
   belongs_to :location_category, :class_name => 'Keycode', :foreign_key => 'location_category_id'
   belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
@@ -161,7 +161,7 @@ class Item < ActiveRecord::Base
     integer :remove_reason_id
     boolean :non_searchable
     integer :bookbinder_id
-    integer :order_id
+    integer :order_id if defined? EnjuTrunkOrder
     time :created_at
     time :updated_at
   end

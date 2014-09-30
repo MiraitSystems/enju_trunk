@@ -1,9 +1,9 @@
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'bookstore') if defined? EnjuTrunkOrder
 class Bookstore < ActiveRecord::Base
   attr_accessible :name, :name_transcription, :email, :zip_code, :address,
                   :telephone_number, :fax_number, :url, :note, :position
   default_scope :order => "position"
   has_many :items
-  has_many :order_lists
 
   acts_as_list
   validates_presence_of :name

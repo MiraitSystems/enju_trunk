@@ -16,8 +16,10 @@
           <!--
           <li><%= link_to t('page.export'), 'page/export' -%></li>
           -->
-          <% if SystemConfiguration.get("use_order_lists") %>
-            <li><%= link_to t('activerecord.models.order_list'), order_lists_path -%></li>
+          <% if defined? EnjuTrunkOrder %>
+            <% if SystemConfiguration.get("use_order_lists") %>
+              <li><%= link_to t('activerecord.models.order_list'), order_lists_path -%></li>
+            <% end %>
           <% end %>
           <li><%= link_to t('page.statistics'), page_exstatistics_path -%></li>
           <!--

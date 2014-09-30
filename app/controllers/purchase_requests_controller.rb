@@ -6,9 +6,11 @@ class PurchaseRequestsController < ApplicationController
   before_filter :store_location, :only => :index
   load_and_authorize_resource
   before_filter :get_user
-  if SystemConfiguration.get("use_order_lists")
-    before_filter :get_order_list
-  end
+  if defined? EnjuTrunkOrder
+    if SystemConfiguration.get("use_order_lists")
+      before_filter :get_order_list
+    end
+  end 
   before_filter :store_page, :only => :index
   after_filter :solr_commit, :only => [:create, :update, :destroy]
   after_filter :convert_charset, :only => :index

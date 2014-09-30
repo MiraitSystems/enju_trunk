@@ -458,16 +458,18 @@
             <td><%= manifestation.extext_1 -%></td>
           </tr>
         <%- end -%>
-        <%- if SystemConfiguration.get("attributes.manifestation.use_license_id") -%>
-          <tr>
-            <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
-            <td>
-              <% if manifestation.use_license  %>
-                <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
-              <% end %>
-            </td>
-          </tr>
-        <%- end -%>
+        <% if defined? EnjuTrunkOrder %>
+          <% if SystemConfiguration.get("attributes.manifestation.use_license_id") %>
+            <tr>
+              <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
+              <td>
+                <% if manifestation.use_license  %>
+                  <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
         <% unless manifestation.periodical_master %> 
           <%- if SystemConfiguration.get("manifestation.display_checkouts_count") && Setting.operation -%>
             <tr>
