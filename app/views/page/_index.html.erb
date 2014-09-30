@@ -5,7 +5,9 @@ $(document).FunctionKeys(
 {
  F2:function(obj,s,c,a){document.location = '<%= new_basket_path%>';}
 ,F3:function(obj,s,c,a){document.location = '<%= checkins_path %>';}
-,F4:function(obj,s,c,a){document.location = '<%= order_lists_path %>';}
+<% if defined? EnjuTrunkOrder %>
+  ,F4:function(obj,s,c,a){document.location = '<%= order_lists_path %>';}
+<% end %>
 });
 <% end %>
 // -->

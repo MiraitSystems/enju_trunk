@@ -50,8 +50,6 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :work_has_languages, :reject_if => lambda{ |attributes| attributes[:language_id].blank? }, :allow_destroy => true
   accepts_nested_attributes_for :work_has_subjects, :allow_destroy => true
   
-  has_many :orders
-
   belongs_to :catalog
   accepts_nested_attributes_for :items
 

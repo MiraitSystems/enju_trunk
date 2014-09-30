@@ -32,7 +32,11 @@ class Ability
       can [:read, :output], BarcodeRegistration
       can [:read, :create, :update], Bookstore
       can :destroy, Bookstore do |bookstore|
-        bookstore.order_lists.empty?
+        if defined? EnjuTrunkOrder
+          bookstore.order_lists.empty?
+        else
+          true
+        end
       end
       can [:read, :create, :update], Budget
       can :destroy, Budget do |budget|
@@ -145,7 +149,6 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        OrderList,
         Own,
         AgentImportFile,
         AgentMerge,
@@ -220,7 +223,11 @@ class Ability
       can [:read, :output], BarcodeRegistration
       can [:read, :create, :update], Bookstore
       can :destroy, Bookstore do |bookstore|
-        bookstore.order_lists.empty?
+        if defined? EnjuTrunkOrder
+          bookstore.order_lists.empty?
+        else
+          true
+        end
       end
       can [:read, :create, :update], Budget
       can :destroy, Budget do |budget|
@@ -319,7 +326,6 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        OrderList,
         Own,
         AgentImportFile,
         AgentMerge,

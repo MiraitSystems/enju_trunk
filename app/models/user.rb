@@ -1,3 +1,4 @@
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'user') if defined? EnjuTrunkOrder
 class User < ActiveRecord::Base
   self.extend UsersHelper
   # Include default devise modules. Others available are:
@@ -58,7 +59,6 @@ class User < ActiveRecord::Base
   has_many :search_histories, :dependent => :destroy
   has_many :baskets, :dependent => :destroy
   has_many :purchase_requests
-  has_many :order_lists
   has_many :subscriptions
   has_many :checkout_stat_has_users
   has_many :user_checkout_stats, :through => :checkout_stat_has_users

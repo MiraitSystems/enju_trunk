@@ -205,7 +205,9 @@
                 <li><%= link_to t('page.output', :model => t('bookbinding.card')), :controller => :bookbindings, :action => :get_bookbinding_card, :param => @manifestation %></li>
               <% end %>
             <%- end -%>
-            <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@manifestation) %></li>
+            <% if defined? EnjuTrunkOrder %>
+              <li><%= link_to t('activerecord.models.order'), manifestation_orders_path(@manifestation) %></li>
+            <% end %>
             <%# 書誌と所蔵を１：１で管理する設定時、除籍・復元を表示 %>
             <% if SystemConfiguration.get("manifestation.has_one_item") %>
               <% item = SystemConfiguration.get('manifestation.manage_item_rank') ? @manifestation.items.sort_rank.first : @manifestation.items.first %>

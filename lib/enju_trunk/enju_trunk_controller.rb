@@ -265,7 +265,7 @@ module EnjuTrunk
       end
 
       def get_order_list
-        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id]
+        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id] and defined? EnjuTrunkOrder
       end
 
       def get_purchase_request

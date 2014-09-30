@@ -92,7 +92,6 @@ class Item < ActiveRecord::Base
   end
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
-  belongs_to :order
   belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
   belongs_to :location_category, :class_name => 'Keycode', :foreign_key => 'location_category_id'
   belongs_to :statistical_class, :class_name => 'Keycode', :foreign_key => 'statistical_class_id'
@@ -162,7 +161,7 @@ class Item < ActiveRecord::Base
     integer :remove_reason_id
     boolean :non_searchable
     integer :bookbinder_id
-    integer :order_id
+    integer :order_id if defined? EnjuTrunkOrder
     time :created_at
     time :updated_at
   end
