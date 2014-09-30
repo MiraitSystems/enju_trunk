@@ -66,7 +66,9 @@
         <li><%= link_to t('activerecord.models.agent_merge_list'), agent_merge_lists_path -%></li>
         <li><%= link_to t('activerecord.models.title_type'), title_types_path -%></li>
         <li><%= link_to t('order.system_menu_title'), orders_path %></li>
-        <li><%= link_to t('payment.system_menu_title'), payments_path %></li>
+        <% if defined?(EnjuTrunkOrder) %>
+          <li><%= link_to t('payment.system_menu_title'), payments_path %></li>
+        <% end %>
         <li><%= link_to t('activerecord.models.publication_status'), publication_statuses_path %></li>
         <li><%= link_to t('activerecord.models.sequence_pattern'), sequence_patterns_path %></li>
       </ul>

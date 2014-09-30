@@ -194,7 +194,6 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
-      payment: Payment
       work_has_language: Work to language relationship
       function: Function
       function_class: Function class
@@ -1620,24 +1619,6 @@ en:
         name: Name
         display_name: Display name
         note: Note
-      payment:
-        id: Id
-        order_id: Order id
-        billing_date: Billing date
-        manifestation_id: Manifestation id
-        currency_id: Currency
-        currency_rate: Currency rate
-        margin_ratio: Margin ratio
-        before_conv_amount_of_payment: Before conv amount of payment
-        amount_of_payment: Amount of payment
-        number_of_payment: Number of payment
-        volume_number: Volume number
-        note: Note
-        auto_calculation_flag: Auto calculation flag
-        payment_type: Payment type
-        taxable_amount: Taxable amount
-        tax_exempt_amount: Tax exempt amount
-        discount_commision: Discount commision
       function:
         controller_name: Controller name
         display_name: Display name

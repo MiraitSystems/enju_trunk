@@ -6,7 +6,7 @@ if @sru
     @webget = @sru.extra_response_data[:webget]
     @digitalize = @sru.extra_response_data[:digitalize]
     @porta_type = @sru.extra_response_data[:porta_type]
-    @payment = @sru.extra_response_data[:payment]
+    @payment = @sru.extra_response_data[:payment] if defined? EnjuTrunkOrder
     @ndc = @sru.extra_response_data[:ndc]
     @date = @sru.extra_response_data[:date]
   end
@@ -40,7 +40,7 @@ def extra_response_data!(xml)
       lst_tag!(xml, "WEBGET_TYPE", 'dcndl_porta:type.Web-get', @webget)
       lst_tag!(xml, "DIGITALIZE_TYPE", 'dcndl_porta:type.Digitalize', @digitalize)
       lst_tag!(xml, "PORTA_TYPE", 'dcndl_porta:PORTAType', @porta_type)
-      lst_tag!(xml, "PAYMENT_TYPE", 'dcndl_porta:type.Payment', @payment)
+      lst_tag!(xml, "PAYMENT_TYPE", 'dcndl_porta:type.Payment', @payment) if defined? EnjuTrunkOrder
       lst_tag!(xml, "NDC", 'int', @ndc)
       lst_tag!(xml, "ISSUED_DATE", 'int', @date)
     end

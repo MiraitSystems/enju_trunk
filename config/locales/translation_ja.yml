@@ -197,7 +197,6 @@ ja:
       currency: 通貨単位
       keycode: コード管理
       approval: 見計らい
-      payment: 支払
       work_has_language: 資料と言語の関係
       function: 機能
       function_class: 機能区分
@@ -1638,24 +1637,6 @@ ja:
         name: 名前
         display_name: 表示名
         note: 注記
-      payment:
-        id: ID
-        order_id: 発注番号
-        billing_date: 請求年月日
-        manifestation_id: 資料番号
-        currency_id: 通貨単位
-        currency_rate: 通貨レート
-        margin_ratio: 割引手数料
-        before_conv_amount_of_payment: 換算前支払金額
-        amount_of_payment: 支払金額
-        number_of_payment: 支払冊数
-        volume_number: 巻号
-        note: 摘要内容
-        auto_calculation_flag: 金額自動計算フラグ
-        payment_type: 支払区分
-        taxable_amount: 課税対象金額
-        tax_exempt_amount: 非課税対象金額
-        discount_commision: 割引手数料
       function:
         controller_name: コントローラ名
         display_name: 表示名

@@ -7,6 +7,7 @@ engines << EnjuMessage::Engine  if defined?(EnjuMessage)
 engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
 engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
 engines << EnjuTrunkReport::Engine if defined?(EnjuTrunkReport)
+engines << EnjuTrunkOrder::Engine if defined?(EnjuTrunkOrder)
 engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
 
 class Ability
@@ -144,7 +145,6 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        Order,
         OrderList,
         Own,
         AgentImportFile,
@@ -152,7 +152,6 @@ class Ability
         AgentMergeList,
         AgentRelationship,
         AgentRelationshipType,
-        Payment,
         PictureFile,
         Produce,
         ProduceType,
@@ -181,7 +180,6 @@ class Ability
         Title,
         TitleType,
         EnjuTerminal,
-        UseLicense,
         UserCheckoutStat,
         UserHasRole,
         UserReserveStat,
@@ -321,14 +319,12 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        Order,
         OrderList,
         Own,
         AgentImportFile,
         AgentMerge,
         AgentMergeList,
         AgentRelationship,
-        Payment,
         PictureFile,
         Produce,
         ProduceType,
@@ -352,7 +348,6 @@ class Ability
         Term,
         Title,
         TitleType,
-        UseLicense,
         UserStatus,
         WorkHasTitle
       ]

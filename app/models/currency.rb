@@ -1,9 +1,8 @@
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'currency') if defined? EnjuTrunkOrder
 class Currency < ActiveRecord::Base
   attr_accessible :created_at, :display_name, :id, :name, :updated_at
 
   has_many :exchange_rates
-  has_many :orders
-  has_many :payments
  
   paginates_per 10
 
