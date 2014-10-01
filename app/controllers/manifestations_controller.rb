@@ -1974,7 +1974,7 @@ class ManifestationsController < ApplicationController
   # 
   def create_classification_values(add_classifications)
     classifications = []
-    add_classifications.each do |add_classification|
+    (add_classifications || []).each do |add_classification|
       next if add_classification[:classification_id].blank?
       classification = Classification.where(:id => add_classification[:classification_id]).first
       classifications << classification if classification.present?
