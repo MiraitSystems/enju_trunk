@@ -104,6 +104,15 @@ namespace :enju_trunk do
 
     desc 'Scheduled process'
     task :scheduled_import => :enviroment do
+      require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
+      Rails.logger = Logger.new(Rails.root.join(LOGFILE))
+
+      $enju_log_head = "sync::scheduled_import"
+      $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
+     
+      # based on perl
+      
+      #  
       Rake::Task["enju:sync:import"].invoke
     end
   end

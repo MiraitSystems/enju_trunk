@@ -37,6 +37,10 @@ module EnjuSyncServices
 
     self.extend EnjuSyncUtil
 
+    def self.load_control_file(ctl_file_name)
+      return compressed_file_size, md5checksum
+    end
+
     def self.build_bucket(bucket_id)
       # init backet
       work_dir = File.join(DUMPFILE_PREFIX, "#{bucket_id}")
@@ -96,8 +100,63 @@ module EnjuSyncServices
       end
     end
 
+    def self.marshal_file_recv
+      glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-[RDY|ERR]-*.ctl"
+
+      # 一番IDが小さい受信可能ファイルを取得( RDY|ERR )
+      rdy_ctl_files = Dir.glob(glob_string).sort 
+      if rdy_ctl_files.empty?
+        # 受信すべきバケットがないので、ログを記録して終了
+        tag_logger("receive buckets not exist");
+        return
+      end 
+
+      rdy_ctl_files.each do |ctl_file_name|
+        unless /\w+\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ ctl_file_name
+          tar_logger "FATAL: ctl_file error (1) #{target_dir}"
+          return
+        end
+        exec_date = $1
+        send_stat = $2
+        retry_cnt = $3
+
+        tag_logger "exec_date=#{exec_date} send_stat=#{send_stat} retry_cnt=#{retry_cnt}"
+
+        target_dir = File.dirname(ctl_file_name)
+        unless /.*\/(\d)$/ =~ target_dir
+          tar_logger "FATAL: ctl_file error (2) #{target_dir}"
+          return
+        end
+
+        bucket_id = $1
+
+        unless send_stat == "RDY"
+          tag_logger "skip: status=#{send_stat} ctl_fil_name=#{ctl_file_name}"
+          next
+        end
+
+        f = open("foo")
+        f.each_line {|line|
+          print line
+        }
+        f.close
+
+        ctl_file_success_name = File.join(target_dir, "#{exec_date}-END-#{retry_cnt}.ctl")
+
+        target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
+        push_target_files = Dir.glob(target_dir_s).sort 
+        push_target_files << "#{ctl_file_name}"
+
+        Rake::Task["enju:sync:import"].invoke
+
+        tag_logger "rename to #{ctl_file_success_name}"
+        File.rename(ctl_file_name, ctl_file_success_name)
+      end
+ 
+    end
+
     def self.marshal_file_push(bucket_id)
-      glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-RDY-*.ctl"
+      glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-[RDY|ERR]-*.ctl"
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
       ftp_password = SystemConfiguration.get("sync.ftp.password")
@@ -109,7 +168,7 @@ module EnjuSyncServices
       end
 
       if ftp_user.blank? || ftp_password.blank?
-        tag_notifier "FATAL: configuration (sync.ftp.user or sync.ftp.password)  is empty."
+        tag_notifier "FATAL: configuration (sync.ftp.user or sync.ftp.password) is empty."
         tag_logger "FATAL: see config/config.yml"
         return
       end
@@ -117,7 +176,7 @@ module EnjuSyncServices
       # compress marsharl file, create control file and write checksum
       build_bucket(bucket_id)
 
-      # 一番IDが小さい送信可能ファイルを取得( RDY )
+      # 一番IDが小さい送信可能ファイルを取得( RDY|ERR )
       rdy_ctl_files = Dir.glob(glob_string).sort 
       if rdy_ctl_files.empty?
         # 送信すべきバケットがないので、ログを記録して終了
@@ -134,6 +193,8 @@ module EnjuSyncServices
         send_stat = $2
         retry_cnt = $3
 
+        tag_logger "exec_date=#{exec_date} send_stat=#{send_stat} retry_cnt=#{retry_cnt}"
+
         target_dir = File.dirname(ctl_file_name)
         unless /.*\/(\d)$/ =~ target_dir
           tar_logger "FATAL: ctl_file error (2) #{target_dir}"
@@ -142,13 +203,22 @@ module EnjuSyncServices
 
         bucket_id = $1
 
-        target_dir_s = File.join(target_dir, "dumpfiles.gz")
+        unless send_stat == "RDY"
+          tag_logger "skip: status=#{send_stat} ctl_fil_name=#{ctl_file_name}"
+          next
+        end
+
+        ctl_file_success_name = File.join(target_dir, "#{exec_date}-END-#{retry_cnt}.ctl")
+
+        target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
         push_target_files = Dir.glob(target_dir_s).sort 
         push_target_files << "#{ctl_file_name}"
 
         push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
-      end
 
+        tag_logger "rename to #{ctl_file_success_name}"
+        File.rename(ctl_file_name, ctl_file_success_name)
+      end
     end
   end
 end
