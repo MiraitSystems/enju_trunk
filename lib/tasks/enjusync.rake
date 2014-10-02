@@ -29,7 +29,6 @@ namespace :enju_trunk do
     desc 'sync first'
     task :first => :environment do
       require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
-
       Rails.logger = Logger.new(Rails.root.join(LOGFILE))
 
       $enju_log_head = "sync::first"
@@ -61,22 +60,18 @@ namespace :enju_trunk do
 
       tag_logger "call task [enju::sync::export] end"
 
-      Dir::chdir(SCRIPT_ROOT)  
-      begin
-        EnjuSyncService.marshal_file_push
-      rescue => ex
-        EnjuSyncService.sync_notifier(Rails.env, ex)
-        tag_logger "fatal: error occurred : #{ex.message}"
-        fail "fatal: error occurred : #{ex.message}"
-      end
+      EnjuSyncServices::Sync.marshal_file_push
 
       tag_logger "end (NormalEnd)"
     end
 
     desc 'Scheduled process'
     task :scheduled_export => :environment do
-      $enju_head = "sync::scheduled_export"
-      $enju_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
+      require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
+      Rails.logger = Logger.new(Rails.root.join(LOGFILE))
+
+      $enju_log_head = "sync::scheduled_export"
+      $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
 
       tag_logger "start #{Time.now}"
       tag_logger "init_bucket=#{INIT_BUCKET}"
