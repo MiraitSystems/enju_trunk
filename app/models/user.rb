@@ -964,6 +964,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.get_user(identifier)
+    user = User.where(:user_number => identifier).first
+    user = User.where(:username => identifier).first unless user
+    unless user
+      agent = Agent.where(:agent_identifier => identifier).first
+      user = agent.user if agent
+    end
+    return user
+  end
+
   private
   def self.get_object_method(obj,array)
     _obj = obj.send(array.shift)
