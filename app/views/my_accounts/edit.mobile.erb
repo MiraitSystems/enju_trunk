@@ -1,0 +1,33 @@
+<div data-role="header">
+  <h1 class="title"><%= t('page.edit_user_profile', :login_name => @user.username) -%></h1>
+</div>
+<br />
+<%= link_to t('activerecord.attributes.user.show_user'), @user -%>
+<%= render 'page/required_field' %>
+<%= simple_form_for(@user, :url => my_account_path) do |f| -%>
+  <%= f.error_messages -%>
+  <%= render :partial => 'my_accounts/edit_credential', :locals => {:f => f, :user => @user} -%>
+  <div style="clear: both" class="table">
+    <div class="row">
+      <div><%= f.label :keyword_list -%></div>
+      <div><%= f.text_area :keyword_list, :class => 'resource_textarea' -%></div>
+    </div>
+    <br />
+    <div class="row">
+      <div><%= f.label t('user.reset_checkout_icalendar_url') -%></div>
+      <div id="feed_token">
+        <%- if @user.checkout_icalendar_token -%>
+          <%= link_to checkouts_url(:icalendar_token => @user.checkout_icalendar_token, :format => :ics), checkouts_url(:icalendar_token => @user.checkout_icalendar_token, :format => :ics) -%>
+          <%= f.hidden_field :checkout_icalendar_token -%>
+        <%- end -%>
+        <input onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#feed_token').html(request);}, type:'get', url:'<%= edit_user_path(@user, :mode => 'feed_token') %>'});" type="button" value="<%= t('page.reset') %>" data-inline="true" />
+        <input onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#feed_token').html(request);}, type:'get', url:'<%= edit_user_path(@user, :disable => true, :mode => 'feed_token') %>'});" type="button" value="<%= t('page.delete') %>" data-inline="true" />
+      </div>
+    </div>
+    <br />
+    <div class="actions">
+      <%= f.submit %>
+    </div>
+<%- end -%>
+</div>
+

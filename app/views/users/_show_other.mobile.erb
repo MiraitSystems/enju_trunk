@@ -1,6 +1,6 @@
-<div id="content_detail" class="ui-corner-all">
-<h1><%= t('page.showing', :model => t('activerecord.models.user')) -%></h1>
-<div id="content_list">
+<div data-role="header">
+  <h1><%= t('page.showing', :model => t('activerecord.models.user')) -%></h1>
+</div>
   <p id="notice"><%= notice %></p>
   <div style="color: red">
     <%= user_notice(user) -%>
@@ -11,6 +11,13 @@
       <%- end -%>
     <%- end -%>
   </div>
+  <br />
+
+  <% if user_signed_in? %>
+    <% if can? :update, user %>
+      <%= link_to t('page.edit'), edit_user_path(user) -%>
+    <% end %>
+  <%- end -%>
 
   <h2 class="resource_title">[U]<%= @agent.full_name %></h2>
 
@@ -64,5 +71,3 @@
       <%= link_to t('page.listing', :model => t('activerecord.models.reserve')), user_reserves_path(current_user), :class=>'my_status_button ui-corner-all' -%>
     </div>
   <%- end -%>
-</div>
-</div>
