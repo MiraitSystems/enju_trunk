@@ -479,7 +479,7 @@ class ManifestationsController < ApplicationController
       set_in_process
       @index_agent = get_index_agent
       
-      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort")
+      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort") || 1
       @sort_plan = {}
       (1..10).each do |id|
         @sort_plan[t(Manifestation::SORT_PLANS[id]["sort"], :sort_by => t(Manifestation::SORT_PLANS[id]["sort_by"]))] = id
