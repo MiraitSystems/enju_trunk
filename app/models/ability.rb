@@ -256,7 +256,6 @@ class Ability
         series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and
           series_statement.root_manifestation = series_statement.manifestations.first)
       end
-      can [:output], Shelf
       can [:index, :create], Agent
       can :show, Agent do |agent|
         agent.required_role_id <= 3
@@ -348,6 +347,7 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
+        Shelf,
         Subscribe,
         Subscription,
         SystemConfiguration,
@@ -392,7 +392,6 @@ class Ability
         RetentionPeriod,
         Role,
         SearchEngine,
-        Shelf,
         EnjuTerminal,
         UseRestriction,
         UserGroup,

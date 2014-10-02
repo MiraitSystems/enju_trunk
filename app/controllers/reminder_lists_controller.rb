@@ -30,8 +30,11 @@ class ReminderListsController < ApplicationController
     library = params[:library][:id] if params[:library] and !params[:library][:id].blank?
     date = 1.days.ago.end_of_day
     date = params[:days_overdue].to_i.days.ago.end_of_day if params[:days_overdue]
-    user_number = @user_number = params[:user_number]
-    @user = User.where(:user_number => user_number).try(:first) unless user_number.blank?
+    unless params[:user_number].blank?
+      @user_number = params[:user_number]
+      user_number = User.get_user(params[:user_number]).try(:user_number) || @user_number
+      @user = User.where(:user_number => user_number).try(:first)
+    end
     full_name = @full_name = params[:full_name]
     if full_name && full_name.size == 1
       full_name = "#{full_name}*"
