@@ -28,8 +28,11 @@ module EnjuSyncServices
   class Sync
     LOGFILE = 'log/sync.log'
 
+    SLAVE_SERVER_DIR = "/var/enjusync"
+
     DUMPFILE_PREFIX = "/var/enjusync"
     DUMPFILE_NAME = "enjudump.marshal"
+    COMPRESS_FILE_NAME = "dumpfiles.gz"
     STATUS_FILE = "#{DUMPFILE_PREFIX}/work/status.marshal"
 
     self.extend EnjuSyncUtil
@@ -37,30 +40,30 @@ module EnjuSyncServices
     def self.build_bucket(bucket_id)
       # init backet
       work_dir = File.join(DUMPFILE_PREFIX, "#{bucket_id}")
-      gzip_file_name = "#{DUMPFILE_NAME}.gz"
+      gzip_file_name = COMPRESS_FILE_NAME
       marsharl_full_name = File.join(work_dir, DUMPFILE_NAME)
       gzip_full_name = File.join(work_dir, gzip_file_name)
       exec_date = Time.now.strftime("%Y%m%d")
 
       unless FileTest::exist?(marsharl_full_name)
-        # コマンドファイルが無い場合、ステータスEND、exit3で終了
+        # marshal ファイルが無い場合、ステータスEND、終了
         ctl_file = File.join(work_dir, "#{exec_date}-END-0.ctl")
         FileUtils.touch(ctl_file, :mtime => Time.now)
         tag_logger("Can not open #{marsharl_full_name} (no update)");
         return
       end
 
+      # marshal ファイルをgzで圧縮する。
       Zlib::GzipWriter.open(gzip_full_name, Zlib::BEST_COMPRESSION) do |gz|
         gz.mtime = File.mtime(marsharl_full_name)
         gz.orig_name = marsharl_full_name
         gz.puts File.open(marsharl_full_name, 'rb') {|f| f.read }
       end
 
-      ctl_file = File.join(work_dir, "#{exec_date}-RDY-0.ctl")
-      FileUtils.touch(ctl_file, :mtime => Time.now)
-
       file_size = File.size(gzip_full_name)
       md5sum = Digest::MD5.file(gzip_full_name).to_s
+
+      ctl_file = File.join(work_dir, "#{exec_date}-RDY-0.ctl")
 
       # ステータスファイルにファイルサイズとmd5チェックサムを記述する。
       File.open(ctl_file, "w") do |io|
@@ -71,27 +74,29 @@ module EnjuSyncServices
     end
 
     def self.push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
-      ftp_site_base_dir = "/var/enjusync"
+      ftp_site_base_dir = SLAVE_SERVER_DIR
+      bucket_dir = File.join(ftp_site_base_dir, "#{bucket_id}")
 
-      tag_logger "ftp_site=#{ftp_site} ftp_user=#{ftp_user} bucket_id=#{bucket_id}"
+      tag_logger "ftp_site:#{ftp_site} ftp_user:#{ftp_user} bucket_id:#{bucket_id}"
+      tag_logger "ftp_site_dir: #{bucket_dir}"
 
       Net::FTP.open(ftp_site, ftp_user, ftp_password) do |ftp|
-        bucket_dir = File.join(ftp_site_base_dir, "#{bucket_id}")
         ftp.passive = true
-        ftp.chdir(ftp_site_base_dir)
-        unless ftp.dir(File.join(ftp_site_base_dir, bucket_dir))
-          tag_logger "mkdir #{bucket_dir}"
+
+        if ftp.dir(bucket_dir).empty?
+          tag_logger "try mkdir: #{bucket_dir}"
           ftp.mkdir(bucket_dir)
         end
 
         push_target_files.each do |file_name|
-          site_file_name = File.basename(file_name)
+          site_file_name = File.join(bucket_dir, File.basename(file_name))
+          tag_logger "push file: slave_server_filename: #{site_file_name}"
           ftp.putbinaryfile(file_name, site_file_name)
         end
       end
     end
 
-    def self.marshal_file_push
+    def self.marshal_file_push(bucket_id)
       glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-RDY-*.ctl"
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
@@ -108,6 +113,9 @@ module EnjuSyncServices
         tag_logger "FATAL: see config/config.yml"
         return
       end
+
+      # compress marsharl file, create control file and write checksum
+      build_bucket(bucket_id)
 
       # 一番IDが小さい送信可能ファイルを取得( RDY )
       rdy_ctl_files = Dir.glob(glob_string).sort 
@@ -134,10 +142,7 @@ module EnjuSyncServices
 
         bucket_id = $1
 
-        # compress and write checksum
-        build_bucket(bucket_id)
-
-        target_dir_s = File.join(target_dir, "enjudump.marshal.gz")
+        target_dir_s = File.join(target_dir, "dumpfiles.gz")
         push_target_files = Dir.glob(target_dir_s).sort 
         push_target_files << "#{ctl_file_name}"
 

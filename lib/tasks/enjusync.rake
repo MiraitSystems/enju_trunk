@@ -60,7 +60,7 @@ namespace :enju_trunk do
 
       tag_logger "call task [enju::sync::export] end"
 
-      EnjuSyncServices::Sync.marshal_file_push
+      EnjuSyncServices::Sync.marshal_file_push(last_event_id)
 
       tag_logger "end (NormalEnd)"
     end
