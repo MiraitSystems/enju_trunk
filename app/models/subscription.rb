@@ -1,8 +1,8 @@
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'subscription') if defined? EnjuTrunkOrder
 class Subscription < ActiveRecord::Base
   has_many :subscribes, :dependent => :destroy
   has_many :works, :through => :subscribes
   belongs_to :user, :validate => true
-  belongs_to :order_list, :validate => true
 
   validates_presence_of :title, :user
   validates_associated :user
@@ -30,7 +30,6 @@ end
 #  title            :text            not null
 #  note             :text
 #  user_id          :integer
-#  order_list_id    :integer
 #  deleted_at       :datetime
 #  subscribes_count :integer         default(0), not null
 #  created_at       :datetime

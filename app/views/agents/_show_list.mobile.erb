@@ -1,0 +1,148 @@
+<div id="tabs">
+
+  <div id="detail">
+    <table class="index vcard">
+      <%- unless @agent.agent_identifier.blank? -%>
+      <tr>
+        <td><strong><%= t('agent.agent_identifier') -%>:</strong></td>
+        <td><%= @agent.agent_identifier -%></td>
+      </tr>
+      <%- end -%>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.full_name') -%>:</strong></td>
+        <td><span class="fn"><%= @agent.full_name -%></span></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.full_name_transcription') -%>:</strong></td>
+        <td><%= @agent.full_name_transcription -%></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.full_name_alternative') -%>:</strong></td>
+        <td><%= @agent.full_name_alternative -%></td>
+      </tr>
+      <%- if @agent.user -%>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.user.username') -%>:</strong></td>
+          <td><%= @agent.user.username -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.user.library') -%>:</strong></td>
+          <td><%= @agent.user.library.display_name unless @agent.user.library_id.blank? -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.user.user_group') -%>:</strong></td>
+          <td><%= @agent.user.user_group.display_name -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.user.department') -%>:</strong></td>
+          <td><%= @agent.user.department.display_name unless @agent.user.department_id.blank? -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.user.expired_at') -%>:</strong></td>
+          <td><%= l(@agent.user.expired_at, :format => :only_date) if @agent.user.expired_at -%></td>
+        </tr>
+      <%- end -%>
+<!--
+      <%- if user_signed_in? and current_user.has_role?('Librarian') or !@agent.user -%>
+        <tr>
+          <td><strong><%= t('activerecord.models.agent_type') -%>:</strong></td>
+          <td><%= @agent.agent_type.display_name.localize -%></td>
+        </tr>
+      <%- end -%>
+-->
+      <% if @agent.corporate_type_id %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.agent.corporate_type') %>:</strong></td>
+          <td><%= @agent.corporate_type.keyname %></td>
+        </tr>
+      <% end %>
+      <% unless @agent.keyperson_1.blank? %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.agent.keyperson_1') %>:</strong></td>
+          <td><%= @agent.keyperson_1 %></td>
+        </tr>
+      <% end %>
+      <% unless @agent.keyperson_2.blank? %>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.agent.keyperson_2') %>:</strong></td>
+          <td><%= @agent.keyperson_2 %></td>
+        </tr>
+      <% end %>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.url') -%>:</strong></td>
+        <td><%= link_to @agent.url, @agent.url, :class => 'url' if @agent.url? -%></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.gender') -%>:</strong></td>
+        <td><%= @agent.gender.keyname if @agent.gender %></td>
+      </tr>
+      <% if SystemConfiguration.get("agent.manage_grade") %>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.grade') -%>:</strong></td>
+        <td><%= @agent.grade.keyname if @agent.grade %></td>
+      </tr>
+      <% end %>
+
+      <% if @agent.user && SystemConfiguration.get("penalty.user_penalty") %>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.user.days_after_penalty') %>: </strong></td>
+        <td><%= @agent.user.days_after_penalty %></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.user.in_penalty') %>: </strong></td>
+        <td><%= @agent.user.in_penalty ? t('page.boolean.true') : t('page.boolean.false') %></td>
+      </tr>
+      <% end %>
+
+<%- if false -%>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.other_designation') -%>:</strong></td>
+        <td><%= @agent.other_designation -%></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.attributes.agent.place') -%>:</strong></td>
+        <td><%= @agent.place -%></td>
+      </tr>
+<%- end -%>
+      <tr>
+        <td><strong><%= t('activerecord.models.language') -%>:</strong></td>
+        <td><%= @agent.language.display_name.localize -%></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('activerecord.models.country') -%>:</strong></td>
+        <td><%= @agent.country.display_name.localize -%></td>
+      </tr>
+      <% if @agent.place %>
+        <tr>
+          <td><strong><%= t('agent.place') %>:</strong></td>
+          <td><%= @agent.place.term %></td>
+        </tr>
+      <% end %>
+      <%- if !@agent.user or (@agent.user and user_signed_in? and current_user.has_role?('Librarian')) -%>
+        <tr>
+         <td><strong><%= t('activerecord.attributes.agent.note') -%>:</strong></td>
+          <td><%= @agent.note -%></td>
+        </tr>
+        <tr>
+          <td><strong><%= t('activerecord.attributes.agent.note_update_at') -%>:</strong></td>
+          <td><%= l(@agent.note_update_at) unless @agent.note_update_at.blank?-%>
+            <%- if @agent.note_update_by -%>
+              &nbsp;<%= t('agent.last_update_by') -%>: <%= @agent.note_update_by -%>
+            <%- end -%>
+            <%- if @agent.note_update_library -%>
+              (<%= @agent.note_update_library-%>)
+            <%- end -%>
+          </td>
+        </tr>
+      <%- end -%>
+      <tr>
+        <td><strong><%= t('page.created_at') -%>:</strong></td>
+        <td><%= l(@agent.created_at) -%></td>
+      </tr>
+      <tr>
+        <td><strong><%= t('page.updated_at') -%>:</strong></td>
+        <td><%= l(@agent.updated_at) -%></td>
+      </tr>
+    </table>
+  </div>
+</div>

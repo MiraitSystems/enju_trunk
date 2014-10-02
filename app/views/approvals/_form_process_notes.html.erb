@@ -35,7 +35,7 @@
     remove : function (currentNumber) {
       if($("div:visible[id ^= 'PN']").length == 1) this.add();
       var field = $('#PN' + currentNumber);
-      field.append('<input name=manifestation[process_notes_attributes][' + currentNumber + '][_destroy] style="display:none" value="1" />');
+      field.append('<input name=approval[process_notes_attributes][' + currentNumber + '][_destroy] style="display:none" value="1" />');
       field.hide();
     }
   };

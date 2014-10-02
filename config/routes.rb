@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     post :output_csv, :on => :collection
   end
   resources :keycodes
-  resources :use_licenses
   resources :function_classes do
     resources :function_class_abilities, :only => [:index] do
       post :update_all, :on => :collection
@@ -88,7 +87,6 @@ Rails.application.routes.draw do
     resources :manifestations
     resources :series_statements
     resources :series_has_manifestations
-    resources :orders
     post :output_show, :on => :member
     get :output_pdf, :on => :member
     post :output_excelx, :on => :collection
@@ -257,25 +255,6 @@ Rails.application.routes.draw do
   resources :accept_types
   resources :search_histories, :only => [:index, :show, :destroy]
 
-  resources :order_lists do
-    resource :order
-    resources :purchase_requests
-  end
-
-  resources :orders do
-    resources :payments
-    get :paid, :on => :member
-    get :search, :on => :collection
-    get :create_subsequent_year_orders, :on => :collection
-    get :create_ordered_manifestations, :on => :member
-    get :update_order, :on => :member
-    post :output_csv, :on => :collection
-    resources :payments
-    resources :items
-  end
-  match 'payments/search', :to => 'payments#search'
-  resources :payments
-
   match '/resource_import_textfiles/adapters/:name' => 'resource_import_textfiles#inherent_view'
   resources :resource_import_textfiles do
     get :import_request, :on => :collection
@@ -303,7 +282,6 @@ Rails.application.routes.draw do
   end
 
   resources :purchase_requests do
-    resource :order
     get :accept, :on => :member
     get :reject, :on => :member
     get :do_order, :on => :member
@@ -313,7 +291,6 @@ Rails.application.routes.draw do
 
   resources :bookstores do
     get :search_bookstores, :on => :collection
-    resources :order_lists
   end
   resources :areas
 

@@ -479,7 +479,7 @@ class ManifestationsController < ApplicationController
       set_in_process
       @index_agent = get_index_agent
       
-      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort")
+      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort") || 1
       @sort_plan = {}
       (1..10).each do |id|
         @sort_plan[t(Manifestation::SORT_PLANS[id]["sort"], :sort_by => t(Manifestation::SORT_PLANS[id]["sort_by"]))] = id
@@ -1593,7 +1593,7 @@ class ManifestationsController < ApplicationController
       @identifiers = @manifestation.identifiers
       @identifiers << Identifier.new if @identifiers.blank?
     end
-    @use_licenses = UseLicense.all
+    @use_licenses = UseLicense.all if defined? EnjuTrunkOrder
     @classification_types = ClassificationType.order("position").all
 
     # 書誌と所蔵を１：１で管理　編集のためのデータを準備する
@@ -1974,7 +1974,7 @@ class ManifestationsController < ApplicationController
   # 
   def create_classification_values(add_classifications)
     classifications = []
-    add_classifications.each do |add_classification|
+    (add_classifications || []).each do |add_classification|
       next if add_classification[:classification_id].blank?
       classification = Classification.where(:id => add_classification[:classification_id]).first
       classifications << classification if classification.present?

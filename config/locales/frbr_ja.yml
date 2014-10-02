@@ -94,7 +94,6 @@ ja:
         jpn_or_foreign: 和洋区分
         manifestation_identifier: 資料番号
         titles: その他の書名
-        use_license_id: "著者抄録許諾\n(許諾機関名称)"
         nacsis_identifier: NACSIS書誌レコードID
         manifestation_type: 資料区分
         original: オリジナル
