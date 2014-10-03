@@ -28,7 +28,8 @@ module EnjuSyncServices
   class Sync
     LOGFILE = 'log/sync.log'
 
-    SLAVE_SERVER_DIR = "/var/enjusync"
+    SLAVE_SERVER_DIR = "/var/enjusync"  # 送信先
+    RECEIVE_DIR = "/var/enjusync"       # 受信時の取得場所
 
     DUMPFILE_PREFIX = "/var/enjusync"
     DUMPFILE_NAME = "enjudump.marshal"
@@ -38,6 +39,29 @@ module EnjuSyncServices
     self.extend EnjuSyncUtil
 
     def self.load_control_file(ctl_file_name)
+      compressed_file_size = 0
+      md5checksum = ""
+      lines = 0
+
+      open(ctl_file_name) {|file|
+        while l = file.gets
+          lines += 1
+
+          case lines
+          when 1
+            compressed_file_size = l
+          when 2
+            md5checksum = l
+          when lines > 2
+            break
+          end
+        end
+      }
+
+      if /\D.*/ =~ compressed_file_size
+        raise SyncError("control file compressed_file_size error")
+      end
+
       return compressed_file_size, md5checksum
     end
 
@@ -101,9 +125,10 @@ module EnjuSyncServices
     end
 
     def self.marshal_file_recv
-      glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-[RDY|ERR]-*.ctl"
+      # opac 側の指定ディレクトリを探査
+      glob_string = "#{RECEIVE_DIR}/[0-9]*/*-[RDY|ERR]-*.ctl"
 
-      # 一番IDが小さい受信可能ファイルを取得( RDY|ERR )
+      # 受信可能ファイルを取得( RDY|ERR )
       rdy_ctl_files = Dir.glob(glob_string).sort 
       if rdy_ctl_files.empty?
         # 受信すべきバケットがないので、ログを記録して終了
@@ -130,27 +155,27 @@ module EnjuSyncServices
 
         bucket_id = $1
 
-        unless send_stat == "RDY"
-          tag_logger "skip: status=#{send_stat} ctl_fil_name=#{ctl_file_name}"
-          next
+        # uncompress
+        compress_marshal_file_name = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
+        marshal_file_name = File.join(target_dir, DUMPFILE_NAME)
+        status_file_name = File.join(target_dir, STATUSFILE_NAME)
+
+        Zlib::GzipReader.open(compress_marshal_file_name) do |gz|
+          orig_mtime = gz.mtime || Time.now # gz に時刻があればその時刻をタイムスタンプとして使用する
+          File.open(marshal_file_name, "wb") do |f|
+            f.print gz.read
+          end
+
+          File.utime(orig_mtime, orig_mtime, orig_name)
         end
 
-        f = open("foo")
-        f.each_line {|line|
-          print line
-        }
-        f.close
-
-        ctl_file_success_name = File.join(target_dir, "#{exec_date}-END-#{retry_cnt}.ctl")
-
-        target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
-        push_target_files = Dir.glob(target_dir_s).sort 
-        push_target_files << "#{ctl_file_name}"
+        # rake enju:sync:import DUMP_FILE=$RecvDir/$rcv_bucket/enjudump.marshal STATUS_FILE=$RecvDir/$rcv_bucket/status.marshal
+        ENV['DUMP_FILE'] = marshal_file_name
+        ENV['STATUS_FILE'] = 
 
         Rake::Task["enju:sync:import"].invoke
 
-        tag_logger "rename to #{ctl_file_success_name}"
-        File.rename(ctl_file_name, ctl_file_success_name)
+        change_control_file_to_import(ctl_file_name)
       end
  
     end
@@ -160,6 +185,7 @@ module EnjuSyncServices
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
       ftp_password = SystemConfiguration.get("sync.ftp.password")
+      ftp_trans_mode = SystemConfiguration.get("sync.ftp.trans_mode_passive") || true
 
       if ftp_site.blank?
         tag_notifier "FATAL: configuration (sync.ftp.site) is empty."
@@ -176,7 +202,7 @@ module EnjuSyncServices
       # compress marsharl file, create control file and write checksum
       build_bucket(bucket_id)
 
-      # 一番IDが小さい送信可能ファイルを取得( RDY|ERR )
+      # 送信可能ファイルを取得( RDY|ERR )
       rdy_ctl_files = Dir.glob(glob_string).sort 
       if rdy_ctl_files.empty?
         # 送信すべきバケットがないので、ログを記録して終了
@@ -208,17 +234,42 @@ module EnjuSyncServices
           next
         end
 
-        ctl_file_success_name = File.join(target_dir, "#{exec_date}-END-#{retry_cnt}.ctl")
-
         target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
         push_target_files = Dir.glob(target_dir_s).sort 
         push_target_files << "#{ctl_file_name}"
 
-        push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
+        push_by_ftp(ftp_site, ftp_user, ftp_password, ftp_trans_mode, bucket_id, push_target_files)
 
-        tag_logger "rename to #{ctl_file_success_name}"
-        File.rename(ctl_file_name, ctl_file_success_name)
+        change_control_file_to_success(ctl_file_name)
       end
+    end
+
+    private
+    def change_control_file_to_error(ctl_file_name)
+      control_file_status_change(ctl_file_name, "IMP")
+    end
+
+    def change_control_file_to_error(ctl_file_name)
+      control_file_status_change(ctl_file_name, "ERR")
+    end
+
+    def change_control_file_to_success(ctl_file_name)
+      control_file_status_change(ctl_file_name, "END")
+    end
+
+    def control_status_change(control_file, status_mark)
+      unless /\w+\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ ctl_file_name
+        tar_logger "FATAL: ctl_file error (1) #{target_dir}"
+        return
+      end
+      exec_date = $1
+      send_stat = $2
+      retry_cnt = $3
+
+      ctl_file_rename = File.join(target_dir, "#{exec_date}-#{status_mark}-#{retry_cnt}.ctl")
+
+      tag_logger "rename to #{ctl_file_rename}"
+      File.rename(ctl_file_name, ctl_file_rename)
     end
   end
 end

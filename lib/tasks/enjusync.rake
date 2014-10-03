@@ -98,22 +98,22 @@ namespace :enju_trunk do
       Rake::Task["enju:sync:export"].invoke
 
       # c.バケット作成, d.データ転送
-      Dir::chdir(SCRIPT_ROOT)  
       EnjuSync.ftpsyncpush(last_id) 
     end
 
-    desc 'Scheduled process'
-    task :scheduled_import => :enviroment do
+    desc 'Scheduled import process on opac(slave)'
+    task :scheduled_import => :environment do
       require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
       Rails.logger = Logger.new(Rails.root.join(LOGFILE))
 
       $enju_log_head = "sync::scheduled_import"
       $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
-     
-      # based on perl
-      
-      #  
-      Rake::Task["enju:sync:import"].invoke
+
+      tag_logger "start #{Time.now}"
+    
+      EnjuSyncServices::Sync.marshal_file_recv
+
+      tag_logger "end (NormalEnd)"
     end
   end
 end
