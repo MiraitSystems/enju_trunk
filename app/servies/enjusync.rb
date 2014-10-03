@@ -31,12 +31,47 @@ module EnjuSyncServices
     SLAVE_SERVER_DIR = "/var/enjusync"  # 送信先
     RECEIVE_DIR = "/var/enjusync"       # 受信時の取得場所
 
-    DUMPFILE_PREFIX = "/var/enjusync"
+    MASTER_SERVER_DIR = "/var/enjusync"
     DUMPFILE_NAME = "enjudump.marshal"
     COMPRESS_FILE_NAME = "dumpfiles.gz"
-    STATUS_FILE = "#{DUMPFILE_PREFIX}/work/status.marshal"
+    STATUSFILE_NAME = "status.marshal"
+    STATUS_FILE = "#{MASTER_SERVER_DIR}/work/#{STATUSFILE_NAME}"
 
     self.extend EnjuSyncUtil
+
+    def self.get_status_file
+      ftp_site = SystemConfiguration.get("sync.ftp.site")
+      ftp_user = SystemConfiguration.get("sync.ftp.user")
+      ftp_password = SystemConfiguration.get("sync.ftp.password")
+      ftp_trans_mode = SystemConfiguration.get("sync.ftp.trans_mode_passive") || true
+
+      if ftp_site.blank?
+        tag_notifier "FATAL: configuration (sync.ftp.site) is empty."
+        tag_logger "FATAL: see config/config.yml"
+       return
+      end
+
+      if ftp_user.blank? || ftp_password.blank?
+        tag_notifier "FATAL: configuration (sync.ftp.user or sync.ftp.password) is empty."
+        tag_logger "FATAL: see config/config.yml"
+        return
+      end
+
+      Net::FTP.open(ftp_site, ftp_user, ftp_password) do |ftp|
+        ftp.passive = true
+
+        # scan
+        files = ftp.scan("/var/enjusync/*")
+
+        push_target_files.each do |file_name|
+          site_file_name = File.join(bucket_dir, File.basename(file_name))
+          tag_logger "push file: slave_server_filename: #{site_file_name}"
+          ftp.putbinaryfile(file_name, site_file_name)
+        end
+      end
+
+
+    end
 
     def self.load_control_file(ctl_file_name)
       compressed_file_size = 0
@@ -67,7 +102,7 @@ module EnjuSyncServices
 
     def self.build_bucket(bucket_id)
       # init backet
-      work_dir = File.join(DUMPFILE_PREFIX, "#{bucket_id}")
+      work_dir = File.join(MASTER_SERVER_DIR, "#{bucket_id}")
       gzip_file_name = COMPRESS_FILE_NAME
       marsharl_full_name = File.join(work_dir, DUMPFILE_NAME)
       gzip_full_name = File.join(work_dir, gzip_file_name)
@@ -126,7 +161,9 @@ module EnjuSyncServices
 
     def self.marshal_file_recv
       # opac 側の指定ディレクトリを探査
-      glob_string = "#{RECEIVE_DIR}/[0-9]*/*-[RDY|ERR]-*.ctl"
+      glob_string = "#{RECEIVE_DIR}/[0-9]*/[0-9]*-RDY-*.ctl"
+
+      tag_logger "glob_string=#{glob_string}"
 
       # 受信可能ファイルを取得( RDY|ERR )
       rdy_ctl_files = Dir.glob(glob_string).sort 
@@ -145,7 +182,7 @@ module EnjuSyncServices
         send_stat = $2
         retry_cnt = $3
 
-        tag_logger "exec_date=#{exec_date} send_stat=#{send_stat} retry_cnt=#{retry_cnt}"
+        tag_logger "exec_date=#{exec_date} imp_stat=#{send_stat} retry_cnt=#{retry_cnt}"
 
         target_dir = File.dirname(ctl_file_name)
         unless /.*\/(\d)$/ =~ target_dir
@@ -156,7 +193,7 @@ module EnjuSyncServices
         bucket_id = $1
 
         # uncompress
-        compress_marshal_file_name = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
+        compress_marshal_file_name = File.join(target_dir, "#{COMPRESS_FILE_NAME}")
         marshal_file_name = File.join(target_dir, DUMPFILE_NAME)
         status_file_name = File.join(target_dir, STATUSFILE_NAME)
 
@@ -166,12 +203,12 @@ module EnjuSyncServices
             f.print gz.read
           end
 
-          File.utime(orig_mtime, orig_mtime, orig_name)
+          File.utime(orig_mtime, orig_mtime, marshal_file_name)
         end
 
         # rake enju:sync:import DUMP_FILE=$RecvDir/$rcv_bucket/enjudump.marshal STATUS_FILE=$RecvDir/$rcv_bucket/status.marshal
         ENV['DUMP_FILE'] = marshal_file_name
-        ENV['STATUS_FILE'] = 
+        ENV['STATUS_FILE'] = status_file_name
 
         Rake::Task["enju:sync:import"].invoke
 
@@ -181,7 +218,7 @@ module EnjuSyncServices
     end
 
     def self.marshal_file_push(bucket_id)
-      glob_string = "#{DUMPFILE_PREFIX}/[0-9]*/*-[RDY|ERR]-*.ctl"
+      glob_string = "#{MASTER_SERVER_DIR}/[0-9]*/*-[RDY|ERR]-*.ctl"
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
       ftp_password = SystemConfiguration.get("sync.ftp.password")

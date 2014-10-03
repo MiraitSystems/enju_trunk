@@ -81,11 +81,12 @@ namespace :enju_trunk do
       dumpfiledir = "#{DUMPFILE_PREFIX}/#{last_id}"
       dumpfile = "#{dumpfiledir}/#{DUMPFILE_NAME}"
 
-      # a.業務側からWebOPAC側に接続し、5)のstatusfileを取得
-      Dir::chdir(SCRIPT_ROOT)  
-      tag_logger "call task [get_status_file] start"
-      sh "#{PERLBIN} #{GET_STATUS_FILE}"
-      tag_logger "call task [get_status_file] end"
+      # a.業務側からWebOPAC側に接続し、5)のstatusfileを取得し work/marshal.status に保存。
+      #Dir::chdir(SCRIPT_ROOT)  
+      #tag_logger "call task [get_status_file] start"
+      # sh "#{PERLBIN} #{GET_STATUS_FILE}"
+      EnjuSyncServices::Sync.status_file_get
+      #tag_logger "call task [get_status_file] end"
 
       #
       tag_logger "mkdir_p begin"
