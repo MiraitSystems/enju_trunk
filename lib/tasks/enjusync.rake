@@ -7,7 +7,7 @@ SEND_BUCKET = "#{SCRIPT_ROOT}/send-bucket.pl"
 RECV_BUCKET = "#{SCRIPT_ROOT}/recv-bucket.pl"
 GET_STATUS_FILE = "#{SCRIPT_ROOT}/get-statusfile.pl"
 
-LOGFILE = 'log/sync.log'
+LOGFILE = 'log/sync'
 
 DUMPFILE_PREFIX = "/var/enjusync"
 DUMPFILE_NAME = "enjudump.marshal"
@@ -29,7 +29,7 @@ namespace :enju_trunk do
     desc 'sync first'
     task :first => :environment do
       require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
-      Rails.logger = Logger.new(Rails.root.join(LOGFILE))
+      Rails.logger = Logger.new(Rails.root.join("#{LOGFILE}-#{Rails.env}.log"))
 
       $enju_log_head = "sync::first"
       $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
@@ -68,7 +68,7 @@ namespace :enju_trunk do
     desc 'Scheduled process'
     task :scheduled_export => :environment do
       require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
-      Rails.logger = Logger.new(Rails.root.join(LOGFILE))
+      Rails.logger = Logger.new(Rails.root.join("#{LOGFILE}-#{Rails.env}.log"))
 
       $enju_log_head = "sync::scheduled_export"
       $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
@@ -104,7 +104,7 @@ namespace :enju_trunk do
     desc 'Scheduled import process on opac(slave)'
     task :scheduled_import => :environment do
       require File.join(Gem::Specification.find_by_name("enju_trunk").gem_dir, 'app/servies/enjusync.rb')
-      Rails.logger = Logger.new(Rails.root.join(LOGFILE))
+      Rails.logger = Logger.new(Rails.root.join("#{LOGFILE}-#{Rails.env}.log"))
 
       $enju_log_head = "sync::scheduled_import"
       $enju_log_tag = Digest::SHA1.hexdigest(Time.now.strftime('%s'))[-5, 5]
