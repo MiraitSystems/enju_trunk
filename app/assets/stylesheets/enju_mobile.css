@@ -55,3 +55,8 @@ h2.resource_title_mobile{
   line-height: 140%;
   text-align: center
 }
+
+.input_field{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

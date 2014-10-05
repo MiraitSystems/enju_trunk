@@ -1468,3 +1468,24 @@ system_configuration_00210:
   typename: Boolean
   description: "書誌項目のその他のタイトル代替を利用する"
   category: 'attributes'
+system_configuration_00211:
+  id: 211
+  keyname: 'attributes.item.acquired_at'
+  v: "false"
+  typename: Boolean
+  description: "所蔵項目の受入日(Date Field)を利用する"
+  category: 'attributes'
+system_configuration_00212:
+  id: 212
+  keyname: 'attributes.item.acquired_at_string'
+  v: "true"
+  typename: Boolean
+  description: "所蔵項目の受入日(String Field)を利用する"
+  category: 'attributes'
+system_configuration_00213:
+  id: 213
+  keyname: 'manifestation.search_sort'
+  v: 1
+  typename: Numeric
+  description: "書誌検索結果のデフォルトソート"
+  category: 'manifestation'

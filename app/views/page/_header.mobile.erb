@@ -1,11 +1,13 @@
 <div class="header_and_footer">
   <div id="header_mobile">
     <div id="library_system_name_mobile">
-      <h2 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h2>
+      <h3 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h3>
     </div>
 
     <div id="header_right_mobile">
       <% if user_signed_in? %>
+        <%= link_to t('page.user_management'), current_user -%>
+        <br />
         <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete -%>
       <% else %>
         <% unless controller_name == 'sessions' %>

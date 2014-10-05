@@ -31,9 +31,6 @@ ja:
             state:
               invalid_transition: "不正な処理です。"
       attributes:
-        order:
-          pair_manifestation_identifier:
-            not_found: に該当の資料が見つかりません
         claim:
           claim_type: "クレームタイプを選択してください。"
         identifier:

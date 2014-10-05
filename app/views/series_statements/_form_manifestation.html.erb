@@ -168,11 +168,14 @@ function displayArticleTitle(article_title) {
 
   <%= render :partial => 'manifestations/form_subject_field', :locals => {:f => f_m, :manifestation => @series_statement.root_manifestation} %>
 
-  <div class="row">
-    <div><%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %></div>
-    <div><%= f_m.select2 :use_license_id, @use_licenses, @series_statement.root_manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name'%></div>
-  </div>
-
+  <% if defined? EnjuTrunkOrder %>
+    <% if SystemConfiguration.get('attributes.manifestation.use_license_id') %>
+      <div class="row">
+        <div><%= f_m.label t('activerecord.attributes.manifestation.use_license_id') %></div>
+        <div><%= f_m.select2 :use_license_id, @use_licenses, @series_statement.root_manifestation.use_license_id, :width => 200, :select_attribute => 'id', :display_attribute => 'display_name'%></div>
+      </div>
+    <% end %>
+  <% end %>
 
   <div class="actions">
     <%= hidden_field_tag :agent_id, @agent.id if @agent -%>

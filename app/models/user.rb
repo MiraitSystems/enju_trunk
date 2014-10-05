@@ -1,3 +1,4 @@
+require EnjuTrunkOrder::Engine.root.join('app', 'models', 'user') if defined? EnjuTrunkOrder
 class User < ActiveRecord::Base
   self.extend UsersHelper
   # Include default devise modules. Others available are:
@@ -58,7 +59,6 @@ class User < ActiveRecord::Base
   has_many :search_histories, :dependent => :destroy
   has_many :baskets, :dependent => :destroy
   has_many :purchase_requests
-  has_many :order_lists
   has_many :subscriptions
   has_many :checkout_stat_has_users
   has_many :user_checkout_stats, :through => :checkout_stat_has_users
@@ -962,6 +962,16 @@ class User < ActiveRecord::Base
       self.own_password = false unless saved
       return saved
     end
+  end
+
+  def self.get_user(identifier)
+    user = User.where(:user_number => identifier).first
+    user = User.where(:username => identifier).first unless user
+    unless user
+      agent = Agent.where(:agent_identifier => identifier).first
+      user = agent.user if agent
+    end
+    return user
   end
 
   private

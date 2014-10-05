@@ -58,7 +58,7 @@ div#content{
   padding-right: 4px;
   clear: both;
   margin-right: 210px;
-  min-width: 500px;
+  min-width: 760px;
 }
 
 div.header_and_footer{
@@ -150,6 +150,11 @@ div#submenu{
   margin-right: -210px;
 }
 
+div#facet_menu{
+  width: 190px;
+  float: left;
+}
+
 div#social_bookmark{
   margin-top: 5px;
   clear: left;
@@ -193,8 +198,21 @@ div#content_detail{
   min-width: 750px;
 }
 
+div#search_result{
+  float: right;
+  margin-bottom: 5px;
+  width: 100%;
+  min-width: 750px;
+  margin-right: -210px;
+}
+
 div#content_list{
   padding: 10px;
+  word-wrap: break-word;
+}
+
+div#content_list_search_result{
+  padding: 0px;
   word-wrap: break-word;
 }
 
@@ -282,6 +300,16 @@ h1.title, h2.title, h3.title, h4.title{
 a.title { color: white; }
 a.title:hover { color: white; }
 a.title:visited { color: white; }
+
+#facet_menu h4.title {
+  text-align: center;
+  border-radius: 30px;
+  margin: 0px;
+}
+
+#facet_menu h4, #facet_menu ul {
+  margin: 5px;
+}
 
 .bigger_font{
   font-size: 120%;

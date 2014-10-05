@@ -9,15 +9,17 @@
 <div id="submenu" class="ui-corner-all">
   <ul>
     <% if user_signed_in? and current_user.has_role?('Librarian') %>
-      <% if SystemConfiguration.get("use_order_lists") %>
-        <li>
-          <% if @purchase_request.order_list %>
-            <%= link_to t('purchase_request.remove_from_order_list'), order_path(@purchase_request.order_list), 
-              :method => :delete, :confirm => t('page.are_you_sure') if @purchase_request.order_list %>
-          <% else %>
-            <%= link_to t('purchase_request.add_to_order_list'), new_purchase_request_order_path(@purchase_request) %>
-          <% end %>
-        </li>
+      <% if defined? EnjuTrunkOrder %>
+        <% if SystemConfiguration.get("use_order_lists") %>
+          <li>
+            <% if @purchase_request.order_list %>
+              <%= link_to t('purchase_request.remove_from_order_list'), order_path(@purchase_request.order_list), 
+                :method => :delete, :confirm => t('page.are_you_sure') if @purchase_request.order_list %>
+            <% else %>
+              <%= link_to t('purchase_request.add_to_order_list'), new_purchase_request_order_path(@purchase_request) %>
+            <% end %>
+          </li>
+        <% end %>
       <% end %>
 
       <% if @purchase_request.state == "pending" %>

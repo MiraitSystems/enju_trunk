@@ -1,0 +1,73 @@
+<div data-role="header">
+  <h1><%= t('page.showing', :model => t('activerecord.models.user')) -%></h1>
+</div>
+  <p id="notice"><%= notice %></p>
+  <div style="color: red">
+    <%= user_notice(user) -%>
+    <%- unless @family_users.blank? -%>
+      <br />
+      <%- @family_users.each do |f_user| -%>
+        <%= user_notice(f_user) unless f_user == user -%>
+      <%- end -%>
+    <%- end -%>
+  </div>
+  <br />
+
+  <% if user_signed_in? %>
+    <% if can? :update, user %>
+      <%= link_to t('page.edit'), edit_my_account_path -%>
+    <% end %>
+  <%- end -%>
+
+  <h2 class="resource_title">[U]<%= @agent.full_name %></h2>
+
+  <%- if flash[:temporary_password] -%>
+    <p><%= t('user.your_temporary_password_is') -%>: </p>
+    <p style="font-size: 200%"><%= flash[:temporary_password] -%></p>
+    <%= form_tag({:action => 'output_password'}) do -%>
+      <%= hidden_field_tag :password, flash[:temporary_password] -%>
+      <%= submit_tag t('page.output', :model => t('activerecord.attributes.user.password')) -%>
+    <%- end -%>
+  <%- end -%>
+
+  <% if SystemConfiguration.get("use_user_notice") %>
+    <% if can? :create, user %>
+      <%= form_tag({:action => 'output_user_notice'}) do %>
+        <div class="actions">
+          <%= submit_tag t('page.output', :model => t('page.user_notice')) %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <p><strong><%= t('activerecord.attributes.user.user_number') %>: </strong><%= user.user_number %></p>
+  <%- if current_user.has_role?('Librarian') -%>
+    <p><strong><%= t('activerecord.models.role') %>: </strong><%= user.role.display_name.localize %></p>
+    <p><strong><%= t('activerecord.models.function_class') %>: </strong><%= user.try(:function_class).try(:display_name) %></p>
+  <%- end -%>
+
+  <%- unless @family_users.blank? -%>
+    <p><strong><%= t('activerecord.attributes.checkout.family_info') %>: </strong>
+      <%- @family_users.each do |f_user| -%>
+        <%- unless f_user == user -%>
+          <%- if current_user.has_role?('Librarian') -%>
+            <%= link_to f_user.agent.full_name, f_user -%>
+          <%- else -%>
+            <%= f_user.agent.full_name -%>
+          <%- end -%>
+          &nbsp;
+        <%- end -%>
+      <%- end -%>
+    </p>
+  <%- end -%>
+
+  <%= render 'agents/show_list' %>
+
+  <%- if defined?(EnjuTrunkCirculation) %>
+    <br />
+    <%= link_to t('page.listing', :model => t('activerecord.models.checkout')), user_checkouts_path(current_user), :class=>'my_status_button ui-corner-all' -%>
+    <br />
+    <div id="reserves_list">
+      <%= link_to t('page.listing', :model => t('activerecord.models.reserve')), user_reserves_path(current_user), :class=>'my_status_button ui-corner-all' -%>
+    </div>
+  <%- end -%>

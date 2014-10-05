@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 class LibraryGroup < ActiveRecord::Base
-  attr_accessible :name, :display_name, :email, :url, :login_banner, 
+  attr_accessible :name, :display_name, :header_title, :email, :url, :login_banner, 
                   :allow_bookmark_external_url, :my_networks, :admin_networks, 
                   :use_dsbl, :dsbl_list, :note, :country_id,
                   :title_color, :list_odd_color, :list_even_color, :list_border_color
@@ -35,7 +35,7 @@ class LibraryGroup < ActiveRecord::Base
   end
 
   def self.system_name(locale = I18n.locale)
-    LibraryGroup.site_config.display_name.localize(locale)
+    LibraryGroup.site_config.header_title.try(:localize, locale) ||  LibraryGroup.site_config.display_name.localize(locale)
   end
 
   def config?

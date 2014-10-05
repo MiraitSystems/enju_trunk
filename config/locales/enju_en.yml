@@ -32,9 +32,6 @@ en:
             state:
               invalid_transition: Invalid transaction
       attributes:
-        order:
-          pair_manifestation_identifier:
-            not_found: is not found.
         claim:
           claim_type: Select claim type
         identifier:

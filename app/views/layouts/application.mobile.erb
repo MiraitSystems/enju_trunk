@@ -12,12 +12,6 @@
   <%= render 'page/portlets' %>
 </head>
 <body>
-<script>
-  $(document).ready(function(){
-    if ($("#errorExplanation").length > 0)
-       playSound('<%= root_path -%><%= SystemConfiguration.get("sounds.basedir") %><%= SystemConfiguration.get("sounds.errors.default") %>');
-  });
-</script>
 <%= render 'page/header' %>
 
 <div id="content_mobile">

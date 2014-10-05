@@ -7,6 +7,7 @@ engines << EnjuMessage::Engine  if defined?(EnjuMessage)
 engines << EnjuTrunkIll::Engine if defined?(EnjuTrunkIll)
 engines << EnjuBookmark::Engine if defined?(EnjuBookmark)
 engines << EnjuTrunkReport::Engine if defined?(EnjuTrunkReport)
+engines << EnjuTrunkOrder::Engine if defined?(EnjuTrunkOrder)
 engines.map{|engine| require engine.root.join('app', 'models','ability') if defined?(engine)}
 
 class Ability
@@ -31,7 +32,11 @@ class Ability
       can [:read, :output], BarcodeRegistration
       can [:read, :create, :update], Bookstore
       can :destroy, Bookstore do |bookstore|
-        bookstore.order_lists.empty?
+        if defined? EnjuTrunkOrder
+          bookstore.order_lists.empty?
+        else
+          true
+        end
       end
       can [:read, :create, :update], Budget
       can :destroy, Budget do |budget|
@@ -144,15 +149,12 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        Order,
-        OrderList,
         Own,
         AgentImportFile,
         AgentMerge,
         AgentMergeList,
         AgentRelationship,
         AgentRelationshipType,
-        Payment,
         PictureFile,
         Produce,
         ProduceType,
@@ -181,7 +183,6 @@ class Ability
         Title,
         TitleType,
         EnjuTerminal,
-        UseLicense,
         UserCheckoutStat,
         UserHasRole,
         UserReserveStat,
@@ -222,7 +223,11 @@ class Ability
       can [:read, :output], BarcodeRegistration
       can [:read, :create, :update], Bookstore
       can :destroy, Bookstore do |bookstore|
-        bookstore.order_lists.empty?
+        if defined? EnjuTrunkOrder
+          bookstore.order_lists.empty?
+        else
+          true
+        end
       end
       can [:read, :create, :update], Budget
       can :destroy, Budget do |budget|
@@ -251,7 +256,6 @@ class Ability
         series_statement.manifestations.blank? or (series_statement.manifestations.size == 1 and
           series_statement.root_manifestation = series_statement.manifestations.first)
       end
-      can [:output], Shelf
       can [:index, :create], Agent
       can :show, Agent do |agent|
         agent.required_role_id <= 3
@@ -321,14 +325,11 @@ class Ability
         ManifestationReserveStat,
         NacsisUserRequest,
         Numbering,
-        Order,
-        OrderList,
         Own,
         AgentImportFile,
         AgentMerge,
         AgentMergeList,
         AgentRelationship,
-        Payment,
         PictureFile,
         Produce,
         ProduceType,
@@ -346,13 +347,13 @@ class Ability
         SeriesHasManifestation,
         SeriesStatementMerge,
         SeriesStatementMergeList,
+        Shelf,
         Subscribe,
         Subscription,
         SystemConfiguration,
         Term,
         Title,
         TitleType,
-        UseLicense,
         UserStatus,
         WorkHasTitle
       ]
@@ -391,7 +392,6 @@ class Ability
         RetentionPeriod,
         Role,
         SearchEngine,
-        Shelf,
         EnjuTerminal,
         UseRestriction,
         UserGroup,

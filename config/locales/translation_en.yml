@@ -1,7 +1,6 @@
 en:
   activerecord:
     models:
-      use_license: Use license
       abbreviation: Abbreviation
       library: Library
       question: Question
@@ -65,8 +64,6 @@ en:
       aaws_response: Aaws response
       agent_type: Agent type
       work_merge_list: Work merge list
-      order: Order
-      order_list: Order list
       advertise: Advertise
       embody: Embody
       item_has_use_restriction: Item has use restriction
@@ -195,7 +192,6 @@ en:
       currency: Currency
       keycode: Keycode
       approval: Approval
-      payment: Payment
       work_has_language: Work to language relationship
       function: Function
       function_class: Function class
@@ -218,25 +214,6 @@ en:
         title_transcription: Title transcription
         title_alternative: Title alternative
         note: Note
-      use_license:
-        target: Target
-        author: Author
-        author_fee: Author fee
-        agency_name: Agency name
-        agency_address: Agency address
-        responsible_name: Responsible name
-        responsible_tel: Responsible tel
-        responsible_mail: Responsible mail
-        bank_name: Bank name
-        bank_code: Bank code
-        branch_name: Branch name
-        branch_number: Branch number
-        account_name: Account name
-        account_number: Account number
-        account_kind: Account kind
-        account_kinds:
-          "normal": Normal
-          "current": Current
       abbreviation:
         keyword: Keyword
         v: V
@@ -732,60 +709,6 @@ en:
         position: Position
       work_merge_list:
         title: Title
-      order:
-        order_identifier: Order identifier
-        manifestation: Manifestation
-        ordered_at: Ordered at
-        order_year: Order year
-        buying_payment_year: Buying payment year 
-        prepayment_settlements_of_account_year: Prepayment settlements of account year 
-        paid_flag: Paid flag 
-        number_of_acceptance_schedule: Number of acceptance schedule 
-        meeting_holding_month_1: Meeting holding month 1
-        meeting_holding_month_2: Meeting holding month 2
-        adption_code: Adption_Code
-        deliver_place_code_1: Deliver place code 1
-        deliver_place_code_2: Deliver place code 2
-        deliver_place_code_3: Deliver place code 3
-        reference_code_id: Reference Code
-        application_form_code_1: Application form code 1
-        application_form_code_2: Application form code 2
-        number_of_acceptance: Number of acceptance
-        number_of_missing: Number of missing
-        collection_status_code: Collection status code
-        publisher_type_id: Publisher type
-        collection_stop_day: Collection stop day
-        order_form_code: Order form code
-        collection_form_code: Collection form code
-        payment_form_code: 
-        budget_subject_code: Budget subject code
-        transportation_route_code: Transportation route code
-        bookstore_code: Bookstore code
-        currency_id: Currency
-        currency_rate: Currency rate
-        margin_ratio: Margin ratio
-        reason_for_settlements_of_account_code: Reason for settlements of account code
-        original_price: Original price
-        cost: Cost
-        unit_price: Unit price
-        order_organization_id: Order organization id
-        note: Note
-        group: Group
-        pair_manifestation_id: Pair manifestation id 
-        auto_calculation_flag: Auto calculation flag
-        manifestation_identifier: Manifestation identifier
-        taxable_amount: Taxable amount
-        tax_exempt_amount: Tax exempt amount
-        payment_sum: Sum of payments
-      order_list:
-        title: Title
-        bookstore: Bookstore
-        note: Note
-        ordered_at: Ordered at
-        deleted_at: Deleted at
-        state: State
-        ordered_at_annotation: YYYY-MM-DD or YYYY-MM-DD HH:MM (e.g. 2011-04-01 09:00)
-        ordered_at_s: "ordered at"
       advertise:
         position: Position
       embody:
@@ -889,6 +812,7 @@ en:
       library_group:
         name: Name
         display_name: Display name
+        header_title: Header title
         short_name: Short name
         email: Email
         my_networks: My networks
@@ -1639,24 +1563,6 @@ en:
         name: Name
         display_name: Display name
         note: Note
-      payment:
-        id: Id
-        order_id: Order id
-        billing_date: Billing date
-        manifestation_id: Manifestation id
-        currency_id: Currency
-        currency_rate: Currency rate
-        margin_ratio: Margin ratio
-        before_conv_amount_of_payment: Before conv amount of payment
-        amount_of_payment: Amount of payment
-        number_of_payment: Number of payment
-        volume_number: Volume number
-        note: Note
-        auto_calculation_flag: Auto calculation flag
-        payment_type: Payment type
-        taxable_amount: Taxable amount
-        tax_exempt_amount: Tax exempt amount
-        discount_commision: Discount commision
       function:
         controller_name: Controller name
         display_name: Display name
@@ -1831,6 +1737,7 @@ en:
     reset: Reset
     account: Account
     form: Form
+    result_filters: Result filters
     remove_this_facet: Remove this facet
     remove_facet: Remove
     no_subject: No subjects.
@@ -1931,6 +1838,8 @@ en:
     add_on: Add-ons
     asc: ascendent
     desc: descendent
+    sort_asc: "Ascendent of %{sort_by}"
+    sort_desc: "Descendent of %{sort_by}"
     error_occured: An error occured.
     error_file: Not able to output file.
     did_you_mean: Did you mean
@@ -2001,7 +1910,6 @@ en:
     connection_failed: Failed to connect network
     userdetail: User detail
     download: Download
-    budget_and_order: Budget and Order
     budget: Budget
     system_configuration: Systen Configuration
     reminder_postal_card: Reminder card
@@ -2441,9 +2349,6 @@ en:
     request_rejected: Rejected the purchase request.
     request_ordered: Ordered the purchase request.
     failed_update: Failed to update purchase request.
-  order_list:
-    library_group_order_list: Order lists in %{library_group_name}
-    total_price: Total price
   inter_library_loan:
     library_group_inter_library_loan: Inter library loans in %{library_group_name}
     borrowing_library: Borrowing library
@@ -2511,9 +2416,6 @@ en:
   inventory_file:
     not_in_catalog: Not in catalog
     not_on_shelf: Not on shelf
-  order:
-    create_order_list: You should create an order list.
-    specify_purchase_request: You should specify the purchase request.
   work_has_subject:
     add_work: Add a work
     add_subject: Add a subject
@@ -3077,91 +2979,8 @@ en:
         last_number: Last number
   title_type:
     cannot_delete: The title type cannnot be deleted.
-  order:
-    system_menu_title: Order search
-    cannot_delete: The order cannot be deleted.
-    no_matches_found_agent: "No matches found agent"
-    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
-    no_matches_found_order: "No matches found order to %{attribute}"
-    switch_manual_entry: "Use auto calculate the amount" 
-    auto_calculation_flag_0: Auto calculation
-    auto_calculation_flag_1: Manual entry
-    payments: Payments
-    subsequent_year_orders: Subsequent year orders
-    create_subsequent_year_orders: Create subsequent year orders
-    create_year_orders_confirm: "Are you sure to create subsequent year orders of %{year}"
-    no_create_subsequent_year_orders: "No create subsequent year orders."
-    create_payment_to_advance_payment: "<br />Create payment to advance payment"
-    copy: Copy and create new order
-    document_application: Document application
-    list_of_order: List of ordering
-    list_of_deferred_payment_acceptance: List of deferred payment acceptance
-    list_of_acceptance_situation: List of acceptance situation
-    list_of_payment: List of payment
-    list_of_acceptance_after_payment: List of acceptance after payment
-    select_document: Select Document
-  payment:
-    system_menu_title: Payment search
-    switch_manual_entry: "Use auto calculate the amount"
-    auto_calculation_flag_0: Auto calculation
-    auto_calculation_flag_1: Manual entry
-    items: Ordered Items
-    paid: Paid
-    want_to_paid: "Want to paid?"
-    no_matches_found_order: "No matches found order to %{attribute}"
-    no_matches_found_manifestation: "No matches found manifestation to %{attribute}"
-    no_create_deferred_payment: "No create payment of payment type:deferred payment because order don't have paid"
-    create_ordered_manifestations: "Creste ordered items"
-    confirm_create_ordered: "Are you sure?"
-    not_created_items: "Ordered item wasn't created"
-    update_order: ”Update order”
-    confirm_update_order: "Are you sure to update acquired number and create payments?"
   item_has_operators:
     no_matches_found_user: "No matches found user(%{user_number})"
-  order_output_csv:
-    number: "No."
-    full_name: "Contracting agency"
-    zip_code_1: "Zip code"
-    address_1: "Address"
-    country_of_publication_id: "Country of publication"
-    date_of_publication: "Date of publication"
-    bookstore_code: "Bookstore"
-    collection_status_code: "Collection status code"
-    currency_id: "Currency"
-    edition: "Edition"
-    frequency_id: "Frequency"
-    currency_rate: "Currency rate"
-    discount_commision: "Discount commision"
-    group: "Group"
-    order_note: "Order note"
-    prepayment_principal_rate: "Prepayment principal rate"
-    number_of_acceptance: "Number of acceptance"
-    number_of_acceptance_schedule: "Number of acceptance schedule"
-    identifier: "Identifier"
-    issn: "ISSN"
-    number_of_missing: "Number of missing"
-    order_identifier: "Order identifier"
-    pair_manifestation_id: "Pair manifestation"
-    issue_number_string: "Issue Number"
-    report_number_string: "Report Number"
-    original_title: "Original title"
-    publishers: "Publisher"
-    volume_number_string: "Volume Number"
-    report_volume_number_string: "Report pattern"
-    acquired_at: "Acquired at"
-    quantity: "Quantity"
-    payment_form_code: "Payment"
-    prepayment_principal: "Prepayment principal"
-    publication_year: "Publication year"
-    tax_exempt_amount: "Tax exempt amount"
-    taxable_amount: "Taxable amount"
-    item_note: "Item note"
-    transportation_route_code: "Transportation route"
-    yen_imprest: "Yen imprest"
-    deduction_quantity: "Deduction quantity"
-    delayed_quantity: "Delayed quantity"
-  order_search:
-    notset: "Not set"
   approval:
     basic_information: "Basic information"
     group_approval: "Group approval"

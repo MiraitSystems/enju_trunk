@@ -1,7 +1,11 @@
 # -*- encoding: utf-8 -*-
 require 'csv'
-require EnjuTrunkFrbr::Engine.root.join('app', 'models', 'manifestation')
-require EnjuTrunkCirculation::Engine.root.join('app', 'models', 'manifestation') # unless SystemConfiguration.isWebOPAC
+engines = []
+engines << EnjuTrunkFrbr::Engine        if defined? EnjuTrunkFrbr
+engines << EnjuTrunkCirculation::Engine if defined? EnjuTrunkCirculation
+engines << EnjuTrunkOrder::Engine       if defined? EnjuTrunkOrder
+engines.map{ |engine| require engine.root.join('app', 'models','manifestation') if defined?(engine) }
+
 require 'enju_trunk/output_columns'
 class Manifestation < ActiveRecord::Base
   extend ActiveRecordExtension
@@ -46,10 +50,6 @@ class Manifestation < ActiveRecord::Base
   accepts_nested_attributes_for :work_has_languages, :reject_if => lambda{ |attributes| attributes[:language_id].blank? }, :allow_destroy => true
   accepts_nested_attributes_for :work_has_subjects, :allow_destroy => true
   
-  has_many :orders
-
-  belongs_to :use_license, :foreign_key => 'use_license_id'
-
   belongs_to :catalog
   accepts_nested_attributes_for :items
 
@@ -68,6 +68,19 @@ class Manifestation < ActiveRecord::Base
       items: :shelf,
       subjects: {classifications: :category},
     ]
+  }
+
+  SORT_PLANS = {
+    1 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.attributes.manifestation.date_of_publication' },
+    2 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.attributes.manifestation.date_of_publication' },
+    3 => { "sort" => 'page.sort_desc', "sort_by" => 'manifestation.date_of_acquisition' },
+    4 => { "sort" => 'page.sort_asc', "sort_by" => 'manifestation.date_of_acquisition' },
+    5 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.attributes.manifestation.original_title' },
+    6 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.attributes.manifestation.original_title' },
+    7 => { "sort" => 'page.sort_desc', "sort_by" => 'agent.creator' },
+    8 => { "sort" => 'page.sort_asc', "sort_by" => 'agent.creator' },
+    9 => { "sort" => 'page.sort_desc', "sort_by" => 'activerecord.models.carrier_type' },
+    10 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.models.carrier_type' }
   }
 
   searchable(SUNSPOT_EAGER_LOADING) do
@@ -515,7 +528,6 @@ class Manifestation < ActiveRecord::Base
 
   validates_presence_of :carrier_type, :manifestation_type, :country_of_publication
   validates_associated :carrier_type, :languages, :manifestation_type, :country_of_publication
-  validates_associated :use_license, :allow_nil => true
   validates_numericality_of :acceptance_number, :allow_nil => true
   validates_uniqueness_of :nacsis_identifier, :allow_nil => true
   validate :check_rank
@@ -1594,7 +1606,9 @@ class Manifestation < ActiveRecord::Base
       end
 
     when 'use_license'
-      val = use_license_id
+      if defined?(EnjuTrunkOrder)
+        val = use_license_id
+      end
 
     when 'missing_issue'
       val = helper.missing_status(missing_issue) || ''

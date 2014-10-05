@@ -265,7 +265,7 @@ module EnjuTrunk
       end
 
       def get_order_list
-        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id]
+        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id] and defined? EnjuTrunkOrder
       end
 
       def get_purchase_request
@@ -463,7 +463,7 @@ module EnjuTrunk
      #
      def create_creator_values(add_creators)
        creates = []
-       add_creators.each do |add_creator|
+       (add_creators || []).each do |add_creator|
          next if add_creator[:id].blank?
          if add_creator[:id].to_i != 0
            agent = Agent.where(:id => add_creator[:id]).first
@@ -498,7 +498,7 @@ module EnjuTrunk
      #
      def create_contributor_values(add_contributors)
        realizes = []
-       add_contributors.each do |add_contributor|
+       (add_contributors || []).each do |add_contributor|
          next if add_contributor[:id].blank?
          if add_contributor[:id].to_i != 0
            agent = Agent.where(:id => add_contributor[:id]).first
@@ -533,7 +533,7 @@ module EnjuTrunk
      #
      def create_publisher_values(add_publishers)
        produces = []
-       add_publishers.each do |add_publisher|
+       (add_publishers || []).each do |add_publisher|
          next if add_publisher[:id].blank?
          if add_publisher[:id].to_i != 0
            agent = Agent.where(:id => add_publisher[:id]).first
@@ -568,7 +568,7 @@ module EnjuTrunk
      #
      def create_subject_values(add_subjects)
        subjects = []
-       add_subjects.each do |add_subject|
+       (add_subjects || []).each do |add_subject|
          next if add_subject[:subject_id].blank?
          if add_subject[:subject_id].to_i != 0
            subject = Subject.where(:id => add_subject[:subject_id]).first

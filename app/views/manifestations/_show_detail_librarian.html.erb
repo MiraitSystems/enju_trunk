@@ -243,7 +243,7 @@
               <ul>
                 <%- manifestation.subjects.each do |subject| -%>
                   <li>
-                    <%= link_to subject.term, subject -%>
+                    <%= link_to subject.term, subject_works_path(subject) -%>
                     <% if subject.subject_type %>
                       (<%= link_to subject.subject_type.try(:display_name).try(:localize), subject.subject_type %>)
                     <% end %>
@@ -458,16 +458,18 @@
             <td><%= manifestation.extext_1 -%></td>
           </tr>
         <%- end -%>
-        <%- if SystemConfiguration.get("attributes.manifestation.use_license_id") -%>
-          <tr>
-            <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
-            <td>
-              <% if manifestation.use_license  %>
-                <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
-              <% end %>
-            </td>
-          </tr>
-        <%- end -%>
+        <% if defined? EnjuTrunkOrder %>
+          <% if SystemConfiguration.get("attributes.manifestation.use_license_id") %>
+            <tr>
+              <td><%= t('activerecord.attributes.manifestation.use_license_id') %>:</td>
+              <td>
+                <% if manifestation.use_license  %>
+                  <%= link_to manifestation.use_license.agency_name.blank? ? nil : manifestation.use_license.agency_name, manifestation.use_license %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
         <% unless manifestation.periodical_master %> 
           <%- if SystemConfiguration.get("manifestation.display_checkouts_count") && Setting.operation -%>
             <tr>
@@ -567,8 +569,8 @@
                   <% if user_signed_in? and current_user.has_role?('Librarian') %>
                     (
                     <%= t('activerecord.attributes.checkout.due_date') %>:
-                    <%= l(item.checkouts.first.due_date, :format => :only_date) %>
-                    <% if Time.zone.parse(item.checkouts.first.due_date.to_s) < Time.now %>
+                    <%= l(item.checkout.due_date, :format => :only_date) %>
+                    <% if Time.zone.parse(item.checkout.due_date.to_s) < Time.now %>
                       <span class="not_rent_item"><%= t('activerecord.attributes.checkout.past_due') -%></span>
                     <% end %>
                     )

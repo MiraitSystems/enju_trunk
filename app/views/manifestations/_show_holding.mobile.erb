@@ -1,4 +1,6 @@
 <% if manifestation.items.exists? %>
+  <hr>
+  <br />
   <div id="holding">
     <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
     <ol data-role="listview">
@@ -59,12 +61,16 @@
         </div>
 
         <% if user_signed_in? %>
-          <%- if @manifestation.reservable_with_item?(current_user) -%>
-            <%= link_to t('activerecord.models.reserve'), new_user_reserve_path(current_user, :manifestation_id => @manifestation.id) -%>
-          <%- end -%>
+          <% if manifestation.reservable? && Setting.operation %>
+            <%- if @manifestation.reservable_with_item?(current_user) -%>
+              <%= link_to t('activerecord.models.reserve'), new_user_reserve_path(current_user, :manifestation_id => @manifestation.id) -%>
+            <%- end -%>
+          <% end %>
         <% end %>
         </li>
       <% end %>
     </ol> 
   </div>
+  <br />
+  <hr>
 <% end %>

@@ -23,8 +23,8 @@
   <%= link_to @item.circulation_status.display_name.localize, @item.circulation_status -%>
   <%- if user_signed_in? -%>
     <%- if current_user.has_role?('Librarian') -%>
-      <%- unless @item.checkouts.not_returned.blank? -%>
-        (<%= link_to t('item.current_checkout'), user_checkout_path(@item.checkouts.not_returned.first.user, @item.checkouts.not_returned.first) -%>)
+      <%- unless @item.checkout.blank? -%>
+        (<%= link_to t('item.current_checkout'), user_checkout_path(@item.checkout.user, @item.checkout) -%>)
       <%- end -%>
     <%- end -%>
   <%- end -%>
