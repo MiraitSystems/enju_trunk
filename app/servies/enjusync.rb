@@ -23,6 +23,35 @@ module EnjuSyncServices
     def sync_notifier(ex)
       ExceptionNotifier::Rake.maybe_deliver_notification ex
     end
+
+    def change_control_file_to_import(ctl_file_name)
+      control_file_status_change(ctl_file_name, "IMP")
+    end
+
+    def change_control_file_to_error(ctl_file_name)
+      control_file_status_change(ctl_file_name, "ERR")
+    end
+
+    def change_control_file_to_success(ctl_file_name)
+      control_file_status_change(ctl_file_name, "END")
+    end
+
+    def control_file_status_change(control_file_name, status_mark)
+      unless /^(.*)\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ control_file_name
+        tar_logger "FATAL: ctl_file error (1) #{target_dir}"
+        return
+      end
+      target_dir = $1
+      exec_date = $2
+      send_stat = $3
+      retry_cnt = $4
+
+      puts "control_file_nam=#{control_file_name} target_dir=#{target_dir}"
+      rename_file_rename = File.join(target_dir, "#{exec_date}-#{status_mark}-#{retry_cnt}.ctl")
+
+      tag_logger "rename to #{rename_file_rename}"
+      File.rename(control_file_name, rename_file_rename)
+    end
   end
 
   class Sync
@@ -30,6 +59,7 @@ module EnjuSyncServices
 
     SLAVE_SERVER_DIR = "/var/enjusync"  # 送信先
     RECEIVE_DIR = "/var/enjusync"       # 受信時の取得場所
+    PUT_DIR = "/var/enjusync"
 
     MASTER_SERVER_DIR = "/var/enjusync"
     DUMPFILE_NAME = "enjudump.marshal"
@@ -38,6 +68,14 @@ module EnjuSyncServices
     STATUS_FILE = "#{MASTER_SERVER_DIR}/work/#{STATUSFILE_NAME}"
 
     self.extend EnjuSyncUtil
+
+    def self.ftp_directory
+      SystemConfiguration.get("sync.ftp.directory") || PUT_DIR
+    end
+
+    def self.master_server_dir
+      SystemConfiguration.get("sync.master.base_directory") || MASTER_SERVER_DIR
+    end
 
     def self.get_status_file
       ftp_site = SystemConfiguration.get("sync.ftp.site")
@@ -102,25 +140,28 @@ module EnjuSyncServices
 
     def self.build_bucket(bucket_id)
       # init backet
-      work_dir = File.join(MASTER_SERVER_DIR, "#{bucket_id}")
+      base_dir = EnjuSyncServices::Sync.master_server_dir
+      work_dir = File.join(base_dir, "#{bucket_id}")
       gzip_file_name = COMPRESS_FILE_NAME
-      marsharl_full_name = File.join(work_dir, DUMPFILE_NAME)
+      marshal_full_name = File.join(work_dir, DUMPFILE_NAME)
       gzip_full_name = File.join(work_dir, gzip_file_name)
       exec_date = Time.now.strftime("%Y%m%d")
 
-      unless FileTest::exist?(marsharl_full_name)
+      tag_logger "marshal_full_name=#{marshal_full_name} gzip_full_name=#{gzip_full_name}"
+
+      unless FileTest::exist?(marshal_full_name)
         # marshal ファイルが無い場合、ステータスEND、終了
         ctl_file = File.join(work_dir, "#{exec_date}-END-0.ctl")
         FileUtils.touch(ctl_file, :mtime => Time.now)
-        tag_logger("Can not open #{marsharl_full_name} (no update)");
+        tag_logger("Can not open #{marshal_full_name} (no update)");
         return
       end
 
       # marshal ファイルをgzで圧縮する。
       Zlib::GzipWriter.open(gzip_full_name, Zlib::BEST_COMPRESSION) do |gz|
-        gz.mtime = File.mtime(marsharl_full_name)
-        gz.orig_name = marsharl_full_name
-        gz.puts File.open(marsharl_full_name, 'rb') {|f| f.read }
+        gz.mtime = File.mtime(marshal_full_name)
+        gz.orig_name = marshal_full_name
+        gz.puts File.open(marshal_full_name, 'rb') {|f| f.read }
       end
 
       file_size = File.size(gzip_full_name)
@@ -136,15 +177,15 @@ module EnjuSyncServices
 
     end
 
-    def self.push_by_ftp(ftp_site, ftp_user, ftp_password, bucket_id, push_target_files)
-      ftp_site_base_dir = SLAVE_SERVER_DIR
+    def self.push_by_ftp(ftp_site, ftp_user, ftp_password, passive_mode, bucket_id, push_target_files)
+      ftp_site_base_dir = EnjuSyncServices::Sync.ftp_directory
       bucket_dir = File.join(ftp_site_base_dir, "#{bucket_id}")
 
       tag_logger "ftp_site:#{ftp_site} ftp_user:#{ftp_user} bucket_id:#{bucket_id}"
-      tag_logger "ftp_site_dir: #{bucket_dir}"
+      tag_logger "ftp_site_dir: #{bucket_dir} passive_mode=#{passive_mode}"
 
       Net::FTP.open(ftp_site, ftp_user, ftp_password) do |ftp|
-        ftp.passive = true
+        ftp.passive = true if passive_mode
 
         if ftp.dir(bucket_dir).empty?
           tag_logger "try mkdir: #{bucket_dir}"
@@ -192,11 +233,25 @@ module EnjuSyncServices
 
         bucket_id = $1
 
-        # uncompress
+        # prepare
         compress_marshal_file_name = File.join(target_dir, "#{COMPRESS_FILE_NAME}")
         marshal_file_name = File.join(target_dir, DUMPFILE_NAME)
         status_file_name = File.join(target_dir, STATUSFILE_NAME)
 
+        # check
+        gzfilesize, md5checksum = load_control_file(ctl_file_name)
+        unless File.size(compress_marshal_file_name) == gzfilesize
+          tag_logger "unmatched file size. #{ctl_file_name} ctl_file_size=#{gzfilesize} actual_size=#{File.size(compress_marshal_file_name)}"
+          return
+        end
+
+        digest = Digest::MD5.file(compress_marshal_file_name)
+        unless digest.hexdigest == md5checksum
+          tag_logger "unmatched checksum. #{ctl_file_name} ctl_file_size=#{md5checksum}"
+          return
+        end
+
+        # uncompress
         Zlib::GzipReader.open(compress_marshal_file_name) do |gz|
           orig_mtime = gz.mtime || Time.now # gz に時刻があればその時刻をタイムスタンプとして使用する
           File.open(marshal_file_name, "wb") do |f|
@@ -218,11 +273,14 @@ module EnjuSyncServices
     end
 
     def self.marshal_file_push(bucket_id)
-      glob_string = "#{MASTER_SERVER_DIR}/[0-9]*/*-[RDY|ERR]-*.ctl"
+      basedir = EnjuSyncServices::Sync.master_server_dir
+      glob_string = "#{basedir}/[0-9]*/*-{RDY,ERR}-*.ctl"
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
       ftp_password = SystemConfiguration.get("sync.ftp.password")
       ftp_trans_mode = SystemConfiguration.get("sync.ftp.trans_mode_passive") || true
+
+      #tag_logger "glob_string=#{glob_string}"
 
       if ftp_site.blank?
         tag_notifier "FATAL: configuration (sync.ftp.site) is empty."
@@ -271,7 +329,7 @@ module EnjuSyncServices
           next
         end
 
-        target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}.gz")
+        target_dir_s = File.join(target_dir, "#{COMPRESS_FILE_NAME}")
         push_target_files = Dir.glob(target_dir_s).sort 
         push_target_files << "#{ctl_file_name}"
 
@@ -280,33 +338,5 @@ module EnjuSyncServices
         change_control_file_to_success(ctl_file_name)
       end
     end
-
-    private
-    def change_control_file_to_error(ctl_file_name)
-      control_file_status_change(ctl_file_name, "IMP")
-    end
-
-    def change_control_file_to_error(ctl_file_name)
-      control_file_status_change(ctl_file_name, "ERR")
-    end
-
-    def change_control_file_to_success(ctl_file_name)
-      control_file_status_change(ctl_file_name, "END")
-    end
-
-    def control_status_change(control_file, status_mark)
-      unless /\w+\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ ctl_file_name
-        tar_logger "FATAL: ctl_file error (1) #{target_dir}"
-        return
-      end
-      exec_date = $1
-      send_stat = $2
-      retry_cnt = $3
-
-      ctl_file_rename = File.join(target_dir, "#{exec_date}-#{status_mark}-#{retry_cnt}.ctl")
-
-      tag_logger "rename to #{ctl_file_rename}"
-      File.rename(ctl_file_name, ctl_file_rename)
-    end
-  end
+ end
 end

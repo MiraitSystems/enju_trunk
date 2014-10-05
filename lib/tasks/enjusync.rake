@@ -9,10 +9,10 @@ GET_STATUS_FILE = "#{SCRIPT_ROOT}/get-statusfile.pl"
 
 LOGFILE = 'log/sync'
 
-DUMPFILE_PREFIX = "/var/enjusync"
-DUMPFILE_NAME = "enjudump.marshal"
+#DUMPFILE_PREFIX = "/var/enjusync"
+#DUMPFILE_NAME = "enjudump.marshal"
 PERLBIN = "/usr/bin/perl"
-STATUS_FILE = "#{DUMPFILE_PREFIX}/work/status.marshal"
+#STATUS_FILE = "#{DUMPFILE_PREFIX}/work/status.marshal"
 
 $enju_log_head = ""
 $enju_log_tag = ""
@@ -43,8 +43,9 @@ namespace :enju_trunk do
         fail 'please specify EXPORT_FROM=N'
       end
 
-      dumpfiledir = "#{DUMPFILE_PREFIX}/#{last_event_id}"
-      dumpfile = "#{dumpfiledir}/#{DUMPFILE_NAME}"
+      basedir = EnjuSyncServices::Sync.master_server_dir
+      dumpfiledir = "#{basedir}/#{last_event_id}"
+      dumpfile = "#{dumpfiledir}/#{EnjuSyncServices::Sync::DUMPFILE_NAME}"
 
       tag_logger "last_id=#{last_event_id} dumpfiledir=#{dumpfiledir} dumpfile=#{dumpfile} "
 
