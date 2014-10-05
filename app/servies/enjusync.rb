@@ -77,6 +77,10 @@ module EnjuSyncServices
       SystemConfiguration.get("sync.master.base_directory") || MASTER_SERVER_DIR
     end
 
+    def self.slave_server_dir
+      SystemConfiguration.get("sync.slave.base_directory") || MASTER_SERVER_DIR
+    end
+
     def self.get_status_file
       ftp_site = SystemConfiguration.get("sync.ftp.site")
       ftp_user = SystemConfiguration.get("sync.ftp.user")
@@ -122,9 +126,9 @@ module EnjuSyncServices
 
           case lines
           when 1
-            compressed_file_size = l
+            compressed_file_size = l.chomp
           when 2
-            md5checksum = l
+            md5checksum = l.chomp
           when lines > 2
             break
           end
@@ -132,7 +136,7 @@ module EnjuSyncServices
       }
 
       if /\D.*/ =~ compressed_file_size
-        raise SyncError("control file compressed_file_size error")
+        raise EnjuSyncServices::SyncError("control file compressed_file_size error")
       end
 
       return compressed_file_size, md5checksum
@@ -202,9 +206,10 @@ module EnjuSyncServices
 
     def self.marshal_file_recv
       # opac 側の指定ディレクトリを探査
-      glob_string = "#{RECEIVE_DIR}/[0-9]*/[0-9]*-RDY-*.ctl"
+      basedir = EnjuSyncServices::Sync.slave_server_dir
+      glob_string = "#{basedir}/[0-9]*/[0-9]*-RDY-*.ctl"
 
-      tag_logger "glob_string=#{glob_string}"
+      tag_logger "recv glob_string=#{glob_string}"
 
       # 受信可能ファイルを取得( RDY|ERR )
       rdy_ctl_files = Dir.glob(glob_string).sort 
@@ -238,10 +243,13 @@ module EnjuSyncServices
         marshal_file_name = File.join(target_dir, DUMPFILE_NAME)
         status_file_name = File.join(target_dir, STATUSFILE_NAME)
 
+        tag_logger "compress_marshal_file_name=#{compress_marshal_file_name} marshal_file_name=#{marshal_file_name} status_file_name=#{status_file_name}"
+
         # check
         gzfilesize, md5checksum = load_control_file(ctl_file_name)
-        unless File.size(compress_marshal_file_name) == gzfilesize
-          tag_logger "unmatched file size. #{ctl_file_name} ctl_file_size=#{gzfilesize} actual_size=#{File.size(compress_marshal_file_name)}"
+        actual_file_size = File.size(compress_marshal_file_name)
+        unless actual_file_size == gzfilesize.to_i
+          tag_logger "unmatched file size. #{ctl_file_name} ctl_file_size=#{gzfilesize} actual_size=#{actual_file_size}"
           return
         end
 
