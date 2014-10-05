@@ -221,7 +221,7 @@ module EnjuSyncServices
 
       rdy_ctl_files.each do |ctl_file_name|
         unless /\w+\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ ctl_file_name
-          tar_logger "FATAL: ctl_file error (1) #{target_dir}"
+          tag_notifier "FATAL: ctl_file error (1) #{target_dir}"
           return
         end
         exec_date = $1
@@ -231,8 +231,8 @@ module EnjuSyncServices
         tag_logger "exec_date=#{exec_date} imp_stat=#{send_stat} retry_cnt=#{retry_cnt}"
 
         target_dir = File.dirname(ctl_file_name)
-        unless /.*\/(\d)$/ =~ target_dir
-          tar_logger "FATAL: ctl_file error (2) #{target_dir}"
+        unless /.*\/(\d*)$/ =~ target_dir
+          tag_notifier "FATAL: ctl_file error (2) #{target_dir}"
           return
         end
 
@@ -249,13 +249,13 @@ module EnjuSyncServices
         gzfilesize, md5checksum = load_control_file(ctl_file_name)
         actual_file_size = File.size(compress_marshal_file_name)
         unless actual_file_size == gzfilesize.to_i
-          tag_logger "unmatched file size. #{ctl_file_name} ctl_file_size=#{gzfilesize} actual_size=#{actual_file_size}"
+          tag_notifier "unmatched file size. #{ctl_file_name} ctl_file_size=#{gzfilesize} actual_size=#{actual_file_size}"
           return
         end
 
         digest = Digest::MD5.file(compress_marshal_file_name)
         unless digest.hexdigest == md5checksum
-          tag_logger "unmatched checksum. #{ctl_file_name} ctl_file_size=#{md5checksum}"
+          tag_notifier "unmatched checksum. #{ctl_file_name} ctl_file_size=#{md5checksum}"
           return
         end
 
@@ -315,7 +315,7 @@ module EnjuSyncServices
 
       rdy_ctl_files.each do |ctl_file_name|
         unless /\w+\/(\d+)-(\w+)-(\d+)\.ctl$/ =~ ctl_file_name
-          tar_logger "FATAL: ctl_file error (1) #{target_dir}"
+          tag_notifier "FATAL: ctl_file error (1) #{target_dir}"
           return
         end
         exec_date = $1
@@ -325,8 +325,8 @@ module EnjuSyncServices
         tag_logger "exec_date=#{exec_date} send_stat=#{send_stat} retry_cnt=#{retry_cnt}"
 
         target_dir = File.dirname(ctl_file_name)
-        unless /.*\/(\d)$/ =~ target_dir
-          tar_logger "FATAL: ctl_file error (2) #{target_dir}"
+        unless /.*\/(\d*)$/ =~ target_dir
+          tag_notifier "FATAL: ctl_file error (2) target_dir=#{target_dir}"
           return
         end
 
