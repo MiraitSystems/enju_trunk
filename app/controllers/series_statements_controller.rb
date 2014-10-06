@@ -202,9 +202,9 @@ class SeriesStatementsController < ApplicationController
     @languages = Language.all_cache
     @language_types = LanguageType.all
     @roles = Role.all
-    @create_types = CreateType.find(:all, :select => "id, name, display_name")
-    @realize_types = RealizeType.find(:all, :select => "id, name, display_name")
-    @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
+    @create_types = CreateType.where(display: true).select("id, name, display_name")
+    @realize_types = RealizeType.where(display: true).select("id, name, display_name")
+    @produce_types = ProduceType.where(display: true).select ("id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @numberings = Numbering.get_manifestation_numbering('series_statement')
     @title_types = TitleType.find(:all, :select => "id, display_name, name", :order => "position")
