@@ -7,13 +7,13 @@
 <%= simple_form_for(@user, :url => my_account_path) do |f| -%>
   <%= f.error_messages -%>
   <%= render :partial => 'my_accounts/edit_credential', :locals => {:f => f, :user => @user} -%>
-  <div style="clear: both" class="table">
-    <div class="row">
+
+    <div class="input_field">
       <div><%= f.label :keyword_list -%></div>
       <div><%= f.text_area :keyword_list, :class => 'resource_textarea' -%></div>
     </div>
-    <br />
-    <div class="row">
+
+    <div class="input_field">
       <div><%= f.label t('user.reset_checkout_icalendar_url') -%></div>
       <div id="feed_token">
         <%- if @user.checkout_icalendar_token -%>
@@ -24,10 +24,9 @@
         <input onclick="$.ajax({data:'authenticity_token=' + encodeURIComponent('<%= form_authenticity_token %>'), success:function(request){$('#feed_token').html(request);}, type:'get', url:'<%= edit_user_path(@user, :disable => true, :mode => 'feed_token') %>'});" type="button" value="<%= t('page.delete') %>" data-inline="true" />
       </div>
     </div>
-    <br />
+
     <div class="actions">
       <%= f.submit %>
     </div>
 <%- end -%>
-</div>
 
