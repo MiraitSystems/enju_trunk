@@ -1511,7 +1511,7 @@ class ManifestationsController < ApplicationController
 
   def search_result_order(sort_id)
     sort = {}
-    sort_id = SystemConfiguration.get("manifestation.search_sort") if sort_id.nil? 
+    sort_id = SystemConfiguration.get("manifestation.search_sort") || 1 if sort_id.nil? 
     sort_id = sort_id.to_i
     # TODO: ページ数や大きさでの並べ替え
     case sort_id
