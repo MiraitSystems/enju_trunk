@@ -1647,6 +1647,8 @@ ja:
     edit_user_profile: "%{login_name} さんのプロフィールの編集"
     sign_in: "ログイン"
     sign_out: "ログアウト"
+    pc_site: "PC版ページ"
+    mobile_site: "モバイル版ページ"
     sign_up: "新規登録"
     login_name: "ユーザ名"
     password: "パスワード"

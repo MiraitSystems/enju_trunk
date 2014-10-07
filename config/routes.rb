@@ -520,6 +520,8 @@ Rails.application.routes.draw do
   match '/page/extensions' => 'page#extensions'
   match '/page/budgets' => 'page#budgets'
   match '/get_manual' => 'page#get_manual'
+  match '/page/show_pc_site' => 'page#show_pc_site'
+  match '/page/show_mobile_site' => 'page#show_mobile_site'
 
   # for opac begin
   match '/opac/signed_in' => 'opac#signed_in'

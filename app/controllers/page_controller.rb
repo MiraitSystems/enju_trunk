@@ -8,8 +8,8 @@ class PageController < ApplicationController
   before_filter :redirect_user, :only => :index
   before_filter :clear_search_sessions, :only => [:index, :advanced_search]
   before_filter :store_location, :only => [:advanced_search, :about, :add_on, :msie_acceralator]
-  before_filter :authenticate_user!, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual]
-  before_filter :check_librarian, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual]
+  before_filter :authenticate_user!, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual, :show_pc_site, :show_mobile_site]
+  before_filter :check_librarian, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual, :show_pc_site, :show_mobile_site]
   helper_method :get_libraries
 
   def index
@@ -114,6 +114,16 @@ class PageController < ApplicationController
       filename = t('manual_for_user')
     end
     send_file filepath, :filename => filename
+  end
+
+  def show_pc_site
+    session[:mobile_view] = false
+    redirect_to :controller => 'my_accounts', :action => 'show'
+  end
+
+  def show_mobile_site
+    session[:mobile_view] = true
+    redirect_to :controller => 'my_accounts', :action => 'show'
   end
 
   private
