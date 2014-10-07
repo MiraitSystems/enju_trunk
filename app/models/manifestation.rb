@@ -83,6 +83,8 @@ class Manifestation < ActiveRecord::Base
     10 => { "sort" => 'page.sort_asc', "sort_by" => 'activerecord.models.carrier_type' }
   }
 
+  ISBN_IDENTIFIER_TYPE_IDS = [1,2,6]
+
   searchable(SUNSPOT_EAGER_LOADING) do
     text :extexts do
       if root_of_series? # 雑誌の場合
@@ -935,10 +937,19 @@ class Manifestation < ActiveRecord::Base
 
   # isbn > identifier.body の順で検索して最初の識別子をかえす。
   def call_isbn
+    isbn_normalize = ""
     if isbn.present?
-      return isbn
+      isbn_normalize = Lisbn.new(isbn)
+    else
+      isbn_normalize = identifiers.where(identifier_type_id: ISBN_IDENTIFIER_TYPE_IDS).pluck(:body).first
+      if isbn_normalize 
+        isbn_normalize = Lisbn.new(isbn_normalize)
+      end
     end
-    identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
+    if isbn_normalize
+      isbn_normalize = isbn_normalize.isbn13
+    end
+    return isbn_normalize
   end
 
   def call_isbn?
@@ -946,7 +957,7 @@ class Manifestation < ActiveRecord::Base
     if isbn.present?
       identifier = isbn
     else 
-      identifier = identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
+      identifier = identifiers.where(identifier_type_id: ISBN_IDENTIFIER_TYPE_IDS).pluck(:body).first
     end
     return identifier.present?
   end

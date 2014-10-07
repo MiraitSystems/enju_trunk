@@ -1620,6 +1620,8 @@ en:
     user_title: Welcome %{login_name}
     sign_in: Sign in
     sign_out: Sign out
+    pc_site: PC site
+    mobile_site: Mobile site
     sign_up: Sign up
     logged_in_as: logged in as %{login_name}
     edit_user_profile: "Edit %{login_name}'s profile"

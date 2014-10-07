@@ -1,6 +1,3 @@
-<%- if SystemConfiguration.get("manifestations.google_book_search_preview") && manifestation.isbn -%>
-  <%= google_book_search_preview(manifestation.isbn) -%>
-<%- end -%>
   <%= embed_content(manifestation) -%>
   <% if manifestation.bookbinder %>
     <td><%= t('bookbinding.status') -%>:</td>
