@@ -20,6 +20,11 @@ module EnjuTrunk
       before_filter :get_library_group, :set_locale, :set_available_languages, :set_current_user, :get_current_basket
 
       has_mobile_fu
+      before_filter :set_request_format
+
+      def set_request_format
+        request.format = :mobile if is_mobile_device?
+      end
     end
 
     module ClassMethods
