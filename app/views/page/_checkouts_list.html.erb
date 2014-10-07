@@ -21,7 +21,12 @@
           <%- if SystemConfiguration.get('item.use_different_identifier') %>
             <%= t('activerecord.attributes.item.identifier') %>: <%= link_to checkout.item.identifier, checkout.item %> /
           <%- end -%> 
-          <%= t('activerecord.attributes.item.item_identifier') -%>: <%= link_to checkout.item.item_identifier, item_path(checkout.item) -%>
+          <%= t('activerecord.attributes.item.item_identifier') -%>: 
+          <%- if checkout.item.item_identifier %>
+            <%= link_to checkout.item.item_identifier, item_path(checkout.item) -%>
+          <%- else -%>
+            <%= link_to t('item.no_number'), checkout.item %>
+          <%- end -%>
           </nobr>
         </td>
       <%- end -%>
