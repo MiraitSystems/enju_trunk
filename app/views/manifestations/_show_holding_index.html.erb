@@ -80,7 +80,7 @@
               <% if user_signed_in? and (current_user.has_role?('Librarian') || current_user.id == item.checkout.user_id) %>
                 (
                 <%= t('activerecord.attributes.checkout.due_date') %>:
-                <%= l(item.checkout.due_date, :format => :only_date), item.checkout %>
+                <%= link_to l(item.checkout.due_date, :format => :only_date), item.checkout %>
                 <% if Time.zone.parse(item.checkout.due_date.to_s) < Time.now %>
                   <span class="not_rent_item">
                     <%= t('activerecord.attributes.checkout.past_due') -%> 
