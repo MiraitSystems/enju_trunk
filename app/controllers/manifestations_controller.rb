@@ -1511,7 +1511,7 @@ class ManifestationsController < ApplicationController
 
   def search_result_order(sort_id)
     sort = {}
-    sort_id = SystemConfiguration.get("manifestation.search_sort") if sort_id.nil? 
+    sort_id = SystemConfiguration.get("manifestation.search_sort") || 1 if sort_id.nil? 
     sort_id = sort_id.to_i
     # TODO: ページ数や大きさでの並べ替え
     case sort_id
@@ -1578,9 +1578,9 @@ class ManifestationsController < ApplicationController
     @countries = Country.all
     @frequencies = Frequency.all
     @nii_types = NiiType.all if defined?(NiiType)
-    @create_types = CreateType.find(:all, :select => "id, name, display_name")
-    @realize_types = RealizeType.find(:all, :select => "id, name, display_name")
-    @produce_types = ProduceType.find(:all, :select => "id, name, display_name")
+    @create_types = CreateType.where(display: true).select("id, name, display_name")
+    @realize_types = RealizeType.where(display: true).select("id, name, display_name")
+    @produce_types = ProduceType.where(display: true).select ("id, name, display_name")
     @default_language = Language.where(:iso_639_1 => @locale).first
     @title_types = TitleType.find(:all, :select => "id, display_name, name", :order => "position")
     @work_has_titles = @manifestation.work_has_titles
