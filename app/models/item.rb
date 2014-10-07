@@ -19,8 +19,8 @@ class Item < ActiveRecord::Base
   self.extend ItemsHelper
  
   scope :sort_rank, order('rank')
-  scope :for_checkout, where('item_identifier IS NOT NULL')
-  scope :not_for_checkout, where(:item_identifier => nil)
+  scope :for_checkout, where('item_identifier IS NOT NULL || identifier IS NOT NULL')
+  scope :not_for_checkout, where(:identifier => nil)
   scope :on_shelf, where('shelf_id != 1')
   scope :on_web, where(:shelf_id => 1)
   scope :for_retain_from_own, lambda{|library| where('shelf_id IN (?)', library.excludescope_shelf_ids).order('created_at ASC')}
