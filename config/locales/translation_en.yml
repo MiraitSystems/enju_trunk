@@ -1620,6 +1620,7 @@ en:
     user_title: Welcome %{login_name}
     sign_in: Sign in
     sign_out: Sign out
+    display_form: Display form
     pc_site: PC site
     mobile_site: Mobile site
     sign_up: Sign up

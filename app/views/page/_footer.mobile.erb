@@ -1,11 +1,5 @@
-<div class="header_and_footer">
-  <div id="footer">
-    <%= raw SystemConfiguration.get("footer_message") %>
-    <%- if SystemConfiguration.get("footer_message").blank? %>
-      <a href="https://github.com/MiraitSystems/enju_trunk">Next-L Enju Trunk <%= EnjuTrunk::VERSION if defined?(EnjuTrunk::VERSION) %></a>,
-      <%= t('page.open_source_integrated_library_system') -%> |
-      <%= link_to t('page.about_this_system'), page_about_path -%> | 
-    <%- end -%>
-    <%= link_to t('page.pc_site'), '/page/show_pc_site' %>
-  </div>
+<div data-role="footer" id="display_form">
+    <%= t('page.display_form') %>:
+    <%= t('page.mobile_site') %> |
+    <%= link_to t('page.pc_site'), '/page/show_pc_site', "data-role" => "none" %>
 </div>
