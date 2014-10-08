@@ -48,12 +48,12 @@ div#header_right_mobile{
 
 h1.resource_title_mobile{
   line-height: 140%;
-  text-align: center
+  text-align: center;
 }
 
 h2.resource_title_mobile{
   line-height: 140%;
-  text-align: center
+  text-align: center;
 }
 
 .input_field{
@@ -62,5 +62,10 @@ h2.resource_title_mobile{
 }
 
 .holding{
+  padding: 1em;
+}
+
+div#display_form{
+  text-align: center;
   padding: 1em;
 }
