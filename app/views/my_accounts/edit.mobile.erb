@@ -1,7 +1,3 @@
-<div data-role="header">
-  <h1 class="title"><%= t('page.edit_user_profile', :login_name => @user.username) -%></h1>
-</div>
-<br />
 <%= link_to t('activerecord.attributes.user.show_user'), @user -%>
 <%= render 'page/required_field' %>
 <%= simple_form_for(@user, :url => my_account_path) do |f| -%>
