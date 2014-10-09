@@ -40,7 +40,7 @@ div#header_right_mobile{
   padding-bottom: 0.5em;
 }
 
-// TODO 縦方向のセンタリング
+// TODO ヘッダー縦方向のセンタリング
 .text02{
     width: 200px;
     height: 100px;
@@ -80,4 +80,9 @@ h3.resource_title_mobile{
 div#display_form{
   text-align: center;
   padding: 1em;
+}
+
+td.label{
+  height: 30px;
+  white-space: nowrap;
 }
