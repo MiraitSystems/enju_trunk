@@ -258,12 +258,12 @@ module EnjuTrunk
 
     ADVANCED_SEARCH_PARAMS = [
       :except_query, :tag, :title, :except_title, :creator, :except_creator,
-      :publisher, :isbn, :issn, :ndc, :item_identifier, :pub_date_from,
+      :publisher, :isbn, :issn, :ndc, :item_identifier, :pub_date_from, :subject,
       :edition_display_value, :volume_number_string, :issue_number_string, :serial_number_string,
       :pub_date_to, :acquired_from, :acquired_to, :removed_from, :removed_to,
       :number_of_pages_at_least, :number_of_pages_at_most, :advanced_search,
-      :title_merge, :creator_merge, :query_merge, :manifestation_types,
-      :carrier_types, :identifier, :other_identifier,
+      :title_merge, :creator_merge, :query_merge, :subject_merge,
+      :manifestation_types, :carrier_types, :identifier, :other_identifier,
       :classifications,
     ]
 
@@ -272,6 +272,8 @@ module EnjuTrunk
       title: 'page.title',
       creator: 'agent.creator',
       subject: 'activerecord.models.subject',
+      all_subject: 'page.all_subject',
+      any_subject: 'page.any_subject',
       publisher: 'agent.publisher',
       isbn: 'activerecord.attributes.manifestation.isbn',
       issn: 'activerecord.attributes.manifestation.issn',
@@ -398,7 +400,7 @@ module EnjuTrunk
           end
           special[t][i] = params[key] if special[t]
 
-        when :title, :creator, :title_merge, :creator_merge, :query_merge
+        when :title, :creator, :subject, :title_merge, :creator_merge, :query_merge, :subject_merge
           t = key.to_s.sub(/(_merge)?\z/, '').to_sym
           v = nil
           if $1
@@ -492,14 +494,18 @@ module EnjuTrunk
         all = true
       end
 
-      (if name == 'query'
+      (if name == 'query' || name == 'subject'
           ''
         else
           radio_button_tag(pname, 'exact', exact) +
           advanced_search_label(:"exact_#{name}") + ' '
         end +
-        radio_button_tag(pname, 'startwith', startwith) +
-        advanced_search_label(:"startwith_#{name}") + ' ' +
+        if name == 'subject'
+          ''
+        else
+          radio_button_tag(pname, 'startwith', startwith) +
+          advanced_search_label(:"startwith_#{name}") + ' '
+        end +
         radio_button_tag(pname, 'all', all) +
         advanced_search_label(:"all_#{name}") + ' ' +
         radio_button_tag(pname, 'any', any) +

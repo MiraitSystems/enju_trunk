@@ -118,12 +118,12 @@ class PageController < ApplicationController
 
   def show_pc_site
     session[:mobile_view] = false
-    redirect_to :controller => 'my_accounts', :action => 'show'
+    redirect_to root_path
   end
 
   def show_mobile_site
     session[:mobile_view] = true
-    redirect_to :controller => 'my_accounts', :action => 'show'
+    redirect_to root_path
   end
 
   private

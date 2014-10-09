@@ -5,28 +5,26 @@
     <ol data-role="listview">
       <% items.each do |item| %>
         <% next if hide_item?(true, item) %>
-   
-        <%# TODO %> 
-        <li>
-        <div>
-          <th><%= t('activerecord.models.library') %>:</th>
+        <table>
+        <tr>
+          <td class="label"><%= t('activerecord.models.library') %>:</td>
           <td><%= item.shelf.library.display_name.localize %></td>
-        </div>
-        <div>
-          <th><%= t('activerecord.models.shelf') %>:</th>
+        </tr>
+        <tr>
+          <td class="label"><%= t('activerecord.models.shelf') %>:</td>
           <td>
             <%= item.shelf.display_name.localize %>
             <%= render 'items/shelf_picture', :item => item if item.shelf %>
           </td>
-        </div>
-        <div>
-          <th><%= t('activerecord.attributes.item.call_number') %>:</th>
+        </tr>
+        <tr>
+          <td class="label"><%= t('activerecord.attributes.item.call_number') %>:</td>
           <td>
             <%= call_numberformat(item) %>
           </td>
-        </div>
-        <div>
-          <th><%= t('activerecord.attributes.item.item_identifier') %>:</th>
+        </tr>
+        <tr>
+          <td class="label"><%= t('activerecord.attributes.item.item_identifier') %>:</td>
           <td>
             <% if item.item_identifier? %>
               <%= item.item_identifier %>
@@ -34,10 +32,10 @@
               (<%= t('item.no_number') %>)
             <% end %>
           </td>
-        </div>
-        <div>
+        </tr>
+        <tr>
           <% unless manifestation.article? %>
-            <th><%= t('activerecord.models.circulation_status') %>:</th>
+            <td class="label"><%= t('activerecord.models.circulation_status') %>:</td>
             <td>
               <% if item.circulation_status.name != 'Available On Shelf' %>
                 <span class="not_rent_item">
@@ -57,16 +55,8 @@
               <% end %>
             </td>
           <% end %>
-        </div>
-
-        <% if user_signed_in? %>
-          <% if manifestation.reservable? && Setting.operation %>
-            <%- if @manifestation.reservable_with_item?(current_user) -%>
-              <%= link_to t('activerecord.models.reserve'), new_user_reserve_path(current_user, :manifestation_id => @manifestation.id) -%>
-            <%- end -%>
-          <% end %>
-        <% end %>
-        </li>
+        </tr>
+        </table>
       <% end %>
     </ol> 
   </div>

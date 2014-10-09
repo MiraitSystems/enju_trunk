@@ -2,6 +2,7 @@ class Devise::SessionsController < ApplicationController
   prepend_before_filter :require_no_authentication, :only => [ :new, :create ]
   prepend_before_filter :allow_params_authentication!, :only => :create
   prepend_before_filter :clear_locale, :only => [:create]
+  prepend_before_filter :strip_whitespace, :only => [:create] 
   include Devise::Controllers::InternalHelpers
   layout :select_layout
 
@@ -25,9 +26,6 @@ class Devise::SessionsController < ApplicationController
     resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#new")
     set_flash_message(:notice, :signed_in) if is_navigational_format?
     sign_in(resource_name, resource)
-
-    pp '@@@@ 3 params'
-    pp params
 
     if params[:opac]
       respond_with resource, :location => opac_path
@@ -64,6 +62,13 @@ class Devise::SessionsController < ApplicationController
       "opac"
     else
       "application"
+    end
+  end
+
+  def strip_whitespace
+    if params[:user]
+      params[:user][:username] = params[:user][:username].strip if params[:user][:username]
+      params[:user][:password] = params[:user][:password].strip if params[:user][:password]
     end
   end
 

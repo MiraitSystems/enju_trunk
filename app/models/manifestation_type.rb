@@ -1,6 +1,6 @@
 class ManifestationType < ActiveRecord::Base
   include MasterModel
-  attr_accessible :display_name, :name, :note, :position
+  attr_accessible :display_name, :name, :note, :position, :icon_filename
   default_scope :order => "position"
   has_many :manifestations
   has_many :statistics if defined?(Statistic)

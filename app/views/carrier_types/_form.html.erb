@@ -15,7 +15,7 @@
   </div>
   <div>
     <%= f.label :icon_filename %><br />
-    <%= f.radio_button :icon_filename, nil %><%= t('carrier_type.no_icon') %>
+    <%= f.radio_button :icon_filename, nil %><%= t('page.no_icon') %>
     <% @icon_files.each do |file| %>
       <%= f.radio_button :icon_filename, file %><%= image_tag "icons/#{file}", :size => '16x16' %>
     <% end %>
