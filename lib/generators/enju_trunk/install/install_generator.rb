@@ -131,6 +131,10 @@ devise_scope :user do
     gsub_file 'config/initializers/devise.rb', /^(\s*)\# (config\.authentication_keys) = \[ .*\n/, <<-'E'
 \1\2 = [ :username ]
     E
+ 
+    gsub_file 'config/initializers/devise.rb', /^(\s*)\# (config\.http_authenticatable_on_xhr) = .*\n/, <<-'E'
+\1\2 = false
+    E
   end
 
   def setup_delayed_job
