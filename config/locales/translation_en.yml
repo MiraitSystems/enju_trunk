@@ -1679,6 +1679,8 @@ en:
     all_publisher: All
     any_publisher: Any
     except_publisher: Except
+    all_subject: All
+    any_subject: Any
     note: Note
     back: Back
     show: Show
