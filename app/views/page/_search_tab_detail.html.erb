@@ -127,6 +127,13 @@ $(function(){
       <%= search_field_tag 'serial_number_string', params[:serial_number_string], :size => 8 -%>
     </td>
   </tr>
+  <tr>
+    <td><label><%= advanced_search_label(:subject) -%>:</label></td>
+    <td>
+      <%= search_field_tag 'subject', params[:subject] -%>
+      <%= advanced_search_merge_tag('subject') %>
+    </td>
+  </tr>
   <tr class="nacsis-only">
     <td><label><%= advanced_search_label(:ncid) -%>:</label></td>
     <td><%= search_field_tag 'ncid', params[:ncid] -%>

@@ -1701,6 +1701,8 @@ ja:
     all_publisher: "すべて"
     any_publisher: "いずれか"
     except_publisher: "を含まない"
+    all_subject: "すべて"
+    any_subject: "いずれか"
     solr_query: "Solr 検索式"
     note: "注記"
     back: "戻る"
