@@ -19,20 +19,21 @@
 <%= paginate(@manifestations) %>
 
 <br>
-<ol data-role="listview">
+<ul data-role="listview">
   <% @manifestations.each do |manifestation| %>
     <li>
       <%= link_to manifestation do %>
         <%= manifestation.original_title %>
-        <div id="creator_list_<%= manifestation.id -%>">
+        <div style="white-space: normal;">
           <%= render 'manifestations/show_creators', :manifestation => manifestation -%>
         </div>
         <% manifestation_type = ManifestationType.where(:id => manifestation.manifestation_type_id).select([:display_name]).first %>
-        <%= manifestation_type.display_name.localize %>
+        <%#= manifestation_type.display_name.localize %>
+        <%= render 'manifestations/holding', :manifestation => manifestation %>
       <% end %>
     </li>
   <% end %>
-</ol>
+</ul>
 
 <%= paginate(@manifestations) %>
 
