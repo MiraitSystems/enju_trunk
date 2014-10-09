@@ -1,3 +1,11 @@
+<% if user_signed_in? %>
+  <% if manifestation.reservable? && Setting.operation %>
+    <%- if manifestation.reservable_with_item?(current_user) -%>
+      <%= link_to t('activerecord.models.reserve'), new_user_reserve_path(current_user, :manifestation_id => manifestation.id), "data-role" => "button" -%>
+    <%- end -%>
+  <% end %>
+<% end %>
+
   <h2 class="resource_title">
     <%= manifestation.original_title -%>
   </h2>
