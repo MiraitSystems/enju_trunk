@@ -763,6 +763,7 @@ en:
         display_name: Display name
         note: Note
         position: Position
+        icon_filename: Icon filename
 
       manifestation/identifiers:
         body: Other identifier
@@ -1932,6 +1933,7 @@ en:
     imported: Imported
     copy: Copy new create
     print: Print this page
+    no_icon: No Icon
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"
@@ -3048,5 +3050,3 @@ en:
     search_placeholder: Please enter sub carrier type
     search_searching: Searching...
     search_nomatch: No matches
-  carrier_type:
-    no_icon: No icon

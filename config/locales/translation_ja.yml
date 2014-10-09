@@ -850,6 +850,7 @@ ja:
         display_name: 表示名
         note: 注記
         position: 位置
+        icon_filename: アイコン
       manifestation/identifiers:
         body: その他の識別子
         identifier_type_id: その他の識別子の種類
@@ -1938,6 +1939,7 @@ ja:
     copy: コピーして新規作成
     print: このページを印刷
     statistical_table: "統計表"
+    no_icon: なし
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -3101,5 +3103,3 @@ ja:
     jpn_donate: "寄贈(和書)"
     foreign_donate: "寄贈(洋書)"
     total_donate: "寄贈(合計)"
-  carrier_type:
-    no_icon: なし
