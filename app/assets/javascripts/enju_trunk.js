@@ -22,6 +22,7 @@
 //= require jquery.simplecalendarjp
 //= require jquery.autoKana
 //= require jquery.minicolors
+//= require cssmenu
 
 $(document).ready(function() {
   // check checkbox
