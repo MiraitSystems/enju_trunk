@@ -1,0 +1,38 @@
+<script type="text/javascript">
+  <!--
+  <% unless SystemConfiguration.get("no_operation_counter").nil? || SystemConfiguration.get("no_operation_counter") == 0 -%>   
+    $(function(){
+      window.document.onmousedown = counter_clear;
+      window.document.onkeydown   = counter_clear;
+      window.document.onmousemove = counter_clear;
+      function counter_clear() {
+        nooperation_cnt = 0;
+      }
+
+      var t = setInterval(keyborad_observer, 1000);
+      function keyborad_observer(){
+        try {
+          nooperation_cnt++;
+        } catch (e) {
+          nooperation_cnt = 0;
+        }
+        if (nooperation_cnt > <%= SystemConfiguration.get("no_operation_counter") %>) {
+        <% if user_signed_in? %>      
+          <% if SystemConfiguration.get("no_operation_logout") %>
+            location.href = "<%= destroy_user_session_path %>";
+          <% else %>
+            location.href = "<%= destroy_user_session_path %>";
+          <% end %>
+        <% else %>
+          location.href = "<%= root_path %>";
+        <% end %>
+        }
+      }
+    });
+  <% end %>
+  // -->
+</script>
+
+<div id="footer">
+  <%= button_tag(t('page.print'), :type => 'button', :onclick => 'window.print();') if SystemConfiguration.get("view_print_button") %>
+</div>
