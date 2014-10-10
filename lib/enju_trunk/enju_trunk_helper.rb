@@ -271,9 +271,9 @@ module EnjuTrunk
       tag: 'page.tag',
       title: 'page.title',
       creator: 'agent.creator',
-      subject: 'activerecord.models.subject',
-      all_subject: 'page.all_subject',
-      any_subject: 'page.any_subject',
+      subject_text: 'activerecord.models.subject',
+      all_subject_text: 'page.all_subject_text',
+      any_subject_text: 'page.any_subject_text',
       publisher: 'agent.publisher',
       isbn: 'activerecord.attributes.manifestation.isbn',
       issn: 'activerecord.attributes.manifestation.issn',
@@ -494,13 +494,13 @@ module EnjuTrunk
         all = true
       end
 
-      (if name == 'query' || name == 'subject'
+      (if name == 'query' || name == 'subject_text'
           ''
         else
           radio_button_tag(pname, 'exact', exact) +
           advanced_search_label(:"exact_#{name}") + ' '
         end +
-        if name == 'subject'
+        if name == 'subject_text'
           ''
         else
           radio_button_tag(pname, 'startwith', startwith) +
