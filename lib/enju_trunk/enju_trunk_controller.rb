@@ -23,7 +23,15 @@ module EnjuTrunk
       before_filter :set_request_format
 
       def set_request_format
-        request.format = :mobile if is_mobile_device?
+#        request.format = :mobile if is_mobile_device? or is_tablet_device?
+        #if is_mobile_device? or is_tablet_device?
+        if is_mobile_device? 
+          if (devise_controller? && action_name == 'create' && request.method == ('POST'))
+            request.format = :html
+          else
+            request.format = :mobile
+          end
+        end
       end
     end
 

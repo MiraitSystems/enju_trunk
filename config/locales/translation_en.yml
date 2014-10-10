@@ -766,6 +766,10 @@ en:
         icon_filename: Icon filename
 
       manifestation/identifiers:
+        isbn: ISBN
+        nbn: NBN
+        lccn: LCCN
+        ndc: NDC
         body: Other identifier
         identifier_type_id: Other identifier type
       manifestation/items/claim:

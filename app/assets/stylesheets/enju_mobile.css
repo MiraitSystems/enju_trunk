@@ -86,3 +86,8 @@ td.label{
   height: 30px;
   white-space: nowrap;
 }
+
+hr.dash_line{
+  border: 2px dashed #bbb;
+  height: 0px;
+}

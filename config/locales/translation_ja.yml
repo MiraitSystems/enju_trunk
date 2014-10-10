@@ -852,6 +852,10 @@ ja:
         position: 位置
         icon_filename: アイコン
       manifestation/identifiers:
+        isbn: ISBN
+        nbn: NBN
+        lccn: LCCN
+        ndc: NDC
         body: その他の識別子
         identifier_type_id: その他の識別子の種類
       manifestation/items/claim:

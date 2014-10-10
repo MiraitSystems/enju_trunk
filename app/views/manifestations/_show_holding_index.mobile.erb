@@ -1,0 +1,72 @@
+<% if manifestation.items.exists? %>
+<table>
+  <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+  <% items.each do |item| %>
+    <hr class="dash_line">
+    <% next unless item.has_view_role?(current_user.try(:role).try(:id)) %>
+    <% next if hide_item?(params[:all_manifestations], item) %>
+    <div>
+      <%= t('activerecord.attributes.item.call_number') %>:
+      <span class="red_string"><%= call_numberformat(item) %></span>
+    </div>
+    <%- unless @location_symbol_size.blank? -%>
+      <div>
+        <%= t('activerecord.attributes.item.location_symbol') %>:
+        <% if item.location_symbol.present? %>
+          <span class="red_string"><%= item.location_symbol.keyname %></span>
+        <% end %>
+      </div>
+    <%- end -%>
+    <div>
+      <%= t('activerecord.attributes.item.item_identifier') %>:
+      <% if item.item_identifier? %>
+        <%= item.item_identifier %>
+      <% else %>
+        (<%= t('item.no_number') %>)
+      <% end %>
+    </div>
+    <div>
+      <%- if SystemConfiguration.get('item.use_different_identifier') %>
+        <%= t('activerecord.attributes.item.identifier') %>:
+        <%= link_to item.identifier, item if item.identifier%>
+      <%- end -%>
+    </div>
+    <% unless manifestation.article? %>
+      <div>
+        <%= t('activerecord.models.circulation_status') %>:
+        <% if item.circulation_status.name != 'Available On Shelf' %>
+          <span class="not_rent_item">
+            <%- if item.circulation_restriction.v != 0 %><%= item.circulation_restriction.keyname %><%- end -%>
+            <%= item.circulation_status.display_name.localize if item.circulation_status %>
+            <% if item.use_restriction.try(:name) == 'Not For Loan' %>
+              (<%= t('activerecord.attributes.checkout.not_available') %>)
+            <% end %>
+          </span>
+        <% else %>
+          <% if item.circulation_status %>
+            <% if item.use_restriction.try(:name) != 'Not For Loan' %>
+              <%= item.circulation_status.display_name.localize %>
+            <% else %>
+              <span class="not_rent_item"><%= t('activerecord.attributes.checkout.not_for_loan') %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% if item.rent? %>
+          <% if user_signed_in? and (current_user.has_role?('Librarian') || current_user.id == item.checkout.user_id) %>
+            (
+            <%= t('activerecord.attributes.checkout.due_date') %>:
+            <%= link_to l(item.checkout.due_date, :format => :only_date), item.checkout %>
+            <% if Time.zone.parse(item.checkout.due_date.to_s) < Time.now %>
+              <span class="not_rent_item">
+                <%= t('activerecord.attributes.checkout.past_due') -%> 
+                <%= t('checkout.days_overdue', :days => item.checkout.day_of_overdue) %>
+              </span>
+            <% end %>
+            )
+          <% end %>
+        <% end %>
+      <div>
+    <% end %>
+  <% end %>
+</table>
+<% end %>
