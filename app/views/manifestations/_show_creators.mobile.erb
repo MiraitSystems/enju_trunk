@@ -1,4 +1,3 @@
-<div>
   <%- unless manifestation.creators.readable_by(current_user).empty? -%>
     <%- if params[:mode] == 'show_all_creators' -%>
       <%= t('agent.creator') -%>:<%= agents_list(manifestation.creates.except(:order).order(order_str('create')).readable_by(current_user), {:nolink => true}, manifestation.id, 'create') %>
@@ -6,17 +5,13 @@
       <%= t('agent.creator') -%>:<%= agents_list(manifestation.creates.except(:order).order(order_str('create')).readable_by(current_user)[0..2], {:nolink => true}, manifestation.id, 'create') %>
     <%- end -%>
   <%- end -%>
-</div>
-<div>
   <%- unless manifestation.contributors.readable_by(current_user).empty? -%>
     <%= t('agent.contributor') -%>:<%= agents_list(manifestation.realizes.except(:order).order(order_str('realize')).readable_by(current_user), {:nolink => true}, manifestation.id, 'realize') %>
   <%- end -%>
-</div>
-<div>
   <%- unless manifestation.publishers.readable_by(current_user).empty? -%>
     <%= t('agent.publisher') -%>:<%= agents_list(manifestation.produces.except(:order).order(order_str('produce')).readable_by(current_user), {:nolink => true}, manifestation.id, 'produce') %>
   <%- end -%>
-</div>
+
 <div>
   <%- if manifestation.pub_date.present? -%>
     <%= t('page.pub_date') -%>:<%= manifestation.pub_date -%>
