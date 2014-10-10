@@ -106,12 +106,17 @@
 
   <%unless manifestation.periodical_master %>
     <tr>
-      <td class="label"><%= t('manifestation.physical_description') -%>:</td>
+      <td class="label">ページ数:</td>
       <td>
         <%- if manifestation.number_of_pages -%>
           <span itemprop="numPages"><%= manifestation.number_of_pages -%></span> p.
         <%- end -%>
         <%= manifestation_page(manifestation) %>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">大きさ:</td>
+      <td>
         <!-- TODO: センチメートル以外の単位 -->
         <%- if manifestation.height -%>
           <%= manifestation.height -%> cm.
@@ -151,45 +156,45 @@
 
   <% unless manifestation.periodical_master %>
     <%- unless manifestation.serial? -%>
-      <tr>
-        <td class="label"><%= t('activerecord.models.identifier') -%>:</td>
-        <td>
-          <%- if manifestation.isbn.present? -%>
-            ISBN: <span itemprop="isbn"><%= manifestation.isbn -%></span>
+      <%- if manifestation.isbn.present? -%>
+        <tr>
+          <td class="label"><%= t("activerecord.attributes.manifestation/identifiers.isbn") %>:</td>
+          <td>
+            <span itemprop="isbn"><%= manifestation.isbn -%></span>
             <%- if manifestation.isbn10.present? -%>
+              <br />
               ( <%= manifestation.isbn10 -%> )
             <%- end -%>
-          <%- end -%>
-          <%- if manifestation.nbn.present? -%>
-            NBN: <%= manifestation.nbn -%>
-          <%- end -%>
-          <%- if manifestation.lccn.present? -%>
-            <br />
-            LCCN: <%= manifestation.lccn -%>
-          <%- end -%>
-          <%- if manifestation.ndc.present? -%>
-            <br />
-            NDC: <%= manifestation.ndc -%>
-          <%- end -%>
-          <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
-            <%- manifestation.identifiers.each do |identifier| -%> 
-              <%= identifier.identifier_type.display_name.localize %>: <%= identifier.body %><br />
-            <%- end -%> 
-          <%- end -%> 
-        </td>
-      </tr>
+          </td>
+        </tr>
+      <%- end -%>
+      <%- if manifestation.nbn.present? -%>
+        <tr>
+          <td class="label"><%= t("activerecord.attributes.manifestation/identifiers.nbn") %>:</td>
+          <td><%= manifestation.nbn -%></td>
+        </tr>
+      <%- end -%>
+      <%- if manifestation.lccn.present? -%>
+        <tr>
+          <td class="label"><%= t("activerecord.attributes.manifestation/identifiers.lccn") %>:</td>
+          <td><%= manifestation.lccn -%></td>
+        </tr>
+      <%- end -%>
+      <%- if manifestation.ndc.present? -%>
+        <tr>
+          <td class="label"><%= t("activerecord.attributes.manifestation/identifiers.ndc") %>:</td>
+          <td><%= manifestation.ndc -%></td>
+        </tr>
+      <%- end -%>
+      <%- if SystemConfiguration.get('manifestation.use_identifiers') %>
+        <%- manifestation.identifiers.each do |identifier| -%> 
+          <tr>
+            <td class="label"><%= identifier.identifier_type.display_name.localize %>:</td>
+            <td><%= identifier.body %></td>
+          </tr>
+        <%- end -%> 
+      <%- end -%> 
     <%- end -%>
-  <% end %>
-
-  <% unless manifestation.periodical_master %>
-    <tr>
-      <td class="label"><%= t('manifestation.date_of_acquisition') -%>:</td>
-      <td><%=l manifestation.created_at if manifestation.created_at -%></td>
-    </tr>
-    <tr>
-      <td class="label"><%= t('page.updated_at') -%>:</td>
-      <td><%=l manifestation.updated_at if manifestation.updated_at -%></td>
-    </tr>
   <% end %>
 
   <% if manifestation.description.present? %>
