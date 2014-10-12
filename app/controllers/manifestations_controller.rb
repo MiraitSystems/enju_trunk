@@ -1331,6 +1331,7 @@ class ManifestationsController < ApplicationController
       [:except_creator, 'creator_text', 'creator_sm'],
       [:except_publisher, 'publisher_text', 'publisher_sm'],
       [:identifier, 'identifier_sm'],
+      [:subject_text, 'subject_text', 'subject_sm'],
     ].each do |key, field, onechar_field|
       next if special_match.include?(key)
 

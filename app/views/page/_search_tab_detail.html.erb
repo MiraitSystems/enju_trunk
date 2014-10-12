@@ -88,6 +88,13 @@ $(function(){
     <td><%= search_field_tag 'publisher', params[:publisher] -%></td>
   </tr>
   <tr>
+    <td><label><%= advanced_search_label(:subject_text) -%>:</label></td>
+    <td>
+      <%= search_field_tag 'subject_text', params[:subject_text] -%>
+      <%= advanced_search_merge_tag('subject_text') %>
+    </td>
+  </tr>
+  <tr>
     <td><label><%= advanced_search_label(:isbn) -%>:</label></td>
     <td><%= search_field_tag 'isbn', params[:isbn] -%><%= t('advanced_search.help_isbn') -%></td>
   </tr>
@@ -125,13 +132,6 @@ $(function(){
       <%= search_field_tag 'issue_number_string', params[:issue_number_string], :size => 8 -%>
       <%= advanced_search_label(:serial_number_string) -%>
       <%= search_field_tag 'serial_number_string', params[:serial_number_string], :size => 8 -%>
-    </td>
-  </tr>
-  <tr>
-    <td><label><%= advanced_search_label(:subject) -%>:</label></td>
-    <td>
-      <%= search_field_tag 'subject', params[:subject] -%>
-      <%= advanced_search_merge_tag('subject') %>
     </td>
   </tr>
   <tr class="nacsis-only">
