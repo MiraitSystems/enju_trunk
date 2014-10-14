@@ -1,5 +1,4 @@
 <% if manifestation.items.exists? %>
-<table>
   <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
   <% items.each do |item| %>
     <hr class="dash_line">
@@ -65,8 +64,7 @@
             )
           <% end %>
         <% end %>
-      <div>
+      </div>
     <% end %>
   <% end %>
-</table>
 <% end %>
