@@ -1,5 +1,3 @@
-<%= render 'page/header' %>
-
 <% if @series_statement %>
   <h3>
     <%= @series_statement.original_title %>
@@ -36,6 +34,3 @@
 </ul>
 
 <%= paginate(@manifestations) %>
-
-<hr>
-<%= render 'page/footer' %>
