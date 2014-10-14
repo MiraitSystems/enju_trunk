@@ -11,6 +11,7 @@ class PageController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual, :show_pc_site, :show_mobile_site]
   before_filter :check_librarian, :except => [:index, :advanced_search, :about, :add_on, :msie_acceralator, :opensearch, :routing_error, :get_manual, :show_pc_site, :show_mobile_site]
   helper_method :get_libraries
+  before_filter :set_no_cache_header
 
   def index
     @numdocs = Manifestation.search.total
@@ -30,7 +31,7 @@ class PageController < ApplicationController
     get_libraries
     get_manifestation_types
     get_carrier_types
- 
+
     respond_to do |format|
       if defined?(EnjuCustomize) && EnjuCustomize.method_defined?(:render_dir) && EnjuCustomize.method_defined?(:render_layout)
         format.html { render :file => "page/#{EnjuCustomize.render_dir}/index", :layout => EnjuCustomize.render_layout}
@@ -117,22 +118,33 @@ class PageController < ApplicationController
   end
 
   def show_pc_site
-    session[:mobile_view] = false
-    redirect_to root_path
+    session[:enju_mobile_view] = false
+    session[:redirect_mode] = true
+    redirect_to root_path, :status => 302
   end
 
   def show_mobile_site
-    session[:mobile_view] = true
-    redirect_to root_path
+    session[:enju_mobile_view] = true
+    session[:redirect_mode] = true
+    redirect_to root_path, :status => 302
   end
 
   private
+  def set_no_cache_header
+    if session[:redirect_mode]
+      response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+      session[:redirect_mode] = nil
+    end
+  end
+
   def check_librarian
     unless current_user.has_role?('Librarian')
       access_denied
     end
   end
- 
+
   def redirect_user
     if user_signed_in?
       flash.keep(:notice) if flash[:notice]
