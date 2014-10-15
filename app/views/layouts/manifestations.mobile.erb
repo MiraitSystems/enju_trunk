@@ -5,10 +5,15 @@
   <%= render 'page/include' %>
 </head>
 <body>
+<%= render 'page/header' %>
 
-<div data-role="page">
+<div id="content_mobile">
   <%= yield %>
 </div>
 
+<hr>
+<% unless SystemConfiguration.get("not_use_footer") %>
+  <%= render 'page/footer' %>
+<% end %>
 </body>
 </html>
