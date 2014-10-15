@@ -1,6 +1,6 @@
 <% unless tab_menu_width == 'fg-3button' and ! SystemConfiguration.isWebOPAC %>
   <a tabindex="2" href='#'><%= t('page.request') %></a>
-  <ul>
+  <ul class='sub'>
     <% if can_use_purchase_request? %>
       <li><%= link_to t('activerecord.models.purchase_request'), purchase_requests_path %></li>
     <% end %>

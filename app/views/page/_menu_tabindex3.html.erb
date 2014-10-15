@@ -1,6 +1,6 @@
 <% unless @library_group.real_libraries.empty? %>
-<a tabindex="3" href="#"><%= t('activerecord.models.event_calendar') %></a>
-  <ul>
+  <a tabindex="3" href="#"><%= t('activerecord.models.event_calendar') %></a>
+  <ul class='sub'>
     <li><%= link_to t('page.calendar'), calendar_path %></li>
     <li><%= link_to t('event.all'), events_path %></li>
     <% @library_group.real_libraries.each do |library| %>

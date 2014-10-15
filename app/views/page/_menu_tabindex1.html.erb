@@ -1,6 +1,6 @@
 <% if user_signed_in? and current_user.has_role?('Librarian') %>
   <a tabindex="1" href='#'><%= t('page.acquisition') %></a>
-  <ul>
+  <ul class='sub'>
     <li><%= link_to t('import_request.enter_isbn'), new_import_request_path %></li>
     <% if defined?(EnjuNdl) %>
       <li><%= link_to t('enju_ndl.import_from_ndl_search'), ndl_books_path %></li>
