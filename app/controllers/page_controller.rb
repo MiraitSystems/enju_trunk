@@ -63,14 +63,19 @@ class PageController < ApplicationController
     end
     @selected_manifestation_types = params[:manifestation_types]
     @classification_types = ClassificationType.order("position").all
+
+    SystemConfiguration::CLASSIFICATION_TYPES.each do |key, value|
+      if key == SystemConfiguration.get("manifestation.search.desabled_classification_type_form")
+        @selected_classification_type = value
+      end
+    end
+
     if params[:classifications].blank?
       @classifications = []
-        3.times do
-          @classifications << {:classification_id => "", :classification_type_id => 2}
-          unless SystemConfiguration.get('manifestation.search.use_select2_for_classification')
-            break
-          end
-        end
+      number_of_form = SystemConfiguration.get('manifestation.search.number_of_classification_field')
+      number_of_form.times do
+        @classifications << {:classification_id => "", :classification_type_id => 2}
+      end
     else
       @classifications = params[:classifications]
     end

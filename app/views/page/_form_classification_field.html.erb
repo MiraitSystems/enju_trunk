@@ -79,14 +79,18 @@
     <% @classifications.each_with_index do |classification, index| -%>
       <tr id="CLASSIFICATION<%= index %>" >
         <td>
-          <%= select2_tag("classifications_#{index}_classification_type_id", 
-                           "classifications[][classification_type_id]", 
-                           @classification_types,
-                           classification[:classification_type_id].to_i,
-                           select_attribute: :name,
-                           display_attribute: :display_name, 
-                           width: '200'
-                          ) %>
+          <% if SystemConfiguration.get("manifestation.search.desabled_classification_type_form") == 0 %>
+            <%= select2_tag("classifications_#{index}_classification_type_id", 
+                             "classifications[][classification_type_id]", 
+                             @classification_types,
+                             classification[:classification_type_id].to_i,
+                             select_attribute: :name,
+                             display_attribute: :display_name, 
+                             width: '200'
+                            ) %>
+          <% else %>
+            <%= @selected_classification_type %>:
+          <% end %>
         </td>
         <td>
           <% if SystemConfiguration.get("manifestation.search.use_select2_for_classification") %>

@@ -30,7 +30,8 @@ module SystemConfigurationsHelper
            'user.locked.background',
            'user.unable.background',
            'purchase_request.can_use',
-           'manifestation.search_sort'
+           'manifestation.search_sort',
+           'manifestation.search.desabled_classification_type_form'
         string = make_form_selector(string, system_configuration)
       else
         string << "<input type='text' "
@@ -95,6 +96,14 @@ module SystemConfigurationsHelper
        string << "selected='selected'" if system_configuration.v.to_i == key
        string << ">"
        string << t(value["sort"], :sort_by => t(value["sort_by"]))
+       string << "</option>"
+     end
+   when 'manifestation.search.desabled_classification_type_form'
+     SystemConfiguration::CLASSIFICATION_TYPES.each_pair do |key, value|
+       string << "<option value=#{key} "
+       string << "selected='selected'" if system_configuration.v.to_i == key
+       string << ">"
+       string << value
        string << "</option>"
      end
    end
