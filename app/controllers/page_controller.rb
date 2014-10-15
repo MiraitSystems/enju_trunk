@@ -65,9 +65,12 @@ class PageController < ApplicationController
     @classification_types = ClassificationType.order("position").all
     if params[:classifications].blank?
       @classifications = []
-      3.times do
-        @classifications << {:classification_id => "", :classification_type_id => 2}
-      end
+        3.times do
+          @classifications << {:classification_id => "", :classification_type_id => 2}
+          unless SystemConfiguration.get('manifestation.search.use_select2_for_classification')
+            break
+          end
+        end
     else
       @classifications = params[:classifications]
     end
