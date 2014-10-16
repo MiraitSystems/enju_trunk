@@ -66,7 +66,7 @@ class PageController < ApplicationController
 
     if params[:classifications].blank?
       @classifications = []
-      number_of_form = SystemConfiguration.get('manifestation.search.number_of_classification_field')
+      number_of_form = SystemConfiguration.get('manifestation.search.number_of_classification_field') || 3
       number_of_form.times do
         @classifications << {:classification_id => "", :classification_type_id => 2}
       end

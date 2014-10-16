@@ -1309,7 +1309,6 @@ class ManifestationsController < ApplicationController
       end
     else
       # text入力版のコード
-      # cls_params = []
       cls_params = {}
       (params[:classifications] || []).each do |cls_hash|
         cls_type_id = cls_hash['classification_type_id']
