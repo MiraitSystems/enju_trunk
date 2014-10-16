@@ -18,7 +18,7 @@ class ManifestationsController < ApplicationController
   after_filter :solr_commit, :only => [:create, :up, :outputdate, :destroy]
   after_filter :convert_charset, :only => :index
 
-  helper_method :get_manifestation, :get_subject
+  helper_method :get_manifestation, :get_subject, :get_classification
   helper_method :get_libraries
 
   include EnjuOai::OaiController if defined?(EnjuOai)
@@ -136,6 +136,9 @@ class ManifestationsController < ApplicationController
     end
     def filter_by_subject!(form_input, inverse = false)
       filter_by_some_words(:subject, form_input, inverse)
+    end
+    def filter_by_classification!(form_input, inverse = false)
+      filter_by_some_words(:classification, form_input, inverse)
     end
 
     private
@@ -449,7 +452,7 @@ class ManifestationsController < ApplicationController
         search.__send__(:"filter_by_#{name}!", params[name])
       end
 
-      [:query, :title, :creator, :publisher, :subject].each do |name|
+      [:query, :title, :creator, :publisher, :subject, :classification].each do |name|
         search.__send__(:"filter_by_#{name}!", params[name])
         search.__send__(:"filter_by_#{name}!", params[:"except_#{name}"], true)
       end
@@ -476,6 +479,7 @@ class ManifestationsController < ApplicationController
       set_reservable
       get_manifestation
       get_subject
+      get_classification
       set_in_process
       @index_agent = get_index_agent
       
@@ -1277,7 +1281,8 @@ class ManifestationsController < ApplicationController
     end
 
     # classification
-    if SystemConfiguration.get('manifestation.search.use_select2_for_classification')
+    if SystemConfiguration.get("manifestation.search.use_classification_type") &&
+       SystemConfiguration.get("manifestation.search.use_select2_for_classification")
       # 選択式（SELECT2）のコード
       cls_params = {}
       (params[:classifications] || []).each do |cls_hash|
@@ -1292,8 +1297,8 @@ class ManifestationsController < ApplicationController
         cls_word = {}
         Classification.where(id: cls_ids).
           where(classification_type_id: cls_type_id).each do |cls|
-            cls_word[cls.id.to_s] =
-              "#{cls.classification_type.name}-#{cls.classification_identifier}" # Manifestationのsearchableブロックに合わせる
+            # Manifestationのsearchableブロックに合わせる
+            cls_word[cls.id.to_s] = "#{cls.classification_type.name}-#{cls.classification_identifier}" 
           end
         qws = cls_ids.map {|cls_id| cls_word[cls_id] || 'unknown' }
         if qws.size == 1
@@ -1307,18 +1312,25 @@ class ManifestationsController < ApplicationController
       cls_params = {}
       (params[:classifications] || []).each do |cls_hash|
         cls_type_id = cls_hash['classification_type_id']
+        cls_type_id = 0 unless SystemConfiguration.get("manifestation.search.use_classification_type")
         cls_identifier = cls_hash['classification_identifier']
         next if cls_type_id.blank? || cls_identifier.blank?
         cls_params[cls_type_id] ||= []
         cls_params[cls_type_id] << cls_identifier
       end
-      
+
       cls_params.each do |cls_type_id, cls_identifiers|
         cls_word = []
-        cls_type_name = ClassificationType.where(id: cls_type_id).pluck(:name)
-        # Manifestationのsearchableブロック>に合わせる
-        cls_identifiers.each do |cls_identifier|
-          cls_word << "#{cls_type_name.first}-#{cls_identifier}*"
+        if SystemConfiguration.get("manifestation.search.use_classification_type")
+          cls_type_name = ClassificationType.where(id: cls_type_id).pluck(:name)
+          # Manifestationのsearchableブロック>に合わせる
+          cls_identifiers.each do |cls_identifier|
+            cls_word << "#{cls_type_name.first}-#{cls_identifier}*"
+          end
+        else
+          cls_identifiers.each do |cls_identifier|
+            cls_word << "*-#{cls_identifier}*"
+          end
         end
         if cls_word.size == 1
           qwords << "classification_sm:#{cls_word.first}"
@@ -1502,6 +1514,7 @@ class ManifestationsController < ApplicationController
       [:publisher_ids, @index_agent[:publisher]],
       [:original_manifestation_ids, @manifestation],
       [:subject_ids, @subject],
+      [:classification_ids, @classification],
       [:bookbinder_id, @binder],
       [:series_statement_id, @series_statement],
     ].each do |field, record|

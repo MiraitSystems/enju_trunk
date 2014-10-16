@@ -260,6 +260,11 @@ $(document).keydown(function(e) {
   </div>
 
   <div class="row">
+    <div><%= f.label :nbn -%></div>
+    <div><%= f.text_field :nbn, :class => 'resource_isbn_issn', :style => 'ime-mode: disabled' -%></div>
+  </div>
+
+  <div class="row">
     <div><%= f.label :marc_number -%></div>
     <div><%= f.text_field :marc_number, :class => 'resource_isbn_issn' -%></div>
   </div>
