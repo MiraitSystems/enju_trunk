@@ -468,3 +468,38 @@ keycodes_67:
   v: '1'
   keyname: '禁帯出'
   started_at: 2000-04-01
+keycodes_68:
+  id: 68
+  name: 'sequence_pattern.sequence_type'
+  display_name: '刊行パターン'
+  v: '0'
+  keyname: '基数'
+  started_at: 2000-04-01
+keycodes_69:
+  id: 69
+  name: 'sequence_pattern.sequence_type'
+  display_name: '刊行パターン'
+  v: '1'
+  keyname: '序数'
+  started_at: 2000-04-01
+keycodes_70:
+  id: 70
+  name: 'sequence_pattern.sequence_type'
+  display_name: '刊行パターン'
+  v: '2'
+  keyname: '月(毎月)'
+  started_at: 2000-04-01
+keycodes_71:
+  id: 71
+  name: 'sequence_pattern.sequence_type'
+  display_name: '刊行パターン'
+  v: '3'
+  keyname: '月(奇数月)'
+  started_at: 2000-04-01
+keycodes_72:
+  id: 72
+  name: 'sequence_pattern.sequence_type'
+  display_name: '刊行パターン'
+  v: '4'
+  keyname: '月(偶数月)'
+  started_at: 2000-04-01

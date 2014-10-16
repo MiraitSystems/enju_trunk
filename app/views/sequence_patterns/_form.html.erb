@@ -1,25 +1,63 @@
-<%= form_for(@sequence_pattern) do |f| %>
+<%= render :partial => 'manifestations/form_select2_function_keys' %>
+<%= render 'page/required_field' %>
+
+<%= simple_form_for(@sequence_pattern) do |f| %>
   <%= f.error_messages %>
-  <div class="field">
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </div>
+  <div class="table">
 
-  <div class="field">
-    <%= f.label :volume_param %><br />
-    <%= f.text_field :volume_param %>
-  </div>
+    <div class="row">
+      <div><%= f.label :name %></div>
+      <div><%= f.text_field :name %></div>
+    </div>
 
-  <div class="field">
-    <%= f.label :issue_param %><br />
-    <%= f.text_field :issue_param %>
-  </div>
-  <div class="field">
-    <%= f.label :sequence_type %><br />
-    <%= f.select :sequence_type, @sequence_types.collect{|key,name| [t("sequence_pattern.#{name}"), key]} %>
-  </div>
+    <div class="row">
+      <div><%= f.label :volume_param %></div>
+      <div><%= f.text_field :volume_param %></div>
+    </div>
 
-  <div class="actions">
-    <%= f.submit %>
+    <div class="row">
+      <div><%= f.label :volume_sequence_type %></div>
+      <div><%= f.select2 :volume_sequence_type, @sequence_types, @sequence_pattern.volume_sequence_type, width: 243 %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :issue_param %></div>
+      <div><%= f.text_field :issue_param %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :issue_sequence_param %></div>
+      <div><%= f.text_field :issue_sequence_param %>&nbsp;<small><%= t('sequence_pattern.notice') %></small></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :issue_sequence_type %></div>
+      <div><%= f.select2 :issue_sequence_type, @sequence_types, @sequence_pattern.issue_sequence_type, width: 243 %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :reset_issue_param %></div>
+      <div><%= f.check_box :reset_issue_param %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :description %></div>
+      <div><%= f.text_area :description %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :note %></div>
+      <div><%= f.text_area :note %></div>
+    </div>
+
+    <div class="row">
+      <div><%= f.label :display %></div>
+      <div><%= f.check_box :display %></div>
+    </div>
+
+    <div class="row actions">
+      <div></div>
+      <div><%= f.submit %></div>
+    </div>
   </div>
 <% end %>

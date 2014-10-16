@@ -13,6 +13,10 @@ module EnjuTrunk
       include EnjuTerminalsHelper
     end
 
+    def keycode_keyname(id)
+      return Keycode.find(id).keyname rescue nil
+    end
+
     def form_icon(carrier_type)
       if icon_filename = carrier_type.icon_filename
         return image_tag("icons/#{icon_filename}", :size => '16x16', :alt => carrier_type.display_name.localize, :title => carrier_type.display_name.localize)

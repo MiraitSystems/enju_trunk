@@ -1605,9 +1605,16 @@ en:
         note: Note
       sequence_pattern:
         name: Name
-        volume_param: Volume Number Param
-        issue_param: Issue Number Param
-        sequence_type: Issue Number Type
+        volume_param: Volume param
+        volume_sequence_type: Volume sequence type
+        issue_param: Issue param
+        issue_sequence_param: Issue sequence param
+        reset_issue_param: Reset issue param
+        issue_sequence_type: Issue sequence type
+        description: Description
+        note: Note
+        display: Display
+        position: Position
       catalog:
         display_name: Display name
         name: Name
@@ -2863,9 +2870,7 @@ en:
 
       %{message}'
   sequence_pattern:
-    cardinal: Cardinal
-    ordinal: Ordinal
-    month: Month
+    notice: "※if volumr numbrt is null, volume number is not to add."
   opac:
     finish: Finish
     push_touchpanel: 笆ｼ Select menu

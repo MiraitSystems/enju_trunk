@@ -1,35 +1,40 @@
 <div id="content_detail" class="ui-corner-all">
-<h1 class="title"><%= t('page.listing', :model => t('activerecord.models.sequence_pattern')) -%></h1>
-<div id="content_list">
-<div style="color: red"><%= flash[:message].to_s -%></div>
-<table class="index">
-  <tr>
-    <th><%= t('activerecord.attributes.sequence_pattern.name') -%></th>
-    <th><%= t('activerecord.attributes.sequence_pattern.volume_param') -%></th>
-    <th><%= t('activerecord.attributes.sequence_pattern.issue_param') -%></th>
-    <th><%= t('activerecord.attributes.sequence_pattern.sequence_type') -%></th>
-    <th></th>
-  </tr>
+  <h1 class="title"><%= t('page.listing', :model => t('activerecord.models.sequence_pattern')) %></h1>
+  <div id="content_list">
+    <div style="color: red"><%= flash[:message].to_s -%></div>
+    <table class="index">
+      <tr>
+        <th><%= t('activerecord.attributes.sequence_pattern.name') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.volume_param') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.volume_sequence_type') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.issue_sequence_param') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.issue_param') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.issue_sequence_type') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.reset_issue_param') %></th>
+        <th><%= t('activerecord.attributes.sequence_pattern.description') %></th>
+        <th></th>
+      </tr>
 
-<%- @sequence_patterns.each do |sequence_pattern| -%>
-  <tr class="line<%= cycle("0", "1") -%>">
-    <td><%= sequence_pattern.name %></td>
-    <td><%= sequence_pattern.volume_param %></td>
-    <td><%= sequence_pattern.issue_param %></td>
-    <td><%= sequence_pattern.sequence_type %></td>
-    <td>
-      <%- if can? :update, sequence_pattern -%>
-        <%= link_to t('page.edit'), edit_sequence_pattern_path(sequence_pattern) -%>
+      <% @sequence_patterns.each do |sequence_pattern| %>
+        <tr class="line<%= cycle("0", "1") -%>">
+          <td><%= sequence_pattern.name %></td>
+          <td><%= sequence_pattern.volume_param %></td>
+          <td><%= keycode_keyname(sequence_pattern.volume_sequence_type) %></td>
+          <td><%= sequence_pattern.issue_sequence_param %></td>
+          <td><%= sequence_pattern.issue_param %></td>
+          <td><%= keycode_keyname(sequence_pattern.issue_sequence_type) %></td>
+          <td><%= sequence_pattern.reset_issue_param %></td>
+          <td><%= sequence_pattern.description %></td>
+          <td>
+            <%= link_to t('page.edit'), edit_sequence_pattern_path(sequence_pattern) if can? :update, sequence_pattern %>
+            <%= link_to t('page.destroy'), sequence_pattern, :confirm => t('page.are_you_sure'), :method => :delete if sequence_pattern.destroy? %>
+         </td>
+       </tr>
       <% end %>
-      <%- if sequence_pattern.destroy? -%>
-        <%= link_to t('page.destroy'), sequence_pattern, :confirm => t('page.are_you_sure'), :method => :delete -%>
-      <%- end -%>
-    </td>
-  </tr>
-<%- end -%>
-</table>
-
-</div>
+    </table>
+    <br />
+    <%= paginate(@sequence_patterns) %>
+  </div>
 </div>
 
 <div id="submenu" class="ui-corner-all">

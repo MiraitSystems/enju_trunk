@@ -3,7 +3,7 @@ class SequencePatternsController < ApplicationController
   before_filter :prepare_options, :except => [:index, :destroy]
 
   def index
-    @sequence_patterns = SequencePattern.all
+    @sequence_patterns = SequencePattern.page(params[:page])
   end
 
   def new
@@ -40,7 +40,8 @@ class SequencePatternsController < ApplicationController
 
 private
   def prepare_options
-    @sequence_types = SequencePattern.sequence_types
+    @sequence_types = Keycode.where("name = ? AND (started_at <= ? OR started_at IS NULL) AND (? <= ended_at OR ended_at IS NULL)",
+      'sequence_pattern.sequence_type', Time.zone.now, Time.zone.now) rescue nil
   end
 
 end

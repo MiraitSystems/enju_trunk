@@ -47,12 +47,12 @@
 
   <div class="row">
     <div><%= f.label :sequence_pattern -%></div>
-    <div><%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true, :width => 200 %></div>
+    <div><%= f.select2 :sequence_pattern_id, @sequence_patterns, @series_statement.sequence_pattern_id, :select_attribute => :name, :display_attribute => :description, :include_blank => true, :width => 400 %></div>
   </div>
 
   <div class="row">
     <div><%= f.label t('activerecord.models.publication_status') -%></div>
-    <div><%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true, :width => 200 %></div>
+    <div><%= f.select2 :publication_status_id, @publication_statuses, @series_statement.publication_status_id, :select_attribute => :name, :display_attribute => :display_name, :include_blank => true, :width => 400 %></div>
   </div>
 
   <br />
