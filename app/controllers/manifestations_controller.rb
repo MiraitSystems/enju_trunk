@@ -18,7 +18,7 @@ class ManifestationsController < ApplicationController
   after_filter :solr_commit, :only => [:create, :up, :outputdate, :destroy]
   after_filter :convert_charset, :only => :index
 
-  helper_method :get_manifestation, :get_subject
+  helper_method :get_manifestation, :get_subject, :get_classification
   helper_method :get_libraries
 
   include EnjuOai::OaiController if defined?(EnjuOai)
@@ -136,6 +136,9 @@ class ManifestationsController < ApplicationController
     end
     def filter_by_subject!(form_input, inverse = false)
       filter_by_some_words(:subject, form_input, inverse)
+    end
+    def filter_by_classification!(form_input, inverse = false)
+      filter_by_some_words(:classification, form_input, inverse)
     end
 
     private
@@ -449,7 +452,7 @@ class ManifestationsController < ApplicationController
         search.__send__(:"filter_by_#{name}!", params[name])
       end
 
-      [:query, :title, :creator, :publisher, :subject].each do |name|
+      [:query, :title, :creator, :publisher, :subject, :classification].each do |name|
         search.__send__(:"filter_by_#{name}!", params[name])
         search.__send__(:"filter_by_#{name}!", params[:"except_#{name}"], true)
       end
@@ -476,6 +479,7 @@ class ManifestationsController < ApplicationController
       set_reservable
       get_manifestation
       get_subject
+      get_classification
       set_in_process
       @index_agent = get_index_agent
       
@@ -1502,6 +1506,7 @@ class ManifestationsController < ApplicationController
       [:publisher_ids, @index_agent[:publisher]],
       [:original_manifestation_ids, @manifestation],
       [:subject_ids, @subject],
+      [:classification_ids, @classification],
       [:bookbinder_id, @binder],
       [:series_statement_id, @series_statement],
     ].each do |field, record|
