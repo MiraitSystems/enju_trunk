@@ -1,9 +1,11 @@
 <% if user_signed_in? or !SystemConfiguration.get('view.not_shown_tabmenu.not_logged_in') %>
-  <div id="navibar">
-    <%= render 'page/menu_tabindex0' %>
-    <%= render 'page/menu_tabindex1' %>
-    <%= render 'page/menu_tabindex2' %>
-    <%= render 'page/menu_tabindex3' %>
-    <%= render 'page/menu_tabindex4' %>
-  </div>
+<div class='menubar' style='clear: both;'>
+  <ul id="menu">
+    <li><%= render 'page/menu_tabindex0' %></li>
+    <li><%= render 'page/menu_tabindex1' %></li>
+    <li><%= render 'page/menu_tabindex2' %></li>
+    <li><%= render 'page/menu_tabindex3' %></li>
+    <li><%= render 'page/menu_tabindex4' %></li>
+  </ul>
+</div>
 <% end %>

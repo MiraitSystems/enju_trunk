@@ -1,0 +1,64 @@
+div.menubar {
+  background-color: #eee;
+  min-width: 630px;
+}
+
+div.menubar ul#menu {
+  margin: 0px;
+  padding: 3px 0px;
+}
+
+div.menubar ul#menu li {
+  padding-right: 20px;
+  float: left;
+  list-style-type: none;
+  position: relative;
+}
+
+div.menubar ul#menu a {
+  color: #000;
+  background-color: #eee;
+  text-decoration: none;
+  display: block;
+}
+
+div.menubar ul#menu a:hover {
+  color: #5970B2;
+}
+
+div.menubar ul#menu {
+  zoom: 1;
+}
+
+div.menubar ul#menu:after {
+  height: 0;
+  visibility: hidden;
+  content: ".";
+  display: block;
+  clear: both;
+}
+
+/** sub menu **/
+div.menubar ul#menu ul.sub {
+  margin: 0px 0px 0px -40px;
+  padding: 0px;
+  display: none;
+  position: absolute;
+}
+
+div.menubar ul#menu ul.sub li {
+  width: 235px;
+  height: 37px;
+  //opacity: 0.9;
+}
+
+div.menubar ul#menu ul.sub li a {
+  line-height: 37px;
+  text-indent: 15px;
+  padding-left: 15px;
+}
+
+div.menubar ul#menu ul.sub li a:hover {
+  color: #fff;
+  background-color: #5970B2;
+}

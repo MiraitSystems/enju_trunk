@@ -20,12 +20,23 @@ module EnjuTrunk
       before_filter :get_library_group, :set_locale, :set_available_languages, :set_current_user, :get_current_basket
 
       has_mobile_fu
-      before_filter :set_request_format
+      prepend_before_filter :set_request_format
 
       def set_request_format
-#        request.format = :mobile if is_mobile_device? or is_tablet_device?
-        #if is_mobile_device? or is_tablet_device?
-        if is_mobile_device? 
+        if session[:enju_mobile_view].nil?
+          if is_mobile_device? # or is_tablet_device?
+            if (devise_controller? && action_name == 'create' && request.method == ('POST'))
+              request.format = :html
+            else
+              request.format = :mobile
+            end
+          end
+        elsif session[:enju_mobile_view] == false
+          # puts "@@@ enju_mobile_view = false"
+          session[:mobile_view] = false
+          session[:tablet_view] = false
+          request.format = :html
+        else
           if (devise_controller? && action_name == 'create' && request.method == ('POST'))
             request.format = :html
           else

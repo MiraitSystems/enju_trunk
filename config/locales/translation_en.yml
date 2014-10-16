@@ -3039,6 +3039,7 @@ en:
     issn: "ISSN"
     jstage: "J-Stage"
   classification:
+    not_disabled_type: Not disabled type
     search_placeholder: Please enter a search classification identifier
     search_searching: Searching...
     search_nomatch: No matches

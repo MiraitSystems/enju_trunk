@@ -9,6 +9,14 @@ class SystemConfiguration < ActiveRecord::Base
 
   Prefix_Key = "systemconfig_"
 
+  CLASSIFICATION_TYPES = {
+    0 => I18n.t('classification.not_disabled_type')
+  }
+  ClassificationType.all.each do |cls_type|
+    CLASSIFICATION_TYPES[cls_type.id] = cls_type.display_name
+  end
+
+
   def self.get(keyname)
     value = typename = nil
 

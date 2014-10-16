@@ -1489,3 +1489,24 @@ system_configuration_00213:
   typename: Numeric
   description: "書誌検索結果のデフォルトソート"
   category: 'manifestation'
+system_configuration_00214:
+  id: 214
+  keyname: 'manifestation.search.use_select2_for_classification'
+  v: "false"
+  typename: Boolean
+  description: "詳細検索の分類で選択式フォーム（SELECT2）を使って値を指定する"
+  category: 'manifestation'
+system_configuration_00215:
+  id: 215
+  keyname: 'manifestation.search.number_of_classification_field'
+  v: 3
+  typename: Numeric
+  description: "詳細検索で分類の項目をいくつ表示するか?"
+  category: 'manifestation'
+system_configuration_00216:
+  id: 216
+  keyname: 'manifestation.search.desabled_classification_type_form'
+  v: 0
+  typename: Numeric
+  description: "詳細検索で分類型の項目を固定化する"
+  category: 'manifestation'
