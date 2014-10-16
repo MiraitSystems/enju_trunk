@@ -241,6 +241,24 @@ class NacsisCat
       create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
     end
 
+    # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からManifestationを更新する
+    def update_manifestation_from_nbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil)
+      raise ArgumentError if manifestation.blank?
+      raise ArgumentError if manifestation.nbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(nbn: manifestation.nbn)
+        nacsis_cat = result[:book].first
+      end
+      if nacsis_cat
+        puts "update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
+        begin 
+          create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
+        rescue => e
+          puts "Failed to update Manifestation(#{manifestation.id}): #{e}"
+        end
+      end 
+   end
+
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からSeriesStatementを作成する。
     def create_series_statement_from_nbn(nbn, book_types = ManifestationType.series.all, nacsis_cat = nil)
       raise ArgumentError if nbn.blank?
@@ -929,11 +947,11 @@ class NacsisCat
         JSON.parse(resp.body)
       end
 
-      def create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+      def create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation = nil)
         return nil if nacsis_cat.blank?
 
         child_manifestation = nil
-        child_manifestation = new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+        child_manifestation = new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
         created_manifestations = []
         created_manifestations << child_manifestation
 
@@ -998,13 +1016,12 @@ class NacsisCat
         child_manifestation
       end
 
-      def new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+      def new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation = nil)
         case nacsis_cat.detail[:vol_info].size
         when 0 # VOLGが0件の場合
-          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
+          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, {}, manifestation)
         else   # VOLGが1件以上の場合
-          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types)
-
+          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, {}, manifestation)
           volg_manifestations = []
           nacsis_cat.detail[:vol_info].each do |volg|
             volg_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg)
@@ -1012,7 +1029,10 @@ class NacsisCat
           end
           series_statement = new_series_statement_from_nacsis_cat(nacsis_cat)
           series_statement.periodical = false
+          root_manifestation.update_attribute(:periodical_master, true)
           series_statement.root_manifestation = root_manifestation
+          # TODO ItemがひもづくManifestationをNACSISデータで更新時、root_manifestationにひもづくItemを移行
+          volg_manifestations.first.items = root_manifestation.items unless root_manifestation.items.blank?
           series_statement.manifestations << root_manifestation
           series_statement.manifestations += volg_manifestations
           series_statement.save!
@@ -1020,8 +1040,8 @@ class NacsisCat
         root_manifestation
       end
 
-      def new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg_info = {})
-        return nil if nacsis_cat.blank? || book_types.blank?
+      def new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg_info = {}, manifestation = nil)
+        return nil if nacsis_cat.blank? # || book_types.blank?
         nacsis_info = nacsis_cat.detail
         attrs = {}
         if nacsis_info[:source].nil?
@@ -1101,8 +1121,8 @@ class NacsisCat
         # 関連テーブル：件名の設定
         attrs[:subjects] = []
         nacsis_info[:subjects].each do |subject|
-          subject_type = SubjectType.where(:name => subject['SHK']).first
-          subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
+          subject_type = SubjectType.find_or_create_by_name(subject['SHK']) # SubjectType.where(:name => subject['SHK']).first
+#          subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
           if subject['SHD'].present? && subject_type
             sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
             if sub
@@ -1196,11 +1216,13 @@ class NacsisCat
           attrs[:manifestation_type_id] = ManifestationType.where(:nacsis_identifier => nacsis_info[:type]).first.try(:id)
           attrs[:price_string] = nacsis_info[:price]
         end
-
-        manifestation = Manifestation.create(attrs)
-        manifestation.work_has_languages << new_work_has_languages_from_nacsis_cat(nacsis_cat,manifestation)
-        manifestation.work_has_titles << new_work_has_titles_from_nacsis_cat(nacsis_cat)
-
+        if manifestation
+          manifestation.update_attributes!(attrs)
+        else
+          manifestation = Manifestation.create!(attrs)
+        end
+        manifestation.work_has_languages =  new_work_has_languages_from_nacsis_cat(nacsis_cat,manifestation)
+        manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
         if nacsis_info[:vlyr]
           vlyr_ary = []
           nacsis_info[:vlyr].each do |vlyr|
@@ -1214,7 +1236,6 @@ class NacsisCat
           cre.create_type_id = CreateType.where(:name => af[manifestation.creators.where(:id => cre.agent_id).first.full_name]).first.try(:id)
           cre.save!
         end
-
         manifestation
       end
 
@@ -1322,7 +1343,7 @@ class NacsisCat
                            :title_transcription => other_title['VTR'],
                            :title_alternative => arraying(other_title['VTVR']).join('||'))
           end
-          wht.title_type = TitleType.find_by_name(other_title['VTK'])
+          wht.title_type = TitleType.find_or_create_by_name(other_title['VTK'])
           wht_ary << wht
         end
         if nacsis_cat.book?
@@ -1339,7 +1360,7 @@ class NacsisCat
                              :note => utl_info['UTINFO'],
                              :nacsis_identifier => utl_info['UTID'])
             end
-            wht.title_type = TitleType.find_by_name('UTL')
+            wht.title_type = TitleType.find_or_create_by_name('UTL')
             wht_ary << wht
           end
         end
