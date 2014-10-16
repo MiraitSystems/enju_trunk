@@ -78,8 +78,8 @@
     <% classification = {}; classification[:classification_id] = 2 -%>
     <% @classifications.each_with_index do |classification, index| -%>
       <tr id="CLASSIFICATION<%= index %>" >
-        <td>
-          <% if SystemConfiguration.get("manifestation.search.desabled_classification_type_form") == 0 %>
+        <% if SystemConfiguration.get("manifestation.search.use_classification_type") %>
+          <td>
             <%= select2_tag("classifications_#{index}_classification_type_id", 
                              "classifications[][classification_type_id]", 
                              @classification_types,
@@ -88,12 +88,12 @@
                              display_attribute: :display_name, 
                              width: '200'
                             ) %>
-          <% else %>
-            <%= @selected_classification_type %>:
-          <% end %>
-        </td>
+          </td>
+        <% end %>
         <td>
-          <% if SystemConfiguration.get("manifestation.search.use_select2_for_classification") %>
+          <%# TODO 分類型を使用しない場合のSELECT2フォーム %>
+          <% if SystemConfiguration.get("manifestation.search.use_classification_type") &&
+                SystemConfiguration.get("manifestation.search.use_select2_for_classification") %>
             <%= text_field_tag "classifications[][classification_id]", classification[:classification_id], :id => "classifications_#{index}_classification_id", :class => "classification_id", :value => classification[:classification_id] %>
           <% else %>
             <%= text_field_tag "classifications[][classification_identifier]", classification[:classification_identifier], :id => "classifications_#{index}_classification_identifier", :class => "classification_identifier" %>

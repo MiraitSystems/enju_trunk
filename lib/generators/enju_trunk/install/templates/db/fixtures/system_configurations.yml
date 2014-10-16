@@ -1505,8 +1505,8 @@ system_configuration_00215:
   category: 'manifestation'
 system_configuration_00216:
   id: 216
-  keyname: 'manifestation.search.desabled_classification_type_form'
-  v: 0
-  typename: Numeric
-  description: "詳細検索で分類型の項目を固定化する"
+  keyname: 'manifestation.search.use_classification_type'
+  v: "true"
+  typename: Boolean
+  description: "詳細検索で分類型の項目を使用する"
   category: 'manifestation'

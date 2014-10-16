@@ -1277,7 +1277,8 @@ class ManifestationsController < ApplicationController
     end
 
     # classification
-    if SystemConfiguration.get('manifestation.search.use_select2_for_classification')
+    if SystemConfiguration.get("manifestation.search.use_classification_type") &&
+       SystemConfiguration.get("manifestation.search.use_select2_for_classification")
       # 選択式（SELECT2）のコード
       cls_params = {}
       (params[:classifications] || []).each do |cls_hash|
@@ -1292,8 +1293,8 @@ class ManifestationsController < ApplicationController
         cls_word = {}
         Classification.where(id: cls_ids).
           where(classification_type_id: cls_type_id).each do |cls|
-            cls_word[cls.id.to_s] =
-              "#{cls.classification_type.name}-#{cls.classification_identifier}" # Manifestationのsearchableブロックに合わせる
+            # Manifestationのsearchableブロックに合わせる
+            cls_word[cls.id.to_s] = "#{cls.classification_type.name}-#{cls.classification_identifier}" 
           end
         qws = cls_ids.map {|cls_id| cls_word[cls_id] || 'unknown' }
         if qws.size == 1
@@ -1304,21 +1305,29 @@ class ManifestationsController < ApplicationController
       end
     else
       # text入力版のコード
+      # cls_params = []
       cls_params = {}
       (params[:classifications] || []).each do |cls_hash|
         cls_type_id = cls_hash['classification_type_id']
+        cls_type_id = 0 unless SystemConfiguration.get("manifestation.search.use_classification_type")
         cls_identifier = cls_hash['classification_identifier']
         next if cls_type_id.blank? || cls_identifier.blank?
         cls_params[cls_type_id] ||= []
         cls_params[cls_type_id] << cls_identifier
       end
-      
+
       cls_params.each do |cls_type_id, cls_identifiers|
         cls_word = []
-        cls_type_name = ClassificationType.where(id: cls_type_id).pluck(:name)
-        # Manifestationのsearchableブロック>に合わせる
-        cls_identifiers.each do |cls_identifier|
-          cls_word << "#{cls_type_name.first}-#{cls_identifier}*"
+        if SystemConfiguration.get("manifestation.search.use_classification_type")
+          cls_type_name = ClassificationType.where(id: cls_type_id).pluck(:name)
+          # Manifestationのsearchableブロック>に合わせる
+          cls_identifiers.each do |cls_identifier|
+            cls_word << "#{cls_type_name.first}-#{cls_identifier}*"
+          end
+        else
+          cls_identifiers.each do |cls_identifier|
+            cls_word << "*-#{cls_identifier}*"
+          end
         end
         if cls_word.size == 1
           qwords << "classification_sm:#{cls_word.first}"
