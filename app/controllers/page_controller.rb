@@ -122,13 +122,13 @@ class PageController < ApplicationController
   def show_pc_site
     session[:enju_mobile_view] = false
     session[:redirect_mode] = true
-    redirect_to root_path, :status => 302
+    redirect_to root_path, :status => 303
   end
 
   def show_mobile_site
     session[:enju_mobile_view] = true
     session[:redirect_mode] = true
-    redirect_to root_path, :status => 302
+    redirect_to root_path, :status => 303
   end
 
   private

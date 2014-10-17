@@ -11,7 +11,7 @@
       <% if user_signed_in? %>
         <%= link_to t('page.user_management'), current_user -%>
         <br />
-        <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete -%>
+        <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete, "data-ajax" => :false, "data-role" => :none -%>
       <% else %>
         <% unless controller_name == 'sessions' %>
           <%- unless SystemConfiguration.isWebOPAC %>
