@@ -320,12 +320,16 @@ module EnjuTrunk
       I18n.t(ADVANCED_SEARCH_LABEL_IDS[key])
     end
 
-    def link_to_advanced_search(link_title = nil)
+    def link_to_advanced_search(link_title = nil, type = 'link')
       link_title ||= t('page.advanced_search')
       url_params = params.dup
 
       [:controller, :commit, :utf8, :mode].each {|k| url_params.delete(k) }
-      link_to link_title, page_advanced_search_path(url_params)
+      if type == 'button'
+        button_to link_title, page_advanced_search_path(url_params)
+      else
+        link_to link_title, page_advanced_search_path(url_params)
+      end
     end
 
     def link_to_normal_search(link_title = nil)

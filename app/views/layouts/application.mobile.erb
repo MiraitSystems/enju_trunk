@@ -12,12 +12,13 @@
   <%= render 'page/portlets' %>
 </head>
 <body>
+<div data-role="page">
 <%= render 'page/header' %>
 
-<div id="content_mobile">
-
+<div id="content" class="ui-content" role="main">
 <%= yield %>
 
+</div>
 </div>
 
 <hr>

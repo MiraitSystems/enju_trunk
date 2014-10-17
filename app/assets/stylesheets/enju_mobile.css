@@ -86,8 +86,40 @@ td.label{
   height: 30px;
   white-space: nowrap;
 }
-
 hr.dash_line{
   border: 2px dashed #bbb;
   height: 0px;
+}
+table#advanced_search {
+  width: 100%;
+  border-collapse: collapse;
+}
+table#advanced_search tr td{
+  border-bottom: 1px solid;
+  border-color: grey;
+}
+table#advanced_search tr td label{
+  margin-left: 10px;
+}
+
+table#advanced_search tr td div {
+  margin: 5px;
+  display: inline-block;
+}
+.ui-checkbox,.ui-radio {
+  width: 30px;
+  display: inline-block;
+}
+.ui-input-search {
+  width: 95%;
+}
+.except_text_field{
+  width: 80%;
+}
+.date_text_field{
+  ime-mode: disabled;
+  width: 200px;
+}
+.num_text_field{
+  width: 100px;
 }

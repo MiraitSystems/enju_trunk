@@ -10,6 +10,7 @@
       <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
       <%= submit_tag t('page.research') -%>
     <% end %>
+    <%= link_to_advanced_search(nil, 'button') -%>
   </div>
 </div>
 <hr>
