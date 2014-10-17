@@ -776,11 +776,11 @@ class ManifestationsController < ApplicationController
         redirect_to series_statement_manifestations_url(@manifestation.series_statement)
       end
       return
-    else
-      if @manifestation.series_statement && @manifestation.nacsis_identifier
-        redirect_to series_statement_manifestations_url(@manifestation.series_statement)
-        return
-      end
+#    else
+#      if @manifestation.series_statement && @manifestation.nacsis_identifier
+#        redirect_to series_statement_manifestations_url(@manifestation.series_statement)
+#        return
+#      end
     end
 
 
