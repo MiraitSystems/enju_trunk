@@ -8,7 +8,7 @@
     <%= t('page.search_term') -%>:
     <%= search_field_tag 'query', nil, :class => 'search_form_short', :placeholder => t('page.search_term') -%> 
     <%= submit_tag t('page.search') -%><br />
-    <%- if SystemConfiguration.get('nacsis.can_use') -%>
+    <%- if SystemConfiguration.get('nacsis.use_cat') -%>
       <%= t('page.search_for') -%>:
       <%= radio_button_tag 'index', 'local', true -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
       <%= radio_button_tag 'index', 'nacsis', false -%><%= t('page.search_nacsis') -%>

@@ -17,7 +17,7 @@
         <% if params[:query].present? %>
           <input type="button" value="<%= t('page.search_clear') -%>" onclick='<%= "$(" + "'#search_form_top" + "').val('')" %>' >
         <% end %>
-        <%- if SystemConfiguration.get('nacsis.can_use') -%>
+        <%- if SystemConfiguration.get('nacsis.use_cat') -%>
           <br />
           <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
           <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false, {:checked => true} -%><%= t('page.search_nacsis') -%>
@@ -144,7 +144,7 @@
         <%= link_to t('page.search_local', :library => "#{LibraryGroup.first.display_name}"), @nacsis_cat.manifestation %>
       </li>
     <% else %>
-      <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+      <% if SystemConfiguration.get('nacsis.use_cat') && user_signed_in? && current_user.has_role?('Librarian') %>
         <li>
           <%= form_tag create_from_nacsis_manifestations_path, method: 'post' do %>
             <%= hidden_field_tag 'ncid', @nacsis_cat.ncid %>
