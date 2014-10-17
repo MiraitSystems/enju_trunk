@@ -5,6 +5,7 @@ class ManifestationExinfo < ActiveRecord::Base
   default_scope :order => "position"
 
   belongs_to :manifestation
+  belongs_to :keycode, class_name: "Keycode", foreign_key: :value
 
   has_paper_trail
 
