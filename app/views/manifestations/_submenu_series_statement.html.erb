@@ -29,7 +29,7 @@
     <% end %>
   </ul>
   <br>
-  <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+  <% if SystemConfiguration.get('nacsis.use_cat') && user_signed_in? && current_user.has_role?('Librarian') %>
     <%- if @series_statement.periodical %>
       <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_serial') + t('resource_import_textfile.book') + ' ' %>
       <%- option_hash = {:confirm => t('page.roles_confirm')} %>

@@ -34,7 +34,7 @@
         <% if params[:query].present? %>
           <input type="button" value="<%= t('page.search_clear') -%>" onclick='<%= "$(" + "'#search_form_top" + "').val('')" %>' >
         <% end %>
-        <%- if SystemConfiguration.get('nacsis.can_use') -%>
+        <%- if SystemConfiguration.get('nacsis.use_cat') -%>
           <br />
           <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false, {:checked => true} -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
           <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false -%><%= t('page.search_nacsis') -%>
@@ -235,7 +235,7 @@
       <%- end -%>
       <%- unless @manifestation.series_statement.try(:nacsis_series_statementid) -%>
         <%- unless @manifestation.series_statement.try(:periodical) == false %>
-          <% if SystemConfiguration.get('nacsis.can_use') && user_signed_in? && current_user.has_role?('Librarian') %>
+          <% if SystemConfiguration.get('nacsis.can_push') && user_signed_in? && current_user.has_role?('Librarian') %>
             <br>
             <%- submit_display_str = t('external_catalog.nacsis') + t('page.nacsis_book') + t('resource_import_textfile.book') + ' ' %>
             <%- option_hash = {:confirm => t('page.roles_confirm')} %>

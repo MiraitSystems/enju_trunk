@@ -78,7 +78,7 @@
         <input type="button" value="<%= t('page.search_clear') -%>" onclick='<%= "$(" + "'#search_form_#{form_pos}" + "').val('')" %>' >
       <% end %>
       <br />
-      <%- if SystemConfiguration.get('nacsis.can_use') && !@series_statement -%>
+      <%- if SystemConfiguration.get('nacsis.use_cat') && !@series_statement -%>
         <%= radio_button_tag 'index', 'local', params[:index] == "local" ? true : false, {:checked => true} -%><%= t('page.search_local', :library => "#{LibraryGroup.first.display_name}") -%>
         <%= radio_button_tag 'index', 'nacsis', params[:index] == "nacsis" ? true : false -%><%= t('page.search_nacsis') -%>
         <br />
