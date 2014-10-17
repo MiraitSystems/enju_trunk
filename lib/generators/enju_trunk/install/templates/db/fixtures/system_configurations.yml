@@ -478,10 +478,10 @@ system_configuration_00068:
   category: 'view'
 system_configuration_00069:
   id: 69
-  keyname: nacsis.can_use
+  keyname: nacsis.use_cat
   v: "false"
   typename: Boolean
-  description: "NACSIS-CAT/ILLを利用するか？"
+  description: "NACSIS-CATを利用する(検索・インポート)"
   category: 'nacsis'
 system_configuration_00070:
   id: 70
@@ -1524,3 +1524,18 @@ system_configuration_00218:
   description: "件名一覧を表示する"
   typename: Boolean
   category: 'search_user'
+system_configuration_00219:
+  id: 219
+  keyname: nacsis.can_push
+  v: "false"
+  typename: Boolean
+  description: "NACSISにデータを送信する"
+  category: 'nacsis'
+system_configuration_00220:
+  id: 220
+  keyname: nacsis.use_ill
+  v: "false"
+  typename: Boolean
+  description: "NACSIS-ILLを利用する"
+  category: 'nacsis'
+

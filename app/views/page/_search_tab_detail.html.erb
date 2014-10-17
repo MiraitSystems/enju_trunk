@@ -40,7 +40,7 @@ $(function(){
 </script>
 
 <table style="width: 100%" id="advanced_search">
-  <%- if SystemConfiguration.get('nacsis.can_use') -%>
+  <%- if SystemConfiguration.get('nacsis.use_cat') -%>
     <tr>
       <td><label><%= t('page.search_for') -%>:</label></td>
       <td>

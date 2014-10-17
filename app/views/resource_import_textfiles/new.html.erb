@@ -53,7 +53,7 @@
     });
   });
 
-<% if SystemConfiguration.get('nacsis.can_use') %>
+<% if SystemConfiguration.get('nacsis.use_cat') %>
   $(document).ready( function(){
     $("#extraparams_external_resource_nacsis").attr("checked", true );
   });
@@ -66,7 +66,7 @@
 
     <%= form_for(@resource_import_textfile, :html => { :multipart => true }, :remote => true ) do |f| %>
 
-      <% if SystemConfiguration.get('nacsis.can_use') %>
+      <% if SystemConfiguration.get('nacsis.use_cat') %>
         <%= label_tag 'external_resource_from', t('resource_import_textfile.external_resource_from') %><br />
         <%= radio_button_tag 'extraparams[external_resource]', 'ndl', true %>
         <%= label_tag 'extraparams[external_resource]_ndl', t('page.external_catalog.ndl') %>

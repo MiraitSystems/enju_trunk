@@ -168,8 +168,7 @@ module SystemConfigurationsHelper
        string << t('system_configuration.boolean_not_send') if state == 'false'
      # => use
      when 'use_order_lists',
-          'use_copy_request',
-          'nacsis.can_use'
+          'use_copy_request'
        string << t('system_configuration.boolean_use') if state == 'true'
        string << t('system_configuration.boolean_not_use') if state == 'false'
      # => delete
