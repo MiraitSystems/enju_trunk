@@ -19,13 +19,12 @@
 <%= yield %>
 
 </div>
-</div>
-
 <hr>
 <%#= render 'page/function_general' %>
 <% unless SystemConfiguration.get("not_use_footer") %>
   <%= render 'page/footer' %>
 <% end %>
+</div>
 
 </body>
 </html>
