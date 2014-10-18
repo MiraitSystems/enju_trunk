@@ -25,24 +25,33 @@ module EnjuTrunk
       def set_request_format
         if session[:enju_mobile_view].nil?
           if is_mobile_device? # or is_tablet_device?
-            if (devise_controller? && action_name == 'create' && request.method == ('POST'))
+            if should_request_html_format?
               request.format = :html
             else
               request.format = :mobile
             end
           end
         elsif session[:enju_mobile_view] == false
-          # puts "@@@ enju_mobile_view = false"
           session[:mobile_view] = false
           session[:tablet_view] = false
           request.format = :html
         else
-          if (devise_controller? && action_name == 'create' && request.method == ('POST'))
+          if should_request_html_format?
             request.format = :html
           else
             request.format = :mobile
           end
         end
+      end
+
+      def should_request_html_format?
+        if devise_controller?
+          if  (action_name == 'create' && request.method == ('POST')) || 
+              (action_name == 'destroy' && request.method == ('POST'))
+            return true
+          end
+        end 
+        return false
       end
     end
 
