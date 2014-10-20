@@ -121,7 +121,7 @@
 
 <div id="submenu" class="ui-corner-all">
   <ul>
-    <%- if can? :create, NacsisUserRequest %>
+    <%- if SystemConfiguration.get('nacsis.use_ill') && (can? :create, NacsisUserRequest) %>
       <li>
         <%= link_to t('activerecord.models.nacsis_request_lend'),
           {:controller => "nacsis_user_requests",
