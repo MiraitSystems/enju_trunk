@@ -275,6 +275,7 @@ module EnjuTrunk
       tag: 'page.tag',
       title: 'page.title',
       creator: 'agent.creator',
+      subject: 'activerecord.models.subject',
       subject_text: 'activerecord.models.subject',
       all_subject_text: 'page.all_subject_text',
       any_subject_text: 'page.any_subject_text',
