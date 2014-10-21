@@ -96,8 +96,11 @@
                 SystemConfiguration.get("manifestation.search.use_select2_for_classification") %>
             <%= text_field_tag "classifications[][classification_id]", classification[:classification_id], :id => "classifications_#{index}_classification_id", :class => "classification_id", :value => classification[:classification_id] %>
           <% else %>
-            <%= text_field_tag "classifications[][classification_identifier]", classification[:classification_identifier], :id => "classifications_#{index}_classification_identifier", :class => "classification_identifier" %>
+            <%= text_field_tag "classifications[][classification_identifier]", classification[:classification_identifier], :id => "classifications_#{index}_classification_identifier", :class => "classification_identifier", :value => classification[:classification_identifier] %>
           <% end %>
+        </td>
+        <td>
+          <%= link_to t('activerecord.attributes.search.classification_search'), classifications_search_category_path %>
         </td>
       </tr>
     <% end %>
