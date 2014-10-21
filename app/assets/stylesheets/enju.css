@@ -61,6 +61,20 @@ div#content{
   min-width: 760px;
 }
 
+div#search_category_content{
+  padding-top: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+  clear: both;
+  min-width: 760px;
+}
+
+.category_block{
+  width: 33%;
+  min-width: 200px; 
+  margin: 5px;
+}
+
 div.header_and_footer{
   padding: 2px;
   clear: both;
@@ -275,6 +289,12 @@ h2{
   margin-bottom: 10px;
 }
 
+h2#classification_title{
+  font-size: 160%;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 h1.resource_title{
   line-height: 140%;
 }
@@ -293,6 +313,12 @@ h4{
   font-size: 120%;
   margin-top: 5px;
   margin-bottom: 10px;
+}
+
+h4.category_title{
+  font-size: 120%;
+  margin-top: 5px;
+  margin-bottom: 15px;
 }
 
 h1.title, h2.title, h3.title, h4.title{
@@ -327,6 +353,14 @@ form{
 
 table{
   border: 1px solid #2779aa;
+}
+
+table#category_list{
+  border: none;
+  table-layout: fixed;
+  width: 100%;
+  border-spacing: 10px;
+  border-collapse: separate;
 }
 
 table#bless, table#bless tr, table#bless tr td{
