@@ -1538,4 +1538,11 @@ system_configuration_00220:
   typename: Boolean
   description: "NACSIS-ILLを利用する"
   category: 'nacsis'
+system_configuration_00221:
+  id: 221
+  keyname: 'attributes.search.user.item.call_number'
+  v: "false"
+  description: "利用者検索画面に請求起動を表示する"
+  typename: Boolean
+  category: 'search_user'
 
