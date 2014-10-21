@@ -2,8 +2,10 @@
 <table id="advanced_search">
   <tr>
     <td><label><%= advanced_search_label(:query) -%>:</label></td>
-    <td><%= search_field_tag 'query', params[:query], :class => 'search_form_short', :placeholder => t('page.search_term') -%><br />
-        <%= advanced_search_merge_tag('query') -%><br />
+    <td><%= search_field_tag 'query', params[:query], :class => 'search_form_short', :placeholder => t('page.search_term') -%>
+        <div data-role="fieldcontain"><fiedldset data-role="controlgroup" data-type="horizontal">
+          <%= advanced_search_merge_tag('query') -%>
+        </div>
         <%= search_field_tag 'except_query', params[:except_query] -%><%= advanced_search_label(:except_query) %><br />
         <%= t('advanced_search.help_query') -%>
     </td>
@@ -15,34 +17,29 @@
     </tr>
   <%- end -%>
   <tr class="local-only">
-    <td><label><%= advanced_search_label(:manifestation_types) -%>:</label></td>
-    <td><div class='parent'>
-      <% if @selected_manifestation_types %>
-        <%= check_box_tag 'all_manifestation_types', true, @selected_manifestation_types.size == @manifestation_types.size ? true : false, :class => 'check-parent' %><%= t('advanced_search.all', :model => t('activerecord.models.manifestation_type')) %><br />
-      <% end %>
-      <% @manifestation_types.each_with_index do |manifestation_type, i| %>
-        <% if params[:manifestation_types] %>
-          <% manifestation_types = params[:manifestation_types] %>
-          <%= check_box 'manifestation_types', manifestation_type.id, {:checked => manifestation_types.has_key?(manifestation_type.id.to_s), :class => 'check-child'}, true, false %>
-          <%= manifestation_type.display_name.localize -%>
-          <%- if [5,9].include?(i) %><br /><%- end -%>
-        <% end %>
-      <% end %>
-    </div></td>
+    <td><nobr><label><%= advanced_search_label(:manifestation_types) -%>:</label></nobr></td>
+    <td>
+      <%= select_tag 'manifestation_types', options_for_select(@manifestation_types.map{|m| [m.display_name.localize, m.id, :selected => true]}), multiple: true %>
+    </td>
   </tr>
+<tr>
+</tr>
   <tr>
     <td><label><%= advanced_search_label(:title) -%>:</label></td>
-    <td><%= search_field_tag 'title', params[:title] -%><br />
-        <%= advanced_search_merge_tag('title') %><br />
+    <td><%= search_field_tag 'title', params[:title] -%>
+        <div data-role="fieldcontain"><fiedldset data-role="controlgroup" data-type="horizontal">
+          <%= advanced_search_merge_tag('title') %>
+        </fieldset></div>
         <%= search_field_tag 'except_title', params[:except_title] -%><%= advanced_search_label(:except_title) %>
     </td>
   </tr>
   <tr>
     <td><label><%= advanced_search_label(:creator) -%>:</label></td>
     <td><%= search_field_tag 'creator', params[:creator] -%>
-      <%= advanced_search_merge_tag('creator') %>
-      <br />
-      <%= search_field_tag 'except_creator', params[:except_creator] -%><%= advanced_search_label(:except_creator) %>
+        <div data-role="fieldcontain"><fiedldset data-role="controlgroup" data-type="horizontal">
+          <%= advanced_search_merge_tag('creator') %>
+        </div>
+        <%= search_field_tag 'except_creator', params[:except_creator] -%><%= advanced_search_label(:except_creator) %>
     </td>
   </tr>
   <tr>
@@ -74,26 +71,31 @@
     </tr>
   <%- end -%>
   <tr>
-  <%# = render :partial => 'form_classification_field' -%>
+  <%#= render :partial => 'form_classification_field' -%>
   </tr>
   <tr>
-    <td><label><%= t('page.number') -%>:</label></td>
-    <td>
-      <%= advanced_search_label(:edition_display_value) -%>
-      <%= search_field_tag 'edition_display_value', params[:edition_display_value], :class => 'num_text_field' -%>
-      <%= advanced_search_label(:volume_number_string) -%>
-      <%= search_field_tag 'volume_number_string', params[:volume_number_string], :class => 'num_text_field'-%>
-      <%= advanced_search_label(:issue_number_string) -%>
-      <%= search_field_tag 'issue_number_string', params[:issue_number_string], :class => 'num_text_field' -%>
-      <%= advanced_search_label(:serial_number_string) -%>
-      <%= search_field_tag 'serial_number_string', params[:serial_number_string], :class => 'num_text_field' -%>
-    </td>
+    <td><label><%= advanced_search_label(:edition_display_value) -%>:</label></td>
+    <td><%= search_field_tag 'edition_display_value', params[:edition_display_value], :class => 'num_text_field' -%></td>
+  </tr>
+  <tr>
+    <td><label><%= advanced_search_label(:volume_number_string) -%>:</label></td>
+    <td><%= search_field_tag 'volume_number_string', params[:volume_number_string], :class => 'num_text_field'-%></td>
+  </tr>
+  <tr>
+    <td><label><%= advanced_search_label(:issue_number_string) -%>:</label></td>
+    <td><%= search_field_tag 'issue_number_string', params[:issue_number_string], :class => 'num_text_field' -%></td>
+  </tr>
+  <tr>
+    <td><label><%= advanced_search_label(:serial_number_string) -%>:</label></td>
+    <td><%= search_field_tag 'serial_number_string', params[:serial_number_string], :class => 'num_text_field' -%></td>
   </tr>
   <tr>
     <td><label><%= advanced_search_label(:subject_text) -%>:</label></td>
     <td>
       <%= search_field_tag 'subject_text', params[:subject_text] -%>
-      <%= advanced_search_merge_tag('subject_text') %>
+      <div data-role="fieldcontain"><fiedldset data-role="controlgroup" data-type="horizontal">
+        <%= advanced_search_merge_tag('subject_text') %>
+      </div>
     </td>
   </tr>
   <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.item.item_identifier") %>
@@ -110,33 +112,9 @@
   <% end %>
   <tr class="local-only">
     <td><label><%= advanced_search_label(:pub_date) -%>:</label></td>
-    <td><%= t('advanced_search.from') -%> <%= search_field_tag 'pub_date_from', params[:pub_date_from], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 1978, 1978-04-12" -%>
-      <%= t('advanced_search.to') -%> <%= search_field_tag 'pub_date_to', params[:pub_date_to], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 2011, 2011-04-12"-%></td>
+    <td><%= t('advanced_search.to') %>: <%= text_field_tag 'pub_date_from', params[:pub_date_from], :class => 'date_text_field', :placeholder => "#{t('advanced_search.from')}: 1978, 1978-04-12", :type => 'date' -%><br />
+        <%= t('advanced_search.from') %>: <%= text_field_tag 'pub_date_to', params[:pub_date_to], :class => 'date_text_field', :placeholder => "#{t('advanced_search.to')}: 2011, 2011-04-12", :type => 'date' -%></td>
   </tr>
-  <tr class="local-only">
-    <td><label><%= advanced_search_label(:acquired) -%>:</label></td>
-    <td><%= t('advanced_search.from') -%> <%= search_field_tag 'acquired_from', params[:acquired_from], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 2005, 2005-04-01" -%>
-      <%= t('advanced_search.to') -%> <%= search_field_tag 'acquired_to', params[:acquired_to], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 2011, 2011-03-31"-%></td>
-  </tr>
-  <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.item.removed_at") %>
-  <%# if user_signed_in? and current_user.has_role?('Librarian') %>
-    <tr class="local-only">
-      <td><label><%= advanced_search_label(:removed) %>:</label></td>
-      <td>
-        <%= t('advanced_search.from') %>
-        <%= search_field_tag 'removed_from', params[:removed_from], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 2005, 2005-04-01" %>
-        <%= t('advanced_search.to') %>
-        <%= search_field_tag 'removed_to', params[:removed_to], :class => 'date_text_field', :placeholder => "#{t('page.example')}: 2011, 2011-03-31" %>
-      </td>
-    </tr>
-  <% end %>
-  <% if false %>
-    <tr>
-      <td><label><%= advanced_search_label(:number_of_pages) -%>:</label></td>
-        <td><%= t('advanced_search.from') -%> <%= search_field_tag 'number_of_pages_at_least', params[:number_of_pages_at_least], :size => 5 -%>
-          <%= t('advanced_search.to') -%> <%= search_field_tag 'number_of_pages_at_most', params[:number_of_pages_at_most], :size => 5 -%></td>
-    </tr>
-  <% end %>
   <tr>
     <td></td>
     <td>
