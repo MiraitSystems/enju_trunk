@@ -98,16 +98,12 @@ table#advanced_search tr td{
   border-bottom: 1px solid;
   border-color: grey;
 }
-table#advanced_search tr td label{
+table#advanced_search > tr > td > label{
   margin-left: 10px;
 }
 
-table#advanced_search tr td div {
+table#advanced_search > tr > td > div {
   margin: 5px;
-  display: inline-block;
-}
-.ui-checkbox,.ui-radio {
-  width: 30px;
   display: inline-block;
 }
 .ui-input-search {
@@ -118,7 +114,7 @@ table#advanced_search tr td div {
 }
 .date_text_field{
   ime-mode: disabled;
-  width: 200px;
+  width: 70%;
 }
 .num_text_field{
   width: 100px;

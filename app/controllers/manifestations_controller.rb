@@ -1365,6 +1365,7 @@ class ManifestationsController < ApplicationController
       [:nbn, 'nbn_s'],
       [:publisher, 'publisher_text', 'publisher_sm'],
       [:item_identifier, 'item_identifier_sm'],
+      [:call_number, 'call_number_sm'],
       [:except_query, nil],
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
@@ -1437,9 +1438,16 @@ class ManifestationsController < ApplicationController
     if params[:manifestation_types].present? && params[:manifestation_type].blank?
       types_ary = []
       manifestation_types = params[:manifestation_types]
-      manifestation_types.each_key do |key|
-        manifestation_type = ManifestationType.find(key) rescue nil
-        types_ary << manifestation_type.name if manifestation_type.present?
+      if manifestation_types.class == Hash
+        manifestation_types.each_key do |key|
+          manifestation_type = ManifestationType.find(key) rescue nil
+          types_ary << manifestation_type.name if manifestation_type.present?
+        end
+      else
+        manifestation_types.each do |key|
+          manifestation_type = ManifestationType.find(key) rescue nil
+          types_ary << manifestation_type.name if manifestation_type.present?
+        end
       end
       qwords << "manifestation_type_sm:(" + types_ary.join(" OR ") + ")" if types_ary.present?
     end

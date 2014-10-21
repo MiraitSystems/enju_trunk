@@ -144,6 +144,12 @@ $(function(){
       <td><%= search_field_tag 'item_identifier', params[:item_identifier] -%></td>
     </tr>
   <% end %>
+  <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.item.call_number") %>
+    <tr class="local-only">
+      <td><label><%= advanced_search_label(:call_number) -%>:</label></td>
+      <td><%= search_field_tag 'call_number', params[:call_number] -%></td>
+    </tr>
+  <%- end -%>
   <% if current_user.try(:has_role?, 'Librarian') || SystemConfiguration.get("attributes.search.user.manifestation.identifier") %>
     <tr class="local-only">
       <td><label><%= advanced_search_label(:identifier) -%>:</label></td>

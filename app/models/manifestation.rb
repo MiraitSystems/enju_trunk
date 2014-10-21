@@ -231,6 +231,9 @@ class Manifestation < ActiveRecord::Base
         [identifier]  
       end
     end
+    string :call_number, :multiple => true do
+      items.collect{|i| i.call_number}
+    end
     string :removed_at, :multiple => true do
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号の除籍日のリストを取得する

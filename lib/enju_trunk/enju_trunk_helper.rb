@@ -484,7 +484,7 @@ module EnjuTrunk
       end.join(I18n.t('page.list_delimiter')) + omission + ')'
     end
 
-    def advanced_search_merge_tag(name)
+    def advanced_search_merge_tag(name, type = nil)
       pname = :"#{name}_merge"
       all = any = exact = startwith = false
 
@@ -503,22 +503,22 @@ module EnjuTrunk
         all = true
       end
 
-      (if name == 'query' || name == 'subject_text'
+        (if name == 'query' || name == 'subject_text'
           ''
         else
           radio_button_tag(pname, 'exact', exact) +
-          advanced_search_label(:"exact_#{name}") + ' '
+          label_tag("#{pname}_exact", advanced_search_label(:"exact_#{name}")) + ' '
         end +
         if name == 'subject_text'
           ''
         else
           radio_button_tag(pname, 'startwith', startwith) +
-          advanced_search_label(:"startwith_#{name}") + ' '
+          label_tag("#{pname}_startwith", advanced_search_label(:"startwith_#{name}")) + ' '
         end +
         radio_button_tag(pname, 'all', all) +
-        advanced_search_label(:"all_#{name}") + ' ' +
+        label_tag("#{pname}_all", advanced_search_label(:"all_#{name}")) + ' ' +
         radio_button_tag(pname, 'any', any) +
-        advanced_search_label(:"any_#{name}") + ' '
+        label_tag("#{pname}_any", advanced_search_label(:"any_#{name}")) + ' '
       ).html_safe
     end
 
