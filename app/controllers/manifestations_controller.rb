@@ -1365,6 +1365,7 @@ class ManifestationsController < ApplicationController
       [:nbn, 'nbn_s'],
       [:publisher, 'publisher_text', 'publisher_sm'],
       [:item_identifier, 'item_identifier_sm'],
+      [:call_number, 'call_number_sm'],
       [:except_query, nil],
       [:except_title, 'title_text', 'title_sm'],
       [:except_creator, 'creator_text', 'creator_sm'],
