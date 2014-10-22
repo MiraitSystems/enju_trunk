@@ -1945,6 +1945,9 @@ en:
     copy: Copy new create
     print: Print this page
     no_icon: No Icon
+    back_to_display: "Back to %{display}"
+    advanced_search_display: Advanced search display
+    before_display: Before display
 
   manual_for_user: "manual_for_user.pdf"
   manual_for_librarian: "manual_for_librarian.pdf"

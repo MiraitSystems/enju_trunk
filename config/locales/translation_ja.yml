@@ -1951,6 +1951,9 @@ ja:
     print: このページを印刷
     statistical_table: "統計表"
     no_icon: なし
+    back_to_display: "%{display}に戻る"
+    advanced_search_display: 詳細検索画面
+    before_display: 前の画面
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
