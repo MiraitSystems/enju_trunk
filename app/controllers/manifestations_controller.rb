@@ -819,13 +819,10 @@ class ManifestationsController < ApplicationController
       @manifestation.series_statement = original_manifestation.series_statement unless @manifestation.series_statement
       @keep_themes = original_manifestation.themes.collect(&:id).flatten.join(',') if defined?(EnjuTrunkTheme)
       if original_manifestation.manifestation_exinfos.present?
-        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil }
-      end
-      if original_manifestation.manifestation_exinfos.present?
-        original_manifestation.manifestation_exinfos.map{ |m| eval("@manifestation.#{m.name}_id = '#{m.value}'") rescue nil }
+        original_manifestation.manifestation_exinfos.map{ |m| @manifestation.assign_attributes(m.name => m.value) rescue nil}
       end
       if original_manifestation.manifestation_extexts.present?
-        original_manifestation.manifestation_extexts.map{ |m| eval("@manifestation.#{m.name} = '#{m.value}'") rescue nil }
+        original_manifestation.manifestation_extexts.map{ |m| @manifestation.assign_attributes(m.name => m.value) rescue nil}
       end
 
       @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
