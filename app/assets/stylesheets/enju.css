@@ -687,6 +687,12 @@ tr{
     /* background-color:yellow !important; */
 }
 
+#classifications_back{
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 110%;
+}
+
 /* IE9 */
 .ie9 .active{
     /* 線 */
