@@ -16,12 +16,9 @@ div#library_system_name_mobile{
   padding-bottom: 0px;
 }
 
-div#header_left_mobile{
-  float: left;
-  padding-left: 2px;
-  padding-right: 2px;
-  padding-top: 0.5px;
-  padding-bottom: 0.5px;
+#header_left_mobile{
+  top: 50%;
+  margin-top: -1em;
 }
 
 div#content_mobile{
