@@ -60,6 +60,8 @@ class Manifestation < ActiveRecord::Base
     SELECT2_OBJ.new(1, I18n.t('jpn_or_foreign.foreign'), I18n.t('jpn_or_foreign.foreign')) 
   ]
 
+  ISBN_IDENTIFIER_TYPE_IDS = [1,2,6]
+
   SUNSPOT_EAGER_LOADING = {
     include: [
       :creators, :publishers, :contributors, :carrier_type,
@@ -144,9 +146,9 @@ class Manifestation < ActiveRecord::Base
       if root_of_series? # 雑誌の場合
         # 同じ雑誌の全号のISBNのリストを取得する
         series_manifestations.
-          map {|manifestation| [manifestation.isbn, manifestation.isbn10, manifestation.wrong_isbn, manifestation.identifiers.where(identifier_type_id: [1,2,6]).pluck(:body)] }.flatten.compact
+          map {|manifestation| [manifestation.isbn, manifestation.isbn10, manifestation.wrong_isbn, normalize_identifier_isbn] }.flatten.compact
       else
-        [isbn, isbn10, wrong_isbn, identifiers.where(identifier_type_id: [1,2,6]).pluck(:body)].flatten.compact
+        [isbn, isbn10, wrong_isbn, normalize_identifier_isbn].flatten.compact
       end
     end
     string :issn, :multiple => true do
@@ -390,7 +392,13 @@ class Manifestation < ActiveRecord::Base
       end
     end
     string :other_identifier, :multiple => true do
-      identifiers.map{|identifier| "#{identifier.identifier_type.name}-#{identifier.body}"}
+      identifiers.map {|identifier|
+        if Manifestation::ISBN_IDENTIFIER_TYPE_IDS.include?(identifier.identifier_type.id)
+          "#{identifier.identifier_type.name}-#{Lisbn.new(identifier.body).isbn13 || identifier.body}"
+        else
+          "#{identifier.identifier_type.name}-#{identifier.body}"
+        end
+      }
     end
     string :sort_title
     string :original_title
@@ -921,12 +929,27 @@ class Manifestation < ActiveRecord::Base
     end
   end
 
+  def normalize_identifier_isbn
+    [] unless identifiers
+    # normalize
+    identifiers.where(identifier_type_id: ISBN_IDENTIFIER_TYPE_IDS).pluck(:body).map {|identifier| Lisbn.new(identifier).isbn13 || identifier }
+  end
+
   # isbn > identifier.body の順で検索して最初の識別子をかえす。
   def call_isbn
+    isbn_normalize = ""
     if isbn.present?
-      return isbn
+      isbn_normalize = Lisbn.new(isbn)
+    else
+      isbn_normalize = identifiers.where(identifier_type_id: ISBN_IDENTIFIER_TYPE_IDS).pluck(:body).first
+      if isbn_normalize 
+        isbn_normalize = Lisbn.new(isbn_normalize)
+      end
     end
-    identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
+    if isbn_normalize
+      isbn_normalize = isbn_normalize.isbn13
+    end
+    return isbn_normalize
   end
 
   def call_isbn?
@@ -934,7 +957,7 @@ class Manifestation < ActiveRecord::Base
     if isbn.present?
       identifier = isbn
     else 
-      identifier = identifiers.where(identifier_type_id: [1,2,6]).pluck(:body).first
+      identifier = identifiers.where(identifier_type_id: ISBN_IDENTIFIER_TYPE_IDS).pluck(:body).first
     end
     return identifier.present?
   end
