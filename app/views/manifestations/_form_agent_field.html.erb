@@ -300,7 +300,7 @@
             "creators_#{index}_type_id", 
             "creators[][type_id]", 
             @create_types,
-            creator[:create_type_id] || creator["type_id"], 
+            (creator[:create_type_id] || creator["type_id"]).to_i, 
             :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
@@ -331,7 +331,7 @@
             "contributors_#{index}_type_id", 
             "contributors[][type_id]", 
             @realize_types,
-            contributor[:realize_type_id] || contributor["type_id"], 
+            (contributor[:realize_type_id] || contributor["type_id"]).to_i, 
             :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
@@ -362,7 +362,7 @@
             "publishers_#{index}_type_id", 
             "publishers[][type_id]", 
             @produce_types,
-            publisher[:produce_type_id] || publisher["type_id"], 
+            (publisher[:produce_type_id] || publisher["type_id"]).to_i, 
             :width => 250, :select_attribute => :id, :display_attribute => :display_name 
           ) %><br />
         <% end %>
