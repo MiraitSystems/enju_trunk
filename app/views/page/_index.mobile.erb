@@ -14,6 +14,15 @@
 <%- end -%>
 <br />
 <% if defined?(EnjuEvent) && SystemConfiguration.get('view.events') %>
+
+  <%# TODO best_reader,request %>
+  <div class="portlet" id="easy_tools">
+    <h3 class="title"><%= t('page.books_information') -%></h3>
+    <div id="easy_tools_box">
+      <%= render 'page/easy_tools' -%>
+    </div>
+  </div>
+
   <h3 class="title"><%= t('activerecord.models.event') -%></h3>
   <div>
     <% @events.each do |event| %>
