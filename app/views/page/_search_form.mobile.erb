@@ -1,6 +1,6 @@
 <div data-role="fieldcontain">
 <%= form_for :manifestations, :url => manifestations_path, :html => {:method => 'get'} do -%>
-  <%= search_field_tag 'query', nil, :class => 'search_form_short', :placeholder => t('page.search_term') , :autofocus => true -%>
+  <%= search_field_tag 'query', nil, :id => 'form_width', :placeholder => t('page.search_term'), :autofocus => true -%>
   <%= submit_tag t('page.search') -%>
 <%- end -%>
 <%= button_to t('page.advanced_search'), page_advanced_search_path -%>

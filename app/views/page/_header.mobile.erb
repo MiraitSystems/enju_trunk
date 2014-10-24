@@ -9,13 +9,12 @@
 
   <div class="ui-block-c" id="header_right_mobile">
     <% if user_signed_in? %>
-      <%= link_to t('page.user_management'), current_user -%>
-      <br />
-      <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete, "data-ajax" => :false, "data-role" => :none -%>
+      <div class="right_align"><%= link_to t('page.user_management'), current_user -%></div>
+      <div class="right_align"><%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete, "data-ajax" => :false, "data-role" => :none -%></div>
     <% else %>
       <% unless controller_name == 'sessions' %>
         <%- unless SystemConfiguration.isWebOPAC %>
-          <%= link_to t('page.sign_in'), new_user_session_path -%>
+          <div class="right_align"><%= link_to t('page.sign_in'), new_user_session_path -%></div>
         <%- end -%>
       <% end %>
     <% end %>
