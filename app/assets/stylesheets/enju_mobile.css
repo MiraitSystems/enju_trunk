@@ -112,6 +112,14 @@ table#advanced_search > tr > td > div {
   width: 100px;
 }
 
+.list_count{
+  padding: 5px 20px;
+}
+
+.list_detail{
+  padding-left: 20px;
+}
+
 .ui-input-has-clear{
   padding-right: 5%;
 }

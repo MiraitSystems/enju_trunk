@@ -1889,6 +1889,9 @@ en:
       other: Pictures
     best_request: best request
     best_reader: best reader
+    aggregation_period: Aggregation period
+    checkout_count: Checkout count
+    reserve_count: Reserve count
     wait: Wait..
     extensions: Extensions
     edit_series_statement_relationship: Edit series statement relationship

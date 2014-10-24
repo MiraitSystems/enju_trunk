@@ -1,0 +1,41 @@
+<h2 class="title"><%= t('page.best_reader') -%></h2>
+<%= link_to t('page.best_request'), manifestation_exstats_bestrequest_path -%>
+
+<div class="input_field">
+  <%= t('page.aggregation_period') %>:<%= h(@start_d) -%> ～ <%= h(@end_d) -%> <br />
+</div>
+
+<br />
+<ul data-role="listview">
+  <%- if @ranks -%>
+  <%- @ranks.each_with_index do |r, i| -%>
+    <li>
+    <%#= TODO 書影の表示 -%>
+      <%= link_to r.manifestation do %>
+        <div>
+          <% if r.manifestation.picture_files.exists? %>
+            <%= image_tag(picture_file_path(r.manifestation.picture_files, :format => :download), :width => '100', :height => '100', :alt => '*', :itemprop => 'image') %>
+            <%#= show_image(r.manifestation.picture_files, :size => :thumb) %>
+            <%#= render 'manifestations/book_jacket', :manifestation => @manifestation -%>
+          <% else %>
+            <%= image_tag('unknown_resource.png', :width => '100', :height => '100', :alt => '*', :itemprop => 'image') %>
+          <% end %> 
+          <%= t('page.checkout_count') -%>: <%= @checkouts[i].cnt if @checkouts[i] -%>
+          <%= t('page.checkout_count') -%>: <%= @checkouts[i].cnt if @checkouts[i] -%><br>
+        </div>
+
+        <div>
+        <%= r.rank %>. <%= r.manifestation.original_title %>
+        <div class="list_detail">
+          <div style="white-space: normal;">
+            <%= render 'manifestations/show_creators', :manifestation => r.manifestation -%>
+          </div>
+        </div>
+        </div>
+      <%- end -%>
+    </li>
+  <% end %>
+  <%# else %>
+    <%#= t('activerecord.errors.messages.item_not_exist', :status => t('')) %>
+  <% end %>
+</ul>
