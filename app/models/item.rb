@@ -86,10 +86,6 @@ class Item < ActiveRecord::Base
   has_many :item_exinfos, :dependent => :destroy
   has_many :item_extexts, :dependent => :destroy
   accepts_nested_attributes_for :item_extexts, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? and !(ItemExtext.find(a[:id]) rescue nil) }
-  before_validation :mark_item_extexts_for_removal
-  def mark_item_extexts_for_removal
-    item_extexts.each { |item_extext| item_extext.mark_for_destruction if item_extext.value.blank? }
-  end
   belongs_to :claim, :dependent => :destroy
   accepts_nested_attributes_for :claim, :allow_destroy => true, :reject_if => :all_blank
   belongs_to :location_symbol, :class_name => 'Keycode', :foreign_key => 'location_symbol_id'
