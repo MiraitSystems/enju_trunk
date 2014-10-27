@@ -1,4 +1,5 @@
 class Approval < ActiveRecord::Base
+  extend ActiveRecordExtension
   attr_accessible :adoption_report_flg, :all_process_end_at, :all_process_start_at, :approval_end_at, :approval_result, :collect_user, :created_at, :created_by, 
                   :donate_request_at, :donate_request_replay_at, :donate_request_result, :group_approval_at, :group_approval_result, :group_note, 
                   :group_result_reason, :group_user_id, :id, :manifestation_id, :publication_status, :reason, :reception_agent_id, :refuse_at, :sample_arrival_at, 
