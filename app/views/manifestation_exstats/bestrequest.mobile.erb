@@ -11,22 +11,26 @@
   <%- @ranks.each_with_index do |r, i| -%>
     <li>
       <%= link_to r.manifestation do %>
-        <%= r.rank %>. <%= r.manifestation.original_title %>
-          <div class="list_count">
-            <%= t('page.checkout_count') -%>: <%= @reserves[i].cnt if @reserves[i] -%>
-          </div>
-        
-        <div class="list_detail">
-          <%- if SystemConfiguration.get('item.use_different_identifier') %>
-            <div>
-              <%= t('activerecord.attributes.item.identifier') %>: <%= r.item.identifier %>
+        <div>
+          <%= render 'manifestations/book_jacket', :manifestation => r.manifestation -%>
+          <%= t('page.checkout_count') -%>: <%= @reserves[i].cnt if @reserves[i] -%>
+        </div>
+
+        <div>
+          <%= r.rank %>. <%= r.manifestation.original_title %>
+          <div class="list_detail">
+            <div style="white-space: normal;">
+              <%= render 'manifestations/show_creators', :manifestation => r.manifestation -%>
             </div>
-          <%- end -%>
+            <%- if SystemConfiguration.get('item.use_different_identifier') %>
+              <div>
+                <%= t('activerecord.attributes.item.identifier') %>: <%= r.item.identifier %>
+              </div>
+            <%- end -%>
+          </div>
         </div>
       <%- end -%>
     </li>
   <% end %>
-  <%# else %>
-    <%#= t('activerecord.errors.messages.item_not_exist', :status => t('')) %>
   <% end %>
 </ul>
