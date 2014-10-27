@@ -230,7 +230,14 @@ class ItemsController < ApplicationController
         end
       end
     end
-
+    if params[:item][:notes_attributes]
+      params[:item][:notes_attributes].each do |key, notes_attributes|
+        if notes_attributes[:value].blank? 
+          params[:item][:notes_attributes]["#{key}"][:_destroy] = 1
+        end
+      end
+    end
+ 
     respond_to do |format|
       if @item.update_attributes(params[:item])
         if @item.manifestation.series_statement and @item.manifestation.series_statement.periodical
