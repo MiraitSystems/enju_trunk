@@ -10,6 +10,7 @@ class Keycode < ActiveRecord::Base
   has_many :orders
   has_many :approvals
   has_many :manifestation_exinfos
+  has_many :approval_exinfos
 
   paginates_per 10
 

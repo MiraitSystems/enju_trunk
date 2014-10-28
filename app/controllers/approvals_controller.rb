@@ -1,4 +1,9 @@
 class ApprovalsController < ApplicationController
+  add_breadcrumb "I18n.t('page.listing', model: t('activerecord.models.approval'))", 'approvals_path'
+  add_breadcrumb "I18n.t('page.new', model: I18n.t('activerecord.models.approval'))", 'new_approval_path', only: [:new, :create]
+  add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.approval'))", 'edit_approval_path(params[:id])', only: [:edit, :update]
+  add_breadcrumb "I18n.t('activerecord.models.approval')", 'approval_path([:id])', only: [:show]
+
   authorize_function
   load_and_authorize_resource
   before_filter :prepare_options, :only => [:new, :edit]

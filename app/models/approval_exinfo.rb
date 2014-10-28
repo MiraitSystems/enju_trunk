@@ -6,4 +6,6 @@ class ApprovalExinfo < ActiveRecord::Base
   belongs_to :approval
 
   has_paper_trail
+
+  belongs_to :keycode, class_name: "Keycode", foreign_key: :value
 end
