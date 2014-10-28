@@ -3,7 +3,7 @@
 <head>
   <title><%= resource_title(@manifestation, controller.action_name) %></title>
   <%= render 'page/include' %>
-  <% if %w(bestreader).include?(controller.action_name) %>
+  <% if %w(bestreader bestrequest).include?(controller.action_name) %>
     <%= render 'manifestations/prepare_book_jacket' %>
   <% end %>
 </head>

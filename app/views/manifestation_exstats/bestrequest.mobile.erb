@@ -1,3 +1,5 @@
+<%= render 'manifestations/google_book_thumbnail_script' %>
+
 <h2 class="title"><%= t('page.best_request') -%></h2>
 <%= link_to t('page.best_reader'), manifestation_exstats_bestreader_path -%>
 
@@ -11,10 +13,8 @@
   <%- @ranks.each_with_index do |r, i| -%>
     <li>
       <%= link_to r.manifestation do %>
-        <div>
-          <%= render 'manifestations/book_jacket', :manifestation => r.manifestation -%>
-          <%= t('page.checkout_count') -%>: <%= @reserves[i].cnt if @reserves[i] -%>
-        </div>
+        <%= render 'manifestations/google_book_thumbnail', :manifestation => r.manifestation, :index => i %>
+        <%= t('page.checkout_count') -%>: <%= @reserves[i].cnt if @reserves[i] -%>
 
         <div>
           <%= r.rank %>. <%= r.manifestation.original_title %>
