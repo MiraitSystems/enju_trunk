@@ -22,6 +22,7 @@ class Approval < ActiveRecord::Base
   belongs_to :document_classification_1_code, :class_name => 'Keycode', :foreign_key => 'document_classification_1'
   belongs_to :document_classification_2_code, :class_name => 'Keycode', :foreign_key => 'document_classification_2'
 
+  has_many :approval_exinfos, :dependent => :destroy, :order => "position"
   #TODO accepts_nested_attributes_for :approval_extexts
   has_many :approval_extexts, :dependent => :destroy, :order => "position"
   has_many :process_notes, class_name: 'ApprovalExtext', dependent: :destroy, conditions: { name: 'notes' }
