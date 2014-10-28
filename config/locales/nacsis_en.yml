@@ -1,0 +1,121 @@
+en:
+  activerecord:
+    models:
+      nacsis_user_request: Nacsis user requests
+      nacsis_request_copy: Nacsis copy request
+      nacsis_request_lend: Nacsis lend request
+      nacsis_user_request:
+        subject_heading: Subject heading
+        subject_heading_reading: Subject heading (reading)
+        title_alternative: Subject heading alternative (reading)
+        other_titles: Other title info
+        VTK: Type
+        VTD: Title
+        VTR: Title (reading)
+        VTVR: Title alternative (reading)
+        publisher: Publisher
+        pub_date: Publish date
+        publish_year: Publish year
+        physical_description: Physical description
+        series_title: Series title
+        note: Note
+        isbn: ISBN
+        issn: ISSN
+        xissn: XISSN
+        pub_country: Publish country
+        title_language: Title language
+        text_language: Text language
+        original_language: Original Language
+        author_heading: Author heading
+        subject: subject
+        freq: Frequency code
+        ncid: NCID
+        marc: MARC ID
+        cls_info: Classification info
+        vol_info: Volume info
+        VOL: Volume
+        ISBN: ISBN
+        PRICE: Price
+        XISBN: Invalid ISBN
+        cw_info: Content copyright note
+        CWT: Title
+        CWA: Responsibility
+        CWR: Title (reading)
+        CWVR: Title alternative (reading)
+        nbn: NBN
+        lccn: LCCN
+        ndlcn: NDL card number
+        ndlpn: NDL periodical number
+        gpon: GPO number
+        coden: CODEN
+        ulpn: ULP number
+        other_number: Other number
+        pstat: Publication state
+        ptb_info: Parent manifestation info
+        PTBID: ID
+        PTBK: Type
+        PTBTR: Title
+        PTBTRR: Title (reading)
+        PTBTRVR: Title alternative (reading)
+        PTBNO: Number etc.
+        utl_info: Unification title info
+        UTID: ID
+        UTFLG: Main flag
+        UTHDNG: Title
+        UTHDNGR: Title (reading)
+        UTHDNGVR: Title alternative (reading)
+        UTINFO: Other info
+        price: price
+        fid: Family ID
+        bhn_info: Bibliographic history note info
+        BHBID: Before/After ID
+        BHK: History type
+        BHTR: Before/After Title
+        ndlcln: NDL claim number
+        ndlhold: NDL hold info
+        user_id: User ID
+        user_name: User Name
+        request_datetime: Request datetime
+        request_type: Request type
+        request_type_names:
+        - 
+        - Lend
+        - Copy
+        state: State
+        state_names:
+        - Finish
+        - Accept
+        - Accepted
+        - Sendback
+        - Requested
+        - Rejected
+        - Arrived
+        - Confirming
+        - Notified
+        user_note: User note
+        librarian_note: Librarian note
+        created_from: Created from
+        created_to: Created to
+
+  page:
+    search_nacsis: NACSIS
+    number_of_nacsis_book_search_results:
+      one: "Book(s) found: 1 record"
+      other: "Book(s) found: %{count} records"
+    number_of_nacsis_serial_search_results:
+      one: ! 'Magazine(s) found: 1 record'
+      other: 'Magazine(s) found: %{count} records'
+    import_from_nacsis: Import from NACSIS file
+    nacsis_book: Book
+    nacsis_serial: Magazine
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSIS file
+      wrong_file: can not be imported.
+      wrong_extention: "files with xlsx extension or %{split_type} can be imported."
+  manifestations:
+    show_nacsis:
+      local_import: Local import
+  nacsis_cat:
+    too_many_vlog_manifestations: "SeriesStatement(%{series_statement_id}) many have too many issues. Check the following issues: %{manifestation_ids}"
+
