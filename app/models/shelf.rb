@@ -20,7 +20,13 @@ class Shelf < ActiveRecord::Base
   has_paper_trail
 
   after_save :delay_reindex_manifestation
-
+  # ManifestationsController#index の manifestation をキャッシュしているため
+  # 本棚更新時は manifestation.updated_at を更新する
+  after_update :touch_manifestation, :if => lambda{ self.display_name_changed? || self.required_role_id_changed?}
+  def touch_manifestation
+    items.map{|i| i.manifestation.touch}
+  end
+  
   searchable do
     string :library do
       library.name if library

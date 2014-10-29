@@ -50,6 +50,13 @@ class Library < ActiveRecord::Base
   after_save :clear_all_cache
   after_destroy :clear_all_cache
 
+  # ManifestationsController#index の manifestation をキャッシュしているため
+  # 図書館更新時は manifestation.updated_at を更新する
+  after_update :touch_manifestation, :if => lambda{ self.display_name_changed?}
+  def touch_manifestation
+    Item.where(:shelf_id => self.shelves.map(&:id)).collect(&:manifestation).map{|m| m.touch} rescue nil
+  end
+
   paginates_per 10
 
   def self.all_cache
