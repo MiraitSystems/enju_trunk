@@ -1,7 +1,7 @@
 <%= render 'manifestations/google_book_thumbnail_script' %>
 
 <h2 class="title"><%= t('page.best_reader') -%></h2>
-<%= link_to t('page.best_request'), manifestation_exstats_bestrequest_path -%>
+<%= link_to t('page.best_request'), manifestation_exstats_bestrequest_path, "data-role" => "none", "data-ajax" => "false" -%>
 
 <div class="input_field">
   <%= t('page.aggregation_period') %>:<%= h(@start_d) -%> ～ <%= h(@end_d) -%> <br />
@@ -13,14 +13,21 @@
   <%- @ranks.each_with_index do |r, i| -%>
     <li>
       <%= link_to r.manifestation do %>
-        <%= render 'manifestations/google_book_thumbnail', :manifestation => r.manifestation, :index => i %>
-        <%= t('page.checkout_count') -%>: <%= @checkouts[i].cnt if @checkouts[i] -%>
+        <div class="thumbnail">
+          <%= render 'manifestations/google_book_thumbnail', :manifestation => r.manifestation, :index => i %>
+        </div>
+        <div class="count_field"><%= t('page.checkout_count') -%>: <%= @checkouts[i].cnt if @checkouts[i] -%></div>
 
-        <div>
+        <div class="best_list">
           <%= r.rank %>. <%= r.manifestation.original_title %>
           <div class="list_detail">
             <div style="white-space: normal;">
               <%= render 'manifestations/show_creators', :manifestation => r.manifestation -%>
+              <%- if r.item.item_identifier %>
+                <%= t('activerecord.attributes.item.item_identifier') -%>: <%= r.item.item_identifier -%>
+              <%- else -%>
+                <%= t('item.no_number') %>
+              <%- end -%>
             </div>
           </div>
         </div>

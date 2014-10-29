@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= resource_title(@manifestation, controller.action_name) %></title>
+  <title><%= title(controller.controller_name) %></title>
   <%= render 'page/include' %>
   <% if %w(bestreader bestrequest).include?(controller.action_name) %>
     <%= render 'manifestations/prepare_book_jacket' %>
