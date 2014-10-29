@@ -10,10 +10,14 @@ $(function(){
 </script>
   <div style="color: red"><%= flash[:message] -%></div>
   <p>
-    <%= t('advanced_search.from_date') -%>:<%= text_field_tag 'search_date_first', h(@start_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-01" -%>
-    <%= t('advanced_search.to_date') -%>:<%= text_field_tag 'search_date_last', h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-30" -%> <br />
-      <%= t('advanced_search.library') -%>:<%= select("library", "id", @select_librarlies, {:include_blank => t('advanced_search.all_libraries'), :selected=>@selected_library}  )%> </td>
-    <%= submit_tag t('page.search') -%>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      <%= t('advanced_search.from_date') -%>:<%= text_field_tag 'search_date_first', h(@start_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-01" -%>
+      <%= t('advanced_search.to_date') -%>:<%= text_field_tag 'search_date_last', h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-30" -%> <br />
+        <%= t('advanced_search.library') -%>:<%= select("library", "id", @select_librarlies, {:include_blank => t('advanced_search.all_libraries'), :selected=>@selected_library}  )%> </td>
+      <%= submit_tag t('page.search') -%>
+    <% else %>
+      <%= t('page.aggregation_period') %>:<%= h(@start_d) -%> ～ <%= h(@end_d) -%> <br />
+    <% end %>
     <br />
   </p>
 <%- end -%>

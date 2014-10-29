@@ -12,17 +12,23 @@ $(function(){
 <%= form_for :manifestations, :html => {:method => 'get'} do -%>
   <div style="color: red"><%= flash[:message] -%></div>
   <p>
-    <%= t('advanced_search.from_date') -%>:<%= text_field_tag 'search_date_first', h(@start_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-01"-%>
-    <%= t('advanced_search.to_date') -%>:<%= text_field_tag 'search_date_last', h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-30" -%> <br />
-    <%= t('advanced_search.library') -%>:<%= select("library", "id", @select_librarlies, {:include_blank => t('advanced_search.all_libraries'), :selected=> @selected_library}  )%>
-    <%= UserGroup.model_name.human-%>:<%= select("user_group", "id", @user_groups.map{|g| [g.display_name, g.id]}, :include_blank => true, :selected=> @selected_user_group  )%>
-    <%= Department.model_name.human-%>:<%= select("department", "id", @departments.map{|d| [d.display_name, d.id]}, :include_blank => true, :selected=> @selected_department  )%>
-    <%- if SystemConfiguration.get('agent.manage_grade') -%>
-      <%= t('activerecord.attributes.agent.grade') -%>:<%= select("grade", "id", @grades.map{|g| [g.keyname, g.id]}, :include_blank => true, :selected=> @selected_grade  )%>
-    <%- end -%>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      <%= t('advanced_search.from_date') -%>:<%= text_field_tag 'search_date_first', h(@start_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-01"-%>
+      <%= t('advanced_search.to_date') -%>:<%= text_field_tag 'search_date_last', h(@end_d), :size => 10, :placeholder => "#{t('page.example')}: 2011-04-30" -%> <br />
+      <%= t('advanced_search.library') -%>:<%= select("library", "id", @select_librarlies, {:include_blank => t('advanced_search.all_libraries'), :selected=> @selected_library}  )%>
+      <%= UserGroup.model_name.human-%>:<%= select("user_group", "id", @user_groups.map{|g| [g.display_name, g.id]}, :include_blank => true, :selected=> @selected_user_group  )%>
+      <%= Department.model_name.human-%>:<%= select("department", "id", @departments.map{|d| [d.display_name, d.id]}, :include_blank => true, :selected=> @selected_department  )%>
+      <%- if SystemConfiguration.get('agent.manage_grade') -%>
+        <%= t('activerecord.attributes.agent.grade') -%>:<%= select("grade", "id", @grades.map{|g| [g.keyname, g.id]}, :include_blank => true, :selected=> @selected_grade  )%>
+      <%- end -%>
+    <% else %>
+      <%= t('page.aggregation_period') %>:<%= h(@start_d) -%> ～ <%= h(@end_d) -%> <br />
+    <% end %>
   </p>
   <p>
-    <%= submit_tag t('page.search') -%>
+    <% if user_signed_in? and current_user.has_role?('Librarian') %>
+      <%= submit_tag t('page.search') -%>
+    <% end%>
     <%= submit_tag t('page.output_excelx', :model => t('page.best_reader')), :name => 'output' %>
     <br />
   </p>
