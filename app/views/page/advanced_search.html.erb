@@ -47,6 +47,9 @@ $(document).ready(function(){
 });
 </script>
 
+<% if @series_statement %>
+  <%= render "manifestations/index_form_series_statement_header" %>
+<% end %>
 <div id="content_detail" class="ui-corner-all">
   <h1 class="title"><%= t('page.advanced_search') -%></h1>
   <div id="content_list">

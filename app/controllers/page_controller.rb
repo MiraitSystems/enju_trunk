@@ -51,6 +51,7 @@ class PageController < ApplicationController
   end
 
   def advanced_search
+    get_series_statement
     get_libraries
     @title = t('page.advanced_search')
     # 資料区分
