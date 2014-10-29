@@ -1545,4 +1545,11 @@ system_configuration_00221:
   description: "利用者検索画面に請求起動を表示する"
   typename: Boolean
   category: 'search_user'
+system_configuration_00222:
+  id: 222
+  keyname: 'add_only_exist_subject'
+  v: "false"
+  description: "資料へ件名を追加する際、既に存在する件名しか追加できないようにするか"
+  typename: Boolean
+  category: 'manifestation'
 

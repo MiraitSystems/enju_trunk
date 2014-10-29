@@ -22,6 +22,8 @@ namespace :enju do
         gems << 'EnjuSubject' if defined? EnjuSubject
         gems << 'EnjuTrunkIll' if defined? EnjuTrunkIll
         gems << 'EnjuTrunkReport' if defined? EnjuTrunkReport
+        gems << 'EnjuTrunkOrder' if defined? EnjuTrunkOrder
+        gems << 'EnjuTrunkFireSync' if defined? EnjuTrunkFireSync
         gems.each do |name|
           import_migrations(name)
         end
@@ -66,6 +68,17 @@ namespace :enju do
       task :enju_trunk_report => :environment do
         import_migrations("EnjuTrunkReport") if defined?(EnjuTrunkReport)
       end
+
+      desc 'Directly import enju_trunk_order migrations'
+      task :enju_trunk_order => :environment do
+        import_migrations("EnjuTrunkOrder") if defined?(EnjuTrunkOrder)
+      end
+
+      desc 'Directly import enju_trunk_fire_sync migrations'
+      task :enju_trunk_fire_sync => :environment do
+        import_migrations("EnjuTrunkFireSync") if defined?(EnjuTrunkFireSync)
+      end
+
     end
   end
 end

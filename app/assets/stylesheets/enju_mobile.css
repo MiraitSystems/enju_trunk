@@ -130,6 +130,12 @@ table#advanced_search > tr > td > div {
   padding-left: 20px;
 }
 
+.type_select{
+  width: 120px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ui-input-has-clear{
   padding-right: 5%;
 }
