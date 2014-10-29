@@ -111,7 +111,10 @@
     <% if SystemConfiguration.get('attributes.subject.subject_type_id') %>
       $("select[id $= 'subject_type_id']").select2(ItemFieldSubjectSelect2.subjectTypeSelect2options);
     <% end %>
-    $("input[id $= 'subject_id']").select2(ItemFieldSubjectSelect2.subjectSelect2options);
+    $("input[id $= 'subject_id']").each(function() {
+      $(this).select2(ItemFieldSubjectSelect2.subjectSelect2options).select2('val', [$(this).attr('value')]);
+    });
+    //$("input[id $= 'subject_id']").select2(ItemFieldSubjectSelect2.subjectSelect2options).select2('val', [this.val]);
   });
   $(document).on("select2-selecting select2-removed", ".subject", function(e){
     var targetId = e.target.id;
@@ -151,7 +154,7 @@
                           :width => 200, :select_attribute => :id, :display_attribute => :display_name) %>
           <br />
         <% end %>
-        <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
+        <%= text_field_tag "subjects[][subject_id]", subject[:id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
         <% if SystemConfiguration.get('attributes.subject.term_transcription') %>
           <%= text_field_tag "subjects[][term_transcription]", 
             subject[:term_transcription], 

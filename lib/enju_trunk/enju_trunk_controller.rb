@@ -605,15 +605,15 @@ module EnjuTrunk
          next if add_subject[:subject_id].blank?
          if add_subject[:subject_id].to_i != 0
            subject = Subject.where(:id => add_subject[:subject_id]).first
-           subject.term_transcription = add_subject[:term_transcription]
-           subject.subject_type_id = add_subject[:subject_type_id]
+           subject.term_transcription = add_subject[:term_transcription] if add_subject[:term_transcription]
+           subject.subject_type_id = add_subject[:subject_type_id] || 1 #TODO
            subject.save
            subjects << subject if subject.present?
          else
            # new record
            subject = Subject.new
            subject.term = add_subject[:subject_id]
-           subject.term_transcription = add_subject[:term_transcription]
+           subject.term_transcription = add_subject[:term_transcription] if add_subject[:term_transcription]
            subject.subject_type_id = add_subject[:subject_type_id] || 1 #TODO
            subject.required_role = Role.where(:name => 'Guest').first
            subjects << subject
