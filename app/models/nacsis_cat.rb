@@ -43,7 +43,7 @@ class NacsisCat
   class << self
     def print_log(t)
       File.open("#{Rails.root}/log/nacsis_cat_#{Time.now.strftime('%Y%m%d')}.log", "a") do |file|
-        file.write("#{Time.now} #{t}\n")
+        file.write("#{Time.now} #{t}")
       end 
     end
 
@@ -257,7 +257,10 @@ class NacsisCat
       end
       if nacsis_cat
         print_log "-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
-        manifestation.update_attribute('catalog_id', 100) # TODO temporary for wilmina
+        #TODO 
+        catalog = Catalog.where(:display_name => 'NACSIS UPDATE', :name => 'NACSIS UPDATE', :nacsis_identifier => 'NACSIS UPDATE').first_or_create
+        manifestation.update_attribute('catalog_id', catalog.id)
+
         begin 
           create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
         rescue
@@ -282,7 +285,7 @@ class NacsisCat
     def create_manifestation_from_isbn(isbn, book_types = ManifestationType.book.all, nacsis_cat = nil)
       raise ArgumentError if isbn.blank?
       if nacsis_cat.nil?
-        result = NacsisCat.search(dbs: [:book], isbn: isbn) #複数あるかも
+        result = NacsisCat.search(dbs: [:book], isbn: isbn) # 複数あるかも
         nacsis_cat = result[:book].first
       end
       create_manifestation_from_nacsis_cat(nacsis_cat, book_types)
