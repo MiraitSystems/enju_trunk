@@ -112,6 +112,24 @@ table#advanced_search > tr > td > div {
   width: 100px;
 }
 
+/* bestreader,request */
+.thumbnail{
+  float: left;
+  width: 30%;
+  min-height: 55px;
+}
+.count_field{
+  float: left;
+  width: 30%;
+  padding: 10px;
+}
+.best_list{
+  clear: both;
+}
+.list_detail{
+  padding-left: 20px;
+}
+
 .ui-input-has-clear{
   padding-right: 5%;
 }
