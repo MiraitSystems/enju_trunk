@@ -6,7 +6,13 @@
   <div class="ui-block-b" id="library_system_name_mobile">
     <h3 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h3>
   </div>
-
+  <script>
+  $(function(){
+    $(document.body).delegate("form[action='/accounts/sign_out']",'submit',function(e){
+      $(this).attr("data-ajax", "false");
+    });
+  });
+  </script>
   <div class="ui-block-c" id="header_right_mobile">
     <% if user_signed_in? %>
       <div class="right_align"><%= link_to t('page.user_management'), current_user -%></div>

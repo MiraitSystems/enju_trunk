@@ -39,12 +39,14 @@
          }).done(function(data) { callback(data); });
         }
       },
-      createSearchChoice: function(term, data) {
-        if ($(data).filter(function() {
-          return this.text.localeCompare(term)===0; }).length===0) {
-          return {id:term, text:term};
-        }
-      },
+      <% unless SystemConfiguration.get('add_only_exist_subject') %>
+        createSearchChoice: function(term, data) {
+          if ($(data).filter(function() {
+            return this.text.localeCompare(term)===0; }).length===0) {
+            return {id:term, text:term};
+          }
+        },
+      <% end %>
     },
     // SubjectType select2 options
     subjectTypeSelect2options: {
@@ -65,15 +67,18 @@
       var actionButton = this.actionTemplate.replace(/__count__/mg, this.currentNumber);
       <% if SystemConfiguration.get('attributes.subject.subject_type_id') %>
         var typeFieldId = $("div[id ^= 'SUBJECT']:first").find("select[id $= 'subject_type_id']").attr('id');
-        var cloneType = this.cloneField(typeFieldId);
+      <% else %>
+        var typeFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'subject_type_id']").attr('id');
       <% end %>
+      var cloneType = this.cloneField(typeFieldId);
       <% if SystemConfiguration.get('attributes.subject.term_transcription') %>
         var termTranscriptionFieldId = $("div[id ^= 'SUBJECT']:first").find("input[id $= 'term_transcription']").attr('id');
         var cloneTermTranscription = this.cloneField(termTranscriptionFieldId);
       <% end %>
 
+      newField.append(cloneType)
       <% if SystemConfiguration.get('attributes.subject.subject_type_id') %>
-        newField.append(cloneType).append("<br />")
+        newField..append("<br />")
       <% end %>
       newField.append(cloneTerm);
       <% if SystemConfiguration.get('attributes.subject.term_transcription') %>
@@ -111,7 +116,10 @@
     <% if SystemConfiguration.get('attributes.subject.subject_type_id') %>
       $("select[id $= 'subject_type_id']").select2(ItemFieldSubjectSelect2.subjectTypeSelect2options);
     <% end %>
-    $("input[id $= 'subject_id']").select2(ItemFieldSubjectSelect2.subjectSelect2options);
+    $("input[id $= 'subject_id']").each(function() {
+      $(this).select2(ItemFieldSubjectSelect2.subjectSelect2options).select2('val', [$(this).attr('value')]);
+    });
+    //$("input[id $= 'subject_id']").select2(ItemFieldSubjectSelect2.subjectSelect2options).select2('val', [this.val]);
   });
   $(document).on("select2-selecting select2-removed", ".subject", function(e){
     var targetId = e.target.id;
@@ -150,8 +158,10 @@
                           subject[:subject_type_id],
                           :width => 200, :select_attribute => :id, :display_attribute => :display_name) %>
           <br />
+        <% else %>
+           <%= hidden_field_tag "subjects_#{index}_subject_type_id", subject[:subject_type_id] || 1 %>
         <% end %>
-        <%= text_field_tag "subjects[][subject_id]", subject[:subject_id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
+        <%= text_field_tag "subjects[][subject_id]", subject[:id], :id => "subjects_#{index}_subject_id", :class => "subject" %>
         <% if SystemConfiguration.get('attributes.subject.term_transcription') %>
           <%= text_field_tag "subjects[][term_transcription]", 
             subject[:term_transcription], 
