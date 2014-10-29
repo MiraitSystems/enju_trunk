@@ -16,10 +16,11 @@
       <td><%= search_field_tag 'tag', params[:tag] -%></td>
     </tr>
   <%- end -%>
+
   <tr class="local-only">
     <td><nobr><label><%= advanced_search_label(:manifestation_types) -%>:</label></nobr></td>
     <td>
-      <%= select_tag 'manifestation_types', options_for_select(@manifestation_types.map{|m| [m.display_name.localize, m.id, :selected => true]}), multiple: true %>
+      <%= select_tag 'manifestation_types', options_for_select(@manifestation_types.map{|m| [m.display_name.localize, m.id, :selected => true]}), :class => "type_select", "data-native-menu" => "false", "multiple" => "multiple" %>
     </td>
   </tr>
 <tr>
