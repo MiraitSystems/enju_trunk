@@ -1,0 +1,120 @@
+ja:
+  activerecord:
+    models:
+      nacsis_user_request: 複写貸借状況
+      nacsis_request_copy: 複写依頼
+      nacsis_request_lend: 借用依頼
+    attributes:
+      nacsis_user_request:
+        subject_heading: 本標題/責任表示
+        subject_heading_reading: 本標題等の読み
+        title_alternative: 本標題等のその他の読み
+        other_titles: その他の標題情報
+        VTK: 種類
+        VTD: 標題
+        VTR: 読み
+        VTVR: その他の読み
+        publisher: 出版者
+        pub_date: 出版年
+        publish_year: 出版年
+        physical_description: 形態(ページ情報)
+        series_title: シリーズ名
+        note: 資料注記
+        isbn: ISBN
+        issn: ISSN
+        xissn: XISSN
+        pub_country: 出版国
+        title_language: 標題言語
+        text_language: 本文言語
+        original_language: 原本言語
+        author_heading: 著者情報
+        subject: 件名
+        freq: 刊行頻度コード
+        ncid: NCID
+        marc: MARC ID
+        cls_info: 分類記号
+        vol_info: 版情報
+        VOL: 巻冊次
+        ISBN: ISBN
+        PRICE: 価格
+        XISBN: 無効ISBN
+        cw_info: 内容著作注記
+        CWT: 標題
+        CWA: 責任表示
+        CWR: 読み
+        CWVR: その他の読み
+        nbn: 全国書誌番号
+        lccn: LCカード番号
+        ndlcn: NDLカード番号
+        ndlpn: NDL雑誌番号
+        gpon: GPO番号
+        coden: CODEN
+        ulpn: ULP番号
+        other_number: その他の番号
+        pstat: 出版状況コード
+        ptb_info: 親書誌情報
+        PTBID: ID
+        PTBK: 種類
+        PTBTR: 標題
+        PTBTRR: 読み
+        PTBTRVR: その他の読み
+        PTBNO: 番号等
+        utl_info: 統一書名情報
+        UTID: ID
+        UTFLG: 主記入フラグ
+        UTHDNG: 書名
+        UTHDNGR: 読み
+        UTHDNGVR: その他の読み
+        UTINFO: その他の情報
+        price: 金額
+        fid: 遍歴ファミリーID
+        bhn_info: 遍歴注記情報
+        BHBID: 前後書誌レコードID
+        BHK: 遍歴タイプ
+        BHTR: 前後タイトル
+        ndlcln: NDL請求番号
+        ndlhold: NDL所蔵データ
+        user_id: 利用者ID
+        user_name: 利用者名
+        request_datetime: 依頼日時
+        request_type: 依頼分類
+        request_type_names:
+         -
+         - 借用
+         - 複写
+        state: 処理状態
+        state_names:
+         - 終了
+         - 受付
+         - 受付済
+         - 事務員返却
+         - 依頼済
+         - 相手側拒否
+         - 到着済
+         - 事務確認中
+         - 連務連絡済
+        user_note: 依頼内容
+        librarian_note: 事務員注記
+        created_from: 開始日付
+        created_to: 終了日付
+  page:
+    search_nacsis: "NACSIS 目録"
+    number_of_nacsis_book_search_results: "図書の検索結果（%{count}件）"
+    number_of_nacsis_serial_search_results: "雑誌資料の検索結果（%{count}件）"
+    import_from_nacsis: "NACSISファイルからのインポート"
+    nacsis_book: "図書"
+    nacsis_serial: "雑誌"
+  resource_import_nacsisfiles:
+    new:
+      resource_import_nacsisfile: NACSISファイル
+      wrong_file: "はインポートできません。"
+      wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
+    successfully_uploaded: "正常に送信されました。"
+    upload_failed: "送信に失敗しました。"
+  manifestations:
+    show_nacsis:
+      local_import: "ローカルインポート"
+  nacsis_cat:
+    too_many_vlog_manifestations: "シリーズ情報(%{series_statement_id})の巻冊次情報を確認してください。次の書誌情報を作成・更新しました。(%{manifestation_ids})"
+    replace_volume_1: 巻
+    replace_volume_2: 第

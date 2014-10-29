@@ -41,6 +41,12 @@ class NacsisCat
   end
 
   class << self
+    def print_log(t)
+      File.open("#{Rails.root}/log/nacsis_cat_#{Time.now.strftime('%Y%m%d')}.log", "a") do |file|
+        file.write("#{Time.now} #{t}\n")
+      end 
+    end
+
     # NACSIS-CAT検索を実行する。検索結果はNacsisCatオブジェクトの配列で返す。
     # 検索条件は引数で指定する。サポートしている形式は以下の通り。
     #  * :dbs => [...] - 検索対象のDB名リスト: :book(一般書誌)、:serial(雑誌書誌)、:bhold(一般所蔵)、:shold(雑誌所蔵)、:all(:bookと:serialからの横断検索)
@@ -250,14 +256,17 @@ class NacsisCat
         nacsis_cat = result[:book].first
       end
       if nacsis_cat
-        puts "update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
+        print_log "-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
+        manifestation.update_attribute('catalog_id', 100) # TODO temporary for wilmina
         begin 
           create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
-        rescue => e
-          puts "Failed to update Manifestation(#{manifestation.id}): #{e}"
+        rescue
+          print_log "Failed to update Manifestation(#{manifestation.id})"
+          print_log $!
+          print_log $@
         end
       end 
-   end
+    end
 
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からSeriesStatementを作成する。
     def create_series_statement_from_nbn(nbn, book_types = ManifestationType.series.all, nacsis_cat = nil)
@@ -950,92 +959,102 @@ class NacsisCat
       def create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation = nil)
         return nil if nacsis_cat.blank?
 
-        child_manifestation = nil
-        child_manifestation = new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
-        created_manifestations = []
-        created_manifestations << child_manifestation
+        ActiveRecord::Base.transaction do
+          child_manifestation = nil
+          child_manifestation = new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
+          created_manifestations = []
+          created_manifestations << child_manifestation
 
-        ptbk = {}
+          ptbk = {}
 
-        # 親書誌情報の登録
-        nacsis_cat.detail[:ptb_info].each do |ptbl_record|
-          parent_manifestation = Manifestation.where(:nacsis_identifier => ptbl_record['PTBID']).first
-          if parent_manifestation
-            created_manifestations << parent_manifestation
-          else
-            parent_nacsis_cat = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
-            parent_nacsis_cat = parent_nacsis_cat[:book].try(:first)
-            if parent_nacsis_cat
-              created_manifestations << new_root_manifestation_from_nacsis_cat(parent_nacsis_cat, book_types)
+          # 親書誌情報の登録
+          nacsis_cat.detail[:ptb_info].each do |ptbl_record|
+            parent_manifestation = Manifestation.where(:nacsis_identifier => ptbl_record['PTBID']).first
+            if parent_manifestation
+              created_manifestations << parent_manifestation
             else
-              unless ptbl_record['PTBTR'].nil?
-                created_manifestations <<
-                  Manifestation.where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
-                    if m.new_record?
-                      m.nacsis_identifier = ptbl_record['PTBID']
-                      m.title_transcription = ptbl_record['PTBTRR']
-                      m.title_alternative = arraying(ptbl_record['PTBTRVR']).join('||')
-                      m.note = ptbl_record['PTBNO']
+              parent_nacsis_cat = NacsisCat.search(dbs: [:book], id: ptbl_record['PTBID'])
+              parent_nacsis_cat = parent_nacsis_cat[:book].try(:first)
+              if parent_nacsis_cat
+                created_manifestations << new_root_manifestation_from_nacsis_cat(parent_nacsis_cat, book_types)
+              else
+                unless ptbl_record['PTBTR'].nil?
+                  created_manifestations <<
+                    Manifestation.where(:original_title => ptbl_record['PTBTR']).first_or_create do |m|
+                      if m.new_record?
+                        m.nacsis_identifier = ptbl_record['PTBID']
+                        m.title_transcription = ptbl_record['PTBTRR']
+                        m.title_alternative = arraying(ptbl_record['PTBTRVR']).join('||')
+                        m.note = ptbl_record['PTBNO']
+                      end
                     end
-                  end
+                end
               end
             end
+            ptbk[ptbl_record['PTBID']] = ptbl_record['PTBK']
           end
-          ptbk[ptbl_record['PTBID']] = ptbl_record['PTBK']
-        end
-        # 親書誌関係の登録
-        created_manifestations.reverse.each do |parent|
-          created_manifestations.each do |child|
-            break if parent == child
-            parent.derived_manifestations << child
-          end
-
-          # 構造の種類設定
-          parent.derived_manifestations.each do |derived|
-            derived.parents.each do |child|
-              child.manifestation_relationship_type_id = ManifestationRelationshipType.where(:name => ptbk[parent.nacsis_identifier]).first.try(:id)
-              child.save!
+          # 親書誌関係の登録
+          created_manifestations.reverse.each do |parent|
+            created_manifestations.each do |child|
+              break if parent == child
+              parent.derived_manifestations << child
             end
+
+            # 構造の種類設定
+            parent.derived_manifestations.each do |derived|
+              derived.parents.each do |child|
+                child.manifestation_relationship_type_id = ManifestationRelationshipType.where(:name => ptbk[parent.nacsis_identifier]).first.try(:id)
+                child.save!
+              end
+            end
+
           end
-
-        end
-
-        # 内容著作注記の登録
-        nacsis_cat.detail[:cw_info].each do |cw_record|
-          attrs = {}
-          attrs[:original_title] = cw_record['CWT']
-          attrs[:title_transcription] = cw_record['CWR']
-          attrs[:title_alternative] = arraying(cw_record['CWVR']).join('||')
-          unless cw_record['CWA'].nil?
-            attrs[:creators] = []
-            attrs[:creators] << Agent.where(:full_name => cw_record['CWA'].to_s).first_or_create
+          # 内容著作注記の登録
+          nacsis_cat.detail[:cw_info].each do |cw_record|
+            attrs = {}
+            attrs[:original_title] = cw_record['CWT']
+            attrs[:title_transcription] = cw_record['CWR']
+            attrs[:title_alternative] = arraying(cw_record['CWVR']).join('||')
+            unless cw_record['CWA'].nil?
+              attrs[:creators] = []
+              attrs[:creators] << Agent.where(:full_name => cw_record['CWA'].to_s).first_or_create
+            end
+            child_manifestation.derived_manifestations << Manifestation.create(attrs)
           end
-          child_manifestation.derived_manifestations << Manifestation.create(attrs)
+          if manifestation 
+            print_log "Updated Manifestation(#{manifestation.id})"
+          else
+            print_log "Created Manifestation(#{child_manifestation.id})"
+          end
+          child_manifestation
         end
-
-        child_manifestation
       end
 
       def new_root_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation = nil)
         case nacsis_cat.detail[:vol_info].size
-        when 0 # VOLGが0件の場合
+        when 0,1 # VOLGが0/1件の場合
+        # NCIDに該当するManifestationが既にある場合は既存のManifestationを更新する
+          manifestation = Manifestation.where(:nacsis_identifier => nacsis_cat.ncid).first unless manifestation
           root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, {}, manifestation)
-        else   # VOLGが1件以上の場合
-          root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, {}, manifestation)
-          volg_manifestations = []
+        else   # VOLGが2件以上の場合
+        # NCIDに該当するManifestationが既にある場合は既存のManifestationを更新する
+          root_manifestation = Manifestation.where(:nacsis_identifier => nacsis_cat.ncid).first
+          unless root_manifestation
+            root_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, {})
+          end
+          series_statement = new_series_statement_from_nacsis_cat(nacsis_cat, root_manifestation)
+          series_statement.periodical = false
+          series_statement.root_manifestation = root_manifestation
+          root_manifestation.series_statement = series_statement
+          root_manifestation.periodical_master = true
+          root_manifestation.save!; series_statement.save!
+          manifestation.series_statement = series_statement if manifestation && !manifestation.periodical_master
           nacsis_cat.detail[:vol_info].each do |volg|
             volg_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg)
-            volg_manifestations << volg_manifestation
+            volg_manifestation.series_statement = series_statement
           end
-          series_statement = new_series_statement_from_nacsis_cat(nacsis_cat)
-          series_statement.periodical = false
-          root_manifestation.update_attribute(:periodical_master, true)
-          series_statement.root_manifestation = root_manifestation
-          # TODO ItemがひもづくManifestationをNACSISデータで更新時、root_manifestationにひもづくItemを移行
-          volg_manifestations.first.items = root_manifestation.items unless root_manifestation.items.blank?
-          series_statement.manifestations << root_manifestation
-          series_statement.manifestations += volg_manifestations
-          series_statement.save!
+          print_log "Updated SeriesStatement(#{series_statement.id})"
+          print_log I18n.t('nacsis_cat.too_many_vlog_manifestations', :series_statement_id => series_statement.id, :manifestation_ids => series_statement.manifestations.where(:periodical_master => false).map(&:id)) if series_statement.manifestations.where(:periodical_master => false).size > nacsis_cat.detail[:vol_info].size
         end
         root_manifestation
       end
@@ -1096,147 +1115,153 @@ class NacsisCat
           attrs[:jpn_or_foreign] = nil
         end
 
-        # 関連テーブル：著者の設定
-        attrs[:creators] = []
-        af = {}
-        nacsis_info[:creators].each do |creator|
-          #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
-          attrs[:creators] <<
-            Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
-              if p.new_record?
-                p.agent_identifier = creator['AID']
-                p.full_name_transcription = creator['AHDNGR']
-                p.full_name_alternative = arraying(creator['AHDNGVR']).join('||')
+        Manifestation.transaction do
+          # 関連テーブル：著者の設定
+          attrs[:creators] = []
+          af = {}
+          nacsis_info[:creators].each do |creator|
+            #TODO 著者名典拠IDが存在する場合、nacsisの著者名典拠DBからデータを取得する。
+            attrs[:creators] <<
+              Agent.where(:full_name => creator['AHDNG'].to_s).first_or_create do |p|
+                if p.new_record?
+                  p.agent_identifier = creator['AID']
+                  p.full_name_transcription = creator['AHDNGR']
+                  p.full_name_alternative = arraying(creator['AHDNGVR']).join('||')
+                end
               end
-            end
-          af[creator['AHDNG']] = creator['AF']
-        end
+            af[creator['AHDNG']] = creator['AF']
+          end
 
-        # 関連テーブル：出版者の設定
-        attrs[:publishers] = []
-        nacsis_info[:publishers].each do |pub|
-          attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
-        end
-
-        # 関連テーブル：件名の設定
-        attrs[:subjects] = []
-        nacsis_info[:subjects].each do |subject|
-          subject_type = SubjectType.find_or_create_by_name(subject['SHK']) # SubjectType.where(:name => subject['SHK']).first
-#          subject_type = SubjectType.where(:name => 'K').first if subject_type.nil?
-          if subject['SHD'].present? && subject_type
-            sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
-            if sub
-              attrs[:subjects] << sub
-            else
-              attrs[:subjects] << Subject.create(:term => subject['SHD'],
+          # 関連テーブル：出版者の設定
+          attrs[:publishers] = []
+          nacsis_info[:publishers].each do |pub|
+            attrs[:publishers] << Agent.where(:full_name => pub.to_s).first_or_create
+          end
+          # 関連テーブル：件名の設定
+          attrs[:subjects] = []
+          nacsis_info[:subjects].each do |subject|
+            subject_type = SubjectType.find_or_create_by_name(subject['SHK'])
+            if subject['SHD'].present? && subject_type
+              sub = Subject.where(["term = ? and subject_type_id = ?", subject['SHD'].to_s, subject_type.id]).first
+              if sub
+                attrs[:subjects] << sub
+              else
+                attrs[:subjects] << Subject.create(:term => subject['SHD'],
                                                  :term_transcription => subject['SHR'],
                                                  :term_alternative => arraying(subject['SHVR']).join('||'),
                                                  :subject_type_id => subject_type.id)
+              end
             end
           end
-        end
 
-        attrs[:identifiers] = []
-        if nacsis_info[:gpon]
-          identifier_type = IdentifierType.where(:name => 'gpon').first_or_create
-          attrs[:identifiers] <<
-           Identifier.create(:body => nacsis_info[:gpon], :identifier_type_id => identifier_type.id)
-        end
+          attrs[:identifiers] = []
+          if nacsis_info[:gpon]
+            identifier_type = IdentifierType.where(:name => 'gpon').first_or_create
+            attrs[:identifiers] <<
+             Identifier.create(:body => nacsis_info[:gpon], :identifier_type_id => identifier_type.id)
+          end
 
-        if nacsis_cat.book?
-          unless nacsis_info[:vol_info].size >= 1 && volg_info.present?
+          if nacsis_cat.book?
+            unless nacsis_info[:vol_info].size >= 1 && volg_info.present?
+              attrs[:nacsis_identifier] = nacsis_cat.ncid
+              attrs[:nbn] = nacsis_info[:nbn]
+            end
+
+            attrs[:ndc] = get_latest_ndc(nacsis_info[:cls_info])
+            # 関連テーブル：版冊次の設定
+            if volg_info.present?
+              manifestation = get_volg_manifestation(nacsis_info[:nbn], volg_info['VOL'])
+              if volg_info['ISBN']
+                identifier_type = IdentifierType.where(:name => 'isbn').first_or_create
+                attrs[:identifiers] <<
+                  Identifier.create(:body => volg_info['ISBN'], :identifier_type_id => identifier_type.id)
+              end
+              attrs[:edition_display_value] = volg_info['VOL']
+              attrs[:price_string] = volg_info['PRICE']
+              attrs[:wrong_isbn] = volg_info['XISBN']
+            end
+            if nacsis_info[:ndlcn].present?
+              identifier_type = IdentifierType.where(:name => 'ndlcn').first_or_create
+              nacsis_info[:ndlcn].uniq.each do |ndlcn|
+                attrs[:identifiers] <<
+                  Identifier.create(:body => ndlcn, :identifier_type_id => identifier_type.id)
+              end
+            end
+            nacsis_info[:other_number].each do |othn|
+              othn_array = othn.split(':')
+              name = othn_array[0]
+              val = othn_array[1]
+              unless name.nil? || val.nil?
+                identifier_type = IdentifierType.where(:name => name.downcase).first_or_create
+                attrs[:identifiers] <<
+                  Identifier.create(:body => val, :identifier_type_id => identifier_type.id)
+              end
+            end
+          else # root_manifestation用
             attrs[:nacsis_identifier] = nacsis_cat.ncid
-            attrs[:nbn] = nacsis_info[:nbn]
+            nacsis_info[:xissn].each do |xissn|
+              identifier_type = IdentifierType.where(:name => 'xissn').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => xissn, :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:ndlpn]
+              identifier_type = IdentifierType.where(:name => 'ndlpn').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => nacsis_info[:ndlpn], :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:coden]
+              identifier_type = IdentifierType.where(:name => 'coden').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => nacsis_info[:coden], :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:ulpn]
+              identifier_type = IdentifierType.where(:name => 'ulpn').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => nacsis_info[:ulpn], :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:ndlcln]
+              identifier_type = IdentifierType.where(:name => 'ndlcln').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => nacsis_info[:ndlcln], :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:ndlhold]
+              identifier_type = IdentifierType.where(:name => 'ndlhold').first_or_create
+              attrs[:identifiers] <<
+                Identifier.create(:body => nacsis_info[:ndlhold], :identifier_type_id => identifier_type.id)
+            end
+            if nacsis_info[:freq]
+              attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id) || Frequency.find_by_nii_code('u').try(:id)
+            end
+            attrs[:manifestation_type_id] = ManifestationType.where(:nacsis_identifier => nacsis_info[:type]).first.try(:id)
+            attrs[:price_string] = nacsis_info[:price]
           end
+          if manifestation
+            print_log "update manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier}"
+            # TODO 既存のその他の識別子を削除してから新規登録する仕様でよいか？
+            manifestation.identifiers.destroy_all
 
-          attrs[:ndc] = get_latest_ndc(nacsis_info[:cls_info])
-          # 関連テーブル：版冊次の設定
-          if volg_info.present?
-            if volg_info['ISBN']
-              identifier_type = IdentifierType.where(:name => 'isbn').first_or_create
-              attrs[:identifiers] <<
-                Identifier.create(:body => volg_info['ISBN'], :identifier_type_id => identifier_type.id)
-            end
-            attrs[:edition_display_value] = volg_info['VOL']
-            attrs[:price_string] = volg_info['PRICE']
-            attrs[:wrong_isbn] = volg_info['XISBN']
+            manifestation.update_attributes!(attrs)
+          else
+            manifestation = Manifestation.create!(attrs)
+            print_log "create manifestaton(#{manifestation.id}) IDENTIFIER: #{attrs[:identifier]}"
           end
-          if nacsis_info[:ndlcn].present?
-            identifier_type = IdentifierType.where(:name => 'ndlcn').first_or_create
-            nacsis_info[:ndlcn].uniq.each do |ndlcn|
-              attrs[:identifiers] <<
-                Identifier.create(:body => ndlcn, :identifier_type_id => identifier_type.id)
-            end
-          end
-          nacsis_info[:other_number].each do |othn|
-            othn_array = othn.split(':')
-            name = othn_array[0]
-            val = othn_array[1]
-            unless name.nil? || val.nil?
-              identifier_type = IdentifierType.where(:name => name.downcase).first_or_create
-              attrs[:identifiers] <<
-                Identifier.create(:body => val, :identifier_type_id => identifier_type.id)
-            end
-          end
-        else # root_manifestation用
-          attrs[:nacsis_identifier] = nacsis_cat.ncid
-          nacsis_info[:xissn].each do |xissn|
-            identifier_type = IdentifierType.where(:name => 'xissn').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => xissn, :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:ndlpn]
-            identifier_type = IdentifierType.where(:name => 'ndlpn').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => nacsis_info[:ndlpn], :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:coden]
-            identifier_type = IdentifierType.where(:name => 'coden').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => nacsis_info[:coden], :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:ulpn]
-            identifier_type = IdentifierType.where(:name => 'ulpn').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => nacsis_info[:ulpn], :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:ndlcln]
-            identifier_type = IdentifierType.where(:name => 'ndlcln').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => nacsis_info[:ndlcln], :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:ndlhold]
-            identifier_type = IdentifierType.where(:name => 'ndlhold').first_or_create
-            attrs[:identifiers] <<
-              Identifier.create(:body => nacsis_info[:ndlhold], :identifier_type_id => identifier_type.id)
-          end
-          if nacsis_info[:freq]
-            attrs[:frequency_id] = Frequency.find_by_nii_code(nacsis_info[:freq]).try(:id) || Frequency.find_by_nii_code('u').try(:id)
-          end
-          attrs[:manifestation_type_id] = ManifestationType.where(:nacsis_identifier => nacsis_info[:type]).first.try(:id)
-          attrs[:price_string] = nacsis_info[:price]
-        end
-        if manifestation
-          manifestation.update_attributes!(attrs)
-        else
-          manifestation = Manifestation.create!(attrs)
-        end
-        manifestation.work_has_languages =  new_work_has_languages_from_nacsis_cat(nacsis_cat,manifestation)
-        manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
-        if nacsis_info[:vlyr]
-          vlyr_ary = []
-          nacsis_info[:vlyr].each do |vlyr|
+          manifestation.work_has_languages =  new_work_has_languages_from_nacsis_cat(nacsis_cat,manifestation)
+          manifestation.work_has_titles = new_work_has_titles_from_nacsis_cat(nacsis_cat)
+          if nacsis_info[:vlyr]
+            vlyr_ary = []
+            nacsis_info[:vlyr].each do |vlyr|
             vlyr_ary << ManifestationExtext.new(:name => 'VLYR', :value => vlyr)
+           end
+            manifestation.manifestation_extexts = vlyr_ary
           end
-          manifestation.manifestation_extexts = vlyr_ary
-        end
 
-        # 関連テーブル：著者 役割表示の設定
-        manifestation.creates.each do |cre|
-          cre.create_type_id = CreateType.where(:name => af[manifestation.creators.where(:id => cre.agent_id).first.full_name]).first.try(:id)
-          cre.save!
+          # 関連テーブル：著者 役割表示の設定
+          manifestation.creates.each do |cre|
+            cre.create_type_id = CreateType.where(:name => af[manifestation.creators.where(:id => cre.agent_id).first.full_name]).first.try(:id)
+            cre.save!
+          end
+          manifestation
         end
-        manifestation
       end
 
       def create_series_with_relation_from_nacsis_cat(nacsis_cat, book_types)
@@ -1299,8 +1324,9 @@ class NacsisCat
         series_statement
       end
 
-      def new_series_statement_from_nacsis_cat(nacsis_cat)
+      def new_series_statement_from_nacsis_cat(nacsis_cat, root_manifestation = nil)
         return nil if nacsis_cat.blank?
+        series_statement = root_manifestation.series_statement || SeriesStatement.new
         nacsis_info = nacsis_cat.detail
         attrs = {}
         attrs[:nacsis_series_statementid] = nacsis_cat.ncid
@@ -1309,7 +1335,8 @@ class NacsisCat
         attrs[:issn] = nacsis_info[:issn]
         attrs[:note] = nacsis_info[:note]
         attrs[:publication_status_id] = PublicationStatus.find_by_name(nacsis_info[:pstat]).try(:id)
-        SeriesStatement.new(attrs)
+        series_statement.assign_attributes(attrs)
+        return series_statement
       end
 
       def new_work_has_languages_from_nacsis_cat(nacsis_cat, manifestation)
@@ -1384,6 +1411,17 @@ class NacsisCat
           end
         end
         return_val
+      end
+
+      def get_volg_manifestation(nbn, vol)
+        return nil if nbn.blank? || vol.blank?
+        manifestation = Manifestation.where(:nbn => nbn, :edition_display_value => vol).first
+        manifestation = Manifestation.where(:nbn => nbn, :volume_number_string => vol).first unless manifestation
+        volume_numbers = [vol.gsub(I18n.t('nacsis_cat.replace_volume_1'),''),
+                          vol.gsub(I18n.t('nacsis_cat.replace_volume_2'),''),
+                          vol.gsub(/#{I18n.t('nacsis_cat.replace_volume_1')}|#{I18n.t('nacsis_cat.replace_volume_2')}/,'')]
+        manifestation = Manifestation.where(['nbn = ? AND volume_number_string in (?)', nbn, volume_numbers]).first unless manifestation
+        return manifestation
       end
 
       def get_relationship_type(type_str)

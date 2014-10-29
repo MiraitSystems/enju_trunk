@@ -186,9 +186,6 @@ ja:
       realize_type: 表現の関係
       enju_terminal: 端末設定
       copy_request: 文献複写依頼
-      nacsis_user_request: 複写貸借状況
-      nacsis_request_copy: 複写依頼
-      nacsis_request_lend: 借用依頼
       exchange_manifestation: 所蔵付け替え
       relationship_family: 遍歴ファミリー
       series_statement_relationship_type: 遍歴関係タイプ
@@ -1411,98 +1408,6 @@ ja:
         user: 利用者
         body: 本文
         created_at: 登録日
-      nacsis_user_request:
-        subject_heading: 本標題/責任表示
-        subject_heading_reading: 本標題等の読み
-        title_alternative: 本標題等のその他の読み
-        other_titles: その他の標題情報
-        VTK: 種類
-        VTD: 標題
-        VTR: 読み
-        VTVR: その他の読み
-        publisher: 出版者
-        pub_date: 出版年
-        publish_year: 出版年
-        physical_description: 形態(ページ情報)
-        series_title: シリーズ名
-        note: 資料注記
-        isbn: ISBN
-        issn: ISSN
-        xissn: XISSN
-        pub_country: 出版国
-        title_language: 標題言語
-        text_language: 本文言語
-        original_language: 原本言語
-        author_heading: 著者情報
-        subject: 件名
-        freq: 刊行頻度コード
-        ncid: NCID
-        marc: MARC ID
-        cls_info: 分類記号
-        vol_info: 版情報
-        VOL: 巻冊次
-        ISBN: ISBN
-        PRICE: 価格
-        XISBN: 無効ISBN
-        cw_info: 内容著作注記
-        CWT: 標題
-        CWA: 責任表示
-        CWR: 読み
-        CWVR: その他の読み
-        nbn: 全国書誌番号
-        lccn: LCカード番号
-        ndlcn: NDLカード番号
-        ndlpn: NDL雑誌番号
-        gpon: GPO番号
-        coden: CODEN
-        ulpn: ULP番号
-        other_number: その他の番号
-        pstat: 出版状況コード
-        ptb_info: 親書誌情報
-        PTBID: ID
-        PTBK: 種類
-        PTBTR: 標題
-        PTBTRR: 読み
-        PTBTRVR: その他の読み
-        PTBNO: 番号等
-        utl_info: 統一書名情報
-        UTID: ID
-        UTFLG: 主記入フラグ
-        UTHDNG: 書名
-        UTHDNGR: 読み
-        UTHDNGVR: その他の読み
-        UTINFO: その他の情報
-        price: 金額
-        fid: 遍歴ファミリーID
-        bhn_info: 遍歴注記情報
-        BHBID: 前後書誌レコードID
-        BHK: 遍歴タイプ
-        BHTR: 前後タイトル
-        ndlcln: NDL請求番号
-        ndlhold: NDL所蔵データ
-        user_id: 利用者ID
-        user_name: 利用者名
-        request_datetime: 依頼日時
-        request_type: 依頼分類
-        request_type_names:
-         -
-         - 借用
-         - 複写
-        state: 処理状態
-        state_names:
-         - 終了
-         - 受付
-         - 受付済
-         - 事務員返却
-         - 依頼済
-         - 相手側拒否
-         - 到着済
-         - 事務確認中
-         - 連務連絡済
-        user_note: 依頼内容
-        librarian_note: 事務員注記
-        created_from: 開始日付
-        created_to: 終了日付
       relationship_family:
         display_name: 表示名
         description: 説明
@@ -1673,7 +1578,6 @@ ja:
     search_term: "検索語"
     search_for: "検索対象"
     search_local: "%{library} 所蔵"
-    search_nacsis: "NACSIS 目録"
     all_search_term: "すべて"
     any_search_term: "いずれか"
     except_search_term: "を含まない"
@@ -1683,8 +1587,6 @@ ja:
     number_of_manifestations: "%{numdocs} 件の資料があります。"
     number_of_unread_messages: "%{numdocs} 件の未読メッセージがあります。"
     number_of_search_results: "%{count} 件の資料が見つかりました。"
-    number_of_nacsis_book_search_results: "図書の検索結果（%{count}件）"
-    number_of_nacsis_serial_search_results: "雑誌資料の検索結果（%{count}件）"
     tag: "タグ"
     call_number: "請求記号"
     holding: "所蔵"
@@ -1798,7 +1700,6 @@ ja:
     import_from_tsvfile: "TSVファイルからのインポート"
     import_from_file: "ファイルからのインポート"
     import_from_network: "ネットワークからインポート"
-    import_from_nacsis: "NACSISファイルからのインポート"
     no_record_found: "資料が見つかりませんでした。"
     did_you_mean_to_search_for: "もしかして"
     not_found_users: "該当の利用者は見つかりませんでした。"
@@ -1934,8 +1835,6 @@ ja:
     library_reports: "報告書・帳票"
     more_information: "詳細情報を表示"
     output_receipt_printer: "＊この資料確認票はレシートプリンタ用です。8cm幅に出力されますのでご注意ください。"
-    nacsis_book: "図書"
-    nacsis_serial: "雑誌"
     exstatistics:
       ranknumber: 順位
       count: 回数
@@ -2608,13 +2507,6 @@ ja:
     reserved_item : "予約済みの資料です。(ユーザ名: %{username}, 利用者番号: %{user_number})"
     invalid_isbn: "指定ISBNが不正です。 ISBN: %{isbn}"
     record_not_found: "指定ISBNの書誌情報を読み込めませんでした。 ISBN: %{isbn}"
-  resource_import_nacsisfiles:
-    new:
-      resource_import_nacsisfile: NACSISファイル
-      wrong_file: "はインポートできません。"
-      wrong_extention: "拡張子が%{split_type}、あるいはxlsx形式のファイルのみインポート可能です。"
-    successfully_uploaded: "正常に送信されました。"
-    upload_failed: "送信に失敗しました。"
   agent_import_file:
     template_download: "テンプレートをダウンロード"
     import_request: "すぐにインポート"
@@ -2967,9 +2859,6 @@ ja:
   agent_merge_list:
     description: "下記のリストから1件選択し、統合ボタンを押してください。<br />
                  ※統合後、選択した人物・団体の情報のみが残り、それ以外の人物・団体の情報は全て削除されます。"
-  manifestations:
-    show_nacsis:
-      local_import: "ローカルインポート"
   function_class_abilities:
     index:
       select_function_class: 機能区分の変更
