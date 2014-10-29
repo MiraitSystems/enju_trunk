@@ -43,7 +43,7 @@ class NacsisCat
   class << self
     def print_log(t)
       File.open("#{Rails.root}/log/nacsis_cat_#{Time.now.strftime('%Y%m%d')}.log", "a") do |file|
-        file.write("#{Time.now} #{t}")
+        file.write("#{Time.now} #{t} \n")
       end 
     end
 
