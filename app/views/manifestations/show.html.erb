@@ -15,6 +15,53 @@
   <div id="content_list">
   <p id="notice"><%= notice %></p>
 
+  <script type="text/javascript">
+    function add_book_thumbnail(thumbnail_id, booksInfo) {
+      var link = '';
+      for (i in booksInfo.items) {
+        var book = booksInfo.items[i]
+        var image = book.volumeInfo.imageLinks;
+        if (image && image.thumbnail != undefined) {
+          var thumbnail = image.thumbnail.replace('zoom=5', 'zoom=1');
+          if ( document.location.protocol == 'https:' ) {
+            var parser = document.createElement('a');
+            parser.href = thumbnail;
+            parser.protocol = 'https:';
+            parser.hostname = 'encrypted.google.com';
+            thumbnail = parser.href;
+          }
+          if (thumbnail) {
+            var link = '<img src="' + thumbnail + '" alt="' + book.volumeInfo.title + '" />';
+          }
+        }
+      }
+      if (link === '') {
+        var link = '<%= image_tag("unknown_resource.png", :size => "150x150", :alt => "*") %>';
+      }
+      var thumb_element = document.getElementById(thumbnail_id);
+      if (thumb_element) {
+        thumb_element.innerHTML = link;
+      }
+    }
+    
+    $.getJSON("https://www.googleapis.com/books/v1/volumes?q=isbn:4864102538",
+    function(data){
+      add_book_thumbnail("bookjacket_thumbnail1", data)
+    });
+    $.getJSON("https://www.googleapis.com/books/v1/volumes?q=isbn:4873116554",
+    function(data){
+      add_book_thumbnail("bookjacket_thumbnail2", data)
+    });
+    $.getJSON("https://www.googleapis.com/books/v1/volumes?q=isbn:4554",
+    function(data){
+      add_book_thumbnail("bookjacket_thumbnail3", data)
+    });
+ 
+  </script>
+  <div id="bookjacket_thumbnail1"></div>
+  <div id="bookjacket_thumbnail2"></div>
+  <div id="bookjacket_thumbnail3"></div>
+
     <% if flash[:error] %>
       <div style="color: red;"><b><%= flash[:error] %></b></div>
     <% end %>
