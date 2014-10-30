@@ -1,3 +1,4 @@
+<% cache ([manifestation, fragment: 'manifestation', role: current_user_role_name, locale: @locale]) do %>
             <tr tabindex=<%=@key_position%> id="tr_basket_<%=manifestation.id%>" class="line<%= cycle("0", "1") %>" name=<%=manifestation.id %>>
               <td style="480px">
                <%- if manifestation.article? %>
@@ -80,3 +81,4 @@
               <%- end -%>
             </tr>
       <% @key_position = @key_position + 1 %>
+<% end %>
