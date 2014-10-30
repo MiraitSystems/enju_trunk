@@ -2,7 +2,7 @@
 library_00001:
   name: gotanda
   short_display_name: gotanda
-  display_name: 五反田中央図書館
+  display_name: "ja:五反田中央図書館\r\nen:Gotanda Library"
   fax_number:
   telephone_number_1:
   telephone_number_2:
@@ -16,7 +16,7 @@ library_00001:
 library_00002:
   name: gotanda1
   short_display_name: gotanda1
-  display_name: 五反田１丁目分館
+  display_name: "ja:五反田１丁目分館\r\nen:Gotanda 1st"
   fax_number:
   telephone_number_1:
   telephone_number_2:
@@ -30,7 +30,7 @@ library_00002:
 library_00004:
   name: gotanda2
   short_display_name: gotanda2
-  display_name: 五反田２丁目分館
+  display_name: "ja:五反田２丁目分館\r\nen:Gotanda2nd"
   fax_number:
   telephone_number_1:
   telephone_number_2:
@@ -44,7 +44,7 @@ library_00004:
 library_00005:
   name: gotanda3
   short_display_name: gotanda3
-  display_name: 五反田３丁目分館
+  display_name: "ja:五反田３丁目分館\r\nen:Gotanda3rd"
   fax_number:
   telephone_number_1:
   telephone_number_2:
