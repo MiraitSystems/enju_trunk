@@ -1345,7 +1345,12 @@ class ManifestationsController < ApplicationController
       identifier_type = IdentifierType.find(params[:other_identifier][:identifier_type_id]) rescue nil
       if identifier_type
         unless params[:other_identifier][:identifier].blank?
-          qwords << "other_identifier_sm:#{identifier_type.name}-#{params[:other_identifier][:identifier]}"
+          if Manifestation::ISBN_IDENTIFIER_TYPE_IDS.include?(identifier_type.id)
+            param_string = Lisbn.new(params[:other_identifier][:identifier]).isbn13 || params[:other_identifier][:identifier]
+          else
+            param_string = params[:other_identifier][:identifier]
+          end
+          qwords << "other_identifier_sm:#{identifier_type.name}-#{param_string}"
         end
       end
     end
