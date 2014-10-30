@@ -71,6 +71,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'enju_manifestation_viewer', '0.1.0.pre3'
   s.add_dependency 'enju_oai', '0.1.0.pre5'
   s.add_dependency 'mobile-fu', '1.3.1'
+  s.add_dependency 'cache_digests'
 
   s.add_development_dependency 'sunspot_solr', '~> 2.0.0'
   s.add_development_dependency 'sunspot-rails-tester'

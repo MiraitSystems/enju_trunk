@@ -66,6 +66,15 @@ class Agent < ActiveRecord::Base
   before_validation :set_role_and_name, :set_date_of_birth, :set_date_of_death
   before_save :change_note, :mark_destroy_blank_full_name
 
+  # ManifestationsController#index の manifestation をキャッシュしているため
+  # 著者・協力者・出版者のフルネーム変更時は manifestation.updated_at を更新する
+  after_update :touch_manifestation, :if => lambda{ self.full_name_changed? || self.required_role_id_changed?}
+  def touch_manifestation
+    self.works.map{|w| w.touch}
+    self.realizes.map{|r| r.touch}
+    self.expressions.map{|e| e.touch}    
+  end
+
   validate :check_duplicate_user
 
   has_paper_trail
