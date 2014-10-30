@@ -168,10 +168,7 @@
           </tr>
         <% end %>
         <% if manifestation.classifications.present? %>
-          <tr>
-            <td><%= t('activerecord.models.classification') -%>:</td>
-            <td><%= display_classifications(manifestation) -%></td>
-          </tr>
+          <%= render :partial => "show_classification_field", :locals => { :manifestation => manifestation } %>
         <% end %>
         <%- unless manifestation.subjects.empty? -%>
           <tr>
