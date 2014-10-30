@@ -232,9 +232,10 @@
           <td><%= t('activerecord.attributes.manifestation.price') -%>:</td>
           <td><%= manifestation.price -%></td>
         </tr>
-
-        <%= render :partial => "show_classification_field", :locals => { :manifestation => manifestation } %>
-
+        <tr>
+          <td><%= t('activerecord.models.classification') -%>:</td>
+          <td><%= display_classifications(manifestation) -%></td>
+        </tr>
         <tr>
           <td><%= t('activerecord.models.subject') -%>:</td>
           <td>
