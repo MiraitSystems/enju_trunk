@@ -1,11 +1,4 @@
 <div data-role="header" class="ui-grid-b">
-  <div class="ui-block-a">
-  </div>
-  <a href="javascript:history.back()", data-icon="back", data-iconpos="notext", class="ui-btn-left", id="header_left_mobile"><%= t('page.back') %></a>
-
-  <div class="ui-block-b" id="library_system_name_mobile">
-    <h3 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h3>
-  </div>
   <script>
   $(function(){
     $(document.body).delegate("form[action='/accounts/sign_out']",'submit',function(e){
@@ -13,10 +6,12 @@
     });
   });
   </script>
-  <div class="ui-block-c" id="header_right_mobile">
+  <div class="ui-block-a" id="header_right_mobile">
     <% if user_signed_in? %>
-      <div class="right_align"><%= link_to t('page.user_management'), current_user -%></div>
-      <div class="right_align"><%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete, "data-ajax" => :false, "data-role" => :none -%></div>
+      <div class="right_align">
+        <%= link_to t('page.user_management'), current_user -%>
+        <%= link_to t('page.sign_out'), destroy_user_session_path, method: :delete, "data-ajax" => :false, "data-role" => :none -%>
+      </div>
     <% else %>
       <% unless controller_name == 'sessions' %>
         <%- unless SystemConfiguration.isWebOPAC %>
@@ -24,5 +19,10 @@
         <%- end -%>
       <% end %>
     <% end %>
+  </div>
+  <a href="javascript:history.back()", data-icon="back", data-iconpos="notext", class="ui-btn-left", id="header_left_mobile"><%= t('page.back') %></a>
+
+  <div class="ui-block-b" id="library_system_name_mobile">
+    <h3 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h3>
   </div>
 </div>

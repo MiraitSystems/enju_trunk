@@ -9,11 +9,9 @@ div#header_mobile{
 }
 
 div#library_system_name_mobile{
+  width: 100%;
   text-align: center;
-  padding-left: 2px;
-  padding-right: 2px;
-  padding-top: 0px;
-  padding-bottom: 0px;
+  margin-bottom: 22px; 
 }
 
 #header_left_mobile{
@@ -33,7 +31,8 @@ div#header_right_mobile{
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  width: 100%;
+  font-size: 80%;
 }
 
 .right_align{
@@ -53,6 +52,7 @@ h2.resource_title_mobile{
 h3.resource_title_mobile{
   line-height: 140%;
   text-align: center;
+  height: 20px;
 }
 
 .input_field{
