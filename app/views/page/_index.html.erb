@@ -131,11 +131,11 @@ $(document).FunctionKeys(
           <% @events.each do |event| %>
             <dl>
               <dt>
-                <%= event.library.display_name %><br/ >
+                <%= event.library.display_name.localize %><br/ >
                 <%= l(event.start_at, :format => :only_date) %> - <%= l(event.end_at, :format => :only_date) %>
               </dt>
               <strong>
-                <dd><%= event.display_name %></dd>
+                <dd><%= event.display_name.localize %></dd>
               </strong>
             </dl>
             <br />

@@ -1665,7 +1665,7 @@ en:
     telephone_number: Telephoone number
     about_this_system: About this system
     report_bugs: Report bugs
-    new_resource: New resources
+    new_resource: New
     checkout_history: Checkout history
     recommendation: Recommendation
     add_manually: Add manually
@@ -1784,8 +1784,8 @@ en:
     number_of_pictures:
       one: Picture
       other: Pictures
-    best_request: best request
-    best_reader: best reader
+    best_request: Best REQ.
+    best_reader: Best Reader
     aggregation_period: Aggregation period
     checkout_count: Checkout count
     reserve_count: Reserve count
