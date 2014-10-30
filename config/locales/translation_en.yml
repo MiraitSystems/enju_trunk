@@ -1589,8 +1589,9 @@ en:
     all_publisher: All
     any_publisher: Any
     except_publisher: Except
-    all_subject: All
-    any_subject: Any
+    all_subject_text: All
+    any_subject_text: Any
+    solr_query: Solr Query
     note: Note
     back: Back
     show: Show
