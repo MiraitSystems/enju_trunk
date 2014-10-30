@@ -3,6 +3,6 @@
   <%= search_field_tag 'query', nil, :id => 'form_width', :placeholder => t('page.search_term'), :autofocus => true -%>
   <%= submit_tag t('page.search') -%>
 <%- end -%>
-<%= button_to t('page.advanced_search'), page_advanced_search_path -%>
+<%= link_to t('page.advanced_search'), page_advanced_search_path -%>
 </div>
 <%= javascript_tag("$('#query').focus()") -%>
