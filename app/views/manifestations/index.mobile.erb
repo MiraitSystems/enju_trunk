@@ -8,10 +8,16 @@
     <%= t('page.number_of_search_results', :count => @count[:query_result]) -%>
     <%= form_for :manifestations, :html => {:method => 'get'} do -%>
       <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
+      <%= hidden_field_tag 'mode', params[:mode] if params[:mode] -%>
       <%= submit_tag t('page.research') -%>
     <% end %>
     <%= link_to_advanced_search(nil, 'link') -%>
+    <% if @series_statement -%>
+      <%= link_to t('page.normal_search'), manifestations_path %>
+    <% end %>
+    <%= link_to_normal_search -%>
   </div>
+  <%= advanced_search_condition_summary -%>
 </div>
 <hr>
 
