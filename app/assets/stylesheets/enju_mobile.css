@@ -78,7 +78,7 @@ td.label{
   white-space: nowrap;
 }
 hr.dash_line{
-  border: 2px dashed #bbb;
+  border: 1px dashed #bbb;
   height: 0px;
 }
 table#advanced_search {
@@ -129,10 +129,15 @@ table#advanced_search > tr > td > div {
   padding-left: 20px;
 }
 
-.type_select{
+.type_select_multiple{
   width: 120px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.list_column{
+  border: solid;
+  border-width: 1px 0px;
 }
 
 .ui-input-has-clear{

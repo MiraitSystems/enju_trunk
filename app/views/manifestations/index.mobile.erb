@@ -20,7 +20,7 @@
 <br>
 <ul data-role="listview">
   <% @manifestations.each do |manifestation| %>
-    <li>
+    <li class="list_column">
       <%= link_to manifestation do %>
         <%= manifestation.original_title %>
         <div style="white-space: normal;">
@@ -33,5 +33,6 @@
     </li>
   <% end %>
 </ul>
+<br>
 
 <%= paginate(@manifestations) %>
