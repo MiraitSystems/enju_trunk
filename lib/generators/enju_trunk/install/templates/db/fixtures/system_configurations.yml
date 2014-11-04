@@ -1552,4 +1552,11 @@ system_configuration_00222:
   description: "資料へ件名を追加する際、既に存在する件名しか追加できないようにするか"
   typename: Boolean
   category: 'manifestation'
+system_configuration_00223:
+  id: 223
+  keyname: manifestation.search.hide_without_accessible_item
+  v: "true"
+  typename: Boolean
+  description: "参照可能な所蔵があるときのみ書誌情報を表示する"
+  category: 'manifestation'
 
