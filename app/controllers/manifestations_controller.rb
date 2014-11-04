@@ -707,17 +707,6 @@ class ManifestationsController < ApplicationController
   # GET /manifestations/1.json
   def show
     @location_symbol_size = Keycode.where(:name => 'item.location_symbol')
-    if SystemConfiguration.get('manifestation.search.hide_not_for_loan')
-      can_show = true
-      unless user_signed_in?
-        can_show = false if @manifestation.has_available_items?
-      else
-        can_show = false if !current_user.has_role?('Librarian') and @manifestation.has_available_items?(current_user.required_role_id)
-      end
-      unless can_show
-        access_denied
-      end
-    end 
 
     if params[:isbn].present?
       if @manifestation_redirect = Manifestation.find_by_isbn(params[:isbn])
@@ -1483,10 +1472,12 @@ class ManifestationsController < ApplicationController
     ]
 
     # hide manifestaion without available item for Guest and User
-    unless ((SystemConfiguration.get('manifestation.show_all') && 
-      current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
-      current_role_id = (current_user.try(:role) || Role.default_role).id
-      with << [:has_available_items, :equal_to, "#{current_role_id}_has_available_items"]
+    if SystemConfiguration.get('manifestation.search.hide_without_accessible_item')
+      unless ((SystemConfiguration.get('manifestation.show_all') && 
+        current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
+        current_role_id = (current_user.try(:role) || Role.default_role).id
+        with << [:has_available_items, :equal_to, "#{current_role_id}_has_available_items"]
+      end
     end
 
     if @removed

@@ -416,7 +416,7 @@ class Ability
         item.required_role_id <= 2 && item.shelf.required_role_id <= 2 && item.circulation_status.name != 'Removed'
       end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 2 && manifestation.has_available_items?(2)
+        manifestation.required_role_id <= 2 && (!SystemConfiguration.get('manifestation.search.hide_without_accessible_item') || manifestation.has_available_items?(2))
       end
       can :edit, Manifestation #TODO not necessary?
       can [:index, :create], Question
@@ -513,7 +513,7 @@ class Ability
         item.required_role_id <= 1 && item.shelf.required_role_id <= 1 && item.circulation_status.name != 'Removed'
       end
       can :read, Manifestation do |manifestation|
-        manifestation.required_role_id <= 1 && manifestation.has_available_items?(1)
+        manifestation.required_role_id <= 1 && (!SystemConfiguration.get('manifestation.search.hide_without_accessible_item') || manifestation.has_available_items?(1))
       end
       can [:index, :create, :show], PurchaseRequest unless SystemConfiguration.isWebOPAC
       can :read, [
