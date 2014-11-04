@@ -142,6 +142,11 @@ table#advanced_search > tr > td > div {
   white-space: nowrap;
 }
 
+.type_select{
+  min-width: 110px;
+  width: 100%;
+}
+
 .list_column{
   border: solid;
   border-width: 1px 0px;
