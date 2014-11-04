@@ -54,7 +54,7 @@ class Library < ActiveRecord::Base
   # 図書館更新時は manifestation.updated_at を更新する
   after_update :touch_manifestation, :if => lambda{ self.display_name_changed?}
   def touch_manifestation
-    Item.where(:shelf_id => self.shelves.map(&:id)).collect(&:manifestation).map{|m| m.touch} rescue nil
+    ActiveRecord::Base.connection.update_sql("update manifestations set updated_at = current_timestamp where id in (select manifestation_id from items where shelf_id in (select id from shelves where library_id = #{self.id}))")
   end
 
   paginates_per 10
