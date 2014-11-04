@@ -25,4 +25,8 @@
   <div class="ui-block-b" id="library_system_name_mobile">
     <h3 class="resource_title_mobile"><%= link_to LibraryGroup.system_name(@locale), root_path, :title => LibraryGroup.system_name(@locale) %></h3>
   </div>
+
+  <div class="ui-block-c right_align" id="header_locale">
+    <%= render 'page/select_locale' -%>
+  </div>
 </div>

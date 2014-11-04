@@ -11,7 +11,6 @@ div#header_mobile{
 div#library_system_name_mobile{
   width: 100%;
   text-align: center;
-  margin-bottom: 22px; 
 }
 
 #header_left_mobile{
@@ -31,6 +30,14 @@ div#header_right_mobile{
   padding-left: 5px;
   padding-right: 5px;
   padding-top: 0.5em;
+  width: 100%;
+  font-size: 80%;
+}
+
+div#header_locale{
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 0.5em;
   width: 100%;
   font-size: 80%;
 }
