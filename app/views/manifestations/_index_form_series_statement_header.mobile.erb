@@ -1,0 +1,40 @@
+<h4 class="resource_title">
+  <%= link_to @series_statement.original_title, @series_statement, :itemprop => 'name' -%>
+  <% if @series_statement.periodical %>
+    <%- unless @series_statement.root_manifestation.volume_number_string.blank? %>
+      <%= t('manifestation.format_volume', :volume => @series_statement.root_manifestation.volume_number_string) %>
+    <%- end -%>
+    <%- unless SystemConfiguration.get("manifestation.volume_number_string_only") -%>
+      <%- unless @series_statement.root_manifestation.issue_number_string.blank? %>
+        <%= t('manifestation.format_issue', :issue => @series_statement.root_manifestation.issue_number_string) %>
+      <%- end -%>
+      <%- @series_statement.root_manifestation.serial_number_string %>
+    <%- end -%>
+    <p>
+    <%- unless @series_statement.root_manifestation.creators.readable_by(current_user).empty? -%>
+      <%= t('agent.creator') -%>: <%= agents_list(@series_statement.root_manifestation.creates.readable_by(current_user), {:itemprop => 'author'},
+                                                    @series_statement.root_manifestation.id, 'create') -%>
+    <%- end -%>
+    <%- unless @series_statement.root_manifestation.contributors.readable_by(current_user).empty? -%>
+      <%= t('agent.contributor') -%>: <%= agents_list(@series_statement.root_manifestation.realizes.readable_by(current_user), {:itemprop => 'editor'},
+                                                        @series_statement.root_manifestation.id, 'realize') -%>
+    <%- end -%>
+    <%- unless @series_statement.root_manifestation.publishers.readable_by(current_user).empty? -%>
+      <%= t('agent.publisher') -%>: <%= agents_list(@series_statement.root_manifestation.produces.readable_by(current_user), {:itemprop => 'publisher'},
+                                                      @series_statement.root_manifestation.id, 'produce') -%>
+    <% end %>
+    <%- if @series_statement.root_manifestation.pub_date.present? -%>
+      <meta itemprop="publishDate" content="<%= @series_statement.root_manifestation.try(:date_of_publication).try(:iso8601) %>" />
+      (<%= t('activerecord.attributes.manifestation.pub_date_article') %>: <%= @series_statement.root_manifestation.pub_date -%>)
+    <%- end -%>
+    <%- unless SystemConfiguration.isWebOPAC -%>
+      <%- unless @series_statement.root_manifestation.access_address.blank? -%>
+        <br />
+        <%= link_to @series_statement.root_manifestation.access_address, @series_statement.root_manifestation.access_address -%>
+        <%= link_to image_tag('icons/world_go.png', :size => '16x16', :alt => ('Web'), :title => t('tooltip.web')), @series_statement.root_manifestation.access_address -%>
+      <%- end -%>
+    <%- end -%>
+    </p>
+  <% end %>
+</h4>
+<hr>

@@ -1,3 +1,7 @@
+<% if @series_statement %>
+  <%= render "manifestations/index_form_series_statement_header" %>
+<% end %>
+
 <%= form_tag({:controller => 'manifestations'}, {:method => 'get'}) do -%>
 <table id="advanced_search">
   <tr>
