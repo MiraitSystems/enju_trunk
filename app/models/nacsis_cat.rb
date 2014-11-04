@@ -1051,7 +1051,7 @@ class NacsisCat
           root_manifestation.series_statement = series_statement
           root_manifestation.periodical_master = true
           root_manifestation.save!; series_statement.save!
-          manifestation.series_statement = series_statement if manifestation && !manifestation.periodical_master
+          manifestation.series_statement = series_statement if manifestation
           nacsis_cat.detail[:vol_info].each do |volg|
             volg_manifestation = new_manifestation_from_nacsis_cat(nacsis_cat, book_types, volg)
             volg_manifestation.series_statement = series_statement

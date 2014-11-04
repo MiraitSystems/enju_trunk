@@ -24,7 +24,7 @@ class Shelf < ActiveRecord::Base
   # 本棚更新時は manifestation.updated_at を更新する
   after_update :touch_manifestation, :if => lambda{ self.display_name_changed? || self.required_role_id_changed?}
   def touch_manifestation
-    items.map{|i| i.manifestation.touch}
+    ActiveRecord::Base.connection.update_sql("update manifestations set updated_at = current_timestamp where id in (select manifestation_id from items where shelf_id = #{self.id})");
   end
   
   searchable do

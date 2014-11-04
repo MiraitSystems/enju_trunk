@@ -26,17 +26,20 @@
 <br>
 <ul data-role="listview">
   <% @manifestations.each do |manifestation| %>
-    <li class="list_column">
-      <%= link_to manifestation do %>
-        <%= manifestation.original_title %>
-        <div style="white-space: normal;">
-          <%= render 'manifestations/show_creators', :manifestation => manifestation -%>
-        </div>
-        <% manifestation_type = ManifestationType.where(:id => manifestation.manifestation_type_id).select([:display_name]).first %>
-        <%#= manifestation_type.display_name.localize %>
-        <%= render 'manifestations/holding', :manifestation => manifestation %>
-      <% end %>
-    </li>
+    <% cache ([manifestation, fragment: 'manifestation_mobile', role: current_user_role_name, locale: @locale]) do %>
+      <li class="list_column">
+        <%= Time.now %>
+        <%= link_to manifestation do %>
+          <%= manifestation.original_title %>
+          <div style="white-space: normal;">
+            <%= render 'manifestations/show_creators', :manifestation => manifestation -%>
+          </div>
+          <% manifestation_type = ManifestationType.where(:id => manifestation.manifestation_type_id).select([:display_name]).first %>
+          <%#= manifestation_type.display_name.localize %>
+          <%= render 'manifestations/holding', :manifestation => manifestation %>
+        <% end %>
+      </li>
+    <% end %>
   <% end %>
 </ul>
 <br>
