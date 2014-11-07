@@ -256,7 +256,7 @@ class NacsisCat
         nacsis_cat = result[:book].first
       end
       if nacsis_cat
-        print_log "-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
+        print_log "START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
         #TODO 
         catalog = Catalog.where(:display_name => 'NACSIS UPDATE', :name => 'NACSIS UPDATE', :nacsis_identifier => 'NACSIS UPDATE').first_or_create
         manifestation.update_attribute('catalog_id', catalog.id)
