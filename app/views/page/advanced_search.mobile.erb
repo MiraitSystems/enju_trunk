@@ -63,20 +63,12 @@
     <tr>
       <td><nobr><label><%= advanced_search_label(:other_identifier) -%>:</label></nobr></td>
       <td>
-        <%#= select2_tag 'other_identifier_identifier_type',
-          'other_identifier[identifier_type_id]',
-          IdentifierType.all,
-          (params[:other_identifier][:identifier_type_id].to_i rescue nil),
-          select_attribute: :id,
-          display_attribute: :display_name,
-          include_blank: true,
-          width: '200' %>
         <%= search_field_tag 'other_identifier[identifier]', (params[:other_identifier][:identifier] rescue nil) %>
       </td>
     </tr>
   <%- end -%>
   <tr>
-  <%#= render :partial => 'form_classification_field' -%>
+  <%= render :partial => 'form_classification_field' -%>
   </tr>
   <tr>
     <td><label><%= advanced_search_label(:edition_display_value) -%>:</label></td>
