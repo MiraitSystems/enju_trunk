@@ -146,7 +146,7 @@
   <% if SystemConfiguration.get('manifestation.manage_item_rank') %>
     <div class="row">
       <div><%= f.label t('activerecord.attributes.item.rank') %></div>
-      <div><%= f.select(:rank, item_ranks.collect{|r| [i18n_rank(r), r]}) %></div>
+      <div><%= f.select2 :rank, item_ranks, @item.rank, :display_attribute => 'text', :select_attribute => 'id' %></div>
     </div>
   <% end %>
 
