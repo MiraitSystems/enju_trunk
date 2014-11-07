@@ -248,7 +248,7 @@ class NacsisCat
     end
 
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からManifestationを更新する
-    def update_manifestation_from_nbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil, index => nil)
+    def update_manifestation_from_nbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil, index = nil)
       raise ArgumentError if manifestation.blank?
       raise ArgumentError if manifestation.nbn.blank?
       if nacsis_cat.nil?
