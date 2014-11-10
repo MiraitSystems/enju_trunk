@@ -248,7 +248,7 @@ class NacsisCat
     end
 
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からManifestationを更新する
-    def update_manifestation_from_nbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil)
+    def update_manifestation_from_nbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil, index = nil)
       raise ArgumentError if manifestation.blank?
       raise ArgumentError if manifestation.nbn.blank?
       if nacsis_cat.nil?
@@ -256,7 +256,7 @@ class NacsisCat
         nacsis_cat = result[:book].first
       end
       if nacsis_cat
-        print_log "-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
+        print_log "--#{index}-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} NBN: #{manifestation.nbn}"
         #TODO 
         catalog = Catalog.where(:display_name => 'NACSIS UPDATE', :name => 'NACSIS UPDATE', :nacsis_identifier => 'NACSIS UPDATE').first_or_create
         manifestation.update_attribute('catalog_id', catalog.id)
