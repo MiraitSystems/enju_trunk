@@ -12,7 +12,7 @@
         <% end %>
         <div>
           <%# TODO 分類型を使用しない場合のSELECT2フォーム %>
-          <%= search_field_tag "classifications[][classification_identifier]", classification[:classification_identifier], :id => "classifications_classification_identifier", :class => "type_select", :value => classification[:classification_identifier] %>
+          <%= search_field_tag "classifications[][classification_identifier]", classification[:classification_identifier], :id => "classifications_classification_identifier", :class => "type_select", :value => @classification_mobile %>
         </div>
         <div>
           <%= link_to t('activerecord.attributes.search.classification_search'), classifications_search_category_path(mobile: true), "data-ajax" => "false" %>
