@@ -73,6 +73,7 @@ class PageController < ApplicationController
       end
     else
       @classifications = params[:classifications]
+      @classification_mobile = params[:classifications][0][:classification_identifier]
     end
   end
 
