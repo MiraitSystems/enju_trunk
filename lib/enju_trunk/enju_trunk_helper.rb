@@ -436,7 +436,11 @@ module EnjuTrunk
           end
 
         when :manifestation_types
-          ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
+          if params[key].class == ActiveSupport::HashWithIndifferentAccess
+            ks = ManifestationType.where(["id in (?)", params[key].keys]).map{|mt| mt.display_name.localize}
+          else
+            ks = ManifestationType.where(["id in (?)", params[key]]).map{|mt| mt.display_name.localize}
+          end
           summary_ary << [key, ks.join(', ')] if params[key].present?
 
         when :classifications

@@ -1432,7 +1432,7 @@ class ManifestationsController < ApplicationController
     if params[:manifestation_types].present? && params[:manifestation_type].blank?
       types_ary = []
       manifestation_types = params[:manifestation_types]
-      if manifestation_types.class == Hash
+      if manifestation_types.class == ActiveSupport::HashWithIndifferentAccess
         manifestation_types.each_key do |key|
           manifestation_type = ManifestationType.find(key) rescue nil
           types_ary << manifestation_type.name if manifestation_type.present?
