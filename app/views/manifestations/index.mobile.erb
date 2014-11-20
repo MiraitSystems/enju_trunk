@@ -1,3 +1,30 @@
+<script>
+<!--
+  $(document).ready(function() {
+    $('#sort_plan').change(function() {
+      url = "<%= url_for(:controller => :manifestations,:action => :index) %>";
+
+      var sort_plan = $('#sort_plan').val();
+      url += "?sort_plan=" + sort_plan;
+
+      var parameter = location.search;
+      parameter = parameter.substring(1, parameter.length);
+      parameter = decodeURIComponent(parameter);
+      parameters = parameter.split('&');
+      var fix_parameter = "";
+      for(var i = 0; i < parameters.length; i++) {
+        if (!parameters[i].match(/^sort_plan=|^page=/))
+          fix_parameter += "&" + parameters[i];
+      }
+      if (fix_parameter != null)
+        url += fix_parameter;
+
+      location.href = url;
+    });
+  });
+-->
+</script>
+
 <% if @series_statement %>
   <h3>
     <%= @series_statement.original_title %>
@@ -21,9 +48,17 @@
 </div>
 <hr>
 
-<%= paginate(@manifestations) %>
+<div style="float: left;">
+  <%= paginate(@manifestations) %>
+</div>
 
-<br>
+<div>
+  <div style="float: right;">
+    <%= select_tag("sort_plan", options_for_select(@sort_plan, :selected => @sort_plan_id)) %>
+  </div>
+  <br style="clear: both;"/>
+</div>
+
 <ul data-role="listview">
   <% @manifestations.each do |manifestation| %>
     <% cache ([manifestation, fragment: 'manifestation_mobile', role: current_user_role_name, locale: @locale]) do %>
