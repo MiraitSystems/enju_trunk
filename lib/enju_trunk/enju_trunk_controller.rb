@@ -24,7 +24,7 @@ module EnjuTrunk
 
       def set_request_format
         if session[:enju_mobile_view].nil?
-          if is_mobile_device? # or is_tablet_device?
+          if is_mobile_device? or is_tablet_device?
             if should_request_html_format?
               request.format = :html
             else

@@ -1,10 +1,37 @@
+<script>
+<!--
+  $(document).ready(function() {
+    $('#sort_plan').change(function() {
+      url = "<%= url_for(:controller => :manifestations,:action => :index) %>";
+
+      var sort_plan = $('#sort_plan').val();
+      url += "?sort_plan=" + sort_plan;
+
+      var parameter = location.search;
+      parameter = parameter.substring(1, parameter.length);
+      parameter = decodeURIComponent(parameter);
+      parameters = parameter.split('&');
+      var fix_parameter = "";
+      for(var i = 0; i < parameters.length; i++) {
+        if (!parameters[i].match(/^sort_plan=|^page=/))
+          fix_parameter += "&" + parameters[i];
+      }
+      if (fix_parameter != null)
+        url += fix_parameter;
+
+      location.href = url;
+    });
+  });
+-->
+</script>
+
 <% if @series_statement %>
   <h3>
     <%= @series_statement.original_title %>
   </h3>
 <% end %>
-<div data-role="content">
-  <div data-role="fieldcontain">
+<div data-role="content" class="search_padding">
+  <div data-role="fieldcontain" class="search_block">
     <%= t('page.number_of_search_results', :count => @count[:query_result]) -%>
     <%= form_for :manifestations, :html => {:method => 'get'} do -%>
       <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
@@ -19,11 +46,20 @@
   </div>
   <%= advanced_search_condition_summary -%>
 </div>
+
+<div>
+  <div style="float: right;">
+    <%= select_tag("sort_plan", options_for_select(@sort_plan, :selected => @sort_plan_id)) %>
+  </div>
+</div>
+<br style="clear: both;"/>
 <hr>
 
-<%= paginate(@manifestations) %>
+<div>
+  <%= paginate(@manifestations) %>
+</div>
+<br />
 
-<br>
 <ul data-role="listview">
   <% @manifestations.each do |manifestation| %>
     <% cache ([manifestation, fragment: 'manifestation_mobile', role: current_user_role_name, locale: @locale]) do %>
