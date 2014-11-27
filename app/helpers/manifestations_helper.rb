@@ -432,4 +432,16 @@ module ManifestationsHelper
     list.join(" ; ").html_safe
   end
 
+  def volume_display(manifestation)
+    return true if manifestation.edition_display_value?
+    return true unless manifestation.volume_number_string.blank?
+
+    unless SystemConfiguration.get("manifestation.volume_number_string_only")
+      return true unless manifestation.issue_number_string.blank?
+      if manifestation.series_statement
+        return true unless manifestation.serial_number_string.blank?
+      end 
+    end 
+    return false
+  end
 end

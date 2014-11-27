@@ -6,23 +6,29 @@
         <hr class="dash_line">
         <% next if hide_item?(true, item) %>
         <table>
-        <tr>
-          <td class="label"><%= t('activerecord.models.library') %>:</td>
-          <td><%= item.shelf.library.display_name.localize %></td>
-        </tr>
-        <tr>
-          <td class="label"><%= t('activerecord.models.shelf') %>:</td>
-          <td>
-            <%= item.shelf.display_name.localize %>
-            <%= render 'items/shelf_picture', :item => item if item.shelf %>
-          </td>
-        </tr>
-        <tr>
-          <td class="label"><%= t('activerecord.attributes.item.call_number') %>:</td>
-          <td>
-            <%= call_numberformat(item) %>
-          </td>
-        </tr>
+        <% if item.shelf %>
+          <% if item.shelf.library %>
+            <tr>
+              <td class="label"><%= t('activerecord.models.library') %>:</td>
+              <td><%= item.shelf.library.display_name.localize %></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td class="label"><%= t('activerecord.models.shelf') %>:</td>
+            <td>
+              <%= item.shelf.display_name.localize %>
+              <%= render 'items/shelf_picture', :item => item if item.shelf %>
+            </td>
+          </tr>
+        <% end %>
+        <% if item.call_number.present? %>
+          <tr>
+            <td class="label"><%= t('activerecord.attributes.item.call_number') %>:</td>
+            <td>
+              <%= call_numberformat(item) %>
+            </td>
+          </tr>
+        <% end %>
         <tr>
           <td class="label"><%= t('activerecord.attributes.item.item_identifier') %>:</td>
           <td>
