@@ -271,6 +271,32 @@ class NacsisCat
       end 
     end
 
+    # 指定されたISBNによりNACSIS-CAT検索を行い、書誌を特定できた場合Manifestationを更新する
+    def update_manifestation_from_isbn(manifestation, book_types = ManifestationType.book.all, nacsis_cat = nil, index = nil)
+      raise ArgumentError if manifestation.blank?
+      raise ArgumentError if manifestation.isbn.blank?
+      if nacsis_cat.nil?
+        result = NacsisCat.search(isbn: manifestation.isbn)
+        result[:book].size
+      end
+
+      if result[:book].size > 1
+        print_log "ISBN(#{manifestation.isbn})の検索結果は #{result[:book].size} 件です。更新できません。"
+      elsif nacsis_cat = result[:book].first
+        print_log "--#{index}-- START to update Manifestation(#{manifestation.id}) IDENTIFIER: #{manifestation.identifier} ISBN: #{manifestation.isbn}"
+        catalog = Catalog.where(:display_name => 'NACSIS UPDATE', :name => 'NACSIS UPDATE', :nacsis_identifier => 'NACSIS UPDATE').first_or_create
+        manifestation.update_attribute('catalog_id', catalog.id)
+
+        begin 
+          create_manifestation_from_nacsis_cat(nacsis_cat, book_types, manifestation)
+        rescue
+          print_log "Failed to update Manifestation(#{manifestation.id})"
+          print_log $!
+          print_log $@
+        end
+      end 
+    end
+
     # 指定されたNBN(全国書誌番号)によりNACSIS-CAT検索を行い、得られた情報からSeriesStatementを作成する。
     def create_series_statement_from_nbn(nbn, book_types = ManifestationType.series.all, nacsis_cat = nil)
       raise ArgumentError if nbn.blank?
@@ -1329,7 +1355,9 @@ class NacsisCat
 
       def new_series_statement_from_nacsis_cat(nacsis_cat, root_manifestation = nil)
         return nil if nacsis_cat.blank?
-        series_statement = root_manifestation.series_statement || SeriesStatement.new
+        series_statement = root_manifestation.series_statement
+        series_statement = SeriesStatement.where(:root_manifestation_id => root_manifestation.id).first unless series_statement && !root_manifestation
+        series_statement = SeriesStatement.new unless series_statement
         nacsis_info = nacsis_cat.detail
         attrs = {}
         attrs[:nacsis_series_statementid] = nacsis_cat.ncid
