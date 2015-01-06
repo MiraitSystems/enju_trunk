@@ -444,4 +444,10 @@ module ManifestationsHelper
     end 
     return false
   end
+
+  def has_accessible_item(manifestation)
+    return false if manifestation.items.empty?
+    return false if manifestation.items.select{|i| i.has_view_role?(current_user.try(:role).try(:id)) && !hide_item?(params[:all_manifestation], i)}.blank?
+    return true
+  end
 end

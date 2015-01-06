@@ -1,10 +1,11 @@
 <% if manifestation.items.exists? %>
+<% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+<% items = items.select{|i| i.has_view_role?(current_user.try(:role).try(:id)) && !hide_item?(params[:all_manifestation], i)} %>
+<% unless items.blank? %>
   <div class="holding">
-    <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
     <ol data-role="listview">
       <% items.each do |item| %>
         <hr class="dash_line">
-        <% next if hide_item?(true, item) %>
         <table>
         <% if item.shelf %>
           <% if item.shelf.library %>
@@ -82,4 +83,5 @@
     </ol> 
   </div>
   <hr>
+<% end %>
 <% end %>
