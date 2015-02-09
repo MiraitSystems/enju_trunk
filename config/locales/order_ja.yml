@@ -1,0 +1,193 @@
+ja:
+  activerecord:
+    models:
+      order: 発注
+      order_list: 発注リスト
+      payment: 支払
+      use_license: 利用許諾
+
+    attributes:
+      manifestation:
+        use_license_id: "著者抄録許諾\n(許諾機関名称)"
+      order:
+        order_identifier: 発注番号
+        manifestation: 資料
+        ordered_at: 発注年月日
+        order_year: 発注年
+        buying_payment_year: 購入費支払年
+        prepayment_settlements_of_account_year: 前払資料精算年
+        paid_flag: 精算済フラグ
+        number_of_acceptance_schedule: 受入予定冊数
+        meeting_holding_month_1: 開催月1
+        meeting_holding_month_2: 開催月2
+        adption_code: 採択
+        deliver_place_code_1: 回付先1
+        deliver_place_code_2: 回付先2
+        deliver_place_code_3: 回付先3
+        reference_code_id: 引用情報
+        application_form_code_1: 申込書指定1
+        application_form_code_2: 申込書指定2
+        number_of_acceptance: 受入冊数
+        number_of_missing: 欠号数
+        collection_status_code: 収集ステータス
+        reason_for_collection_stop_code: 収集中止理由
+        collection_stop_day: 収集中止年月日
+        order_form_code: 発注形式
+        collection_form_code: 収集形式
+        payment_form_code: 支払形式
+        budget_subject_code: 予算科目
+        transportation_route_code: 輸送経路
+        bookstore_code: 書店
+        currency_id: 通貨単位
+        currency_rate: 通貨レート
+        margin_ratio: 割引手数料
+        publisher_type_id: メタデータ発行元種別
+        original_price: 換算前発注金額
+        cost: 発注金額
+        unit_price: 単価
+        order_organization_id: 発注機関番号
+        note: 注記内容
+        group: グループ
+        pair_manifestation_id: コンビ資料番号
+        auto_calculation_flag: 金額自動計算フラグ
+        manifestation_identifier: 資料番号
+        taxable_amount: 課税対象金額
+        tax_exempt_amount: 非課税対象金額
+        payment_sum: 支払合計金額
+      order_list:
+        title: 発注リスト名
+        bookstore: 書店
+        note: 注記
+        ordered_at: 発注時刻
+        ordered_at_s: 発注時刻
+        deleted_at: 削除時刻
+        state: 状態
+        ordered_at_annotation: YYYY-MM-DD あるいは YYYY-MM-DD HH:MM (例 "2011-04-01 09:00")
+      payment:
+        id: ID
+        order_id: 発注番号
+        billing_date: 請求年月日
+        manifestation_id: 資料番号
+        currency_id: 通貨単位
+        currency_rate: 通貨レート
+        margin_ratio: 割引手数料
+        before_conv_amount_of_payment: 換算前支払金額
+        amount_of_payment: 支払金額
+        number_of_payment: 支払冊数
+        volume_number: 巻号
+        note: 摘要内容
+        auto_calculation_flag: 金額自動計算フラグ
+        payment_type: 支払区分
+        taxable_amount: 課税対象金額
+        tax_exempt_amount: 非課税対象金額
+        discount_commision: 割引手数料
+      use_license:
+        target: 利用許諾対象
+        author: 著者抄録許諾
+        author_fee: 著者抄録許諾料金
+        agency_name: 許諾機関名称
+        agency_address: 許諾機関住所
+        responsible_name: 担当者名
+        responsible_tel: 担当者電話
+        responsible_mail: 担当者メール
+        bank_name: 銀行名
+        bank_code: 銀行コード
+        branch_name: 支店名
+        branch_number: 支店番号
+        account_name: 口座名
+        account_number: 口座番号
+        account_kind: 口座種類
+        account_kinds:
+          "normal": 普通
+          "current": 当座
+
+  page:
+    budget_and_order: "予算と発注の管理"
+  order:
+    create_order_list: "発注リストを作成してください。"
+    specify_purchase_request: "購入依頼を指定してください。"
+    system_menu_title: 発注検索
+    cannot_delete: "この発注は削除できません"
+    no_matches_found_agent: "発注機関が見つかりません"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    switch_manual_entry: "金額を自動計算する"
+    auto_calculation_flag_0: 自動計算
+    auto_calculation_flag_1: 手入力
+    payments: 支払情報
+    items: 発注資料
+    subsequent_year_orders: 次年度発注
+    create_subsequent_year_orders: 次年度発注生成
+    create_year_orders_confirm: "%{year}年の年次発注を作成します。\nよろしいですか？"
+    no_create_subsequent_year_orders: "年次発注生成対象となる発注が見つかりませんでした。<br />(年次発注を生成するには発注形式を'年次発注'に設定してください。)"
+    create_payment_to_advance_payment: "<br />発注に対応する支払を作成しました。"
+    copy: コピーして新規作成
+    document_application: "資料申込書"
+    list_of_order: "発注リスト"
+    list_of_deferred_payment_acceptance: "後払い受入リスト"
+    list_of_acceptance_situation: "受入状況リスト"
+    list_of_payment: "精算リスト"
+    list_of_acceptance_after_payment: "精算後受入リスト"
+    select_document: "帳票を選択"
+    create_ordered_manifestations: "発注資料を一括作成"
+    confirm_create_ordered: "発注資料を作成しますか。"
+    not_created_items: "発注資料は作成されませんでした。"
+    update_order: "発注情報の更新"
+    confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
+  order_output_csv:
+    number: "No."
+    full_name: "発注機関"
+    zip_code_1: "郵便番号"
+    address_1: "住所"
+    country_of_publication_id: "出版国"
+    date_of_publication: "出版日"
+    bookstore_code: "書店"
+    collection_status_code: "収集ステータス"
+    currency_id: "通貨単位"
+    edition: "版（数字）"
+    frequency_id: "発行頻度"
+    currency_rate: "通貨レート"
+    discount_commision: "割引手数料"
+    group: "グループ"
+    order_note: "発注注記"
+    prepayment_principal_rate: "前払版元円価"
+    number_of_acceptance: "受入冊数"
+    number_of_acceptance_schedule: "受入予定冊数"
+    identifier: "識別子"
+    issn: "ISSN"
+    number_of_missing: "欠号数"
+    order_identifier: "発注番号"
+    pair_manifestation_id: "コンビ資料番号"
+    issue_number_string: "資料号"
+    report_number_string: "レポート番号"
+    original_title: "タイトル"
+    publishers: "出版者"
+    volume_number_string: "資料巻"
+    report_volume_number_string: "レポートパターン"
+    acquired_at: "資料受入日"
+    quantity: "数量"
+    payment_form_code: "支払形式"
+    prepayment_principal: "換算前発注金額"
+    publication_year: "雑誌刊行年"
+    tax_exempt_amount: "非課税対象金額"
+    taxable_amount: "課税対象金額"
+    item_note: "受入注記"
+    transportation_route_code: "輸送経路"
+    yen_imprest: "発注金額"
+    deduction_quantity: "精算対象外差引数"
+    delayed_quantity: "延着数"
+  order_search:
+    notset: "未設定"
+  order_list:
+    library_group_order_list: "%{library_group_name} の発注リスト"
+    total_price: "合計価格"
+  payment:
+    system_menu_title: 支払検索
+    switch_manual_entry: "金額を自動計算する"
+    auto_calculation_flag_0: 自動計算
+    auto_calculation_flag_1: 手入力
+    paid: 精算
+    want_to_paid: "精算しますか?"
+    no_matches_found_order: "%{attribute}に該当する発注が見つかりません。"
+    no_matches_found_manifestation: "%{attribute}に該当する資料が見つかりません。"
+    no_create_deferred_payment: "精算が作成されていないため、支払区分が精算後支払の支払を作成できません。"

@@ -10,6 +10,7 @@
   <p>
     <%= t('page.search_term') -%>: <%= search_field_tag 'query', h(@query), {:id => 'search_form_top', :class => 'search_form', :placeholder => t('page.search_term')} -%>
     <%= submit_tag t('page.search') -%>
+    <%= select_tag :status, options_for_select(@circulation_statuses), {:include_blank => '選択してください'} %>
   </p>
 <%- end -%>
 

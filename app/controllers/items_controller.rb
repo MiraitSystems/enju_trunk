@@ -74,6 +74,7 @@ class ItemsController < ApplicationController
       return
     end
 
+    @circulation_statuses = CirculationStatus.pluck :display_name
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @items }

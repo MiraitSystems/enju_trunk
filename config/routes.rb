@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :tax_rates
 
+  resources :order_lists
+  resources :accepts, :except => [:edit, :update]
 
   resources :sequence_patterns
   resources :publication_statuses
@@ -36,7 +38,7 @@ Rails.application.routes.draw do
   resources :warekis
   resources :user_request_logs
   resources :enju_terminals
-	resource :exchange_manifestation do
+  resource :exchange_manifestation do
     post :select_manifestation, :on => :member
   end
 
@@ -178,7 +180,7 @@ Rails.application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
-    post :output_user_notice, :on => :member   
+    post :output_user_notice, :on => :member
     resources :answers
     resources :questions do
       resources :answers
@@ -415,7 +417,7 @@ Rails.application.routes.draw do
   resources :export_item_registers do
     get :get_list_size, :on => :collection
   end
- 
+
   resources :library_reports do
     get :daily_report, :on => :collection
     get :monthly_report, :on => :collection
