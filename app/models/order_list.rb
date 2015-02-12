@@ -12,7 +12,8 @@ class OrderList < ActiveRecord::Base
   validates_associated :user, :bookstore
   validates_format_of :ordered_at_s, :with => /^\d{4}-\d{2}-\d{2}$|^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/, :allow_blank => true
 
-  attr_accessor :ordered_at_s
+  attr_accessor :ordered_at_s, :edit_mode
+
   state_machine :initial => :pending do
     before_transition :pending => :ordered, :do => :order
 
@@ -22,7 +23,11 @@ class OrderList < ActiveRecord::Base
   end
 
   paginates_per 5
- 
+
+  def edit_mode
+
+  end
+
   def total_price
     self.purchase_requests.sum(:price)
   end

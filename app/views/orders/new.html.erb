@@ -6,17 +6,28 @@
   <%= f.error_messages -%>
   <div class="field">
     <%= f.label t('activerecord.models.order_list') -%><br />
-    <%= f.select(:order_list_id, @order_lists.collect{|l| [l.title, l.id]}) -%>
+    <%= f.select(:order_list_id, @order_lists.collect{|l| [l.title, l.id]}, autofocus: true) -%>
   </div>
 
   <div class="field">
-    <%= f.label t('activerecord.models.purchase_request') -%><br />
-    <%- if @purchase_request -%>
-      <%= link_to @purchase_request.title, @purchase_request -%>
-      <%= f.hidden_field :purchase_request_id, value: @purchase_request.id -%>
+    <%= f.label order_item_label(@order) -%><br />
+    <%- if @item -%>
+      <%= link_to @item.manifestation.original_title, @item -%>
+      <%= f.hidden_field :item_id, value: @item.id -%>
     <%- else -%>
-      <%= f.text_field :purchase_request_id -%>
+      <%= f.text_field :item_id -%>
     <%- end -%>
+  </div>
+
+  <div class="field">
+    <%= f.label :purchase_order_number -%><br />
+    <%= f.text_field :purchase_order_number -%>
+    <%= t('order.order_number_auto_generate_on_blank') %>
+  </div>
+
+  <div class="field">
+    <%= f.label :price_string_on_order -%><br />
+    <%= f.text_field :price_string_on_order -%>
   </div>
 
   <div class="actions">

@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   resources :tax_rates
 
-  resources :order_lists
+  resources :order_lists do
+    resource :order
+    get :do_order, on: :member
+  end
+  resources :orders
+
   resources :accepts, :except => [:edit, :update]
 
   resources :sequence_patterns
@@ -353,6 +358,7 @@ Rails.application.routes.draw do
     resources :agents
     resources :owns
     resource :exemplify
+    resource :order
     get :remove, :on => :member
     get :restore, :on => :member
     get :numbering, :on => :collection

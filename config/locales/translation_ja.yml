@@ -212,6 +212,9 @@ ja:
       accept: 検収
 
     attributes:
+      order:
+        purchase_order_number: 発注番号
+        price_string_on_order: 注文価格
       title:
         title: 書名
         title_transcription: 書名(ヨミ)
@@ -2118,6 +2121,8 @@ ja:
     not_found: "資料が見つかりません"
     search_bookstore: "寄贈・購入先検索フォーム"
     search_bookstore_description: "絞り込みを行いたい寄贈・購入先を入力してください"
+    add_to_order_list: "発注リストに追加"
+    remove_from_order_list: "発注リストから削除"
   agent:
     library_group_agent: "%{library_group_name} の人物・団体"
     work_agent: "%{work_title} の著作者"
@@ -2297,6 +2302,10 @@ ja:
     remove_from_order_list: "発注リストから削除"
     input_into_form_as_much_as_possible: "わかる範囲で入力してください。"
     guest: ゲスト
+  order:
+    order_number_auto_generate_on_blank: "発注番号が空白の場合は自動で採番されます。"
+  order_list:
+    do_order: "発注"
   inter_library_loan:
     library_group_inter_library_loan: "%{library_group_name} の相互貸借"
     borrowing_library: "借受館"

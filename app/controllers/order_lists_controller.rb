@@ -95,4 +95,8 @@ class OrderListsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def do_order
+
+  end
 end
