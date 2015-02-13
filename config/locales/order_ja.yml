@@ -58,11 +58,12 @@ ja:
         title: 発注リスト名
         bookstore: 書店
         note: 注記
-        ordered_at: 発注時刻
-        ordered_at_s: 発注時刻
+        ordered_at: 発注日
+        ordered_at_s: 発注日
         deleted_at: 削除時刻
         state: 状態
         ordered_at_annotation: YYYY-MM-DD あるいは YYYY-MM-DD HH:MM (例 "2011-04-01 09:00")
+        total_price: 注文価格合計
       payment:
         id: ID
         order_id: 発注番号
@@ -134,6 +135,7 @@ ja:
     not_created_items: "発注資料は作成されませんでした。"
     update_order: "発注情報の更新"
     confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
+    order_number_auto_generate_on_blank: "発注番号が空白の場合は自動で採番されます。"
   order_output_csv:
     number: "No."
     full_name: "発注機関"
@@ -181,6 +183,19 @@ ja:
   order_list:
     library_group_order_list: "%{library_group_name} の発注リスト"
     total_price: "合計価格"
+    do_order: "発注"
+    order_letter: "発注票データの出力"
+    manage: "発注の管理"
+    order_list: "発注一覧の出力"
+    not_arrival_list: "未納リストの出力"
+    ordered_at_start: 発注日開始
+    ordered_at_end: 発注日終了
+    ordered_at: 発注日の条件
+    error_msg: "発注日開始と発注日終了は必須です。"
+    error_msg_invalid: "発注日開始もしくは発注日終了の書式が不正です。"
+    ordered_label: "(発注票データ作成済み)"
+    order_list_success: "発注表データの出力が成功しました。"
+    ordered: 発注済み
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"

@@ -33,6 +33,11 @@
   <%= @order_list.note -%>
 </p>
 
+<p>
+  <strong><%= t('activerecord.attributes.order_list.total_price') -%>:</strong>
+  <%= number_to_currency(@order_list.total_price, unit: '') -%>
+</p>
+
 </div>
 
 <table style="margin-left: 30px;">
@@ -47,7 +52,7 @@
     <td><%= o.purchase_order_number %></td>
     <td><%= o.item.manifestation.isbn %></td>
     <td><%= o.item.manifestation.original_title %></td>
-    <td><%= number_to_currency(o.price_string_on_order, unit: '') %></td>
+    <td style="text-align: right;"><%= number_to_currency(o.price_string_on_order, unit: '') %></td>
   </tr>
 <% end %>
 </table>
@@ -63,6 +68,11 @@
   </ul>
   <br />
   <ul>
-    <li><%= link_to t('order_list.do_order'), do_order_order_list_path(@order_list) %></li>
+    <% if @order_list.available_order? %>
+      <li><%= link_to t('order_list.do_order'), do_order_order_list_path(@order_list) %></li>
+    <% else %>
+      <p style="color: grey"><%= t('order_list.ordered_label') %></p>
+      <li><%= link_to t('order_list.order_letter'), order_letter_order_list_path(@order_list) %></li>
+    <% end %>
   </ul>
 </div>

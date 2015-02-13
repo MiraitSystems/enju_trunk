@@ -1,0 +1,40 @@
+<div id="content_detail" class="ui-corner-all ui-widget-content">
+<h1 class="title"><%= t('page.manage', model: t('activerecord.models.order_list')) -%></h1>
+<div id="content_list">
+
+<p id="alert" style="color: red"><%= alert %></p>
+<p id="notice"><%= notice %></p>
+
+<br />
+<%= form_tag(manage_list_of_order_order_lists_path, method: :get) do %>
+  <%= t('order_list.ordered_at') %><br />
+  <%= t('order_list.ordered_at_start') %>：
+  <%= text_field_tag :start_at, @order_start_at , :placeholder => "#{t('page.example')}: 2015-04-12", :autofocus => true-%>
+  <br />
+  <%= t('order_list.ordered_at_end') %>：
+  <%= text_field_tag :end_at, @ordered_end_at , :placeholder => "#{t('page.example')}: 2015-04-12"-%>
+  <br />
+  <br />
+  <div class="actions">
+    <%= submit_tag t('order_list.order_list'), :id => "submit_order_list", :name => "submit_order_list" %>
+    <%= submit_tag t('order_list.not_arrival_list'), :id => "submit_not_arrival_list", :name => "submit_not_arrival_list" %>
+  </div>
+<% end %>
+
+<script>
+  $(function(){
+    $('#start_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  $(function(){
+    $('#end_at').setCalendar({src:'/assets/calendar.png'});
+  });
+</script>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all ui-widget-content">
+  <ul>
+    <li><%= link_to t('page.listing', model: t('activerecord.models.order_list')), order_lists_path -%></li>
+  </ul>
+</div>

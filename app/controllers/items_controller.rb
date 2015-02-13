@@ -209,6 +209,7 @@ class ItemsController < ApplicationController
         end
       rescue => e
         logger.error "################ #{e.message} ##################"
+        logger.error e.backtrace.join("\n ")
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @item.errors, :status => :unprocessable_entity }

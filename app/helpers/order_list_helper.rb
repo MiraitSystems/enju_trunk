@@ -9,4 +9,5 @@ module OrderListHelper
       t('order_list.ordered')
     end
   end
+
 end

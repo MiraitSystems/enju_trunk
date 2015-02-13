@@ -7,6 +7,8 @@
   <tr>
     <th><%= t('activerecord.attributes.order_list.title') -%></th>
     <th><%= t('activerecord.models.bookstore') -%></th>
+    <th><%= t('activerecord.attributes.order_list.ordered_at') -%></th>
+    <th><%= t('activerecord.attributes.order_list.state') -%></th>
     <th><%= t('activerecord.attributes.order_list.note') -%></th>
     <th></th>
   </tr>
@@ -15,6 +17,8 @@
   <tr class="line<%= cycle("0", "1") -%>">
     <td><%= link_to order_list.title, order_list -%></td>
     <td><%= link_to order_list.bookstore.name, order_list.bookstore -%></td>
+    <td><%= l(order_list.ordered_at) if order_list.ordered_at -%></td>
+    <td><%= localized_order_state(order_list.state) -%></td>
     <td><%= order_list.note -%></td>
     <td>
       <%= link_to t('page.edit'), edit_order_list_path(order_list) -%>
@@ -31,5 +35,6 @@
 <div id="submenu" class="ui-corner-all ui-widget-content">
   <ul>
     <li><%= link_to t('page.new', model: t('activerecord.models.order_list')), new_order_list_path -%></li>
+    <li><%= link_to t('order_list.manage'), manage_order_lists_path -%></li>
   </ul>
 </div>

@@ -97,6 +97,55 @@ class OrderListsController < ApplicationController
   end
 
   def do_order
+    @order_list.do_order
+    redirect_to @order_list, flash: {success: t('order_list.order_list_success')}
+  end
+
+  def order_letter
+    filename = @order_list.order_letter_filename
+    logger.info "order_letter filename=#{filename}"
+    send_file filename, :filename => "発注票.tsv".encode("cp932"), :type => 'application/octet-stream'
+
+  end
+
+  def manage_list_of_order
+    @start_at_s = params[:start_at]
+    @end_at_s = params[:end_at]
+    action = params[:submit_order_list] || params[:submit_not_arrival_list]
+
+    if @start_at_s.blank? || @end_at_s.blank? || action.blank?
+      logger.debug "blank parameter"
+      flash[:alert] = t('order_list.error_msg')
+      render :action => "manage"
+      return
+    end
+
+    start_at = end_at = nil
+    begin
+      start_at = DateTime.parse(@start_at_s)
+      end_at = DateTime.parse(@end_at_s)
+    rescue => e
+      # error
+      logger.debug "invalid format (1)"
+      logger.debug e.message
+      logger.debug e.backtrace.first
+    end
+
+    if start_at.blank? || end_at.blank?
+      logger.debug "invalid date"
+      flash[:alert] = t('order_list.error_msg_invalid')
+      render :action => "manage"
+      return
+    end
+
+    if params[:submit_order_list]
+      filename = OrderList.generate_order_list(start_at, end_at)
+      logger.info "order_list filename=#{filename}"
+      send_file filename, :filename => "order_list.tsv".encode("cp932"), :type => 'application/octet-stream'
+    elsif params[:submit_not_arrival_list]
+      logger.info "submit_order_list"
+
+    end
 
   end
 end

@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   resources :order_lists do
     resource :order
     get :do_order, on: :member
+    get :order_letter, on: :member
+    get :manage, on: :collection
+    get :manage_list_of_order, on: :collection
   end
   resources :orders
 
