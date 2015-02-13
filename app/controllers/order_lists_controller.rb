@@ -143,8 +143,9 @@ class OrderListsController < ApplicationController
       logger.info "order_list filename=#{filename}"
       send_file filename, :filename => "order_list.tsv".encode("cp932"), :type => 'application/octet-stream'
     elsif params[:submit_not_arrival_list]
-      logger.info "submit_order_list"
-
+      filename = OrderList.generate_not_arrival_list(start_at, end_at)
+      logger.info "submit_order_list filename=#{filename}"
+      send_file filename, :filename => "not_arrival_list.tsv".encode("cp932"), :type => 'application/octet-stream'
     end
 
   end

@@ -71,16 +71,29 @@ class AcceptsController < ApplicationController
     @accept.basket = @basket
     @accept.librarian = current_user
 
+    item = nil
+    order = nil
+
     flash[:message] = ''
     if @accept.item_identifier.blank?
       flash[:message] << t('accept.enter_item_identifier') if @accept.item_identifier.blank?
     else
-      item = Item.where(item_identifier: @accept.item_identifier.to_s.strip).first
+      order = Order.where(purchase_order_number: @accept.item_identifier.to_s.strip).first
+      if order
+        item = order.item
+      else
+        item = Item.where(item_identifier: @accept.item_identifier.to_s.strip).first
+      end
     end
     @accept.item = item
+    @accept.order = order
 
     respond_to do |format|
       if @accept.save
+        if order
+          order.accept = @accept
+          order.save!
+        end
         flash[:message] << t('accept.successfully_accepted', model:  t('activerecord.models.accept'))
         format.html { redirect_to accepts_url(basket_id: @basket.id) }
         format.json { render json: @accept, status: :created, location:  @accept }

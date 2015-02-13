@@ -3020,5 +3020,7 @@ ja:
     total_donate: "寄贈(合計)"
   accept:
     accept: 検収
+    order_number_or_item_identifier: 発注番号または図書バーコード番号
     item_not_found: 資料が見つかりません。
     successfully_accepted: 検収が完了しました。
+    accept_notice: 初めに発注番号のチェックを、次に図書バーコード番号のチェックを行います。

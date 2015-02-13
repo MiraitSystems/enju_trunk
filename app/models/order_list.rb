@@ -24,6 +24,10 @@ class OrderList < ActiveRecord::Base
 
   paginates_per 5
 
+  def ordered_on
+    self.ordered_at.beginning_of_day.to_date
+  end
+
   def total_price
     total = 0
     self.orders.each do |o|
@@ -38,6 +42,53 @@ class OrderList < ActiveRecord::Base
       return true
     end
     return false
+  end
+
+  def self.generate_not_available_list(start_at, end_at)
+    # generate order list
+    logger.debug "self.generate_order_list start_at=#{start_at} end_at=#{end_at}"
+
+    order_lists = OrderList.where(:ordered_at => start_at.beginning_of_day..end_at.end_of_day)
+                      .includes(:orders).where("orders.accept_id IS NULL").order("order_lists.bookstore_id asc, orders.purchase_order_number")
+
+    order_file_dir = File.join(Rails.root.to_s, 'private', 'system', 'order_list')
+    order_file_path = File.join(order_file_dir, "order_list_#{Time.now.strftime("%s")}.tsv")
+    FileUtils.mkdir_p(order_file_dir)
+
+    CSV.open(order_file_path, "w", :col_sep => "\t") do |csv|
+      csv << ["発注先","通番","発注番号","費目","書名","著者名","出版者","価格","ISBN"]
+      serial_number = 0; pre_bookstore_id = -1
+      order_lists.each do |order_list|
+        order_list.orders.each do |o|
+          if pre_bookstore_id != order_list.bookstore.id
+            serial_number = 1
+          end
+
+          budget_category_group_name = ""
+          if o.item.budget_category
+            budget_category_group_value = budget_category_group_value(o.item.budget_category.group_id)
+          end
+
+          # ファイルへ書き込み
+          row = []
+          row << order_list.bookstore.name
+          row << "#{serial_number}"
+          row << o.purchase_order_number
+          row << budget_category_group_value
+          row << o.item.manifestation.original_title
+          row << o.item.manifestation.creators.pluck(:full_name).first
+          row << o.item.manifestation.publishers.pluck(:full_name).first
+          row << o.price_string_on_order
+          row << o.item.manifestation.isbn
+
+          csv << row
+
+          serial_number = serial_number + 1
+        end
+      end
+    end
+
+    return order_file_path
   end
 
   def self.generate_order_list(start_at, end_at)

@@ -4,6 +4,7 @@ class Accept < ActiveRecord::Base
   belongs_to :basket
   belongs_to :item, touch: true
   belongs_to :librarian, class_name: 'User'
+  belongs_to :order, touch: true
 
   enju_circulation_accept_model if defined?(EnjuCirculation)
 
