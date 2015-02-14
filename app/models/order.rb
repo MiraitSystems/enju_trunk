@@ -23,9 +23,11 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def can_destroy?
-    unless self.ordered_at
-      return true
+  def can_cancel?
+    if self.order_list.ordered?
+      unless self.accept_id.present?
+        return true
+      end
     end
     return false
   end

@@ -59,8 +59,11 @@
       <td style="text-align: right;"><%= number_to_currency(o.price_string_on_order, unit: '') %></td>
       <td><%= accept_status(o) %></td>
       <td>
-        <%- if o.can_destroy? -%>
-          <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <%- if @order_list.can_destroy? -%>
+          <%= link_to t('order_list.remove_order_list'), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <%- end -%>
+        <%- if o.can_cancel? -%>
+          <%= link_to t('order_list.cancel_after_ordered'), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
         <%- end -%>
       </td>
     </tr>

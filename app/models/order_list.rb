@@ -214,6 +214,13 @@ class OrderList < ActiveRecord::Base
     true if self.ordered_at.present?
   end
 
+  def can_destroy?
+    unless self.ordered_at.present?
+      return true
+    end
+    return false
+  end
+
   def set_ordered_at
     return if ordered_at_s.blank?
     begin

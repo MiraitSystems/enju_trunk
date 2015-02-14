@@ -1,6 +1,5 @@
 class OrdersController < ApplicationController
   before_filter :get_order_list
-  before_filter :get_purchase_request
 
   load_and_authorize_resource
 
@@ -112,7 +111,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       if @order_list
-        format.html { redirect_to purchase_requests_url(order_list: @order_list.id) }
+        format.html { redirect_to order_list_path(id: @order_list.id) }
         format.json { head :no_content }
       else
         format.html { redirect_to orders_url }

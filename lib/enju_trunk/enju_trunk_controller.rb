@@ -46,11 +46,11 @@ module EnjuTrunk
 
       def should_request_html_format?
         if devise_controller?
-          if  (action_name == 'create' && request.method == ('POST')) || 
+          if  (action_name == 'create' && request.method == ('POST')) ||
               (action_name == 'destroy' && request.method == ('POST'))
             return true
           end
-        end 
+        end
         return false
       end
     end
@@ -298,7 +298,7 @@ module EnjuTrunk
       end
 
       def get_order_list
-        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id] and defined? EnjuTrunkOrder
+        @order_list = OrderList.find(params[:order_list_id]) if params[:order_list_id] # and defined? EnjuTrunkOrder
       end
 
       def get_purchase_request
