@@ -191,7 +191,10 @@ class Ability
         WorkHasTitle,
         Language,
         LanguageType,
-        TaxRate
+        TaxRate,
+        Accept,
+        OrderList,
+        Order
       ]
       can [:read, :update], [
         AcceptType,
@@ -355,7 +358,10 @@ class Ability
         Title,
         TitleType,
         UserStatus,
-        WorkHasTitle
+        WorkHasTitle,
+        Accept,
+        OrderList,
+        Order
       ]
       can [:read, :update], [
         SeriesStatementRelationshipType

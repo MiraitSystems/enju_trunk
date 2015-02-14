@@ -5,19 +5,19 @@ require EnjuTrunkOrder::Engine.root.join('app', 'models', 'item') if defined? En
 class Item < ActiveRecord::Base
   extend ActiveRecordExtension
   attr_accessible :library_id, :shelf_id, :checkout_type_id, :circulation_status_id,
-                  :retention_period_id, :call_number, :bookstore_id, :price, :price_string, :url, 
-                  :include_supplements, :use_restriction_id, :required_role_id, 
+                  :retention_period_id, :call_number, :bookstore_id, :price, :price_string, :url,
+                  :include_supplements, :use_restriction_id, :required_role_id,
                   :acquired_at, :acquired_at_string, :note, :item_identifier, :rank, :remove_reason_id,
                   :use_restriction, :manifestation_id, :manifestation,
-                  :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type, 
+                  :shelf_id, :circulation_status, :bookstore, :remove_reason, :checkout_type,
                   :shelf, :bookstore, :retention_period, :accept_type_id, :accept_type, :required_role,
                   :non_searchable, :item_has_operators_attributes,
-                  :non_searchable, :item_exinfo, :claim_attributes, :location_category_id, :location_symbol_id, 
-                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes, 
+                  :non_searchable, :item_exinfo, :claim_attributes, :location_category_id, :location_symbol_id,
+                  :statistical_class_id, :budget_category_id, :tax_rate_id, :excluding_tax, :tax, :item_extexts_attributes,
                   :manifestation_id, :identifier, :circulation_restriction_id
 
   self.extend ItemsHelper
- 
+
   scope :sort_rank, order('rank')
   scope :for_checkout, where('item_identifier IS NOT NULL || identifier IS NOT NULL')
   scope :not_for_checkout, where(:identifier => nil)
@@ -106,13 +106,17 @@ class Item < ActiveRecord::Base
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
 
+  def available_order?
+    true
+  end
+
   def has_view_role?(current_role_id)
     current_role_id = Role.default_role.id unless current_role_id
-    if self.required_role_id <= current_role_id && (self.shelf.required_role_id.nil? || self.shelf.required_role_id <= current_role_id) 
+    if self.required_role_id <= current_role_id && (self.shelf.required_role_id.nil? || self.shelf.required_role_id <= current_role_id)
       return TRUE
     else
       return FALSE
-    end 
+    end
   end
 
   def set_item_operator
@@ -280,7 +284,7 @@ class Item < ActiveRecord::Base
         manifestation = self.manifestation
       else
         manifestation = Manifestation.find(self.manifestation_id)
-      end      
+      end
       unless manifestation.article?
         self.rank = 1 if self.rank == 0
       end
@@ -361,7 +365,7 @@ class Item < ActiveRecord::Base
       self.circulation_status = CirculationStatus.where(:name => 'Binded').first
       if self.save
         self.manifestation.index
-        return true 
+        return true
       else
         return false
       end
@@ -369,11 +373,11 @@ class Item < ActiveRecord::Base
   end
 
   def binded_manifestations(sort = :id)
-    if sort == :serial_number 
+    if sort == :serial_number
       binding_item, not_binding_item = self.binding_items.partition{|binding_items| binding_items.manifestation.serial_number?}
       if binding_item
         binding_item.map(&:manifestation).sort_by(&sort) + not_binding_item.map(&:manifestation)
-      else 
+      else
         not_binding_item(&:manifestation)
       end
     else
@@ -397,14 +401,14 @@ class Item < ActiveRecord::Base
 
   def exchangeable?
     case self.circulation_status.name
-    when "In Process", "Available On Shelf" 
+    when "In Process", "Available On Shelf"
       return true
     else
       return false
     end
   end
 
-  def self.numbering_item_identifier(numbering_name, options = {}) 
+  def self.numbering_item_identifier(numbering_name, options = {})
     begin
       item_identifier = Numbering.do_numbering(numbering_name, true, options)
     end while Item.where(:item_identifier => item_identifier).first
@@ -427,7 +431,7 @@ class Item < ActiveRecord::Base
 
     when 'bookstore', 'checkout_type', 'circulation_status', 'required_role', 'tax_rate'
       val = __send__(ws_col).try(:name) || ''
- 
+
     when 'item.budget_category'
       val = __send__(ws_col.split('.').last).try(:name) || ''
 
@@ -450,7 +454,7 @@ class Item < ActiveRecord::Base
       when 'item_extext'
         val = [nil]*ccount
         extexts = ItemExtext.where(name: splits[1], item_id: __send__(:id)).order(:position)
-        extexts.each_with_index do |record, i| 
+        extexts.each_with_index do |record, i|
           val[i] =  record.value
         end
       when 'item_exinfo'
@@ -479,7 +483,7 @@ class Item < ActiveRecord::Base
     logger.info "output removing_list tsv: #{tsv_file} pdf: #{pdf_file}"
     # create output path
     FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
-    
+
     items = Item.where('removed_at IS NOT NULL').order('removed_at ASC, id ASC')
     if items
       # tsv
@@ -492,7 +496,7 @@ class Item < ActiveRecord::Base
           [:original_title,'activerecord.attributes.manifestation.original_title'],
           ['removed_at', 'activerecord.models.remove_reason'],
 #          ['price', 'activerecord.attributes.item.price'],
-          [:agent_publisher,'agent.publisher'], 
+          [:agent_publisher,'agent.publisher'],
           [:agent_creator, 'agent.creator'],
           [:date_of_publication, 'activerecord.attributes.manifestation.date_of_publication'],
           [:removed_reason, 'activerecord.models.remove_reason'],
@@ -508,7 +512,7 @@ class Item < ActiveRecord::Base
             row << I18n.t(column[1])
           end
           output.print '"'+row.join("\"\t\"")+"\n"
-  
+
           items.each do |item|
             row = []
             columns.each do |column|
@@ -581,7 +585,7 @@ class Item < ActiveRecord::Base
     end  #end of method
   end
 
-  def self.export_item_register(type, out_dir, file_type = nil) 
+  def self.export_item_register(type, out_dir, file_type = nil)
     raise "invalid parameter: no path" if out_dir.nil? || out_dir.length < 1
     tsv_file = out_dir + "item_register_#{type}.tsv"
     pdf_file = out_dir + "item_register_#{type}.pdf"
@@ -591,7 +595,7 @@ class Item < ActiveRecord::Base
     # get item
     if type == 'all'
       @items = Item.order("bookstore_id DESC, acquired_at ASC, item_identifier ASC").all
-    else  
+    else
       @items = Item.joins(:manifestation).where(["manifestations.manifestation_type_id in (?)", ManifestationType.type_ids(type)]).order("items.bookstore_id DESC, items.acquired_at ASC, items.item_identifier ASC").all
     end
     # make tsv
@@ -636,7 +640,7 @@ class Item < ActiveRecord::Base
       [:marc_number, 'activerecord.attributes.manifestation.marc_number'],
       ['note', 'activerecord.attributes.item.note']
     ]
-  
+
     File.open(tsvfile, "w") do |output|
       # add UTF-8 BOM for excel
       output.print "\xEF\xBB\xBF".force_encoding("UTF-8")
@@ -660,7 +664,7 @@ class Item < ActiveRecord::Base
               creators = item.manifestation.creators.inject([]){|names, creator| names << creator.full_name if creator.full_name; names}.join("\t")
               row << creators || ""
             when :original_title
-              row << item.try(:manifestation).try(:original_title) || "" 
+              row << item.try(:manifestation).try(:original_title) || ""
             when :pub_year
               pub_year = item.try(:manifestation).try(:date_of_publication).strftime("%Y") rescue nil
               row << pub_year || ""
@@ -680,7 +684,7 @@ class Item < ActiveRecord::Base
             end
           end
           output.print '"'+row.join("\"\t\"")+"\"\n"
-        end  
+        end
       end
     end
   end
@@ -699,7 +703,7 @@ class Item < ActiveRecord::Base
       [:call_number, 'activerecord.attributes.item.call_number'],
       ['note', 'activerecord.attributes.item.note']
     ]
-  
+
     File.open(tsvfile, "w") do |output|
       # add UTF-8 BOM for excel
       output.print "\xEF\xBB\xBF".force_encoding("UTF-8")
@@ -740,7 +744,7 @@ class Item < ActiveRecord::Base
             end
           end
           output.print '"'+row.join("\"\t\"")+"\"\n"
-        end  
+        end
       end
     end
   end
@@ -778,7 +782,7 @@ class Item < ActiveRecord::Base
                 row.item(:note).value(item.note.split("\r\n")[0]) if item.note
               end
             end
-          end	
+          end
         end
       end
     else
@@ -872,7 +876,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :carrier_type
           row << item.manifestation.carrier_type.display_name.localize
         when :shelf
@@ -951,7 +955,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :carrier_type
           row << item.manifestation.carrier_type.display_name.localize
         when :shelf
@@ -1027,7 +1031,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :carrier_type
           row << item.manifestation.carrier_type.display_name.localize
         when :shelf
@@ -1065,7 +1069,7 @@ class Item < ActiveRecord::Base
     end
     report.start_new_page
     report.page.item(:date).value(Time.now)
-    date_ago = Time.zone.now - SystemConfiguration.get("new_book_term").day 
+    date_ago = Time.zone.now - SystemConfiguration.get("new_book_term").day
     term = date_ago.strftime("%Y/%m/%d").to_s + ' -  '
     report.page.item(:term).value(term)
     items.each do |item|
@@ -1088,7 +1092,7 @@ class Item < ActiveRecord::Base
     data << "\xEF\xBB\xBF".force_encoding("UTF-8") + "\n"
 
     # set term
-    date_ago = Time.zone.now - SystemConfiguration.get("new_book_term").day 
+    date_ago = Time.zone.now - SystemConfiguration.get("new_book_term").day
     term = date_ago.strftime("%Y/%m/%d").to_s + ' -  '
     data << '"' + term + "\"\n"
 
@@ -1112,7 +1116,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :carrier_type
           row << item.manifestation.carrier_type.display_name.localize
         when :shelf
@@ -1185,7 +1189,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :bookstore
           bookstore = ""
           bookstore = item.bookstore.name if item.bookstore and item.bookstore.name
@@ -1276,7 +1280,7 @@ class Item < ActiveRecord::Base
       columns.each do |column|
         case column[0]
         when :library
-          row << item.shelf.library.display_name.localize 
+          row << item.shelf.library.display_name.localize
         when :bookstore
           bookstore = ""
           bookstore = item.bookstore.name if item.bookstore and item.bookstore.name
@@ -1305,7 +1309,7 @@ class Item < ActiveRecord::Base
 FileUtils.mkdir_p(out_dir) unless FileTest.exist?(out_dir)
 if type == 'title'
       @manifestations = Manifestation.order("original_title ASC")
-    elsif type == 'author' 
+    elsif type == 'author'
       @manifestations = Manifestation.includes(:creates => :agent).order("agents.full_name ASC")
     elsif type == 'classifild'
       @manifestations = Manifestation.order("ndc ASC")

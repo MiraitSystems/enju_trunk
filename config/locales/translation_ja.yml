@@ -209,8 +209,12 @@ ja:
       tax_rate: 消費税区分
       budget_category: 予算区分
       statistical_table: 統計表
+      accept: 検収
 
     attributes:
+      order:
+        purchase_order_number: 発注番号
+        price_string_on_order: 注文価格
       title:
         title: 書名
         title_transcription: 書名(ヨミ)
@@ -1557,6 +1561,8 @@ ja:
         rounding: 端数処理方式
         start_date: 適用開始日
         end_date: 適用終了日
+      accept:
+        accept: 検収
 
   page:
     user_title: "ようこそ %{login_name} さん"
@@ -1722,6 +1728,7 @@ ja:
     editing: "%{model}の編集"
     showing: "%{model}の表示"
     deleting: "%{model}の削除"
+    manage: "%{model}の管理"
     output: "%{model}の出力"
     output_cover: "%{model}送付状"
     output_pdf: "%{model}の出力(PDF)"
@@ -1856,6 +1863,7 @@ ja:
     back_to_display: "%{display}に戻る"
     advanced_search_display: 詳細検索画面
     before_display: 前の画面
+    accept: 検収
 
   manual_for_user: "利用マニュアル.pdf"
   manual_for_librarian: "運用マニュアル.pdf"
@@ -2114,6 +2122,8 @@ ja:
     not_found: "資料が見つかりません"
     search_bookstore: "寄贈・購入先検索フォーム"
     search_bookstore_description: "絞り込みを行いたい寄贈・購入先を入力してください"
+    add_to_order_list: "発注リストに追加"
+    remove_from_order_list: "発注リストから削除"
   agent:
     library_group_agent: "%{library_group_name} の人物・団体"
     work_agent: "%{work_title} の著作者"
@@ -2904,7 +2914,7 @@ ja:
     all: 全体
     sample: サンプル入手
     approval: 見計らい
-    donate_request: 寄贈依頼       
+    donate_request: 寄贈依頼
     no_matches_found_manifestation: "に該当する資料が見つかりませんでした。"
     no_blank_identifier: "を入力してください。"
   approval_search:
@@ -3008,3 +3018,9 @@ ja:
     jpn_donate: "寄贈(和書)"
     foreign_donate: "寄贈(洋書)"
     total_donate: "寄贈(合計)"
+  accept:
+    accept: 検収
+    order_number_or_item_identifier: 発注番号または図書バーコード番号
+    item_not_found: 資料が見つかりません。
+    successfully_accepted: 検収が完了しました。
+    accept_notice: 初めに発注番号のチェックを、次に図書バーコード番号のチェックを行います。

@@ -74,6 +74,7 @@ class ItemsController < ApplicationController
       return
     end
 
+    @circulation_statuses = CirculationStatus.pluck :display_name
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @items }
@@ -208,6 +209,7 @@ class ItemsController < ApplicationController
         end
       rescue => e
         logger.error "################ #{e.message} ##################"
+        logger.error e.backtrace.join("\n ")
         prepare_options
         format.html { render :action => "new" }
         format.json { render :json => @item.errors, :status => :unprocessable_entity }
