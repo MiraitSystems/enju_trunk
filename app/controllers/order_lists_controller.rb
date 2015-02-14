@@ -1,10 +1,11 @@
 class OrderListsController < ApplicationController
-  before_filter :check_client_ip_address
+
+  #before_filter :check_client_ip_address
   load_and_authorize_resource
-  before_filter :get_bookstore
-  unless SystemConfiguration.get("use_order_lists")
-    before_filter :access_denied
-  end
+  #before_filter :get_bookstore
+  #unless SystemConfiguration.get("use_order_lists")
+  #  before_filter :access_denied
+  #end
 
   # GET /order_lists
   # GET /order_lists.json
@@ -143,7 +144,7 @@ class OrderListsController < ApplicationController
       logger.info "order_list filename=#{filename}"
       send_file filename, :filename => "order_list.tsv".encode("cp932"), :type => 'application/octet-stream'
     elsif params[:submit_not_arrival_list]
-      filename = OrderList.generate_not_arrival_list(start_at, end_at)
+      filename = OrderList.generate_non_arrival_list(start_at, end_at)
       logger.info "submit_order_list filename=#{filename}"
       send_file filename, :filename => "not_arrival_list.tsv".encode("cp932"), :type => 'application/octet-stream'
     end

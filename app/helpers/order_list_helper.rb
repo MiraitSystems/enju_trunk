@@ -10,4 +10,12 @@ module OrderListHelper
     end
   end
 
+  def accept_status(order)
+    status = ""
+    if order.accept
+      status = "#{t('order_list.accepted')} (#{l(order.accept.created_at)})"
+    end
+    return status
+
+  end
 end

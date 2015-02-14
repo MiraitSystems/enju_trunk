@@ -44,19 +44,19 @@ class OrderList < ActiveRecord::Base
     return false
   end
 
-  def self.generate_not_available_list(start_at, end_at)
+  def self.generate_non_arrival_list(start_at, end_at)
     # generate order list
-    logger.debug "self.generate_order_list start_at=#{start_at} end_at=#{end_at}"
+    logger.debug "self.generate_non_arrival_list start_at=#{start_at} end_at=#{end_at}"
 
     order_lists = OrderList.where(:ordered_at => start_at.beginning_of_day..end_at.end_of_day)
-                      .includes(:orders).where("orders.accept_id IS NULL").order("order_lists.bookstore_id asc, orders.purchase_order_number")
+                      .includes(:orders).where("orders.accept_id IS NULL").order("order_lists.bookstore_id asc, orders.purchase_order_number asc")
 
     order_file_dir = File.join(Rails.root.to_s, 'private', 'system', 'order_list')
-    order_file_path = File.join(order_file_dir, "order_list_#{Time.now.strftime("%s")}.tsv")
+    order_file_path = File.join(order_file_dir, "non_arrival_list_#{Time.now.strftime("%s")}.tsv")
     FileUtils.mkdir_p(order_file_dir)
 
     CSV.open(order_file_path, "w", :col_sep => "\t") do |csv|
-      csv << ["発注先","通番","発注番号","費目","書名","著者名","出版者","価格","ISBN"]
+      csv << ["発注先","通番","発注番号","発注日","書名","著者名","出版者","価格","ISBN","費目"]
       serial_number = 0; pre_bookstore_id = -1
       order_lists.each do |order_list|
         order_list.orders.each do |o|
@@ -69,17 +69,23 @@ class OrderList < ActiveRecord::Base
             budget_category_group_value = budget_category_group_value(o.item.budget_category.group_id)
           end
 
+          ordered_at_string = ""
+          if order_list.ordered_at
+            ordered_at_string = ActionController::Base.helpers.l(order_list.ordered_at.to_date)
+          end
+
           # ファイルへ書き込み
           row = []
           row << order_list.bookstore.name
           row << "#{serial_number}"
           row << o.purchase_order_number
-          row << budget_category_group_value
+          row << ordered_at_string
           row << o.item.manifestation.original_title
           row << o.item.manifestation.creators.pluck(:full_name).first
           row << o.item.manifestation.publishers.pluck(:full_name).first
           row << o.price_string_on_order
           row << o.item.manifestation.isbn
+          row << budget_category_group_value
 
           csv << row
 
@@ -166,6 +172,12 @@ class OrderList < ActiveRecord::Base
           note = o.item.note.split("\n").first
           note.chomp!
         end
+
+        budget_category_group_name = ""
+        if o.item.budget_category
+          budget_category_group_name = budget_category_group(o.item.budget_category.group_id)
+        end
+
         # ファイルへ書き込み
         row = []
         row << self.bookstore.name
@@ -177,7 +189,7 @@ class OrderList < ActiveRecord::Base
         row << o.item.manifestation.creators.pluck(:full_name).first
         row << o.item.manifestation.publishers.pluck(:full_name).first
         row << o.price_string_on_order
-        row << "大学院"
+        row << budget_category_group_name
         row << note
         row << LibraryGroup.first.display_name
 

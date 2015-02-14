@@ -54,6 +54,7 @@ ja:
         taxable_amount: 課税対象金額
         tax_exempt_amount: 非課税対象金額
         payment_sum: 支払合計金額
+        accept_status: 検収状況
       order_list:
         title: 発注リスト名
         bookstore: 書店
@@ -196,6 +197,7 @@ ja:
     ordered_label: "(発注票データ作成済み)"
     order_list_success: "発注表データの出力が成功しました。"
     ordered: 発注済み
+    accepted: 検収済み
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"
