@@ -49,6 +49,7 @@
     <th><%= t('activerecord.attributes.manifestation.original_title') %></th>
     <th><%= t('activerecord.attributes.order.price_string_on_order') %></th>
     <th><%= t('activerecord.attributes.order.accept_status') %></th>
+    <th> &nbsp; </th>
   </tr>
   <% @order_list.orders.each do |o| %>
     <tr>
@@ -57,6 +58,11 @@
       <td><%= o.item.manifestation.original_title %></td>
       <td style="text-align: right;"><%= number_to_currency(o.price_string_on_order, unit: '') %></td>
       <td><%= accept_status(o) %></td>
+      <td>
+        <%- if o.can_destroy? -%>
+          <%= link_to image_tag('icons/delete.png', :size => '16x16', :alt => t('page.destroy'), :title => t('tooltip.destroy')), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
+        <%- end -%>
+      </td>
     </tr>
   <% end %>
 </table>

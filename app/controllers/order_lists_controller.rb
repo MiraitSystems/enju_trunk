@@ -1,8 +1,8 @@
 class OrderListsController < ApplicationController
 
-  #before_filter :check_client_ip_address
+  before_filter :check_client_ip_address
   load_and_authorize_resource
-  #before_filter :get_bookstore
+
   #unless SystemConfiguration.get("use_order_lists")
   #  before_filter :access_denied
   #end
@@ -10,17 +10,38 @@ class OrderListsController < ApplicationController
   # GET /order_lists
   # GET /order_lists.json
   def index
-    if @bookstore
-      @order_lists = @bookstore.order_lists.page(params[:page])
-    else
-      @order_lists = OrderList.page(params[:page])
+    @bookstores = Bookstore.all
+    @bookstore_id = params[:bookstore_id]
+    @ordered_start_at = params[:ordered_start_at]
+    @ordered_end_at = params[:ordered_end_at]
+    @no_completed = params[:no_completed]
+
+    #@order_lists = OrderList.order("created_at desc").page(params[:page])
+    @order_lists = OrderList.where("1 = 1")
+    if params[:bookstore_id].present?
+      @order_lists = @order_lists.where(bookstore_id: params[:bookstore_id])
     end
+    if params[:ordered_start_at].present?
+      ordered_start_at = DateTime.parse(params[:ordered_start_at]).beginning_of_day rescue nil
+      if ordered_start_at
+        @order_lists = @order_lists.where("order_lists.ordered_at >= ?", ordered_start_at)
+      end
+    end
+    if params[:ordered_end_at].present?
+      ordered_end_at = DateTime.parse(params[:ordered_end_at]).end_of_day rescue nil
+      if ordered_end_at
+        @order_lists = @order_lists.where("order_lists.ordered_at <= ?", ordered_end_at)
+      end
+    end
+    if params[:no_completed].present?
+      @order_lists = @order_lists.where("order_lists.completed_at IS NULL", params[:ordered_end_at])
+    end
+
+    @order_lists = @order_lists.order("created_at desc").page(params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @order_lists }
-      format.rss  { render :layout => false }
-      format.atom
     end
   end
 
@@ -106,7 +127,6 @@ class OrderListsController < ApplicationController
     filename = @order_list.order_letter_filename
     logger.info "order_letter filename=#{filename}"
     send_file filename, :filename => "発注票.tsv".encode("cp932"), :type => 'application/octet-stream'
-
   end
 
   def manage_list_of_order
@@ -148,6 +168,5 @@ class OrderListsController < ApplicationController
       logger.info "submit_order_list filename=#{filename}"
       send_file filename, :filename => "not_arrival_list.tsv".encode("cp932"), :type => 'application/octet-stream'
     end
-
   end
 end

@@ -2,10 +2,10 @@ class OrderList < ActiveRecord::Base
   scope :not_ordered, where(:state => 'pending')
 
   has_many :orders, :dependent => :destroy
-  has_many :purchase_requests, :through => :orders
+  #has_many :purchase_requests, :through => :orders
   belongs_to :user, :validate => true
   belongs_to :bookstore, :validate => true
-  has_many :subscriptions
+  #has_many :subscriptions
   before_save :set_ordered_at
 
   validates_presence_of :title, :user, :bookstore
@@ -22,7 +22,7 @@ class OrderList < ActiveRecord::Base
     end
   end
 
-  paginates_per 5
+  paginates_per 10
 
   def ordered_on
     self.ordered_at.beginning_of_day.to_date

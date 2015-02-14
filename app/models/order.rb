@@ -22,6 +22,13 @@ class Order < ActiveRecord::Base
       self.purchase_order_number = Numbering.do_numbering('order')
     end
   end
+
+  def can_destroy?
+    unless self.ordered_at
+      return true
+    end
+    return false
+  end
 end
 
 #
