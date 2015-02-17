@@ -66,7 +66,7 @@ class OrderList < ActiveRecord::Base
     order_file_path = File.join(order_file_dir, "non_arrival_list_#{Time.now.strftime("%s")}.tsv")
     FileUtils.mkdir_p(order_file_dir)
 
-    CSV.open(order_file_path, "w", :col_sep => "\t") do |csv|
+    CSV.open(order_file_path, "w", :encoding => "SJIS", :col_sep => "\t") do |csv|
       csv << ["発注先","通番","発注番号","発注日","書名","著者名","出版者","価格","ISBN","費目"]
       serial_number = 0; pre_bookstore_id = -1
       order_lists.each do |order_list|
@@ -119,7 +119,7 @@ class OrderList < ActiveRecord::Base
     order_file_path = File.join(order_file_dir, "order_list_#{Time.now.strftime("%s")}.tsv")
     FileUtils.mkdir_p(order_file_dir)
 
-    CSV.open(order_file_path, "w", :col_sep => "\t") do |csv|
+    CSV.open(order_file_path, "w", :encoding => "SJIS", :col_sep => "\t") do |csv|
       csv << ["発注先","通番","発注番号","費目","書名","著者名","出版者","価格","ISBN"]
       serial_number = 0; pre_bookstore_id = -1
       order_lists.each do |order_list|

@@ -167,12 +167,14 @@ class OrderListsController < ApplicationController
 
     if params[:submit_order_list]
       filename = OrderList.generate_order_list(start_at, end_at)
+      client_filename = "発注リスト_#{start_at.to_date}-#{end_at.to_date}.tsv"
       logger.info "order_list filename=#{filename}"
-      send_file filename, :filename => "order_list.tsv".encode("cp932"), :type => 'application/octet-stream'
+      send_file filename, :filename => client_filename.encode("cp932"), :type => 'application/octet-stream'
     elsif params[:submit_not_arrival_list]
       filename = OrderList.generate_non_arrival_list(start_at, end_at)
+      client_filename = "未納リスト_#{start_at.to_date}-#{end_at.to_date}.tsv"
       logger.info "submit_order_list filename=#{filename}"
-      send_file filename, :filename => "not_arrival_list.tsv".encode("cp932"), :type => 'application/octet-stream'
+      send_file filename, :filename => client_filename.encode("cp932"), :type => 'application/octet-stream'
     end
   end
 end
