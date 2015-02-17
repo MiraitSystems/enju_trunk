@@ -92,11 +92,12 @@
     <% else %>
       <p style="color: grey">&nbsp;<%= t('order_list.ordered_label') %></p>
       <li><%= link_to t('order_list.order_letter'), order_letter_order_list_path(@order_list) %></li>
+      <br />
       <% if @order_list.precomplete? %>
         <p style="color: red">&nbsp;<%= t('order_list.precomplete') %></p>
       <% end %>
       <% unless @order_list.completed? %>
-      <li><%= link_to t('order_list.change_state_to_completed'), completed_order_list_order_list_path(@order_list) %></li>
+        <li><%= link_to t('order_list.change_state_to_completed'), completed_order_list_order_list_path(@order_list), :confirm => t('order_list.are_you_sure_to_completed') %></li>
       <% end %>
     <% end %>
   </ul>

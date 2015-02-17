@@ -73,6 +73,7 @@ class OrderList < ActiveRecord::Base
         order_list.orders.each do |o|
           if pre_bookstore_id != order_list.bookstore.id
             serial_number = 1
+            pre_bookstore_id = order_list.bookstore.id
           end
 
           budget_category_group_name = ""
@@ -99,8 +100,6 @@ class OrderList < ActiveRecord::Base
           row << budget_category_group_value
 
           csv << row
-
-          serial_number = serial_number + 1
         end
       end
     end
@@ -126,6 +125,7 @@ class OrderList < ActiveRecord::Base
         order_list.orders.each do |o|
           if pre_bookstore_id != order_list.bookstore.id
             serial_number = 1
+            pre_bookstore_id = order_list.bookstore.id
           end
 
           budget_category_group_name = ""

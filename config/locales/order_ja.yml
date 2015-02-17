@@ -206,6 +206,7 @@ ja:
     precomplete: "全数検収済み"
     change_state_to_completed: "状態を完了にする"
     completed: "完了"
+    are_you_sure_to_completed: "完了状態にします。よろしいですか？"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"
