@@ -28,6 +28,7 @@
         <%=l accept.created_at %>
       </td>
       <td>
+        <%= accept.order.order_list.title %> <br />
         <%= accept.order.purchase_order_number %> <br />
         <%= l(accept.order.order_list.ordered_on) %> <br />
         <%= accept.order.order_list.bookstore.name %>

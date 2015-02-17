@@ -20,6 +20,10 @@ class OrderList < ActiveRecord::Base
     event :sm_order do
       transition :pending => :ordered
     end
+
+    event :sm_complete do
+      transition :ordered => :completed
+    end
   end
 
   paginates_per 10
@@ -35,6 +39,13 @@ class OrderList < ActiveRecord::Base
       total = total + price
     end
     return total
+  end
+
+  def precomplete?
+    return false unless self.orders
+    return false if self.orders.where("orders.accept_id IS NULL").size > 0
+
+    return true
   end
 
   def available_order?
@@ -156,7 +167,7 @@ class OrderList < ActiveRecord::Base
     return (list.present?)?(list.first):(nil)
   end
 
-  def do_order
+  def do_order(letter_file_only = false)
     # generate order file
     order_file_dir = File.join(Rails.root.to_s, 'private', 'system', 'order_letter', "#{self.id}")
     order_file_path = File.join(order_file_dir, "order_letter_#{Time.now.strftime("%Y%m%d")}")
@@ -164,7 +175,7 @@ class OrderList < ActiveRecord::Base
 
     self.ordered_at = Time.now
 
-    CSV.open(order_file_path, "w", :col_sep => "\t") do |csv|
+    CSV.open(order_file_path, "w", :encoding => "SJIS", :col_sep => "\t") do |csv|
       csv << ["注文先","発注番号","ISBN","No","発注日","書名","責任表示","出版者","価格","担当","注釈","図書館名"]
       self.orders.each do |o|
         note = ""
@@ -191,34 +202,45 @@ class OrderList < ActiveRecord::Base
         row << o.price_string_on_order
         row << budget_category_group_name
         row << note
-        row << LibraryGroup.first.display_name
+        row << "#{LibraryGroup.first.display_name}#{o.item.shelf.display_name}"
 
         csv << row
       end
     end
 
     # change status
-    self.sm_order
-
+    if letter_file_only == false
+      self.sm_order
+    end
   end
 
   def edit_mode
+    return "order" if ordered?
+    return ""
+  end
 
+  def complete!
+    sm_complete
+    self.completed_at = Time.zone.now
+    self.save!
   end
 
   def order
-    self.ordered_at = Time.zone.now
+    unless self.ordered_at
+      self.ordered_at = Time.zone.now
+    end
   end
 
   def ordered?
-    true if self.ordered_at.present?
+    return false if self.state == 'pending'
+    return true
   end
 
   def can_destroy?
-    unless self.ordered_at.present?
-      return true
+    if ordered?
+      return false
     end
-    return false
+    return true
   end
 
   def set_ordered_at
@@ -227,6 +249,13 @@ class OrderList < ActiveRecord::Base
       self.ordered_at = Time.zone.parse("#{ordered_at_s}")
     rescue ArgumentError
     end
+  end
+
+  def completed?
+    if state == "completed"
+      return true
+    end
+    return false
   end
 
 end

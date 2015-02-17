@@ -7,6 +7,8 @@ module OrderListHelper
       t('order_list.not_ordered')
     when 'ordered'
       t('order_list.ordered')
+    when 'completed'
+      t('order_list.completed')
     end
   end
 

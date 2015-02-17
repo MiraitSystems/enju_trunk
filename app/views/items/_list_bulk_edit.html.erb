@@ -1,0 +1,37 @@
+
+<div class="search_form">
+<%= form_for(:item, url: bulk_update_items_path(basket_id: @basket.id), remote: true) do |f| %>
+  <div style="color: red"><%= flash[:message] -%></div>
+  <%= f.error_messages %>
+  <p>
+  <p style="color: red">
+    <%= t('update_item.notice1') %>
+    <%= t('update_item.notice2') %>
+  </p>
+    <%= label_tag :item_identifier, t('update_item.item_id_or_item_identifier') -%>:
+    <%= f.search_field :item_identifier, class: 'resource_item_identifier', value: nil -%>
+    <%= f.submit t('update_item.update'), 'data-disable-with' => t('page.updating') -%>
+  </p>
+  <br />
+  <div class="field">
+    <%= f.label t('activerecord.models.circulation_status') -%><br />
+    <%= f.select(:circulation_status_id, @circulation_statuses.collect{|l| [l.display_name.localize, l.id]}, :include_blank => true) -%>
+  </div>
+<%- end -%>
+</div>
+<br />
+
+<table class="index">
+  <tr>
+    <th><%= t('activerecord.models.item') -%></th>
+  </tr>
+  <%- @items.each_with_index do |item, i| -%>
+    <tr class="line<%= cycle("0", "1") -%>">
+      <td>
+        <%= render 'manifestations/show_index', manifestation: item.manifestation %>
+      </td>
+    </tr>
+  <%- end -%>
+</table>
+
+<%= javascript_tag("$(function(){$('#item_item_identifier').focus()})") %>

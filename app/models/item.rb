@@ -106,8 +106,28 @@ class Item < ActiveRecord::Base
 
   before_validation :set_item_operator, :if => proc { SystemConfiguration.get('manifestation.use_item_has_operator') }
 
+  has_many :orders
+
+  def order_list
+    order_list = nil
+    if orders.present?
+      order_list = orders.first.order_list rescue nil
+    end
+    return order_list
+  end
+
   def available_order?
-    true
+    unavailable_statuses = ["On PrepareOrder", "On Ordered"]
+
+    return true unless self.circulation_status
+
+    available_status = true
+
+    if unavailable_statuses.include?(circulation_status.name)
+      available_status = false
+    end
+
+    return available_status
   end
 
   def has_view_role?(current_role_id)

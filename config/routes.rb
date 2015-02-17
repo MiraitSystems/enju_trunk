@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     get :order_letter, on: :member
     get :manage, on: :collection
     get :manage_list_of_order, on: :collection
+    get :completed_order_list, on: :member
   end
   resources :orders
 
@@ -366,6 +367,9 @@ Rails.application.routes.draw do
     get :restore, :on => :member
     get :numbering, :on => :collection
     post :upload_to_nacsis, :on => :collection
+    get :bulk_edit, :on => :collection
+    post :bulk_update, :on => :collection
+    get :bulk_updates, :on => :collection
   end
 
   resources :owns

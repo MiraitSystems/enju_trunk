@@ -33,13 +33,16 @@
   </div>
   <div class="actions">
     <%= f.hidden_field :edit_mode %>
-    <% if @order_list.edit_mode == 'order' %>
-      <%= f.submit t('order_list.create_order_sheet') %>
-    <% else %>
-      <%= f.submit %>
-    <% end %>
+    <%= f.submit %>
   </div>
 <%- end -%>
+
+<script>
+  $(function(){
+    $('#order_list_ordered_at').setCalendar({src:'/assets/calendar.png'});
+  });
+</script>
+
 
 </div>
 </div>

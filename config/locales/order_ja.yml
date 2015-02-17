@@ -202,6 +202,10 @@ ja:
     no_completed_at: 完了以外
     remove_order_list: リストから除外
     cancel_after_ordered: 発注後キャンセル
+    move_to_order_list: "発注リストに遷移する"
+    precomplete: "全数検収済み"
+    change_state_to_completed: "状態を完了にする"
+    completed: "完了"
   payment:
     system_menu_title: 支払検索
     switch_manual_entry: "金額を自動計算する"

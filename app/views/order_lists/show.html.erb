@@ -22,12 +22,17 @@
 
 <p>
   <strong><%= t('activerecord.attributes.order_list.state') -%>:</strong>
-  <%= localized_order_state(@order_list.state) -%>
+  <font style="color: red">
+    <%= localized_order_state(@order_list.state) -%>
+    <% if @order_list.completed_at %>
+    (<%= l(@order_list.completed_at.to_date) %>)
+    <% end %>
+  </font>
 </p>
 
 <p>
   <strong><%= t('activerecord.attributes.order_list.ordered_at') -%>:</strong>
-  <%= l(@order_list.ordered_at) if @order_list.ordered_at -%>
+  <%= l(@order_list.ordered_at.to_date) if @order_list.ordered_at -%>
 </p>
 
 <p>
@@ -51,7 +56,7 @@
     <th><%= t('activerecord.attributes.order.accept_status') %></th>
     <th> &nbsp; </th>
   </tr>
-  <% @order_list.orders.each do |o| %>
+  <% @order_list.orders.order(:purchase_order_number).each do |o| %>
     <tr>
       <td><%= o.purchase_order_number %></td>
       <td><%= o.item.manifestation.isbn %></td>
@@ -60,11 +65,14 @@
       <td><%= accept_status(o) %></td>
       <td>
         <%- if @order_list.can_destroy? -%>
-          <%= link_to t('order_list.remove_order_list'), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
+          <%= link_to t('order_list.remove_order_list'), order_path(order_list_id: @order_list.id), :confirm => t('page.are_you_sure'), :method => :delete -%>
         <%- end -%>
         <%- if o.can_cancel? -%>
           <%= link_to t('order_list.cancel_after_ordered'), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
         <%- end -%>
+        <!---
+        item_id=<%= o.item.id %>
+        -->
       </td>
     </tr>
   <% end %>
@@ -82,8 +90,14 @@
     <% if @order_list.available_order? %>
       <li><%= link_to t('order_list.do_order'), do_order_order_list_path(@order_list) %></li>
     <% else %>
-      <p style="color: grey"><%= t('order_list.ordered_label') %></p>
+      <p style="color: grey">&nbsp;<%= t('order_list.ordered_label') %></p>
       <li><%= link_to t('order_list.order_letter'), order_letter_order_list_path(@order_list) %></li>
+      <% if @order_list.precomplete? %>
+        <p style="color: red">&nbsp;<%= t('order_list.precomplete') %></p>
+      <% end %>
+      <% unless @order_list.completed? %>
+      <li><%= link_to t('order_list.change_state_to_completed'), completed_order_list_order_list_path(@order_list) %></li>
+      <% end %>
     <% end %>
   </ul>
 </div>

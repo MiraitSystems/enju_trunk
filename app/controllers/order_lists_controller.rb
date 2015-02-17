@@ -118,6 +118,11 @@ class OrderListsController < ApplicationController
     end
   end
 
+  def completed_order_list
+    @order_list.complete!
+    redirect_to @order_list, flash: {success: t('order_list.order_list_success')}
+  end
+
   def do_order
     @order_list.do_order
     redirect_to @order_list, flash: {success: t('order_list.order_list_success')}
@@ -125,8 +130,9 @@ class OrderListsController < ApplicationController
 
   def order_letter
     filename = @order_list.order_letter_filename
+    client_filename = "発注票_#{@order_list.title}_#{@order_list.ordered_at.to_date}.tsv"
     logger.info "order_letter filename=#{filename}"
-    send_file filename, :filename => "発注票.tsv".encode("cp932"), :type => 'application/octet-stream'
+    send_file filename, :filename => client_filename.encode("cp932"), :type => 'application/octet-stream'
   end
 
   def manage_list_of_order

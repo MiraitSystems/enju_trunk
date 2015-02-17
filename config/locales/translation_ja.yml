@@ -1814,6 +1814,7 @@ ja:
     example: "例"
     example_date: "2012-04-01"
     saving: "保存中..."
+    updating: "更新中..."
     previous: "前へ"
     next: "次へ"
     my_account: "自分のアカウント"
@@ -3024,3 +3025,9 @@ ja:
     item_not_found: 資料が見つかりません。
     successfully_accepted: 検収が完了しました。
     accept_notice: 初めに発注番号のチェックを、次に図書バーコード番号のチェックを行います。
+  update_item:
+    title: 所蔵情報の更新
+    notice1: 読んでしまうと元に戻せません。
+    notice2: 初めに所蔵IDのチェックを、次に図書バーコード番号のチェックを行います。
+    item_id_or_item_identifier: 所蔵システムIDもしくは図書バーコード番号
+    update: 強制更新

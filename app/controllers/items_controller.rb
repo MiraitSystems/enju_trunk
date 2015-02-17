@@ -5,15 +5,16 @@ class ItemsController < ApplicationController
   add_breadcrumb "I18n.t('page.new', :model => I18n.t('activerecord.models.item'))", 'new_item_path', :only => [:new, :create]
   add_breadcrumb "I18n.t('page.editing', :model => I18n.t('activerecord.models.item'))", 'edit_item_path(params[:id])', :only => [:edit, :update]
   include NotificationSound
-  load_and_authorize_resource :except => :numbering
+  load_and_authorize_resource :except => [:numbering, :bulk_edit, :bulk_update, :bulk_updates]
   before_filter :get_user
   before_filter :get_agent, :get_manifestation
   helper_method :get_shelf
   helper_method :get_library
   before_filter :get_version, :only => [:show]
   before_filter :check_status, :only => [:edit]
+  before_filter :get_basket, only: [:bulk_edit, :bulk_update, :bulk_updates]
   #before_filter :store_location
-  after_filter :solr_commit, :only => [:create, :update, :destroy]
+  after_filter :solr_commit, :only => [:create, :update, :destroy, :bulk_update]
   after_filter :convert_charset, :only => :index
 
   # GET /items
@@ -335,6 +336,97 @@ class ItemsController < ApplicationController
   def numbering
     item_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil
     render :json => {:success => 1, :item_identifier => item_identifier}
+  end
+
+  def bulk_edit
+    unless (user_signed_in? and current_user.has_role?('Librarian'))
+      access_denied; return
+    end
+
+    @circulation_statuses = CirculationStatus.all
+    @basket = Basket.new
+    @basket.user = current_user
+    @basket.save!
+    @item = Item.new
+    @items = []
+
+    respond_to do |format|
+      format.html
+    end
+  end
+
+  def bulk_update
+    unless (user_signed_in? and current_user.has_role?('Librarian'))
+      access_denied; return
+    end
+    unless @basket
+      access_denied; return
+    end
+
+    update_params = params[:item]
+
+    item = nil
+    has_errors = false
+    flash[:message] = ''
+    if update_params['item_identifier'].blank?
+      flash[:message] << t('accept.enter_item_identifier')
+      has_errors = true
+    else
+      identifier = update_params['item_identifier'].to_s.strip
+
+      if identifier =~ /^\d+$/
+        item = Item.where(id: identifier).first
+      end
+      unless item
+        item = Item.where(item_identifier: identifier).first
+      end
+    end
+
+    if item.nil?
+      flash[:message] << t('accept.enter_item_identifier')
+      has_errors = true
+    end
+
+    unless update_params.values.any? {|v| v.present? }
+      has_errors = true
+    end
+
+    if has_errors
+      @circulation_statuses = CirculationStatus.all
+      respond_to do |format|
+        @items = @basket.accepts.page(params[:page])
+        format.html { render action: "bulk_edit" }
+        format.js { render action: "bulk_edit" }
+      end
+      return
+    end
+
+    update_params.delete('item_identifier')
+
+    respond_to do |format|
+      if item.update_attributes(update_params)
+        flash[:message] << t('accept.successfully_accepted', model:  t('activerecord.models.accept'))
+        format.html { redirect_to bulk_updates_items_url(basket_id: @basket.id) }
+        format.js { redirect_to bulk_updates_items_url(basket_id: @basket.id, format: :js) }
+      else
+        @circulation_statuses = CirculationStatus.all
+        @items = @basket.accepts.page(params[:page])
+        format.html { render action: "bulk_edit" }
+        format.js { render action: "bulk_edit" }
+      end
+    end
+
+  end
+
+  def bulk_updates
+    unless (user_signed_in? and current_user.has_role?('Librarian'))
+      access_denied; return
+    end
+    unless @basket
+      access_denied; return
+    end
+
+
   end
 
   private
