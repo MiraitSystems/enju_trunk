@@ -6,7 +6,7 @@
       <li><%= link_to t('page.agent_management'), agents_path %></li>
       <li><%= link_to t('page.import'), page_import_path %></li>
       <!-- <li><%= link_to t('page.export'), 'page/export' %></li> -->
-      <% if defined? EnjuTrunkOrder and SystemConfiguration.get("use_order_lists") %>
+      <% if SystemConfiguration.get("use_order_lists") %>
         <li><%= link_to t('activerecord.models.order_list'), order_lists_path %></li>
       <% end %>
       <li><%= link_to t('page.statistics'), page_exstatistics_path %></li>

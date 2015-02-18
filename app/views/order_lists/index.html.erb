@@ -1,0 +1,80 @@
+<div id="content_detail" class="ui-corner-all ui-widget-content">
+<h1 class="title"><%= t('page.listing', model: t('activerecord.models.order_list')) -%></h1>
+<div id="content_list">
+<p id="notice"><%= notice %></p>
+
+<table class="table table-striped index">
+  <tr>
+    <td>
+      <%= form_tag({:action => :index}, method: :get) do -%>
+        <strong><%= t('activerecord.models.bookstore') -%>：</strong>
+          <%= select_tag :bookstore_id, options_for_select(@bookstores.map{|c|[c.name,c.id]}, :selected => @bookstore_id), {:include_blank => ''} %>
+        <br />
+        <strong><%= t('activerecord.attributes.order_list.ordered_at') -%>：</strong>
+          <%= text_field_tag :ordered_start_at, @ordered_start_at , :placeholder => "#{t('page.example')}: 2015-04-12" -%> ～
+          <%= text_field_tag :ordered_end_at, @ordered_end_at , :placeholder => "#{t('page.example')}: 2015-04-12"-%>
+        <br />
+        <strong><%= t('order_list.no_completed_at') -%>：</strong>
+          <%= check_box_tag 'no_completed', true, false, {:checked => @no_completed} %>
+        <br />
+        <%= submit_tag t('page.search') -%>
+      <% end %>
+    </td>
+  </tr>
+</table>
+
+<script>
+  $(function(){
+    $('#ordered_start_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  $(function(){
+    $('#ordered_end_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  $(function(){
+    $('#created_start_at').setCalendar({src:'/assets/calendar.png'});
+  });
+  $(function(){
+    $('#created_end_at').setCalendar({src:'/assets/calendar.png'});
+  });
+</script>
+
+
+<br />
+
+<table class="table table-striped index">
+  <tr>
+    <th><%= t('activerecord.attributes.order_list.title') -%></th>
+    <th><%= t('activerecord.models.bookstore') -%></th>
+    <th><%= t('activerecord.attributes.order_list.ordered_at') -%></th>
+    <th><%= t('activerecord.attributes.order_list.created_at') -%></th>
+    <th><%= t('activerecord.attributes.order_list.state') -%></th>
+    <th><%= t('activerecord.attributes.order_list.note') -%></th>
+    <th></th>
+  </tr>
+
+<%- @order_lists.each do |order_list| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to order_list.title, order_list -%></td>
+    <td><%= link_to order_list.bookstore.name, order_list.bookstore -%></td>
+    <td><%= l(order_list.ordered_at.to_date) if order_list.ordered_at -%></td>
+    <td><%= l(order_list.created_at.to_date) if order_list.created_at -%></td>
+    <td><%= localized_order_state(order_list.state) -%></td>
+    <td><%= order_list.note -%></td>
+    <td>
+      <%= link_to t('page.edit'), edit_order_list_path(order_list) -%>
+      <%= link_to t('page.destroy'), order_list, data: {confirm: t('page.are_you_sure')}, method: :delete -%>
+  </tr>
+<%- end -%>
+</table>
+
+<%= paginate(@order_lists) -%>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all ui-widget-content">
+  <ul>
+    <li><%= link_to t('page.new', model: t('activerecord.models.order_list')), new_order_list_path -%></li>
+    <li><%= link_to t('order_list.manage'), manage_order_lists_path -%></li>
+  </ul>
+</div>

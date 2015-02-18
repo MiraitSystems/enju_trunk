@@ -64,7 +64,6 @@
   <% @manifestations.each do |manifestation| %>
     <% cache ([manifestation, fragment: 'manifestation_mobile', role: current_user_role_name, locale: @locale]) do %>
       <li class="list_column">
-        <%= Time.now %>
         <%= link_to manifestation do %>
           <%= manifestation.original_title %>
           <div style="white-space: normal;">

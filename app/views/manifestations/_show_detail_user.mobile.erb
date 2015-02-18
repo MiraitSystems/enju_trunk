@@ -46,27 +46,29 @@
     </tr>
   <% end %>
 
-  <tr>
-    <td class="label"><%= t('page.number') -%>:</td>
-    <td>
-      <%- if manifestation.edition_display_value? -%>
-        <%= t('activerecord.attributes.manifestation.edition_display_value') -%>: <%= manifestation.edition_display_value -%>
-      <%- end -%>
-      <%- unless manifestation.volume_number_string.blank? -%>
-        <%= t('activerecord.attributes.manifestation.volume_number_string') -%>: <%= manifestation.volume_number_string -%>
-      <%- end -%>
-      <%- unless SystemConfiguration.get("manifestation.volume_number_string_only") -%>
-        <%- unless manifestation.issue_number_string.blank? -%>
-          <%= t('manifestation.issue_number') -%>: <%= manifestation.issue_number_string -%>
+  <% if volume_display(manifestation) %>
+    <tr>
+      <td class="label"><%= t('page.number') -%>:</td>
+      <td>
+        <%- if manifestation.edition_display_value? -%>
+          <%= t('activerecord.attributes.manifestation.edition_display_value') -%>: <%= manifestation.edition_display_value -%>
         <%- end -%>
-        <%- if manifestation.series_statement -%>
-          <%- unless manifestation.serial_number_string.blank? -%>
-            <%= t('manifestation.serial_number') -%>: <%= manifestation.serial_number_string -%>
+        <%- unless manifestation.volume_number_string.blank? -%>
+          <%= t('activerecord.attributes.manifestation.volume_number_string') -%>: <%= manifestation.volume_number_string -%>
+        <%- end -%>
+        <%- unless SystemConfiguration.get("manifestation.volume_number_string_only") -%>
+          <%- unless manifestation.issue_number_string.blank? -%>
+            <%= t('manifestation.issue_number') -%>: <%= manifestation.issue_number_string -%>
+          <%- end -%>
+          <%- if manifestation.series_statement -%>
+            <%- unless manifestation.serial_number_string.blank? -%>
+              <%= t('manifestation.serial_number') -%>: <%= manifestation.serial_number_string -%>
+            <%- end -%>
           <%- end -%>
         <%- end -%>
-      <%- end -%>
-    </td>
-  </tr>
+      </td>
+    </tr>
+  <% end %>
 
   <tr>
     <td style="width: 200px"><%= t('page.form') -%>:</td>
@@ -80,49 +82,55 @@
     <td><span><%= manifestation.manifestation_type.display_name.localize if manifestation.manifestation_type %></span></td>
   </tr>
 
-  <tr>
-    <td class="label"><%= t('activerecord.attributes.manifestation.jpn_or_foreign') %>:</td>
-    <td>
-      <% Manifestation::JPN_OR_FOREIGN.each do |jpn_or_foreign| %>
-        <%= jpn_or_foreign.name if jpn_or_foreign.id == manifestation.jpn_or_foreign %>
-      <% end %>
-    </td>
-  </tr>
+  <% if manifestation.jpn_or_foreign %>
+    <tr>
+      <td class="label"><%= t('activerecord.attributes.manifestation.jpn_or_foreign') %>:</td> 
+      <td> 
+        <% Manifestation::JPN_OR_FOREIGN.each do |jpn_or_foreign| %> 
+          <%= jpn_or_foreign.name if jpn_or_foreign.id == manifestation.jpn_or_foreign %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
 
-  <tr>
-    <td class="label"><%= t('activerecord.models.language') -%>:</td>
-    <td><span itemprop="inLanguage"><%= display_work_has_languages(manifestation) %></span></td>
-  </tr>
+  <% unless manifestation.nil? || manifestation.work_has_languages.blank? %>
+    <tr>
+      <td class="label"><%= t('activerecord.models.language') -%>:</td>
+      <td><span itemprop="inLanguage"><%= display_work_has_languages(manifestation) %></span></td>
+    </tr>
+  <% end %>
 
   <tr>
     <td class="label"><%= t('activerecord.attributes.manifestation.country_of_publication') -%>:</td>
     <td><%= manifestation.country_of_publication.display_name.localize if manifestation.country_of_publication_id -%></td>
   </tr>
 
-  <tr>
-    <td class="label"><%= t('activerecord.attributes.manifestation.place_of_publication') -%>:</td>
-    <td><%= manifestation.place_of_publication -%></td>
-  </tr>
+  <% unless manifestation.place_of_publication %>
+    <tr>
+      <td class="label"><%= t('activerecord.attributes.manifestation.place_of_publication') -%>:</td>
+      <td><%= manifestation.place_of_publication -%></td>
+    </tr>
+  <% end %>
 
-  <%unless manifestation.periodical_master %>
-    <tr>
-      <td class="label">ページ数:</td>
-      <td>
-        <%- if manifestation.number_of_pages -%>
+  <% unless manifestation.periodical_master %>
+    <% if manifestation.number_of_pages %>
+      <tr>
+        <td class="label">ページ数:</td>
+        <td>
           <span itemprop="numPages"><%= manifestation.number_of_pages -%></span> p.
-        <%- end -%>
-        <%= manifestation_page(manifestation) %>
-      </td>
-    </tr>
-    <tr>
-      <td class="label">大きさ:</td>
-      <td>
-        <!-- TODO: センチメートル以外の単位 -->
-        <%- if manifestation.height -%>
+          <%= manifestation_page(manifestation) %>
+        </td>
+      </tr>
+    <% end %>
+    <% if manifestation.height %>
+      <tr>
+        <td class="label">大きさ:</td>
+        <td>
+          <!-- TODO: センチメートル以外の単位 -->
           <%= manifestation.height -%> cm.
-        <%- end -%>
-      </td>
-    </tr>
+        </td>
+      </tr>
+    <% end %>
   <% end %>
 
   <% if manifestation.price.present? %>

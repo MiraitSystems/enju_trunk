@@ -5,7 +5,6 @@
 <div id="content_list">
 <div style="color: red"><%= raw flash[:message] -%></div>
 <p id="notice"><%= raw notice %></p>
-
   <%- if @item.manifestation -%>
     <%= render 'manifestations/title', :manifestation => @item.manifestation -%>
   <%- end -%>
@@ -53,17 +52,6 @@
   <strong><%= t('activerecord.attributes.item.retention_period') -%>:</strong>
   <%= link_to @item.retention_period.display_name.localize, @item.retention_period if @item.retention_period -%>
 </p>
-
-<%- if false #TODO Setting.operation -%>
-  <p>
-    <strong><%= t('activerecord.models.lending_policy') -%>:</strong>
-    <ul>
-      <%- @item.lending_policies.each do |lending_policy| -%>
-        <li><%= link_to lending_policy.user_group.display_name.localize, lending_policy -%></li>
-      <%- end -%>
-    </ul>
-  </p>
-<%- end -%>
 
 <p>
   <strong><%= t('activerecord.models.circulation_status') -%>:</strong>
@@ -316,7 +304,11 @@
     <%- if @item.manifestation.bookbinder -%>
       <li><%= link_to(t('manifestation.undo_binding'), {:controller => 'bookbindings', :action => 'bind_undo', :item_id => @item.id}, :confirm => t('page.undo_binding')) -%></li>
     <%- end -%>
+    <% if @item.available_order? %>
+      <li><%= link_to t('item.add_to_order_list'), new_item_order_path(@item) %></li>
+    <% end %>
   </ul>
+
   <%#- if @item.manifestation.nacsis_identifier || @item.manifestation.series_statement.nacsis_series_statementid -%>
   <%#- if @item.manifestation.nacsis_identifier || (@item.manifestation.series_statement and @item.manifestation.series_statement.nacsis_series_statementid) -%>
   <%- if @item.manifestation.nacsis_identifier && @item.id == (@item.manifestation.items.where('nacsis_identifier is not null').first.try(:id) || @item.id) -%>

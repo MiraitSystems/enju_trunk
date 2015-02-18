@@ -1,4 +1,7 @@
 <% if manifestation.items.exists? %>
+<% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+<% items = items.select{|i| i.has_view_role?(current_user.try(:role).try(:id)) && !hide_item?(params[:all_manifestation], i)} %>
+<% unless items.blank? %>
 <div id="holding">
 <table class="holding">
   <tr>
@@ -19,12 +22,7 @@
       <% end %>
     <% end %>
   </tr>
-  <%# cache(:controller => :manifestations, :action => :show, :id => manifestation.id, :page => 'holding', :role => current_user_role_name, :locale => @locale, :manifestation_id => nil) do %>
-  <%# - manifestation.items.on_shelf.each do |item| -%>
-    <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
     <% items.each do |item| %>
-      <% next unless item.has_view_role?(current_user.try(:role).try(:id)) %>
-      <% next if hide_item?(params[:all_manifestations], item) %>
       <tr>
         <%- if multi_libraries? %>
           <td>
@@ -99,7 +97,7 @@
         <% end %>
       </tr>
     <% end %>
-  <%# end %>
 </table>
 </div>
+<% end %>
 <% end %>

@@ -1,6 +1,17 @@
 Rails.application.routes.draw do
   resources :tax_rates
 
+  resources :order_lists do
+    resource :order
+    get :do_order, on: :member
+    get :order_letter, on: :member
+    get :manage, on: :collection
+    get :manage_list_of_order, on: :collection
+    get :completed_order_list, on: :member
+  end
+  resources :orders
+
+  resources :accepts, :except => [:edit, :update]
 
   resources :sequence_patterns
   resources :publication_statuses
@@ -36,7 +47,7 @@ Rails.application.routes.draw do
   resources :warekis
   resources :user_request_logs
   resources :enju_terminals
-	resource :exchange_manifestation do
+  resource :exchange_manifestation do
     post :select_manifestation, :on => :member
   end
 
@@ -178,7 +189,7 @@ Rails.application.routes.draw do
     get :get_user_rent, :on => :member
     get :get_user_rent, :on => :collection
     post :output_password, :on => :member
-    post :output_user_notice, :on => :member   
+    post :output_user_notice, :on => :member
     resources :answers
     resources :questions do
       resources :answers
@@ -351,10 +362,14 @@ Rails.application.routes.draw do
     resources :agents
     resources :owns
     resource :exemplify
+    resource :order
     get :remove, :on => :member
     get :restore, :on => :member
     get :numbering, :on => :collection
     post :upload_to_nacsis, :on => :collection
+    get :bulk_edit, :on => :collection
+    post :bulk_update, :on => :collection
+    get :bulk_updates, :on => :collection
   end
 
   resources :owns
@@ -415,7 +430,7 @@ Rails.application.routes.draw do
   resources :export_item_registers do
     get :get_list_size, :on => :collection
   end
- 
+
   resources :library_reports do
     get :daily_report, :on => :collection
     get :monthly_report, :on => :collection

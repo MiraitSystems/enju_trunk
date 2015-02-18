@@ -2548,6 +2548,8 @@ en:
       red: red
     role:
       all: All
+    boolean_yes: 'Yes'
+    boolean_no: 'No'
     boolean_display: Display
     boolean_not_display: Not display
     boolean_do: Do
@@ -2590,8 +2592,6 @@ en:
     copy_request: Copy request
     view: Show
     nacsis: NACSIS-CAT/ILL
-    boolean_yes: Yes
-    boolean_no: No
     boolean_no_opac: No(WebOPAC)
     boolean_rental_certificate_size: Label
     boolean_not_rental_certificate_size: A4

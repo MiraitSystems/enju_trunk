@@ -1,0 +1,31 @@
+<div id="content_detail" class="ui-corner-all ui-widget-content">
+<h1 class="title"><%= t('page.listing', model: t('activerecord.models.order')) -%></h1>
+<div id="content_list">
+
+<table>
+  <tr>
+    <th><%= t('activerecord.models.order_list') -%></th>
+    <th><%= t('page.updated_at') -%></th>
+    <th></th>
+  </tr>
+
+<%- @orders.each do |order| -%>
+  <tr class="line<%= cycle("0", "1") -%>">
+    <td><%= link_to order.order_list.title, order.order_list -%></td>
+    <td><%= l(order.updated_at) -%></td>
+    <td>
+    </td>
+  </tr>
+<%- end -%>
+</table>
+
+<%= paginate(@orders) -%>
+
+</div>
+</div>
+
+<div id="submenu" class="ui-corner-all ui-widget-content">
+  <ul>
+      <li><%= link_to t('page.new', model: t('activerecord.models.order')), new_order_path -%></li>
+  </ul>
+</div>

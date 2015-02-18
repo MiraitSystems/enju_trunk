@@ -1,9 +1,8 @@
 <% if manifestation.items.exists? %>
   <% items = manifestation.items = SystemConfiguration.get('manifestation.manage_item_rank') ? manifestation.items.sort_rank : manifestation.items %>
+  <% items = items.select{|i| i.has_view_role?(current_user.try(:role).try(:id)) && !hide_item?(params[:all_manifestation], i)} %>
   <% items.each do |item| %>
     <hr class="dash_line">
-    <% next unless item.has_view_role?(current_user.try(:role).try(:id)) %>
-    <% next if hide_item?(params[:all_manifestations], item) %>
     <div>
       <%= t('activerecord.attributes.item.call_number') %>:
       <span class="red_string"><%= call_numberformat(item) %></span>
