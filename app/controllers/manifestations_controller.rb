@@ -483,11 +483,12 @@ class ManifestationsController < ApplicationController
       set_in_process
       @index_agent = get_index_agent
       
-      @sort_plan_id = params[:sort_plan] || SystemConfiguration.get("manifestation.search_sort") || 1
+      @sort_plan_id = search_opts[:sort_plan]
       @sort_plan = {}
       (1..10).each do |id|
         @sort_plan[t(Manifestation::SORT_PLANS[id]["sort"], :sort_by => t(Manifestation::SORT_PLANS[id]["sort_by"]))] = id
       end
+
       @per_page = search_opts[:per_page]
       @all_manifestations = params[:all_manifestations] if params[:all_manifestations]
 
@@ -1872,6 +1873,13 @@ class ManifestationsController < ApplicationController
     end
     search_opts[:page_session] = 1
     search_opts[:per_page_session] = SystemConfiguration.get("max_number_of_results")
+
+    # prepare: sort
+    sort_plan = SystemConfiguration.get("manifestation.search_sort") || 1
+    sort_plan = cookies[:sort_plan] if cookies[:sort_plan] # XXX: セッションデータに格納してはダメ?
+    sort_plan = params[:sort_plan] if params[:sort_plan] #Manifestation.sort_plan
+    cookies.permanent[:sort_plan] = { :value => sort_plan } # XXX: セッションデータに格納してはダメ?
+    search_opts[:sort_plan] = sort_plan
 
     search_opts
   end
