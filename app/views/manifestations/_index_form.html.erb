@@ -225,7 +225,7 @@ $(function(){
         if (layout_type == 'request' || layout_type == 'label')
           $('#format_type').val(layout_type);
         else
-          $('#format_type').val($("input:radio[name='format_type_<%= t %>2']:checked").val()); 
+          $('#format_type').val($("input:radio[name='format_type_<%= t %>2']:checked").val());
         // close the dialog before we go
         $('#excelx_<%= t -%>_dialog').dialog('close');
         // submit the form itself
@@ -285,9 +285,7 @@ function BoxChecked(check){
     <div>
       <strong><%= t('page.output_layout') %></strong><br />
       <%= radio_button_tag(:layout_type, 'search', :checked => true) %><%= t('page.search_result') %><br />
-      <% if defined?(EnjuSakura) %>
-        <%= radio_button_tag(:layout_type, 'label') %><%= t('page.output_label') %><br />
-      <% end %>
+      <%= radio_button_tag(:layout_type, 'label') %><%= t('page.output_label') %><br />
       <% if params[:missing_issue] %>
         <%= radio_button_tag(:layout_type, 'request') %><%= t('page.output_request') %><br />
       <% end %>

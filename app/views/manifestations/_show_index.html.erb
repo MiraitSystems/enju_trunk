@@ -3,12 +3,16 @@
     <%- if [1, 2].include?(manifestation.missing_issue) %><%= t('manifestation.missing') %><%- end %>
     <%= t('manifestation.periodical') if manifestation.root_of_series? %>
     <% if manifestation.root_of_series? %>
-      <%= link_to highlight(manifestation.series_statement.original_title), 
+      <%= link_to highlight(manifestation.series_statement.original_title),
         series_statement_manifestations_path(manifestation.series_statement, reset_facet_params(params)) %>
     <% else %>
       <%= link_to highlight(manifestation.original_title), manifestation_path(manifestation, reset_facet_params(params)) %>
-    <% end %>
+   <% end %>
   </strong>
+  <% if (! manifestation.root_of_series?) && manifestation.series_statement %>
+    <%= manifestation.series_statement.original_title %>
+  <% end %>
+
   <%= t('manifestation.format_volume', :volume => manifestation.volume_number_string) unless manifestation.volume_number_string.blank? %>
   <%= t('manifestation.format_issue', :issue => manifestation.issue_number_string) unless manifestation.issue_number_string.blank? %>
   <% if manifestation.root_of_series? %>
