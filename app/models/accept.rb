@@ -11,12 +11,23 @@ class Accept < ActiveRecord::Base
   validates_uniqueness_of :item_id, message:  I18n.t('accept.already_accepted')
   validates_presence_of :item_id, message:  I18n.t('accept.item_not_found')
   validates_presence_of :basket_id
+  validate :check_ordered?
 
   before_save :accept!, on: :create
 
   attr_accessor :item_identifier
 
   paginates_per 10
+
+  def check_ordered?
+    unless order
+      if item.present?
+        errors[:base] << I18n.t('accept.no_ordered')
+        return false
+      end
+    end
+    return true
+  end
 
   def accept!
     circulation_status = CirculationStatus.where(name: 'Available On Shelf').first
