@@ -1,4 +1,6 @@
 class OrderList < ActiveRecord::Base
+  include ItemsHelper
+
   scope :not_ordered, where(:state => 'pending')
 
   has_many :orders, :dependent => :destroy
@@ -16,6 +18,7 @@ class OrderList < ActiveRecord::Base
 
   state_machine :initial => :pending do
     before_transition :pending => :ordered, :do => :order
+    after_transition :pending => :ordered, :do => :change_state_on_order
 
     event :sm_order do
       transition :pending => :ordered
@@ -278,6 +281,20 @@ class OrderList < ActiveRecord::Base
       return true
     end
     return false
+  end
+
+  def change_state_on_order
+    ordered_state = CirculationStatus.where(name: "On Ordered").first
+
+    if ordered_state
+      if self.orders
+        orders.each do |o|
+          if o.item
+            o.item.update_attributes!(circulation_status_id: ordered_state.id)
+          end
+        end
+      end
+    end
   end
 
 end
