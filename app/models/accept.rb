@@ -23,6 +23,13 @@ class Accept < ActiveRecord::Base
         errors[:base] << I18n.t('accept.no_ordered')
         return false
       end
+    else
+      if order.order_list
+        unless order.order_list.ordered_at
+          errors[:base] << I18n.t('accept.no_ordered')
+          return false
+        end
+      end
     end
     return true
   end

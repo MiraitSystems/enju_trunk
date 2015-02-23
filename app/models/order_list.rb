@@ -77,7 +77,7 @@ class OrderList < ActiveRecord::Base
           end
 
           budget_category_group_name = ""
-          if o.item.budget_category
+          if o.item && o.item.budget_category
             budget_category_group_value = budget_category_group_value(o.item.budget_category.group_id)
           end
 
@@ -86,17 +86,28 @@ class OrderList < ActiveRecord::Base
             ordered_at_string = ActionController::Base.helpers.l(order_list.ordered_at.to_date)
           end
 
+          original_title_string = ""
+          creators_string = ""
+          publishers_string = ""
+          isbn_string = ""
+          if o.item && o.item.manifestation
+            original_title_string = o.item.manifestation.original_title
+            creators_string = o.item.manifestation.creators.pluck(:full_name).first
+            publishers_string = o.item.manifestation.publishers.pluck(:full_name).first
+            isbn_string = o.item.manifestation.isbn
+          end
+
           # ファイルへ書き込み
           row = []
           row << order_list.bookstore.name
           row << "#{serial_number}"
           row << o.purchase_order_number
           row << ordered_at_string
-          row << o.item.manifestation.original_title
-          row << o.item.manifestation.creators.pluck(:full_name).first
-          row << o.item.manifestation.publishers.pluck(:full_name).first
+          row << original_title_string
+          row << creators_string
+          row << publishers_string
           row << o.price_string_on_order
-          row << o.item.manifestation.isbn
+          row << isbn_string
           row << budget_category_group_value
 
           csv << row
@@ -129,8 +140,19 @@ class OrderList < ActiveRecord::Base
           end
 
           budget_category_group_name = ""
-          if o.item.budget_category
+          if o.item and o.item.budget_category
             budget_category_group_value = budget_category_group_value(o.item.budget_category.group_id)
+          end
+
+          original_title_string = ""
+          creators_string = ""
+          publishers_string = ""
+          isbn_string = ""
+          if o.item && o.item.manifestation
+            original_title_string = o.item.manifestation.original_title
+            creators_string = o.item.manifestation.creators.pluck(:full_name).first
+            publishers_string = o.item.manifestation.publishers.pluck(:full_name).first
+            isbn_string = o.item.manifestation.isbn
           end
 
           # ファイルへ書き込み
@@ -139,11 +161,11 @@ class OrderList < ActiveRecord::Base
           row << "#{serial_number}"
           row << o.purchase_order_number
           row << budget_category_group_value
-          row << o.item.manifestation.original_title
-          row << o.item.manifestation.creators.pluck(:full_name).first
-          row << o.item.manifestation.publishers.pluck(:full_name).first
+          row << original_title_string
+          row << creators_string
+          row << publishers_string
           row << o.price_string_on_order
-          row << o.item.manifestation.isbn
+          row << isbn_string
 
           csv << row
 
