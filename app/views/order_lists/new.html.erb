@@ -7,11 +7,11 @@
 
   <div class="field">
     <%= f.label :title -%><br />
-    <%= f.text_field :title, class: 'resource_title' -%>
+    <%= f.text_field :title, class: 'resource_title', autofocus: true -%>
   </div>
   <div class="field">
     <%= f.label t('activerecord.models.bookstore') -%><br />
-    <%= f.select(:bookstore_id, @bookstores.collect{|b| [b.name, b.id]}) -%>
+    <%= f.select(:bookstore_id, @bookstores.collect{|b| [b.name, b.id]}, include_blank: true) -%>
   </div>
   <div class="field">
     <%= f.label :note -%><br />
