@@ -76,7 +76,17 @@ class AcceptsController < ApplicationController
 
     flash[:message] = ''
     if @accept.item_identifier.blank?
-      flash[:message] << t('accept.enter_item_identifier') if @accept.item_identifier.blank?
+      flash[:message] << t('accept.enter_item_identifier')
+
+      @accepts = @basket.accepts.page(params[:page])
+
+      respond_to do |format|
+        format.html { render action: "index" }
+        format.json { render json: @accept.errors, status: :unprocessable_entity }
+        format.js { render action: "index" }
+      end
+
+      return
     else
       order = Order.where(purchase_order_number: @accept.item_identifier.to_s.strip).first
       if order

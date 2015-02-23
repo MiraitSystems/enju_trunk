@@ -6,10 +6,15 @@ class Accept < ActiveRecord::Base
   belongs_to :librarian, class_name: 'User'
   belongs_to :order, touch: true
 
-  validates_uniqueness_of :item_id, message:  I18n.t('accept.already_accepted')
-  validates_presence_of :item_id, message:  I18n.t('accept.item_not_found')
   validates_presence_of :basket_id
   validate :check_ordered?
+
+  validate do |accept|
+    accept.errors.add :base, I18n.t('accept.item_not_found') if accept.item_id.blank?
+    if accept.item_id and Accept.where(item_id: accept.item_id).present?
+      accept.errors.add :base, I18n.t('accept.already_accepted')
+    end
+  end
 
   before_save :accept!, on: :create
 

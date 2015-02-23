@@ -208,6 +208,7 @@ ja:
     change_state_to_completed: "状態を完了にする"
     completed: "完了"
     are_you_sure_to_completed: "完了状態にします。よろしいですか？"
+    are_you_sure_to_ordered: "発注します。よろしいですか？"
   accept:
     no_ordered: 発注していない所蔵です。発注済みで無いと検収が出来ません。
   payment:

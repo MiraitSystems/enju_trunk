@@ -3020,11 +3020,13 @@ ja:
     foreign_donate: "寄贈(洋書)"
     total_donate: "寄贈(合計)"
   accept:
+    enter_item_identifier: "発注番号または図書バーコード番号を入力してください。"
     accept: 検収
     order_number_or_item_identifier: 発注番号または図書バーコード番号
-    item_not_found: 資料が見つかりません。
+    item_not_found: "資料が見つかりません。"
     successfully_accepted: 検収が完了しました。
     accept_notice: 初めに発注番号のチェックを、次に図書バーコード番号のチェックを行います。
+    already_accepted: 既に検収済みです。
   update_item:
     title: 所蔵情報の更新
     notice1: 読んでしまうと元に戻せません。
