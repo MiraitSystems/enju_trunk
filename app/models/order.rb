@@ -5,8 +5,8 @@ class Order < ActiveRecord::Base
 
   validates_presence_of :price_string_on_order
 
-  #validates_associated :order_list, :purchase_request
-  #validates_presence_of :order_list, :purchase_request
+  validates_associated :order_list
+  validates_presence_of :order_list
   #validates_uniqueness_of :purchase_request_id, scope: :order_list_id
 
   before_create :build_order_number
@@ -38,7 +38,6 @@ class Order < ActiveRecord::Base
   def update_circulation_status
     # on destroy
     if self.item_id
-      logger.info "@@@ update_circulation_status id=#{self.item_id}"
       status = CirculationStatus.where(name: "On Order").first rescue nil
       if status
         item.circulation_status = status

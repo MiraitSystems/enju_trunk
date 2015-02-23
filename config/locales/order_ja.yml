@@ -55,6 +55,7 @@ ja:
         tax_exempt_amount: 非課税対象金額
         payment_sum: 支払合計金額
         accept_status: 検収状況
+        order_list: 発注リスト
       order_list:
         title: 発注リスト名
         bookstore: 書店
