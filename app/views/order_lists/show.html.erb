@@ -96,7 +96,7 @@
   <br />
   <ul>
     <% if @order_list.available_order? %>
-      <li><%= link_to t('order_list.do_order'), do_order_order_list_path(@order_list) %></li>
+      <li><%= link_to t('order_list.do_order'), do_order_order_list_path(@order_list), :confirm => t('order_list.are_you_sure_to_ordered') %></li>
     <% else %>
       <p style="color: grey">&nbsp;<%= t('order_list.ordered_label') %></p>
       <li><%= link_to t('order_list.order_letter'), order_letter_order_list_path(@order_list) %></li>
