@@ -139,6 +139,7 @@ ja:
     update_order: "発注情報の更新"
     confirm_update_order: "受入冊数の更新、支払い情報を作成します。"
     order_number_auto_generate_on_blank: "発注番号が空白の場合は自動で採番されます。"
+    en_expected: は半角英数字で入力してください。
   order_output_csv:
     number: "No."
     full_name: "発注機関"

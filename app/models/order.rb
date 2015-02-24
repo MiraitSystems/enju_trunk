@@ -5,6 +5,8 @@ class Order < ActiveRecord::Base
 
   validates_presence_of :price_string_on_order
 
+  validate :validate_purchase_order_number
+
   validates_associated :order_list
   validates_presence_of :order_list
   #validates_uniqueness_of :purchase_request_id, scope: :order_list_id
@@ -17,7 +19,14 @@ class Order < ActiveRecord::Base
 
   paginates_per 10
 
-  #
+  def validate_purchase_order_number
+    if self.purchase_order_number.present?
+      unless /\A[a-zA-Z0-9]+\z/ =~ purchase_order_number
+        errors.add(:purchase_order_number, I18n.t('order.en_expected'))
+      end
+    end
+  end
+
   def build_order_number
     if self.purchase_order_number.blank?
       Rails.logger.info "numbering order_number"

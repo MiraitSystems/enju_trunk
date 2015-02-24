@@ -30,7 +30,7 @@ class Accept < ActiveRecord::Base
       end
     else
       if order.order_list
-        unless order.order_list.ordered_at
+        unless order.order_list.state == "ordered"
           errors[:base] << I18n.t('accept.no_ordered')
           return false
         end
