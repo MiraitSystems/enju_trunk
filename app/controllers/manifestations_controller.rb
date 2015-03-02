@@ -241,7 +241,7 @@ class ManifestationsController < ApplicationController
       end
 
       def setup_facet!
-        [:all, :book].each do |key| 
+        [:all, :book].each do |key|
           if @search[key]
             @search[key].build do
               facet_fields.each {|f| facet f }
@@ -482,7 +482,7 @@ class ManifestationsController < ApplicationController
       get_classification
       set_in_process
       @index_agent = get_index_agent
-      
+
       @sort_plan_id = search_opts[:sort_plan]
       @sort_plan = {}
       (1..10).each do |id|
@@ -514,7 +514,7 @@ class ManifestationsController < ApplicationController
 
       if params[:basket_id]
         @basket = @current_basket # ignore params[:basket_id] and get current_basket with current_user
-        @all_manifestations = params[:all_manifestations] = true 
+        @all_manifestations = params[:all_manifestations] = true
       end
 
       @query = params[:query] # フォームで入力されたメインの検索語を保存する
@@ -611,7 +611,7 @@ class ManifestationsController < ApplicationController
       @count[:query_result] = sum
       @collation = search_all_result.collation if @count[:query_result] == 0
 
-      if current_user.nil? or !current_user.has_role?('Librarian') 
+      if current_user.nil? or !current_user.has_role?('Librarian')
         save_search_history(@solr_query, @manifestations.limit_value, @count[:query_result], current_user)
       end
 
@@ -641,7 +641,7 @@ class ManifestationsController < ApplicationController
       end
     end
     store_location # before_filter ではファセット検索のURLを記憶してしまう
-    
+
     respond_to do |format|
       if params[:opac]
         if @manifestations.size > 0
@@ -685,7 +685,7 @@ class ManifestationsController < ApplicationController
       }
       format.mods
       format.json { render :json => @manifestations }
-      format.js { 
+      format.js {
         case params[:verb]
         when 'Exchange'
           render 'exchange_manifestations/manifestations'
@@ -813,7 +813,7 @@ class ManifestationsController < ApplicationController
     original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     if original_manifestation # GET /manifestations/new?manifestation_id=1
       @manifestation = original_manifestation.dup
-      
+
       @classifications = get_classification_values(original_manifestation)
 
       @manifestation.isbn = nil if SystemConfiguration.get("manifestation.isbn_unique")
@@ -830,9 +830,9 @@ class ManifestationsController < ApplicationController
       end
 
       @creators = original_manifestation.try(:creates).present? ? original_manifestation.creates.order(:position) : [{}]
-      @contributors = original_manifestation.try(:realizes).present? ? original_manifestation.realizes.order(:position) : [{}] 
-      @publishers = original_manifestation.try(:produces).present? ? original_manifestation.produces.order(:position) : [{}] 
-      @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}] 
+      @contributors = original_manifestation.try(:realizes).present? ? original_manifestation.realizes.order(:position) : [{}]
+      @publishers = original_manifestation.try(:produces).present? ? original_manifestation.produces.order(:position) : [{}]
+      @subjects = original_manifestation.try(:subjects).present? ? original_manifestation.subjects.order(:position) : [{}]
 
       @work_has_titles = original_manifestation.try(:work_has_titles).present? ? original_manifestation.work_has_titles.inject([]){|wt,t| wt << t.dup} : []
       @work_has_titles << WorkHasTitle.new if @work_has_titles.blank?
@@ -857,7 +857,7 @@ class ManifestationsController < ApplicationController
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
 
     @classifications = get_classification_values(@manifestation) if @classifications.blank?
-    
+
     @manifestation.set_next_number(@manifestation.volume_number, @manifestation.issue_number) if params[:mode] == 'new_issue'
 
     @original_manifestation = original_manifestation if params[:mode] == 'add'
@@ -881,13 +881,13 @@ class ManifestationsController < ApplicationController
     end
     @original_manifestation = Manifestation.where(:id => params[:manifestation_id]).first
     @manifestation.series_statement = @series_statement if @series_statement
-    
+
     @creators = @manifestation.try(:creates).present? ? @manifestation.creates.order(:position) : [{}] unless @creators
     @contributors = @manifestation.try(:realizes).present? ? @manifestation.realizes.order(:position) : [{}] unless @contributors
     @publishers = @manifestation.try(:produces).present? ? @manifestation.produces.order(:position) : [{}] unless @publishers
     @subjects = @manifestation.try(:subjects).present? ? @manifestation.subjects.order(:position) : [{}] unless @subjects
     @classifications = get_classification_values(@manifestation)
-    
+
     if defined?(EnjuBookmark)
       if params[:mode] == 'tag_edit'
         @bookmark = current_user.bookmarks.where(:manifestation_id => @manifestation.id).first if @manifestation rescue nil
@@ -928,11 +928,11 @@ class ManifestationsController < ApplicationController
     @publishers = params[:publishers]
 
     # subjects
-    @subjects = params[:subjects] 
+    @subjects = params[:subjects]
     @manifestation.subjects = create_subject_values(@subjects);
 
     # classifications
-    @classifications = params[:classifications] 
+    @classifications = params[:classifications]
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
@@ -970,9 +970,9 @@ class ManifestationsController < ApplicationController
   end
 
   def numbering
-    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil 
+    manifestation_identifier = params[:type].present? ? Numbering.do_numbering(params[:type]) : nil
     render :json => {:success => 1, :manifestation_identifier => manifestation_identifier}
-  end 
+  end
 
   # PUT /manifestations/1
   # PUT /manifestations/1.json
@@ -993,22 +993,22 @@ class ManifestationsController < ApplicationController
     # subjects
     @subjects = params[:subjects]
     @manifestation.subjects = create_subject_values(@subjects);
-    
+
     # classifications
-    @classifications = params[:classifications] 
+    @classifications = params[:classifications]
     @manifestation.classifications = create_classification_values(@classifications);
 
     @theme = params[:manifestation][:theme] if defined?(EnjuTrunkTheme)
- 
+
     # titles
     if SystemConfiguration.get('manifestation.use_titles')
       params[:manifestation][:work_has_titles_attributes].each_with_index do |wf_attributes|
         title = @manifestation.manifestation_titles.try(:[], wf_attributes[0].to_i) rescue nil
         if title
-          title.title = wf_attributes[1]['title'] 
+          title.title = wf_attributes[1]['title']
           title.title_transcription = wf_attributes[1][:title_transcription]
           title.title_alternative = wf_attributes[1][:title_alternative]
-          @manifestation.work_has_titles[wf_attributes[0].to_i].title = title 
+          @manifestation.work_has_titles[wf_attributes[0].to_i].title = title
         end
       end
     end
@@ -1030,7 +1030,7 @@ class ManifestationsController < ApplicationController
 
         if SystemConfiguration.get('manifestation.use_titles')
           @manifestation.manifestation_titles.each do |title|
-            title.save if title.changed? 
+            title.save if title.changed?
           end
         end
 
@@ -1106,13 +1106,20 @@ class ManifestationsController < ApplicationController
   end
 
   def search_manifestation
-    return nil unless request.xhr? or params[:original_title].blank?
+    unless request.xhr? or params[:original_title].blank?
+      Rails.logger.info "not ajax request on search_manifestation"
+      render text: "" # TODO
+      return
+    end
     manifestations = Manifestation.search.build do
       with(:original_title).equal_to params[:original_title]
       with(:periodical).equal_to false
     end.execute!.results
     manifestations = manifestations.delete_if{ |m| m.id == params[:manifestation_id].to_i } if params[:manifestation_id]
-    return nil unless manifestations.present?
+    unless manifestations.present?
+      render :json => { success: 0, manifestation_urls: nil }
+      return
+    end
     manifestation_urls = []
     manifestations.each do |m|
       str = "#{t('activerecord.attributes.manifestation.identifier')}:"
@@ -1282,13 +1289,13 @@ class ManifestationsController < ApplicationController
         cls_params[cls_type_id] ||= []
         cls_params[cls_type_id] << cls_id
       end
-  
+
       cls_params.each do |cls_type_id, cls_ids|
         cls_word = {}
         Classification.where(id: cls_ids).
           where(classification_type_id: cls_type_id).each do |cls|
             # Manifestationのsearchableブロックに合わせる
-            cls_word[cls.id.to_s] = "#{cls.classification_type.name}-#{cls.classification_identifier}" 
+            cls_word[cls.id.to_s] = "#{cls.classification_type.name}-#{cls.classification_identifier}"
           end
         qws = cls_ids.map {|cls_id| cls_word[cls_id] || 'unknown' }
         if qws.size == 1
@@ -1474,7 +1481,7 @@ class ManifestationsController < ApplicationController
 
     # hide manifestaion without available item for Guest and User
     if SystemConfiguration.get('manifestation.search.hide_without_accessible_item')
-      unless ((SystemConfiguration.get('manifestation.show_all') && 
+      unless ((SystemConfiguration.get('manifestation.show_all') &&
         current_user.try(:role).try(:id).try(:>=, Role.where(:name => 'Librarian').first.id)) || @all_manifestations)
         current_role_id = (current_user.try(:role) || Role.default_role).id
         with << [:has_available_items, :equal_to, "#{current_role_id}_has_available_items"]
@@ -1484,9 +1491,9 @@ class ManifestationsController < ApplicationController
     if @removed
       with << [:has_removed, :equal_to, true]
     else
-      if !params[:missing_issue] && 
+      if !params[:missing_issue] &&
         (@all_manifestations.blank? or !@all_manifestations == true) &&
-        !SystemConfiguration.get("manifestation.show_all") 
+        !SystemConfiguration.get("manifestation.show_all")
       end
     end
     without << [:hide, :equal_to, true]
@@ -1498,7 +1505,7 @@ class ManifestationsController < ApplicationController
         with << [:periodical, :equal_to, false] if options[:add_mode].blank? and @series_statement.blank? and @basket.blank?
       end
     end
-    with << [:periodical_master, :equal_to, false] if options[:add_mode] 
+    with << [:periodical_master, :equal_to, false] if options[:add_mode]
     return [with, without] if options[:add_mode]
 
     #
@@ -1557,7 +1564,7 @@ class ManifestationsController < ApplicationController
 
   def search_result_order(sort_id)
     sort = {}
-    sort_id = SystemConfiguration.get("manifestation.search_sort") || 1 if sort_id.nil? 
+    sort_id = SystemConfiguration.get("manifestation.search_sort") || 1 if sort_id.nil?
     sort_id = sort_id.to_i
     # TODO: ページ数や大きさでの並べ替え
     case sort_id
@@ -1831,7 +1838,7 @@ class ManifestationsController < ApplicationController
           (SystemConfiguration.get('manifestation.isbn_unique') &&
             params[:isbn].present? && params[:isbn] !~ /\*/) ||
               (params[:identifier].present? && params[:identifier] !~ /\*/)
-        search_opts[:direct_mode] = true unless params[:binding_items_flg] 
+        search_opts[:direct_mode] = true unless params[:binding_items_flg]
       end
 
       # split option (local)
@@ -2022,9 +2029,9 @@ class ManifestationsController < ApplicationController
     true
   end
 
-  # 
+  #
   # create classification vaules
-  # 
+  #
   def create_classification_values(add_classifications)
     classifications = []
     (add_classifications || []).each do |add_classification|
@@ -2035,9 +2042,9 @@ class ManifestationsController < ApplicationController
     return classifications
   end
 
-  # 
+  #
   # get classification vaules
-  # 
+  #
   def get_classification_values(manifestation)
     classifications = []
     manifestation_has_classifications = manifestation.manifestation_has_classifications.order(:position)
