@@ -1,21 +1,21 @@
 namespace :enju do
   namespace :install do
     namespace :migrations do
-      MAIN_PATH = Rails.root.to_s 
+      MAIN_PATH = Rails.root.to_s
 
       def import_migrations(name)
-        engine_path = eval("#{name}::Engine").root.to_s rescue nil 
+        engine_path = eval("#{name}::Engine").root.to_s rescue nil
         puts "directly import migration files from #{engine_path} to #{MAIN_PATH}"
         system "rsync -ruv #{engine_path}/db/migrate #{MAIN_PATH}/db/" if engine_path
       end
 
       desc 'Directly import all migrations'
       task :all => :environment do
-        gems = 
+        gems =
         %w(
-          EnjuTrunk 
+          EnjuTrunk
           EnjuManifestationViewer
-          JppCustomercodeTransfer 
+          JppCustomercodeTransfer
         )
         gems << 'EnjuEvent' if defined? EnjuEvent
         gems << 'EnjuTrunkCirculation' if defined? EnjuTrunkCirculation
@@ -24,6 +24,7 @@ namespace :enju do
         gems << 'EnjuTrunkReport' if defined? EnjuTrunkReport
         gems << 'EnjuTrunkOrder' if defined? EnjuTrunkOrder
         gems << 'EnjuTrunkFireSync' if defined? EnjuTrunkFireSync
+        gems << 'EnjuTrunkInventory' if defined? EnjuTrunkInventory
         gems.each do |name|
           import_migrations(name)
         end
@@ -77,6 +78,11 @@ namespace :enju do
       desc 'Directly import enju_trunk_fire_sync migrations'
       task :enju_trunk_fire_sync => :environment do
         import_migrations("EnjuTrunkFireSync") if defined?(EnjuTrunkFireSync)
+      end
+
+      desc 'Directly import enju_trunk_inventory migrations'
+      task :enju_trunk_inventory => :environment do
+        import_migrations("EnjuTrunkInventory") if defined?(EnjuTrunkInventory)
       end
 
     end
