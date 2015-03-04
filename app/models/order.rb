@@ -37,7 +37,9 @@ class Order < ActiveRecord::Base
   def can_cancel?
     if self.order_list.ordered?
       unless self.accept_id.present?
-        return true
+        unless self.canceled_at.present?
+          return true
+        end
       end
     end
     return false

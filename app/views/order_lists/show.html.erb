@@ -76,8 +76,11 @@
           <%= link_to t('order_list.remove_order_list'), order_path(id: o.id, order_list_id: @order_list.id), :confirm => t('page.are_you_sure'), :method => :delete -%>
         <%- end -%>
         <%- if o.can_cancel? -%>
-          <%#= link_to t('order_list.cancel_after_ordered'), o, :confirm => t('page.are_you_sure'), :method => :delete -%>
+          <%= link_to t('order_list.cancel_after_ordered'), order_path(id: o.id, order_list_id: @order_list.id), :confirm => t('order_list.are_you_sure_item_cancel'), :method => :delete -%>
         <%- end -%>
+        <% if o.canceled_at %>
+         <%= t('order_list.has_been_canceled') %>
+        <% end %>
         <!---
         item_id=<%= o.item.id if o.item %>
         -->

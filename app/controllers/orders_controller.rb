@@ -106,8 +106,12 @@ class OrdersController < ApplicationController
   # DELETE /orders/1.json
   def destroy
     @order = Order.find(params[:id])
-
-    @order.destroy
+    unless @order.order_list.state == "ordered"
+      @order.destroy
+    else
+      # 発注後はキャンセル扱い
+      @order.update_attributes!({canceled_at: Time.now})
+    end
 
     respond_to do |format|
       if @order_list

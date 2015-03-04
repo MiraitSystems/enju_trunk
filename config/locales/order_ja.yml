@@ -210,6 +210,8 @@ ja:
     completed: "完了"
     are_you_sure_to_completed: "完了状態にします。よろしいですか？"
     are_you_sure_to_ordered: "発注します。よろしいですか？"
+    are_you_sure_item_cancel: "発注後キャンセルを行います。戻せません。よろしいですか？"
+    has_been_canceled: キャンセル済み
   accept:
     no_ordered: 発注していない所蔵です。発注済みで無いと検収が出来ません。
   payment:
