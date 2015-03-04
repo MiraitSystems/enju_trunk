@@ -8,7 +8,7 @@ namespace :enju_trunk do
     task :exec => :environment do
       filename = backupdir + "/enju_trunk_appbackup_" + Time.now.strftime("%Y%m%d%H%M%S") + ".tar.gz"
       # backup
-      sh "cd #{opt_dir}; tar zcvf #{filename} enju_trunk"
+      sh "cd #{opt_dir}; tar zhcvf #{filename} enju_trunk"
 
     end
   end
